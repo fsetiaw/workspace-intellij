@@ -10,4 +10,14 @@ public class UserController {
     public String showHome() {
         return "home";
     }
+
+    @GetMapping("/leaders")
+    public String showLeadersHome() {
+        return "leaders-home";
+    }
+
+    @GetMapping("/systems")
+    public String showAdminsHome() {
+        return "admin-home";
+    }
 }
