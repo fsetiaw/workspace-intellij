@@ -1,5 +1,6 @@
-package com.divillafajar.disiniaja.possini.entity.user;
+package com.divillafajar.disiniaja.possini.entity.user.detail;
 
+import com.divillafajar.disiniaja.possini.entity.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name="user_detail")
-public class UserDetail {
+public class UserDetailEntity {
 
     // annotate the class as an entity and map to db table
     // define fields
@@ -32,8 +33,8 @@ public class UserDetail {
     @Column(name = "tiktok")
     private String tiktok;
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
+    @OneToOne(mappedBy = "userDetail", cascade = CascadeType.ALL)
     private User user;
+
 
 }

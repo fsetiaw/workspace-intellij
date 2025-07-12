@@ -1,5 +1,6 @@
 package com.divillafajar.disiniaja.possini.entity.user;
 
+import com.divillafajar.disiniaja.possini.entity.user.detail.UserDetailEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(name="user")
 public class User {
 
     @Id
@@ -24,4 +26,14 @@ public class User {
 
     @Column(name = "email")
     private String email;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_detail_id")
+    private UserDetailEntity userDetail;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "users_id")
+    private UserEntity userAuthDetails;
+
+
 }
