@@ -26,11 +26,13 @@ public class UserEntity {
 
     @Column(nullable = false)
     private boolean enabled;
-
+/*
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "authorities_id")
     private AuthorityEntity authDetail;
 
     @OneToOne(mappedBy = "userAuthDetails")
     private User user;
+
+ */
 }

@@ -1,10 +1,14 @@
 package com.divillafajar.disiniaja.possini.entity.user;
 
+import com.divillafajar.disiniaja.possini.entity.user.address.AddressEntity;
 import com.divillafajar.disiniaja.possini.entity.user.detail.UserDetailEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails;
+
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -27,13 +31,21 @@ public class User {
     @Column(name = "email")
     private String email;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_detail_id")
+    //
+    //@OneToOne(cascade = CascadeType.ALL)
+    //@JoinColumn(name = "user_detail_id")
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private UserDetailEntity userDetail;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<AddressEntity> userAddresses;
+/*
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "users_id")
     private UserEntity userAuthDetails;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<AddressEntity> addresses;
 
+ */
 }

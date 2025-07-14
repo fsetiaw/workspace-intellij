@@ -33,7 +33,10 @@ public class UserDetailEntity {
     @Column(name = "tiktok")
     private String tiktok;
 
-    @OneToOne(mappedBy = "userDetail", cascade = CascadeType.ALL)
+    //@OneToOne(mappedBy = "userDetail", cascade = CascadeType.ALL)
+    @OneToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE,
+            CascadeType.PERSIST, CascadeType.REFRESH })
+    @JoinColumn(name = "user_id")
     private User user;
 
 

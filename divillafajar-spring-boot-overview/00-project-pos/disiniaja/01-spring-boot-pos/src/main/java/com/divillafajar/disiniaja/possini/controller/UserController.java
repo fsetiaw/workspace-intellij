@@ -1,9 +1,14 @@
 package com.divillafajar.disiniaja.possini.controller;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
+
+
+
+//@Controller
+@RestController
+@RequestMapping("users")
 public class UserController {
 
     @GetMapping("/")
@@ -19,5 +24,25 @@ public class UserController {
     @GetMapping("/systems")
     public String showAdminsHome() {
         return "admin-home";
+    }
+
+    @GetMapping
+    public String getUser() {
+        return "get User";
+    }
+
+    @PostMapping
+    public String createUser() {
+        return "create User";
+    }
+
+    @PutMapping
+    public String updateUser() {
+        return "update User";
+    }
+
+    @DeleteMapping
+    public String deleteUser() {
+        return "delete User";
     }
 }
