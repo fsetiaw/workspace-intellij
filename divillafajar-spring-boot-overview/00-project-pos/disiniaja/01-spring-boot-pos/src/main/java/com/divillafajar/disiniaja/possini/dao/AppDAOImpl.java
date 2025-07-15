@@ -6,7 +6,7 @@ import com.divillafajar.disiniaja.possini.entity.user.detail.UserDetailEntity;
 import com.divillafajar.disiniaja.possini.entity.user.UserEntity;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
+//import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +36,7 @@ public class AppDAOImpl implements AppDAO {
     public void save(List<AddressEntity> addresses, int userId) {
         User user = entityManager.find(User.class, userId);
         for(AddressEntity address : addresses) {
-            address.setUser(user);
+            //address.setUser(user);
             entityManager.persist(address);
         }
 

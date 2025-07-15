@@ -4,7 +4,7 @@ import com.divillafajar.disiniaja.possini.entity.user.User;
 import com.divillafajar.disiniaja.possini.entity.user.address.AddressEntity;
 import com.divillafajar.disiniaja.possini.entity.user.detail.UserDetailEntity;
 import com.divillafajar.disiniaja.possini.entity.user.UserEntity;
-import org.springframework.security.core.userdetails.UserDetails;
+//import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.List;
 
