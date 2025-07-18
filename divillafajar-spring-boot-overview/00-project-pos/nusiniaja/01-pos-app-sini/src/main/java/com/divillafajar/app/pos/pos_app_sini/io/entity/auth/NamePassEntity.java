@@ -19,11 +19,7 @@ public class NamePassEntity implements Serializable {
     private static final long serialVersionUID = 7312949496455092392L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private int id;
-
-    @Column(length = 50)
+    @Column(length = 50, unique = true)
     private String username;
 
     @Column(nullable = false, length = 100)
@@ -31,6 +27,9 @@ public class NamePassEntity implements Serializable {
 
     @Column(nullable = false)
     private boolean enabled;
+
+    @OneToOne(mappedBy = "namePassEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+    private AuthorityEntity authorityEntity;
 /*
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "authorities_id")

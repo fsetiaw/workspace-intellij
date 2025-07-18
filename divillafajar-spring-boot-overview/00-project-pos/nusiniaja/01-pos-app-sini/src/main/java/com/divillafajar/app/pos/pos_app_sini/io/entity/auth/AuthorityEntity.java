@@ -28,4 +28,9 @@ public class AuthorityEntity implements Serializable {
     @Column(nullable = false, length = 50)
     private String authority;
 
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "username")
+    private NamePassEntity namePassEntity;
+
 }
