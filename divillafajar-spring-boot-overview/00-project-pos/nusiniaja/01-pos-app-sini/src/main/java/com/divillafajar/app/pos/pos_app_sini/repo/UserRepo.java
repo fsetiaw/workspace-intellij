@@ -1,5 +1,6 @@
-package com.divillafajar.app.pos.pos_app_sini.io.entity;
+package com.divillafajar.app.pos.pos_app_sini.repo;
 
+import com.divillafajar.app.pos.pos_app_sini.io.entity.user.UserEntity;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

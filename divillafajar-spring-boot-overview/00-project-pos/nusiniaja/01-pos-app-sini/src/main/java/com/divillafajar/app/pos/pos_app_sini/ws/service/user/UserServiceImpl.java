@@ -1,7 +1,7 @@
 package com.divillafajar.app.pos.pos_app_sini.ws.service.user;
 
-import com.divillafajar.app.pos.pos_app_sini.io.entity.UserEntity;
-import com.divillafajar.app.pos.pos_app_sini.io.entity.UserRepo;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.user.UserEntity;
+import com.divillafajar.app.pos.pos_app_sini.repo.UserRepo;
 import com.divillafajar.app.pos.pos_app_sini.ws.shared.dto.UserDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;

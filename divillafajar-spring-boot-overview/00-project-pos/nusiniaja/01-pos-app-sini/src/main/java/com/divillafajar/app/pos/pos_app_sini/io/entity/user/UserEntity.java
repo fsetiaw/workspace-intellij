@@ -1,4 +1,4 @@
-package com.divillafajar.app.pos.pos_app_sini.io.entity;
+package com.divillafajar.app.pos.pos_app_sini.io.entity.user;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,8 +11,8 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name="userEntity")
-@Table(name="user1")
+@Entity(name="UserEntity")
+@Table(name="user")
 public class UserEntity implements Serializable {
 
     @Serial
@@ -23,7 +23,7 @@ public class UserEntity implements Serializable {
     @Column(name = "id")
     private int id;
 
-    @Column(name = "firstName", length = 50)
+    @Column(name = "first_name", length = 50)
     private String firstName;
 
     @Column(name = "last_name")
