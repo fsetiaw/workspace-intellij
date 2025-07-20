@@ -8,25 +8,19 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
+import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+
+import javax.sql.DataSource;
 
 @Configuration
 public class SecurityConfig {
+
+    // Add support for JDBC
     @Bean
-    public InMemoryUserDetailsManager userDetailsManager() {
-        UserDetails cust = User.builder()
-                .username("cust")
-                .password("{noop}cust")
-                .roles("CUSTOMER")
-                .build();
-
-        UserDetails me = User.builder()
-                .username("saya")
-                .password("{noop}saya")
-                .roles("ADMIN")
-                .build();
-
-        return new InMemoryUserDetailsManager(me);
+    public UserDetailsManager userDetailsManager(DataSource dataSource) {
+        return new JdbcUserDetailsManager(dataSource);
     }
 
 
@@ -46,6 +40,23 @@ public class SecurityConfig {
 
         return http.build();
     }
+/*
+@Bean
+    public InMemoryUserDetailsManager userDetailsManager() {
+        UserDetails cust = User.builder()
+                .username("cust")
+                .password("{noop}cust")
+                .roles("CUSTOMER")
+                .build();
 
+        UserDetails me = User.builder()
+                .username("saya")
+                .password("{noop}saya")
+                .roles("ADMIN")
+                .build();
+
+        return new InMemoryUserDetailsManager(me);
+    }
+ */
 
 }
