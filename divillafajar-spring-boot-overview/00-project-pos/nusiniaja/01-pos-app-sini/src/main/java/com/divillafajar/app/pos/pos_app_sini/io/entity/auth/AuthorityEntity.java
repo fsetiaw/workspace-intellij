@@ -1,5 +1,6 @@
 package com.divillafajar.app.pos.pos_app_sini.io.entity.auth;
 
+import com.divillafajar.app.pos.pos_app_sini.io.entity.user.UserEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,9 +29,12 @@ public class AuthorityEntity implements Serializable {
     @Column(nullable = false, length = 50)
     private String authority;
 
-    @OneToOne
+
     @MapsId
+    @OneToOne
     @JoinColumn(name = "username")
-    private NamePassEntity namePassEntity;
+    private NamePassEntity userNamePass;
+
+
 
 }

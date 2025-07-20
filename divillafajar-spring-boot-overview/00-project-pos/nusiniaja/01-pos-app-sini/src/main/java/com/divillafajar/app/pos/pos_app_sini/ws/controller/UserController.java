@@ -1,5 +1,7 @@
 package com.divillafajar.app.pos.pos_app_sini.ws.controller;
 
+import com.divillafajar.app.pos.pos_app_sini.io.entity.auth.AuthorityEntity;
+import com.divillafajar.app.pos.pos_app_sini.ws.model.user.CreateUserRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.ws.model.user.UserDetailsRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.ws.model.user.UserDetailsResponseModel;
 import com.divillafajar.app.pos.pos_app_sini.ws.service.user.UserService;
@@ -19,7 +21,7 @@ public class UserController {
     public String getUser() {
         return "get user";
     }
-
+/*
     @PostMapping
     public UserDetailsResponseModel createUser(@RequestBody UserDetailsRequestModel userDetailsRequestModel) {
         System.out.println("firstname = "+userDetailsRequestModel.getFirstName());
@@ -31,6 +33,25 @@ public class UserController {
 
         UserDTO createUser = userService.createUser(userDTO);
         BeanUtils.copyProperties(createUser,returnVal);
+        return returnVal;
+    }
+
+ */
+
+    @PostMapping
+    public UserDetailsResponseModel createUser(@RequestBody CreateUserRequestModel userDetailsRequestModel) {
+
+        System.out.println("firstname = "+userDetailsRequestModel.getFirstName());
+        UserDetailsResponseModel returnVal = new UserDetailsResponseModel();
+
+        UserDTO userDTO = new UserDTO();
+        BeanUtils.copyProperties(userDetailsRequestModel, userDTO);
+
+        System.out.println("userDTO firstname = "+userDTO.getFirstName());
+
+        UserDTO createUser = userService.createUser(userDTO);
+        BeanUtils.copyProperties(createUser,returnVal);
+
         return returnVal;
     }
 

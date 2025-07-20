@@ -1,5 +1,6 @@
 package com.divillafajar.app.pos.pos_app_sini.io.entity.user;
 
+import com.divillafajar.app.pos.pos_app_sini.io.entity.auth.NamePassEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -23,12 +25,19 @@ public class UserEntity implements Serializable {
     @Column(name = "id")
     private int id;
 
-    @Column(name = "first_name", length = 50)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private NamePassEntity userAuthDetails;
+
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+    private List<AddressEntity> addresses;
+
+    @Column(name = "first_name", length = 50, nullable = false)
     private String firstName;
 
-    @Column(name = "last_name")
+    @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Column(name = "email")
+    @Column(name = "email", nullable = false)
     private String email;
+
 }

@@ -1,5 +1,6 @@
 package com.divillafajar.app.pos.pos_app_sini.io.entity.auth;
 
+import com.divillafajar.app.pos.pos_app_sini.io.entity.user.UserEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,10 +27,15 @@ public class NamePassEntity implements Serializable {
     private String password;
 
     @Column(nullable = false)
-    private boolean enabled;
+    private boolean enabled = true;
 
-    @OneToOne(mappedBy = "namePassEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
-    private AuthorityEntity authorityEntity;
+    @OneToOne(mappedBy = "userNamePass", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+    private AuthorityEntity userAuth;
+
+    @OneToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE,
+            CascadeType.PERSIST, CascadeType.REFRESH })
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
 /*
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "authorities_id")

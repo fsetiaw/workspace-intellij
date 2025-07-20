@@ -1,5 +1,6 @@
 package com.divillafajar.app.pos.pos_app_sini.ws.model.user;
 
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,5 +13,6 @@ public class UserDetailsRequestModel {
     private String firstName;
     private String lastName;
     private String email;
+
 
 }
