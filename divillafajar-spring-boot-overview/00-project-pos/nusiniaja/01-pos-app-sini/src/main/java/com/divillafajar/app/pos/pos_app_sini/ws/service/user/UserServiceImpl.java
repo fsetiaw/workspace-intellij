@@ -45,16 +45,19 @@ public class UserServiceImpl implements UserService {
         BeanUtils.copyProperties(userDTO, nape);
         nape.setUser(storedUser);
         nape.setEnabled(true);
+        NamePassEntity storedNape = namePasRepo.save(nape);
 
         AuthorityEntity auth = new AuthorityEntity();
         auth.setAuthority(userDTO.getAuthority());
-        auth.setUserNamePass(nape);
-        nape.setUserAuth(auth);
-        System.out.println("nape = "+nape.getUser().getId());
+        auth.setUsername(userDTO.getUsername());
+        auth.setNamePass(storedNape);
+        authRepo.save(auth);
+        //nape.setUserAuth(auth);
+        //System.out.println("nape = "+nape.getUser().getId());
         System.out.println("nape = "+nape.getUsername());
         System.out.println("nape = "+nape.getPassword());
-        System.out.println("nape = "+nape.getUserAuth().getAuthority());
-        NamePassEntity StoredNape = namePasRepo.save(nape);
+        //System.out.println("nape = "+nape.getUserAuth().getAuthority());
+
 
 
 

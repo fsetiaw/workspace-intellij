@@ -8,6 +8,7 @@ import com.divillafajar.app.pos.pos_app_sini.ws.service.user.UserService;
 import com.divillafajar.app.pos.pos_app_sini.ws.shared.dto.UserDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,6 +17,15 @@ public class UserController {
 
     @Autowired
     UserService userService;
+
+    /*
+    @GetMapping("/hello")
+    public String hello(Model theModel) {
+        theModel.addAttribute("theDate", java.time.LocalDateTime.now());
+        return  "hellopage";
+    }
+
+     */
 
     @GetMapping
     public String getUser() {

@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -20,7 +22,11 @@ public class NamePassEntity implements Serializable {
     private static final long serialVersionUID = 7312949496455092392L;
 
     @Id
-    @Column(length = 50, unique = true)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private int id;
+
+    @Column(length = 50)
     private String username;
 
     @Column(nullable = false, length = 100)
@@ -29,14 +35,20 @@ public class NamePassEntity implements Serializable {
     @Column(nullable = false)
     private boolean enabled = true;
 
-    @OneToOne(mappedBy = "userNamePass", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
-    private AuthorityEntity userAuth;
+    @OneToMany(mappedBy = "namePass", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AuthorityEntity> authorities = new ArrayList<>();
+
 
     @OneToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE,
             CascadeType.PERSIST, CascadeType.REFRESH })
     @JoinColumn(name = "user_id")
     private UserEntity user;
-/*
+    /*
+
+
+    @OneToOne(mappedBy = "userNamePass", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+    private AuthorityEntity userAuth;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "authorities_id")
     private AuthorityEntity authDetail;
