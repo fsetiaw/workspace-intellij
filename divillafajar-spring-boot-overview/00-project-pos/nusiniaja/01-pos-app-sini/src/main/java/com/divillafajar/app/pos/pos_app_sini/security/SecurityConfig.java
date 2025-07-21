@@ -29,8 +29,11 @@ public class SecurityConfig {
         http.authorizeHttpRequests(configurer ->
                 configurer
                         .requestMatchers(HttpMethod.PUT, "/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/**").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.POST,"/users").permitAll()
+                        .anyRequest().authenticated()
+
+
             );
         //use http Basic Authntication
         http.httpBasic(Customizer.withDefaults());
