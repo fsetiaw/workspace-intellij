@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
@@ -15,7 +17,10 @@ import java.time.LocalDateTime;
         name="address",
         uniqueConstraints = @UniqueConstraint(columnNames = {"addressName", "user"})
 )
-public class AddressEntity {
+public class AddressEntity implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = -7055023301565209276L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

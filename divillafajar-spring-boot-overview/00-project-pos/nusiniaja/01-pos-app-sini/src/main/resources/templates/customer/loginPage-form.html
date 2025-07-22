@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome CUSTOMER LOGIN PAGE</title>
+</head>
+<body>
+<h2>This is Customer Login Page</h2>
+<hr>
+
+
+    <form th:action="@{/welcome/processLoginForm}" method="GET">
+        <input type="text" name="phoneNumber" placeholder="Enter Phone Number" />
+        <input type="submit"/>
+    </form>
+<hr>
+<form method="POST" action="#" th:action="@{/logout}" >
+    <input type="submit" value="logout">
+</form>
+</body>
+</html>

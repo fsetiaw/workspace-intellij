@@ -28,10 +28,9 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(configurer ->
                 configurer
-                        .requestMatchers(HttpMethod.PUT, "/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/**").hasRole("MANAGER")
-                        .requestMatchers(HttpMethod.POST,"/users").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/ui/**").permitAll()
+                        //.requestMatchers(HttpMethod.PUT, "/**").hasRole("ADMIN")
+                        //.requestMatchers(HttpMethod.GET, "/**").hasRole("MANAGER")
+                        .requestMatchers("welcome/**").permitAll()
                         .anyRequest().authenticated()
 
 

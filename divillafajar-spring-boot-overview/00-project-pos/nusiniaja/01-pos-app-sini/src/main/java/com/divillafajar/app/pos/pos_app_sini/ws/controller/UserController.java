@@ -18,14 +18,14 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    /*
+
     @GetMapping("/hello")
     public String hello(Model theModel) {
         theModel.addAttribute("theDate", java.time.LocalDateTime.now());
-        return  "hellopage";
+        return  "hellopageuser";
     }
 
-     */
+
 
     @GetMapping
     public String getUser() {
