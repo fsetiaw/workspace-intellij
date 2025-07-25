@@ -1,5 +1,7 @@
 package com.divillafajar.app.pos.pos_app_sini.ws.service.customer;
 
+import com.divillafajar.app.pos.pos_app_sini.io.entity.auth.AuthorityEntity;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.auth.NamePassEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.customer.CustomerEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.user.UserEntity;
 import com.divillafajar.app.pos.pos_app_sini.repo.AddressRepo;
@@ -19,12 +21,18 @@ public class CustomerServiceImpl implements CustomerService{
     //@Autowired
     private final CustomerRepo csr;
 
+    private NamePasRepo namePasRepo;
     //@Autowired
     private final UserRepo userRepo;
 
-    public CustomerServiceImpl(CustomerRepo csr,UserRepo userRepo) {
+    private final AuthRepo authRepo;
+
+    public CustomerServiceImpl(CustomerRepo csr,UserRepo userRepo,
+                               NamePasRepo namePasRepo, AuthRepo authRepo) {
         this.csr=csr;
         this.userRepo=userRepo;
+        this.namePasRepo=namePasRepo;
+        this.authRepo=authRepo;
     }
 
 
@@ -56,6 +64,19 @@ public class CustomerServiceImpl implements CustomerService{
             UserEntity nuUser = new UserEntity();
             nuUser.setCustomer(storedCustomer);
             nuUser.setFirstName(storedCustomer.getAliasName());
+            storedUser = userRepo.save(nuUser);
+            NamePassEntity nape = new NamePassEntity();
+            nape.setUsername(storedCustomer.getPhoneNumber());
+            nape.setPassword("NoPwd");
+            nape.setUser(storedUser);
+            nape.setEnabled(true);
+            NamePassEntity storedNape = namePasRepo.save(nape);
+
+            AuthorityEntity auth = new AuthorityEntity();
+            auth.setAuthority("ROLE_CUSTOMER");
+            auth.setUsername(storedNape.getUsername());
+            auth.setNamePass(storedNape);
+            authRepo.save(auth);
 
         }
         BeanUtils.copyProperties(storedCustomer,returnVal);
