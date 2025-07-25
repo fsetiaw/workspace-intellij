@@ -8,25 +8,28 @@ import com.divillafajar.app.pos.pos_app_sini.repo.AddressRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.AuthRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.NamePasRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.UserRepo;
-import com.divillafajar.app.pos.pos_app_sini.ws.shared.dto.UserDTO;
-import org.hibernate.boot.model.source.spi.VersionAttributeSource;
+import com.divillafajar.app.pos.pos_app_sini.ws.model.shared.dto.UserDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements UserService {
-    @Autowired
-    UserRepo userRepo;
+    private final UserRepo userRepo;
+    private final NamePasRepo namePasRepo;
 
-    @Autowired
-    NamePasRepo namePasRepo;
+    private final AuthRepo authRepo;
 
-    @Autowired
-    AuthRepo authRepo;
+    private final AddressRepo addressRepo;
 
-    @Autowired
-    AddressRepo addressRepo;
+    public UserServiceImpl(UserRepo userRepo, NamePasRepo namePasRepo,
+                           AuthRepo authRepo,AddressRepo addressRepo) {
+        this.userRepo=userRepo;
+        this.authRepo=authRepo;
+        this.namePasRepo=namePasRepo;
+        this.addressRepo=addressRepo;
+    }
+
 
     @Override
     public UserDTO createUser(UserDTO userDTO) {
@@ -34,11 +37,16 @@ public class UserServiceImpl implements UserService {
         UserEntity userEntity = new UserEntity();
         BeanUtils.copyProperties(userDTO, userEntity);
         UserEntity storedUser = userRepo.save(userEntity);
+        /*
+        **  Hapus Kalu Mo Sekalian Save Address pada saat create User
+        **
         AddressEntity addressEntity = new AddressEntity();
         addressEntity.setUser(storedUser);
         BeanUtils.copyProperties(userDTO, addressEntity);
         AddressEntity storedAddress = addressRepo.save(addressEntity);
         System.out.println("DONE SAVE ADDRESS");
+
+         */
 
 
         NamePassEntity nape = new NamePassEntity();

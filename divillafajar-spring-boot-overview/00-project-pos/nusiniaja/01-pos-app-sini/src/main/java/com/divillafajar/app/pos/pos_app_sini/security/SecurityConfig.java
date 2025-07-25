@@ -32,8 +32,6 @@ public class SecurityConfig {
                         //.requestMatchers(HttpMethod.GET, "/**").hasRole("MANAGER")
                         .requestMatchers("welcome/**").permitAll()
                         .anyRequest().authenticated()
-
-
             );
         //use http Basic Authntication
         http.httpBasic(Customizer.withDefaults());

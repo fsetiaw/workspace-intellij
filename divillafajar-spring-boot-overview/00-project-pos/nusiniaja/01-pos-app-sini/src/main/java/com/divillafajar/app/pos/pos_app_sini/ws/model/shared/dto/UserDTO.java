@@ -1,4 +1,4 @@
-package com.divillafajar.app.pos.pos_app_sini.ws.shared.dto;
+package com.divillafajar.app.pos.pos_app_sini.ws.model.shared.dto;
 
 import com.divillafajar.app.pos.pos_app_sini.io.entity.auth.AuthorityEntity;
 import jakarta.persistence.CascadeType;

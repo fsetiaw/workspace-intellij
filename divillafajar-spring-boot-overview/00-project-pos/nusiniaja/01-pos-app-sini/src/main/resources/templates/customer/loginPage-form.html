@@ -9,8 +9,9 @@
 <hr>
 
 
-    <form th:action="@{/welcome/processLoginForm}" method="GET">
+    <form th:action="@{/welcome/processLoginForm}" method="POST">
         <input type="text" name="phoneNumber" placeholder="Enter Phone Number" />
+        <input type="text" name="aliasName" placeholder="Enter Name" />
         <input type="submit"/>
     </form>
 <hr>

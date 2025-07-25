@@ -1,6 +1,7 @@
 package com.divillafajar.app.pos.pos_app_sini.io.entity.customer;
 
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientEntity;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.user.UserEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,10 +24,16 @@ public class CustomerEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "phone_number", unique = true, nullable = false)
     private String phoneNumber;
+
+
+    @Column(name = "alias_name", nullable = false, length = 25)
+    private String aliasName;
+
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {
             CascadeType.PERSIST, CascadeType.MERGE,
@@ -36,6 +43,15 @@ public class CustomerEntity implements Serializable {
             joinColumns = @JoinColumn(name = "customer_id"),
             inverseJoinColumns = @JoinColumn(name = "client_id")
     )
-    List<ClientEntity> clients;
+    private List<ClientEntity> clients;
+
+    @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
+    private CustomerDetailsEntity customerDetails;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = {
+            CascadeType.PERSIST, CascadeType.MERGE,
+            CascadeType.DETACH, CascadeType.REFRESH})
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
 
 }

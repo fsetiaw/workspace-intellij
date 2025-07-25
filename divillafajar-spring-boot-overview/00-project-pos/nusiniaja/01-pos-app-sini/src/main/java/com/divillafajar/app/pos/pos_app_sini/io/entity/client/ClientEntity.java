@@ -24,11 +24,16 @@ public class ClientEntity implements Serializable {
     @Column(name = "id")
     private int id;
 
-    @Column(name = "first_name", length = 50, nullable = false)
+    @Column(name = "client_name", length = 50, nullable = false)
     private String clientName;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {
             CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH}, mappedBy = "clients")
     List<CustomerEntity> customers;
+
+
+
+    @OneToOne(mappedBy = "client", cascade = CascadeType.ALL)
+    private ClientDetailsEntity clientDetails;
 }
