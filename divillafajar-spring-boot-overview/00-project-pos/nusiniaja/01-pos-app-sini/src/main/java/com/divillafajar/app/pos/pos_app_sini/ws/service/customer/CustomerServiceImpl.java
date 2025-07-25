@@ -67,7 +67,7 @@ public class CustomerServiceImpl implements CustomerService{
             storedUser = userRepo.save(nuUser);
             NamePassEntity nape = new NamePassEntity();
             nape.setUsername(storedCustomer.getPhoneNumber());
-            nape.setPassword("NoPwd");
+            nape.setPassword("{noop}NoPwd");
             nape.setUser(storedUser);
             nape.setEnabled(true);
             NamePassEntity storedNape = namePasRepo.save(nape);
