@@ -9,12 +9,12 @@ import lombok.Data;
 @Data
 public class CustomerLoginRequestModel {
 
-    @NotBlank(message = "is required")
-    @Size(min = 1, message = "is required")
+    @NotNull(message = "Phone number is required")
+    @Size(min = 8, message = "Phone number is required")
     private String phoneNumber;
 
-    @NotBlank(message = "is required")
-    @Size(min = 1, message = "is required")
+    @NotNull(message = "Name is required")
+    @Size(min = 2, message = "Name is required")
     private String aliasName;
 
 

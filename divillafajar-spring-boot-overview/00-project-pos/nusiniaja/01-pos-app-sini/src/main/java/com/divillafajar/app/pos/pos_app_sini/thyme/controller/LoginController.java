@@ -2,18 +2,15 @@ package com.divillafajar.app.pos.pos_app_sini.thyme.controller;
 
 import com.divillafajar.app.pos.pos_app_sini.ws.model.customer.CustomerLoginRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.ws.service.customer.CustomerService;
-import com.divillafajar.app.pos.pos_app_sini.ws.model.shared.dto.CustomerDTO;
 import com.divillafajar.app.pos.pos_app_sini.ws.service.user.UserService;
 import jakarta.validation.Valid;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("welcome")
+//@RequestMapping("welcome")
 public class LoginController {
     //@Autowired
     private final CustomerService cs;
@@ -23,7 +20,17 @@ public class LoginController {
         this.us=us;
     }
 
+
     @GetMapping("/login")
+    public String showUserLoginForm(Model theModel) {
+        //theModel.addAttribute("theDate", java.time.LocalDateTime.now());
+        System.out.println("USER Controller /showUserLoginForm is called");
+        CustomerLoginRequestModel custModel = new CustomerLoginRequestModel();
+        theModel.addAttribute("customer",custModel);
+        return  "main-login";
+    }
+
+    @GetMapping("/customer")
     public String showLoginForm(Model theModel) {
         //theModel.addAttribute("theDate", java.time.LocalDateTime.now());
         System.out.println("Login Controller /loginForm is called");
@@ -34,7 +41,7 @@ public class LoginController {
 
 
 
-    @PostMapping("/processLoginForm")
+    @PostMapping("customer/processLoginForm")
     public String processForm(
             @Valid @ModelAttribute("customer") CustomerLoginRequestModel theCustomer,
             BindingResult bindingResult) {

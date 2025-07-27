@@ -28,11 +28,21 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(configurer ->
                 configurer
-                        //.requestMatchers(HttpMethod.PUT, "/**").hasRole("ADMIN")
-                        //.requestMatchers(HttpMethod.GET, "/**").hasRole("MANAGER")
-                        .requestMatchers("welcome/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/users").hasRole("EMPLOYEE")
+                        .requestMatchers(HttpMethod.GET, "/api/users/**").hasRole("EMPLOYEE")
+                        .requestMatchers(HttpMethod.POST, "/api/users").hasRole("MANAGER") //create employee
+                        .requestMatchers(HttpMethod.PUT, "/api/users").hasRole("MANAGER") //update employee
+                        .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasRole("ADMIN")
+                        .requestMatchers("welcome/**", "users/register/**").permitAll()
                         .anyRequest().authenticated()
-            );
+            )
+            .formLogin(form ->
+                    form
+                            .loginPage("/login")  //sesuai path
+                            .loginProcessingUrl("/authenticateTheUser")
+                            .permitAll()
+            )
+        ;
         //use http Basic Authntication
         http.httpBasic(Customizer.withDefaults());
 
