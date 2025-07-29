@@ -1,5 +1,6 @@
 package com.divillafajar.app.pos.pos_app_sini.ws.controller;
 
+import com.divillafajar.app.pos.pos_app_sini.ws.exception.GenericCustomErrorException;
 import com.divillafajar.app.pos.pos_app_sini.ws.model.customer.CustomerLoginRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.ws.model.user.CreateUserRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.ws.model.user.UserDetailsResponseModel;
@@ -15,8 +16,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("api/users")
 public class UserController {
 
-    @Autowired
-    UserService userService;
+    //@Autowired
+    private final UserService userService;
+
+
+    public UserController(UserService userService) {
+        this.userService=userService;
+    }
 
     /*
     ** Create New User
@@ -73,6 +79,8 @@ public class UserController {
     @DeleteMapping
     @ResponseBody
     public String deleteUser() {
+        if(false)
+            throw new GenericCustomErrorException("TEST ERROR");
         return "Delete user";
     }
 }

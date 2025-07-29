@@ -10,7 +10,7 @@
 <body>
 <h2>This is Customer Login Page</h2>
 <hr>
-    <form th:action="@{/welcome/processLoginForm}" th:object="${customer}" method="POST">
+    <form th:action="@{/customer/processLoginForm}" th:object="${customer}" method="POST">
         <input placeholder="Enter Phone Number" th:field="*{phoneNumber}" type="text"/>
         <span th:if="${#fields.hasErrors('phoneNumber')}"
               th:errors="*{phoneNumber}" class="error"></span>

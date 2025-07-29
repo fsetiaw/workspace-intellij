@@ -1,5 +1,6 @@
 package com.divillafajar.app.pos.pos_app_sini.ws.service.customer;
 
+import com.divillafajar.app.pos.pos_app_sini.config.security.CustomDefaultProperties;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.auth.AuthorityEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.auth.NamePassEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.customer.CustomerEntity;
@@ -11,14 +12,18 @@ import com.divillafajar.app.pos.pos_app_sini.repo.UserRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.customer.CustomerRepo;
 import com.divillafajar.app.pos.pos_app_sini.ws.model.shared.dto.CustomerDTO;
 import com.divillafajar.app.pos.pos_app_sini.ws.service.user.UserService;
+import com.divillafajar.app.pos.pos_app_sini.ws.utils.MyStringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class CustomerServiceImpl implements CustomerService{
 
-    //@Autowired
+    private final CustomDefaultProperties customDefaultProperties;
+    private final PasswordEncoder passwordEncoder;
     private final CustomerRepo csr;
 
     private NamePasRepo namePasRepo;
@@ -28,19 +33,24 @@ public class CustomerServiceImpl implements CustomerService{
     private final AuthRepo authRepo;
 
     public CustomerServiceImpl(CustomerRepo csr,UserRepo userRepo,
-                               NamePasRepo namePasRepo, AuthRepo authRepo) {
+                               NamePasRepo namePasRepo, AuthRepo authRepo,
+                               PasswordEncoder passwordEncoder, CustomDefaultProperties customDefaultProperties
+    ) {
         this.csr=csr;
         this.userRepo=userRepo;
         this.namePasRepo=namePasRepo;
         this.authRepo=authRepo;
+        this.passwordEncoder=passwordEncoder;
+        this.customDefaultProperties=customDefaultProperties;
     }
 
 
     @Override
-    public CustomerDTO createOrGetCustomer(CustomerDTO customerDTO) {
+    public CustomerDTO loginCustomer(CustomerDTO customerDTO) {
         CustomerDTO returnVal = new CustomerDTO();
         CustomerEntity customerEntity = new CustomerEntity();
         BeanUtils.copyProperties(customerDTO, customerEntity);
+        customerEntity.setPhoneNumber(MyStringUtils.cleanPhoneNumber(customerDTO.getPhoneNumber()));
         /*
         ** cek apa customer hp sudah terdaftar
          */
@@ -63,17 +73,21 @@ public class CustomerServiceImpl implements CustomerService{
             System.out.println("CUSTOMER belum ada di USER");
             UserEntity nuUser = new UserEntity();
             nuUser.setCustomer(storedCustomer);
-            nuUser.setFirstName(storedCustomer.getAliasName());
+            String[]givenName = MyStringUtils.splitLastWord(storedCustomer.getAliasName());
+            nuUser.setFirstName(givenName[0]);
+            if(givenName[1]!=null && givenName[1].isBlank())
+                nuUser.setLastName(givenName[1]);
             storedUser = userRepo.save(nuUser);
             NamePassEntity nape = new NamePassEntity();
             nape.setUsername(storedCustomer.getPhoneNumber());
-            nape.setPassword("{noop}NoPwd");
+            //nape.setPassword("{bcrypt}"+bCryptPasswordEncoder.encode("NoPwd"));
+            nape.setPassword(passwordEncoder.encode(customDefaultProperties.getCustomerPwd()));
             nape.setUser(storedUser);
             nape.setEnabled(true);
             NamePassEntity storedNape = namePasRepo.save(nape);
 
             AuthorityEntity auth = new AuthorityEntity();
-            auth.setAuthority("ROLE_CUSTOMER");
+            auth.setAuthority(customDefaultProperties.getCustomerRole());
             auth.setUsername(storedNape.getUsername());
             auth.setNamePass(storedNape);
             authRepo.save(auth);

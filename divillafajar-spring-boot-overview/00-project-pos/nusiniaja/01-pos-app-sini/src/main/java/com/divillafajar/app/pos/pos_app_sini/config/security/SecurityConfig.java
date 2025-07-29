@@ -1,12 +1,17 @@
-package com.divillafajar.app.pos.pos_app_sini.security;
+package com.divillafajar.app.pos.pos_app_sini.config.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
@@ -17,30 +22,50 @@ import javax.sql.DataSource;
 @Configuration
 public class SecurityConfig {
 
+
+    @Autowired
+    private CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
     // Add support for JDBC
     @Bean
     public UserDetailsManager userDetailsManager(DataSource dataSource) {
         return new JdbcUserDetailsManager(dataSource);
     }
 
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(configurer ->
                 configurer
+                        .requestMatchers("/api/customer").hasRole("CUSTOMER")
+                        .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
                         .requestMatchers(HttpMethod.GET, "/api/users").hasRole("EMPLOYEE")
                         .requestMatchers(HttpMethod.GET, "/api/users/**").hasRole("EMPLOYEE")
                         .requestMatchers(HttpMethod.POST, "/api/users").hasRole("MANAGER") //create employee
                         .requestMatchers(HttpMethod.PUT, "/api/users").hasRole("MANAGER") //update employee
                         .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasRole("ADMIN")
-                        .requestMatchers("welcome/**", "users/register/**").permitAll()
+                        .requestMatchers("customer/login", "customer/processLoginForm", "/api/users/register/**",
+                                "/swagger-ui.html",         // untuk versi lama
+                                "/swagger-ui/**",           // UI assets
+                                "/v3/api-docs",             // root OpenAPI
+                                "/v3/api-docs/**",          // jika endpoint dibagi
+                                "/swagger-resources/**",    // kalau masih digunakan
+                                "/webjars/**"           //kebutuhan swagger
+                        ).permitAll()
                         .anyRequest().authenticated()
             )
             .formLogin(form ->
                     form
                             .loginPage("/login")  //sesuai path
                             .loginProcessingUrl("/authenticateTheUser")
+                            .successHandler(customAuthenticationSuccessHandler)
+                            //.defaultSuccessUrl("/home",true)
                             .permitAll()
+            )
+            .logout(logout -> logout.permitAll()
             )
         ;
         //use http Basic Authntication
@@ -50,6 +75,11 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable());
 
         return http.build();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+        return authConfig.getAuthenticationManager();
     }
 /*
 @Bean

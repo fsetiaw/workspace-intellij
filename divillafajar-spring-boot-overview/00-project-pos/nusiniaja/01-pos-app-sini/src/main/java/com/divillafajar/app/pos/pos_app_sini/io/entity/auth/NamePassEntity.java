@@ -26,7 +26,7 @@ public class NamePassEntity implements Serializable {
     @Column(name = "id")
     private int id;
 
-    @Column(length = 50)
+    @Column(length = 50, unique = true)
     private String username;
 
     @Column(nullable = false, length = 100)
