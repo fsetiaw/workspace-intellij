@@ -1,30 +1,47 @@
 package com.divillafajar.app.pos.pos_app_sini.config.security;
 
+import com.divillafajar.app.pos.pos_app_sini.config.security.jwt.JwtAuthFilter;
+import com.divillafajar.app.pos.pos_app_sini.ws.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.sql.DataSource;
 
 @Configuration
 public class SecurityConfig {
 
+    private final JwtUtil jwtUtil;
+    private final UserDetailsService userDetailsService;
+    private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
-    @Autowired
-    private CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
+    public SecurityConfig(@Lazy JwtUtil jwtUtil,
+                          @Lazy UserDetailsService uds,
+                          CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler) {
+        this.jwtUtil = jwtUtil;
+        this.userDetailsService = uds;
+        this.customAuthenticationSuccessHandler=customAuthenticationSuccessHandler;
+    }
+    //@Autowired
+    //private CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
     // Add support for JDBC
     @Bean
     public UserDetailsManager userDetailsManager(DataSource dataSource) {
@@ -38,6 +55,8 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        System.out.println("SecurityFilterChain START");
+        JwtAuthFilter jwtFilter = new JwtAuthFilter(jwtUtil, userDetailsService);
         http.authorizeHttpRequests(configurer ->
                 configurer
                         .requestMatchers("/api/customer").hasRole("CUSTOMER")
@@ -47,7 +66,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/users").hasRole("MANAGER") //create employee
                         .requestMatchers(HttpMethod.PUT, "/api/users").hasRole("MANAGER") //update employee
                         .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasRole("ADMIN")
-                        .requestMatchers("customer/login", "customer/processLoginForm", "/api/users/register/**",
+                        .requestMatchers(
+                                "/customer/login","/customer-home","/customer/home","/customer-login","/customer/processLoginForm",
+                                "/api/login","/api/users/register/**",
                                 "/swagger-ui.html",         // untuk versi lama
                                 "/swagger-ui/**",           // UI assets
                                 "/v3/api-docs",             // root OpenAPI
@@ -67,20 +88,28 @@ public class SecurityConfig {
             )
             .logout(logout -> logout.permitAll()
             )
+            .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         ;
         //use http Basic Authntication
         http.httpBasic(Customizer.withDefaults());
 
         //Disable SCRF
         http.csrf(csrf -> csrf.disable());
-
+        System.out.println("SecurityFilterChain END");
         return http.build();
     }
 
+
+
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+        System.out.println("AuthenticationManager CALLED");
         return authConfig.getAuthenticationManager();
     }
+
+
 /*
 @Bean
     public InMemoryUserDetailsManager userDetailsManager() {

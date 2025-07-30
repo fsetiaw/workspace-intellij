@@ -47,6 +47,7 @@ public class CustomerServiceImpl implements CustomerService{
 
     @Override
     public CustomerDTO loginCustomer(CustomerDTO customerDTO) {
+        System.out.println("CustomerServiceImpl.loginCustomer is CALLED");
         CustomerDTO returnVal = new CustomerDTO();
         CustomerEntity customerEntity = new CustomerEntity();
         BeanUtils.copyProperties(customerDTO, customerEntity);
@@ -77,20 +78,26 @@ public class CustomerServiceImpl implements CustomerService{
             nuUser.setFirstName(givenName[0]);
             if(givenName[1]!=null && givenName[1].isBlank())
                 nuUser.setLastName(givenName[1]);
+            System.out.println("TRY SAVE USER");
             storedUser = userRepo.save(nuUser);
+            System.out.println("USER SAVED");
             NamePassEntity nape = new NamePassEntity();
             nape.setUsername(storedCustomer.getPhoneNumber());
             //nape.setPassword("{bcrypt}"+bCryptPasswordEncoder.encode("NoPwd"));
             nape.setPassword(passwordEncoder.encode(customDefaultProperties.getCustomerPwd()));
             nape.setUser(storedUser);
             nape.setEnabled(true);
+            System.out.println("TRY SAVE NamePassEntity");
             NamePassEntity storedNape = namePasRepo.save(nape);
+            System.out.println("NamePassEntity SAVED");
 
             AuthorityEntity auth = new AuthorityEntity();
             auth.setAuthority(customDefaultProperties.getCustomerRole());
             auth.setUsername(storedNape.getUsername());
             auth.setNamePass(storedNape);
+            System.out.println("TRY SAVE AuthorityEntity");
             authRepo.save(auth);
+            System.out.println("AuthorityEntity SAVED");
 
         }
         BeanUtils.copyProperties(storedCustomer,returnVal);

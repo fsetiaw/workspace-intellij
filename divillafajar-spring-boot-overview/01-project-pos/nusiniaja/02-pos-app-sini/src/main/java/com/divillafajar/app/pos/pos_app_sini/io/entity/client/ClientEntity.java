@@ -27,7 +27,7 @@ public class ClientEntity implements Serializable {
     @Column(name = "client_name", length = 50, nullable = false)
     private String clientName;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {
             CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH}, mappedBy = "clients")
     List<CustomerEntity> customers;

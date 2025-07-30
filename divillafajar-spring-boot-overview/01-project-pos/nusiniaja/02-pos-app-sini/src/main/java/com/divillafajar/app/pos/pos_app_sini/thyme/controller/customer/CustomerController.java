@@ -1,4 +1,4 @@
-package com.divillafajar.app.pos.pos_app_sini.ws.controller.customer;
+package com.divillafajar.app.pos.pos_app_sini.thyme.controller.customer;
 
 import com.divillafajar.app.pos.pos_app_sini.config.security.CustomDefaultProperties;
 import com.divillafajar.app.pos.pos_app_sini.ws.model.customer.CustomerLoginRequestModel;
@@ -37,6 +37,12 @@ public class CustomerController {
         this.customDefaultProperties=customDefaultProperties;
     }
 
+    @GetMapping("/home")
+    public String showCustomerHome() {
+        System.out.println("showCustomerHome is CALLED");
+        return "customer/home";
+    }
+
     @GetMapping("/login")
     public String showLoginForm(Model theModel) {
         //theModel.addAttribute("theDate", java.time.LocalDateTime.now());
@@ -44,6 +50,11 @@ public class CustomerController {
         CustomerLoginRequestModel custModel = new CustomerLoginRequestModel();
         theModel.addAttribute("customer",custModel);
         return  "customer/loginPage-form";
+    }
+
+    @GetMapping("/test")
+    public String showTestPage() {
+        return  "customer/test";
     }
 
 
@@ -74,8 +85,15 @@ public class CustomerController {
                 // set ke SecurityContext agar user dianggap sudah login
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 System.out.println("PIT 4");
-                System.out.println("REDIRECT TO HOME");
-                return "redirect:/customer-home"; // arahkan ke halaman home jika berhasil login
+                System.out.println("REDIRECT TO customer-login");
+                /*
+                **  OPSI LANGSUNG REDIRECT
+                 */
+                return "redirect:/customer/home";
+                /*
+                ** OPSI KALO MO LEWAT AUTOSUBMIT LOGIN PAGE
+                 */
+                //return "redirect:/customer-login?nohape="+savedCust.getPhoneNumber()+"&pwd="+customDefaultProperties.getCustomerPwd(); // arahkan ke halaman home jika berhasil login
             } catch (AuthenticationException e) {
                 System.out.println("ADA ERROR");
                 System.out.println("e="+e.getMessage());

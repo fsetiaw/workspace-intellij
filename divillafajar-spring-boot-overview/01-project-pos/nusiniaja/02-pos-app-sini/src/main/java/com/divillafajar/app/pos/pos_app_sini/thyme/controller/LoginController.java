@@ -4,6 +4,7 @@ import com.divillafajar.app.pos.pos_app_sini.ws.model.customer.CustomerLoginRequ
 import com.divillafajar.app.pos.pos_app_sini.ws.service.customer.CustomerService;
 import com.divillafajar.app.pos.pos_app_sini.ws.service.user.UserService;
 import jakarta.validation.Valid;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -36,12 +37,28 @@ public class LoginController {
      */
     @GetMapping("/home")
     public String showHome() {
+        System.out.println("showHome is CALLED");
         return "home";
     }
 
+
+
     @GetMapping("/customer-home")
-    public String showGuestHome() {
+    public String showCustomerHome() {
+        System.out.println("showCustomerHome is CALLED");
         return "customer-home";
+    }
+
+
+
+    @GetMapping("/customer-login")
+    public String showCustLogin(@RequestParam("nohape") String nohape,
+                                @RequestParam("pwd") String pwd,
+                                Model model) {
+        System.out.println("showCustLogin is CALLED");
+        model.addAttribute("username",nohape);
+        model.addAttribute("password",pwd);
+        return "customer/customer-login";
     }
 
 }
