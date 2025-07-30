@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>ACCESS DENIED</title>
+</head>
+<body>
+<h2>ACCESS DENIED</h2>
+<hr>
+<p>
+    User: <span sec:authentication="principal.username"></span>
+    <br><br>
+    Role(s): <span sec:authentication="principal.authorities"></span>
+</p>
+<hr>
+<p>
+    <a th:href="@{/}"> Back</a> to home
+</p>
+<hr>
+<form method="POST" action="#" th:action="@{/logout}" >
+    <input type="submit" value="logout">
+</form>
+</body>
+</html>

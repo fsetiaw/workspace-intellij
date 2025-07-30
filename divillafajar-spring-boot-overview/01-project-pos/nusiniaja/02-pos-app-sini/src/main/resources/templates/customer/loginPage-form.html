@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome CUSTOMER LOGIN PAGE</title>
+    <style>
+        .error {color:red}
+    </style>
+</head>
+<body>
+<h2>This is Customer Login Page</h2>
+<hr>
+    <form th:action="@{/customer/processLoginForm}" th:object="${customer}" method="POST">
+        <input placeholder="Enter Phone Number" th:field="*{phoneNumber}" type="text"/>
+        <span th:if="${#fields.hasErrors('phoneNumber')}"
+              th:errors="*{phoneNumber}" class="error"></span>
+        <br><br>
+        <input type="text" th:field="*{aliasName}" placeholder="Enter Name" />
+        <!-- Add error message if present -->
+        <span th:if="${#fields.hasErrors('aliasName')}"
+              th:errors="*{aliasName}" class="error"></span>
+        <br><br>
+        <input type="submit"/>
+    </form>
+<hr>
+<form method="POST" action="#" th:action="@{/logout}" >
+    <input type="submit" value="logout">
+</form>
+</body>
+</html>
