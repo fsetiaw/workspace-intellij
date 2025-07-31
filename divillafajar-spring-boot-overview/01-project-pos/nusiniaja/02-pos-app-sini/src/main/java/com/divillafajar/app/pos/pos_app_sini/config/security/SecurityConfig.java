@@ -68,7 +68,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasRole("ADMIN")
                         .requestMatchers(
                                 "/customer/login","/customer-home","/customer/home","/customer-login","/customer/processLoginForm",
-                                "/api/login","/api/users/register/**",
+                                "/api/login",
+                                "/api/users/register/**",      //sign up
                                 "/swagger-ui.html",         // untuk versi lama
                                 "/swagger-ui/**",           // UI assets
                                 "/v3/api-docs",             // root OpenAPI

@@ -12,6 +12,7 @@ import com.divillafajar.app.pos.pos_app_sini.repo.UserRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.customer.CustomerRepo;
 import com.divillafajar.app.pos.pos_app_sini.ws.model.shared.dto.CustomerDTO;
 import com.divillafajar.app.pos.pos_app_sini.ws.service.user.UserService;
+import com.divillafajar.app.pos.pos_app_sini.ws.utils.GeneratorUtils;
 import com.divillafajar.app.pos.pos_app_sini.ws.utils.MyStringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CustomerServiceImpl implements CustomerService{
-
+    private final GeneratorUtils generatorUtils;
     private final CustomDefaultProperties customDefaultProperties;
     private final PasswordEncoder passwordEncoder;
     private final CustomerRepo csr;
@@ -34,7 +35,9 @@ public class CustomerServiceImpl implements CustomerService{
 
     public CustomerServiceImpl(CustomerRepo csr,UserRepo userRepo,
                                NamePasRepo namePasRepo, AuthRepo authRepo,
-                               PasswordEncoder passwordEncoder, CustomDefaultProperties customDefaultProperties
+                               PasswordEncoder passwordEncoder,
+                               CustomDefaultProperties customDefaultProperties,
+                               GeneratorUtils generatorUtils
     ) {
         this.csr=csr;
         this.userRepo=userRepo;
@@ -42,6 +45,7 @@ public class CustomerServiceImpl implements CustomerService{
         this.authRepo=authRepo;
         this.passwordEncoder=passwordEncoder;
         this.customDefaultProperties=customDefaultProperties;
+        this.generatorUtils=generatorUtils;
     }
 
 
@@ -65,41 +69,52 @@ public class CustomerServiceImpl implements CustomerService{
             //1. set id = null, beanUtils ngasih default = 0 bukannya null(bikin error)
             customerEntity.setId(null);
             storedCustomer = csr.save(customerEntity);
-        }
-        /*
-        **  Cek apa sudah ada di tabel user
-         */
-        UserEntity storedUser = userRepo.findUserByCustomer(storedCustomer);
-        if(storedUser==null) {
-            System.out.println("CUSTOMER belum ada di USER");
-            UserEntity nuUser = new UserEntity();
-            nuUser.setCustomer(storedCustomer);
-            String[]givenName = MyStringUtils.splitLastWord(storedCustomer.getAliasName());
-            nuUser.setFirstName(givenName[0]);
-            if(givenName[1]!=null && givenName[1].isBlank())
-                nuUser.setLastName(givenName[1]);
-            System.out.println("TRY SAVE USER");
-            storedUser = userRepo.save(nuUser);
-            System.out.println("USER SAVED");
-            NamePassEntity nape = new NamePassEntity();
-            nape.setUsername(storedCustomer.getPhoneNumber());
-            //nape.setPassword("{bcrypt}"+bCryptPasswordEncoder.encode("NoPwd"));
-            nape.setPassword(passwordEncoder.encode(customDefaultProperties.getCustomerPwd()));
-            nape.setUser(storedUser);
-            nape.setEnabled(true);
-            System.out.println("TRY SAVE NamePassEntity");
-            NamePassEntity storedNape = namePasRepo.save(nape);
-            System.out.println("NamePassEntity SAVED");
 
-            AuthorityEntity auth = new AuthorityEntity();
-            auth.setAuthority(customDefaultProperties.getCustomerRole());
-            auth.setUsername(storedNape.getUsername());
-            auth.setNamePass(storedNape);
-            System.out.println("TRY SAVE AuthorityEntity");
-            authRepo.save(auth);
-            System.out.println("AuthorityEntity SAVED");
+            /*
+             **  Cek apa sudah ada di tabel user
+             */
+            UserEntity storedUser = userRepo.findUserByCustomer(storedCustomer);
+            if(storedUser==null) {
+                System.out.println("CUSTOMER belum ada di USER");
+                UserEntity nuUser = new UserEntity();
+                nuUser.setCustomer(storedCustomer);
+                nuUser.setPhone(storedCustomer.getPhoneNumber());
+                nuUser.setEmail(customDefaultProperties.getCustomerDummyEmail());
+                nuUser.setPubId(generatorUtils.generatePubUserId(30));
+                String[]givenName = MyStringUtils.splitLastWord(storedCustomer.getAliasName());
+                nuUser.setFirstName(givenName[0]);
+                if(givenName[1]!=null && givenName[1].isBlank())
+                    nuUser.setLastName(givenName[1]);
+                System.out.println("TRY SAVE USER");
+                storedUser = userRepo.save(nuUser);
+                System.out.println("USER SAVED");
+                NamePassEntity nape = new NamePassEntity();
+                nape.setUsername(storedCustomer.getPhoneNumber());
+                //nape.setPassword("{bcrypt}"+bCryptPasswordEncoder.encode("NoPwd"));
+                nape.setPassword(passwordEncoder.encode(customDefaultProperties.getCustomerPwd()));
+                nape.setUser(storedUser);
+                nape.setEnabled(true);
+                System.out.println("TRY SAVE NamePassEntity");
+                NamePassEntity storedNape = namePasRepo.save(nape);
+                System.out.println("NamePassEntity SAVED");
 
+                AuthorityEntity auth = new AuthorityEntity();
+                auth.setAuthority(customDefaultProperties.getCustomerRole());
+                auth.setUsername(storedNape.getUsername());
+                auth.setNamePass(storedNape);
+                System.out.println("TRY SAVE AuthorityEntity");
+                authRepo.save(auth);
+                System.out.println("AuthorityEntity SAVED");
+
+            }
         }
+        else {
+            /*
+             **  Jika ditemukan, proceed to login
+             */
+            System.out.println("CUSTOMER EXIST FOUND");
+        }
+
         BeanUtils.copyProperties(storedCustomer,returnVal);
         return returnVal;
     }

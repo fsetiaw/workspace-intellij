@@ -15,7 +15,7 @@ public class CreateUserRequestModel {
     private String email;
     private String addressName;
     private String recipientName;
-    private String phoneNumber;
+    private String phone;
     private String addressLine1;
     private String addressLine2;
     private String village;
@@ -26,5 +26,9 @@ public class CreateUserRequestModel {
     private String country;
     private String username;
     private String password;
+    /*
+    **  JGN DIPAKE NANTI ORANG REGISTYER SEBAGAI ADMIN
+    **
     private String authority;
+     */
 }

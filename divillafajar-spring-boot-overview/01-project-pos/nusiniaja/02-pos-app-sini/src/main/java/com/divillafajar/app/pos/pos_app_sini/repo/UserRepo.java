@@ -5,8 +5,11 @@ import com.divillafajar.app.pos.pos_app_sini.io.entity.user.UserEntity;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface UserRepo extends CrudRepository<UserEntity, Long> {
     UserEntity findUserByEmail(String email);
     UserEntity findUserByCustomer(CustomerEntity customerEntity);
+    Optional<UserEntity> findByEmailAndPhone(String email, String phone);
 }

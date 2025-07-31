@@ -10,4 +10,6 @@ import org.springframework.stereotype.Component;
 public class CustomDefaultProperties {
     private String customerPwd;
     private String customerRole;
+    private String userRole;
+    private String customerDummyEmail;
 }

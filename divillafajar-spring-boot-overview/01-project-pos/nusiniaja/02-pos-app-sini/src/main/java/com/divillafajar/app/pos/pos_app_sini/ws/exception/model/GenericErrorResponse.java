@@ -1,4 +1,4 @@
-package com.divillafajar.app.pos.pos_app_sini.ws.model.exception;
+package com.divillafajar.app.pos.pos_app_sini.ws.exception.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

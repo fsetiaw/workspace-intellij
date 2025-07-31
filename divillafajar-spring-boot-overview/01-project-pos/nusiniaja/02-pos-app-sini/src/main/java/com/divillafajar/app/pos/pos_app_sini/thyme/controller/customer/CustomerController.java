@@ -63,8 +63,6 @@ public class CustomerController {
     public String processForm(
             @Valid @ModelAttribute("customer") CustomerLoginRequestModel theCustomer,
             BindingResult bindingResult, Model model) {
-        System.out.println("theCustomer = "+theCustomer.getAliasName());
-        System.out.println("theCustomer = "+theCustomer.getPhoneNumber());
         if(bindingResult.hasErrors()) {
             System.out.println("ADA ERROR");
             return "customer/loginPage-form";

@@ -20,13 +20,15 @@ public class UserDTO implements Serializable {
     @Serial
     private static final long serialVersionUID = -4569776359027847181L;
     private long id;
-    private String publicUserId;
+    private String pubId;
+    private String emailVerificationToken;
+    private boolean emailVerificationStatus;
     private String firstName;
     private String lastName;
     private String email;
     private String addressName;
     private String recipientName;
-    private String phoneNumber;
+    private String phone;
     private String addressLine1;
     private String addressLine2;
     private String village;
@@ -38,5 +40,4 @@ public class UserDTO implements Serializable {
     private String username;
     private String password;
     private String authority;
-
 }
