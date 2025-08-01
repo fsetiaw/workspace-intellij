@@ -24,8 +24,6 @@ public class LoginController {
 
     @GetMapping("/login")
     public String showUserLoginForm(Model theModel) {
-        //theModel.addAttribute("theDate", java.time.LocalDateTime.now());
-        System.out.println("Login Controller /showUserLoginForm is called");
         CustomerLoginRequestModel custModel = new CustomerLoginRequestModel();
         theModel.addAttribute("customer",custModel);
         return  "main-login";
@@ -37,7 +35,7 @@ public class LoginController {
      */
     @GetMapping("/home")
     public String showHome() {
-        System.out.println("showHome is CALLED");
+        System.out.println("showHome CALLED");
         return "home";
     }
 

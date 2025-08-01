@@ -33,10 +33,12 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 redirectUrl = "/customer/home";
                 break;
             }
-            /*else if (role.equals("ROLE_EMPLOYEE")) {
-                redirectUrl = "/employee/home";
+            else if (role.equals("ROLE_EMPLOYEE")) {
+                redirectUrl = "/home";
                 break;
-            } else if (role.equals("ROLE_ADMIN")) {
+            }
+            /*
+            else if (role.equals("ROLE_ADMIN")) {
                 redirectUrl = "/admin/home";
                 break;
             }

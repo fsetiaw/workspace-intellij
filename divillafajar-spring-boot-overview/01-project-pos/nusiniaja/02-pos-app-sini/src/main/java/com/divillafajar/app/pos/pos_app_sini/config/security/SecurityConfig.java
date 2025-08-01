@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
@@ -53,13 +54,19 @@ public class SecurityConfig {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
+
+
+
+
+
+    /*
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         System.out.println("SecurityFilterChain START");
         JwtAuthFilter jwtFilter = new JwtAuthFilter(jwtUtil, userDetailsService);
         http.authorizeHttpRequests(configurer ->
                 configurer
-                        .requestMatchers("/api/customer").hasRole("CUSTOMER")
+                        .requestMatchers("/home","/api/customer").hasRole("CUSTOMER")
                         .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
                         .requestMatchers(HttpMethod.GET, "/api/users").hasRole("EMPLOYEE")
                         .requestMatchers(HttpMethod.GET, "/api/users/**").hasRole("EMPLOYEE")
@@ -67,6 +74,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/users").hasRole("MANAGER") //update employee
                         .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasRole("ADMIN")
                         .requestMatchers(
+
                                 "/customer/login","/customer-home","/customer/home","/customer-login","/customer/processLoginForm",
                                 "/api/login",
                                 "/api/users/register/**",      //sign up
@@ -100,14 +108,69 @@ public class SecurityConfig {
         System.out.println("SecurityFilterChain END");
         return http.build();
     }
-
-
-
+     */
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         System.out.println("AuthenticationManager CALLED");
         return authConfig.getAuthenticationManager();
+    }
+
+
+    @Bean
+    @Order(1) // harus lebih tinggi dari yang formLogin
+    public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
+        JwtAuthFilter jwtFilter = new JwtAuthFilter(jwtUtil, userDetailsService);
+        System.out.println("apiFilterChain");
+        http
+                .securityMatcher("/api/**") // hanya untuk endpoint api
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/login", "/api/users/register/**").permitAll()
+                        .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
+                        .requestMatchers("/api/users/**").hasAnyRole("EMPLOYEE", "MANAGER", "ADMIN")
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .csrf(csrf -> csrf.disable())
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .httpBasic(Customizer.withDefaults());
+
+        return http.build();
+    }
+
+    @Bean
+    @Order(2) // lebih rendah prioritasnya
+    public SecurityFilterChain formFilterChain(HttpSecurity http) throws Exception {
+        System.out.println("formFilterChain");
+        http
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/home","/api/customer").hasRole("CUSTOMER")
+                        .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
+                        .requestMatchers(HttpMethod.GET, "/api/users").hasRole("EMPLOYEE")
+                        .requestMatchers(HttpMethod.GET, "/api/users/**").hasRole("EMPLOYEE")
+                        .requestMatchers(HttpMethod.POST, "/api/users").hasRole("MANAGER") //create employee
+                        .requestMatchers(HttpMethod.PUT, "/api/users").hasRole("MANAGER") //update employee
+                        .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasRole("ADMIN")
+                        .requestMatchers(
+                                "/login", //user login form
+                                "/customer/login", //customer login form
+                                "/customer-login", //redirect page->versi autosubmit login via main-login (unused)
+                                "/customer/processLoginForm",  //process login
+                                "/customer/home",  //customer home
+                                "/swagger-ui/**", "/v3/api-docs/**"
+                        ).permitAll()
+                        .anyRequest().authenticated()
+                )
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .loginProcessingUrl("/authenticateTheUser")
+                        .successHandler(customAuthenticationSuccessHandler)
+                        .permitAll()
+                )
+                .logout(logout -> logout.permitAll())
+                .csrf(csrf -> csrf.disable());
+
+        return http.build();
     }
 
 
