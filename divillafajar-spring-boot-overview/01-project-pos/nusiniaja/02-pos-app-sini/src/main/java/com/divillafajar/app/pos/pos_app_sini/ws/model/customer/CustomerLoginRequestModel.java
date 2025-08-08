@@ -11,8 +11,9 @@ public class CustomerLoginRequestModel {
 
     @NotNull(message = "Phone number is required")
     @Size(min = 8, message = "Phone number is required")
-    private String phoneNumber;
-
+    private String username;
+    private String password;
+    private String table;
     @NotNull(message = "Name is required")
     @Size(min = 2, message = "Name is required")
     private String aliasName;

@@ -1,11 +1,33 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>GUEST HOME</title>
+    <title>Welcome Home</title>
 </head>
 <body>
-<h2>Guest Home Page</h2>
+<h2>This is MY CUSTOMER HOME</h2>
+<hr>
+<p>
+    Nomor meja: <span th:text="${session.loggedInCustomer.table}"></span><br><br>
+    Phone: <span th:text="${session.loggedInCustomer.phone}"></span><br><br>
+    Name: <span th:text="${session.loggedInCustomer.name}"></span><br><br>
+    User: <span sec:authentication="principal.username"></span>
+    <br><br>
+    Role(s): <span sec:authentication="principal.authorities"></span>
+</p>
+<hr>
+<div sec:authorize="hasRole('MANAGER')">
+    <p>
+        <a th:href="@{/leaders}"> Leader</a> (only for manager peeps)
+    </p>
+</div>
+<div sec:authorize="hasRole('ADMIN')">
+    <p>
+        <a th:href="@{/systems}"> Admin</a> (only for IT peeps)
+    </p>
+</div>
+<hr>
 <form method="POST" action="#" th:action="@{/logout}" >
     <input type="submit" value="logout">
 </form>

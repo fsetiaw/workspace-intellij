@@ -52,10 +52,12 @@ public class CustomerServiceImpl implements CustomerService{
     @Override
     public CustomerDTO loginCustomer(CustomerDTO customerDTO) {
         System.out.println("CustomerServiceImpl.loginCustomer is CALLED");
+        System.out.println("customerDTO.getUsername = "+customerDTO.getUsername());
+
         CustomerDTO returnVal = new CustomerDTO();
         CustomerEntity customerEntity = new CustomerEntity();
         BeanUtils.copyProperties(customerDTO, customerEntity);
-        customerEntity.setPhoneNumber(MyStringUtils.cleanPhoneNumber(customerDTO.getPhoneNumber()));
+        customerEntity.setPhoneNumber(MyStringUtils.cleanPhoneNumber(customerDTO.getUsername()));
         /*
         ** cek apa customer hp sudah terdaftar
          */

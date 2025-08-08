@@ -17,6 +17,8 @@ public class CustomerDTO implements Serializable {
     @Serial
     private static final long serialVersionUID = -7032381008394561756L;
     private long id;
+    private String username;
+    private String table;
     private String phoneNumber;
     private String aliasName;
     private CustomerDetailsEntity customerDetails;
