@@ -1,6 +1,7 @@
 package com.divillafajar.app.pos.pos_app_sini.config.session;
 
 import com.divillafajar.app.pos.pos_app_sini.repo.UserSessionHistoryRepo;
+import com.divillafajar.app.pos.pos_app_sini.ws.service.session.UserSessionLogRepository;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpSessionEvent;
 import jakarta.servlet.http.HttpSessionListener;
@@ -12,8 +13,15 @@ import java.time.LocalDateTime;
 @Component
 public class SessionListener implements HttpSessionListener {
 
-    @Autowired
+
+    private UserSessionLogRepository sessionLogRepo;
     private UserSessionHistoryRepo historyRepo;
+
+    public SessionListener(UserSessionLogRepository sessionLogRepo,
+                           UserSessionHistoryRepo historyRepo) {
+        this.sessionLogRepo=sessionLogRepo;
+        this.historyRepo=historyRepo;
+    }
 
     @Override
     public void sessionCreated(HttpSessionEvent se) {
@@ -29,6 +37,12 @@ public class SessionListener implements HttpSessionListener {
         String role = (String) session.getAttribute("USER_ROLE");
         //String username = (String) session.getAttribute("USERNAME");
         String sessionId = se.getSession().getId();
+        sessionLogRepo.findBySessionIdAndStatus(sessionId, "ACTIVE").ifPresent(log -> {
+            log.setStatus("EXPIRED");
+            log.setLogoutTime(LocalDateTime.now());
+            sessionLogRepo.save(log);
+        });
+        /*
         historyRepo.findAll().stream()
                 .filter(h -> h.getSessionId().equals(sessionId) && h.isActive())
                 .forEach(h -> {
@@ -37,6 +51,8 @@ public class SessionListener implements HttpSessionListener {
                     historyRepo.save(h);
                 });
         System.out.println("Before session expired, user: , role: " + role);
+
+         */
 
         // Misal: simpan ke log, database, dsb.
     }

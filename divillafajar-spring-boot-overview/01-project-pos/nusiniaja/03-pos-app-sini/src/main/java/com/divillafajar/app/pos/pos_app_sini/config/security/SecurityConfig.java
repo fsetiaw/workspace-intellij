@@ -1,7 +1,9 @@
 package com.divillafajar.app.pos.pos_app_sini.config.security;
 
 import com.divillafajar.app.pos.pos_app_sini.config.security.jwt.JwtAuthFilter;
+import com.divillafajar.app.pos.pos_app_sini.ws.service.session.UserSessionLogRepository;
 import com.divillafajar.app.pos.pos_app_sini.ws.utils.JwtUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
@@ -27,12 +29,17 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 import javax.sql.DataSource;
 import java.time.Duration;
+import java.time.LocalDateTime;
 
 @Configuration
 public class SecurityConfig {
 
+
+    @Autowired
+    private UserSessionLogRepository sessionLogRepo;
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
+
     private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
     public SecurityConfig(@Lazy JwtUtil jwtUtil,
@@ -169,7 +176,21 @@ public class SecurityConfig {
                         .successHandler(customAuthenticationSuccessHandler)
                         .permitAll()
                 )
-                .logout(logout -> logout.permitAll())
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .addLogoutHandler((request, response, auth) -> {
+                            if (request.getSession(false) != null) {
+                                String sessionId = request.getSession().getId();
+                                sessionLogRepo.findBySessionIdAndStatus(sessionId, "ACTIVE").ifPresent(log -> {
+                                    log.setStatus("LOGOUT");
+                                    log.setLogoutTime(LocalDateTime.now());
+                                    sessionLogRepo.save(log);
+                                });
+                            }
+                        })
+                        .permitAll()
+                )
+                //.logout(logout -> logout.permitAll())
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sess -> sess
                         .invalidSessionUrl("/session-expired")

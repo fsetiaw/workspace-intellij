@@ -1,7 +1,9 @@
 package com.divillafajar.app.pos.pos_app_sini.config.security;
 
 import com.divillafajar.app.pos.pos_app_sini.io.entity.user.UserSessionHistory;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.user.UserSessionLog;
 import com.divillafajar.app.pos.pos_app_sini.repo.UserSessionHistoryRepo;
+import com.divillafajar.app.pos.pos_app_sini.ws.service.session.UserSessionLogRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,12 +28,14 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 //public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     //@Autowired
-    private final UserSessionHistoryRepo userSessionHistoryRepo;
-
+    //private final UserSessionHistoryRepo userSessionHistoryRepo;
+    private final UserSessionLogRepository sessionLogRepo;
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
-    public CustomAuthenticationSuccessHandler(UserSessionHistoryRepo userSessionHistoryRepo) {
-        this.userSessionHistoryRepo=userSessionHistoryRepo;
+    public CustomAuthenticationSuccessHandler(UserSessionHistoryRepo userSessionHistoryRepo,
+                                              UserSessionLogRepository sessionLogRepo) {
+        //this.userSessionHistoryRepo=userSessionHistoryRepo;
+        this.sessionLogRepo=sessionLogRepo;
     }
 
     @Override
@@ -43,6 +47,21 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         /*
         **  Simpan riwayat session login
          */
+
+        String username = authentication.getName();
+        String sessionId = request.getSession().getId();
+        String ip = request.getRemoteAddr();
+        String userAgent = request.getHeader("User-Agent");
+
+        UserSessionLog log = new UserSessionLog();
+        log.setUsername(username);
+        log.setSessionId(sessionId);
+        log.setIpAddress(ip);
+        log.setUserAgent(userAgent);
+        log.setStatus("ACTIVE");
+
+        sessionLogRepo.save(log);
+        /*
         UserSessionHistory history = new UserSessionHistory();
         history.setUsername(authentication.getName());
         history.setSessionId(request.getSession().getId());
@@ -52,6 +71,8 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         history.setActive(true);
         userSessionHistoryRepo.save(history);
         System.out.println("userSessionHistoryRepo SAVED");
+
+         */
 
         HttpSession session = request.getSession();
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();

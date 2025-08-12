@@ -105,6 +105,9 @@ public class CustomerController {
             BeanUtils.copyProperties(theCustomer,customerDTO);
             CustomerDTO savedCust = custService.loginCustomer(customerDTO);
             try {
+                /*
+                ** START AUTHENTICATION
+                 */
                 UsernamePasswordAuthenticationToken authRequest =
                         new UsernamePasswordAuthenticationToken(savedCust.getPhoneNumber(), customDefaultProperties.getCustomerPwd());
                 Authentication authentication = authenticationManager.authenticate(authRequest);

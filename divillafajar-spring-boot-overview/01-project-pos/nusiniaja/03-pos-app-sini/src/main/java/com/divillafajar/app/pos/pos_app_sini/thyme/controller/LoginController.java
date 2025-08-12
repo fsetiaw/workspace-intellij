@@ -121,15 +121,11 @@ public class LoginController {
          */
     }
 
-
-
     @GetMapping("/customer-home")
     public String showCustomerHome() {
         System.out.println("showCustomerHome is CALLED");
         return "customer-home";
     }
-
-
 
     @GetMapping("/customer-login")
     public String showCustLogin(@RequestParam("nohape") String nohape,
