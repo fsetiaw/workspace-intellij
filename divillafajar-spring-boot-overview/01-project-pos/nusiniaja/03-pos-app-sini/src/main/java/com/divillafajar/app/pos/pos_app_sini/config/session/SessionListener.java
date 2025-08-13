@@ -1,11 +1,9 @@
 package com.divillafajar.app.pos.pos_app_sini.config.session;
 
-import com.divillafajar.app.pos.pos_app_sini.repo.UserSessionHistoryRepo;
-import com.divillafajar.app.pos.pos_app_sini.ws.service.session.UserSessionLogRepository;
+import com.divillafajar.app.pos.pos_app_sini.repo.session.UserSessionLogRepository;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpSessionEvent;
 import jakarta.servlet.http.HttpSessionListener;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -15,12 +13,11 @@ public class SessionListener implements HttpSessionListener {
 
 
     private UserSessionLogRepository sessionLogRepo;
-    private UserSessionHistoryRepo historyRepo;
+    //private UserSessionHistoryRepo historyRepo;
 
-    public SessionListener(UserSessionLogRepository sessionLogRepo,
-                           UserSessionHistoryRepo historyRepo) {
+    public SessionListener(UserSessionLogRepository sessionLogRepo) {
         this.sessionLogRepo=sessionLogRepo;
-        this.historyRepo=historyRepo;
+        //this.historyRepo=historyRepo;
     }
 
     @Override

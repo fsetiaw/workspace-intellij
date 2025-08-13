@@ -1,4 +1,4 @@
-package com.divillafajar.app.pos.pos_app_sini.config;
+package com.divillafajar.app.pos.pos_app_sini.config.advice;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.ui.Model;
@@ -11,9 +11,9 @@ public class GlobalViewAttributes {
     @ModelAttribute
     public void globalAttributes(HttpSession session, Model model) {
         session.setMaxInactiveInterval(900);
-        model.addAttribute("sessionId", session.getId());
-        model.addAttribute("sessionCreationTime", session.getCreationTime());
-        model.addAttribute("sessionMaxInactiveInternal", session.getMaxInactiveInterval());
-        model.addAttribute("sessionLastAccessedTime", session.getLastAccessedTime());
+        //model.addAttribute("sessionId", session.getId());
+        //model.addAttribute("sessionCreationTime", session.getCreationTime());
+        //model.addAttribute("sessionMaxInactiveInternal", session.getMaxInactiveInterval());
+        //model.addAttribute("sessionLastAccessedTime", session.getLastAccessedTime());
     }
 }

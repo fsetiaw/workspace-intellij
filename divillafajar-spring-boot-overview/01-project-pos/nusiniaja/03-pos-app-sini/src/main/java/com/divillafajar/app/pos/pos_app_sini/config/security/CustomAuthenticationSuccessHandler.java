@@ -1,26 +1,19 @@
 package com.divillafajar.app.pos.pos_app_sini.config.security;
 
-import com.divillafajar.app.pos.pos_app_sini.io.entity.user.UserSessionHistory;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.user.UserSessionLog;
-import com.divillafajar.app.pos.pos_app_sini.repo.UserSessionHistoryRepo;
-import com.divillafajar.app.pos.pos_app_sini.ws.service.session.UserSessionLogRepository;
+import com.divillafajar.app.pos.pos_app_sini.repo.session.UserSessionLogRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Collection;
 
 @Component
@@ -32,8 +25,7 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     private final UserSessionLogRepository sessionLogRepo;
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
-    public CustomAuthenticationSuccessHandler(UserSessionHistoryRepo userSessionHistoryRepo,
-                                              UserSessionLogRepository sessionLogRepo) {
+    public CustomAuthenticationSuccessHandler(UserSessionLogRepository sessionLogRepo) {
         //this.userSessionHistoryRepo=userSessionHistoryRepo;
         this.sessionLogRepo=sessionLogRepo;
     }
@@ -44,12 +36,23 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                                         Authentication authentication) throws IOException, ServletException {
 
         System.out.println("CustomAuthenticationSuccessHandler START");
+
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            session = request.getSession();
+        }
+
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        String role = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .findFirst().orElse(null);
+        session.setAttribute("USER_ROLE", role);
         /*
         **  Simpan riwayat session login
          */
 
         String username = authentication.getName();
-        String sessionId = request.getSession().getId();
+        String sessionId = session.getId();
         String ip = request.getRemoteAddr();
         String userAgent = request.getHeader("User-Agent");
 
@@ -59,6 +62,7 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         log.setIpAddress(ip);
         log.setUserAgent(userAgent);
         log.setStatus("ACTIVE");
+        log.setRole(role);
 
         sessionLogRepo.save(log);
         /*
@@ -74,12 +78,8 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
          */
 
-        HttpSession session = request.getSession();
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        String role = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .findFirst().orElse(null);
-        session.setAttribute("USER_ROLE", role);
+
+
         //request.getSession().setAttribute("customer", customerDTO);
         String redirectUrl = "/home"; // default
 

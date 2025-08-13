@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Welcome CUSTOMER LOGIN PAGE</title>
-    <meta http-equiv="refresh" content="0;url='customer/home'" th:if="${#authorization.expression('isAuthenticated()')}" />
+    <meta http-equiv="refresh" content="0;url='customer/home'" th:if="${#authorization.expression('isAuthenticated()')}" >
     <style>
         .error {color:red}
     </style>

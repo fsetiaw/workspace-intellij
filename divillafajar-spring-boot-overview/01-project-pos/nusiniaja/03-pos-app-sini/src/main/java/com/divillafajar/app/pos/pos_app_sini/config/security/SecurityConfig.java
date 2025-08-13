@@ -1,11 +1,10 @@
 package com.divillafajar.app.pos.pos_app_sini.config.security;
 
+import com.divillafajar.app.pos.pos_app_sini.config.filter.SessionValidationFilter;
 import com.divillafajar.app.pos.pos_app_sini.config.security.jwt.JwtAuthFilter;
-import com.divillafajar.app.pos.pos_app_sini.ws.service.session.UserSessionLogRepository;
+import com.divillafajar.app.pos.pos_app_sini.repo.session.UserSessionLogRepository;
 import com.divillafajar.app.pos.pos_app_sini.ws.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.server.WebServerFactoryCustomizer;
-import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -37,8 +36,16 @@ public class SecurityConfig {
 
     @Autowired
     private UserSessionLogRepository sessionLogRepo;
+
+    //@Autowired
+    //private SessionValidationFilter sessionValidationFilter;
+
+    //@Autowired
+    //private CustomLogoutHandler customLogoutHandler;
+
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
+
 
     private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
@@ -178,6 +185,8 @@ public class SecurityConfig {
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
+                        //.addLogoutHandler(customLogoutHandler) // pakai custom logout handler
+                        /*
                         .addLogoutHandler((request, response, auth) -> {
                             if (request.getSession(false) != null) {
                                 String sessionId = request.getSession().getId();
@@ -188,12 +197,13 @@ public class SecurityConfig {
                                 });
                             }
                         })
+                         */
                         .permitAll()
                 )
                 //.logout(logout -> logout.permitAll())
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sess -> sess
-                        .invalidSessionUrl("/session-expired")
+                        .invalidSessionUrl("/invalid-url")
                         .maximumSessions(1)
                         .maxSessionsPreventsLogin(false)
                         .expiredUrl("/session-expired")
@@ -202,6 +212,7 @@ public class SecurityConfig {
                         .sessionRegistry(sessionRegistry()))
                         //sess.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 ;
+        //http.addFilterBefore(sessionValidationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

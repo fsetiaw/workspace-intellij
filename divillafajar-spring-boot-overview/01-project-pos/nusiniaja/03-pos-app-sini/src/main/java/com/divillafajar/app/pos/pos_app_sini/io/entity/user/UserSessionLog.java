@@ -18,6 +18,7 @@ public class UserSessionLog {
     private Long id;
 
     private String username;
+    private String role;
     private String sessionId;
     private String ipAddress;
     private String userAgent;

@@ -1,6 +1,8 @@
 package com.divillafajar.app.pos.pos_app_sini.thyme.controller.customer;
 
 import com.divillafajar.app.pos.pos_app_sini.config.security.CustomDefaultProperties;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.user.UserSessionLog;
+import com.divillafajar.app.pos.pos_app_sini.repo.session.UserSessionLogRepository;
 import com.divillafajar.app.pos.pos_app_sini.ws.model.customer.AuthenticatedCustomerModel;
 import com.divillafajar.app.pos.pos_app_sini.ws.model.customer.CustomerLoginRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.ws.model.shared.dto.CustomerDTO;
@@ -18,6 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,6 +28,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("customer")
@@ -35,11 +40,13 @@ public class CustomerController {
     private final CustomerService custService;
     private final AuthenticationManager authenticationManager;
     private final AuthenticationSuccessHandler customAuthenticationSuccessHandler;
+    private final UserSessionLogRepository sessionLogRepo;
     //private final AuthenticatedCustomerModel authenticatedCustomerModel;
     public CustomerController(UserService userService, CustomerService custService,
                               AuthenticationManager authenticationManager,
                               CustomDefaultProperties customDefaultProperties,
-                              AuthenticationSuccessHandler customAuthenticationSuccessHandler
+                              AuthenticationSuccessHandler customAuthenticationSuccessHandler,
+                              UserSessionLogRepository sessionLogRepo
                               //AuthenticatedCustomerModel authenticatedCustomerModel
                               ) {
         this.userService=userService;
@@ -47,6 +54,7 @@ public class CustomerController {
         this.authenticationManager=authenticationManager;
         this.customDefaultProperties=customDefaultProperties;
         this.customAuthenticationSuccessHandler=customAuthenticationSuccessHandler;
+        this.sessionLogRepo=sessionLogRepo;
         //this.authenticatedCustomerModel=authenticatedCustomerModel;
     }
 
@@ -60,12 +68,42 @@ public class CustomerController {
     public String showLoginForm(
             @RequestParam(value = "table", required = false) String table,
             Model theModel,
+            HttpServletRequest request,
+            HttpServletResponse response,
             Authentication authentication) {
         System.out.println("customer Login Controller /loginForm is called");
         System.out.println("table = "+table);
         if (authentication != null && authentication.isAuthenticated()) {
             System.out.println("user sudah auntehenticated");
-            return "customer/home";
+            /*
+            ** cek apa session idnya masih ada di DB
+             */
+            HttpSession session = request.getSession(true);
+            if(session!=null) {
+                System.out.println("user auntehenticated session= "+session.getId());
+                String sessionId=session.getId();
+                Optional<UserSessionLog> logOpt = sessionLogRepo.findBySessionIdAndStatus(sessionId, "ACTIVE");
+                if (logOpt.isPresent()) {
+                    System.out.println("logOpt ditemukan");
+                    // Jika session log ditemukan
+                    //UserSessionLog log = logOpt.get();
+                    //log.setStatus("LOGOUT");
+                    //log.setLogoutTime(LocalDateTime.now());
+                    //sessionLogRepo.save(log);
+                    return "customer/home";
+                } else {
+                    // session tidak valid di DB → logout user
+                    System.out.println("logOpt tidak ditemukan");
+                    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                    SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
+                    logoutHandler.logout(request, response, auth);
+
+                    // redirect ke login dengan parameter expired
+                    //response.sendRedirect("/login?expired");
+                }
+            }
+
+            //return "customer/home";
         }
         //theModel.addAttribute("theDate", java.time.LocalDateTime.now());
 

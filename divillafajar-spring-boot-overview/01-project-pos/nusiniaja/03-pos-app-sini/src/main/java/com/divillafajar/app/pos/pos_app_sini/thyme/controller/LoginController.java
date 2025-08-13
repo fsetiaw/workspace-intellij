@@ -62,10 +62,16 @@ public class LoginController {
         return baos.toByteArray();
     }
 
+    @GetMapping("/invalid-url")
+    public String handleInvalidUrl(HttpServletRequest request, Model model) {
+        System.out.println("invalid-url is CALLED");
+        return "redirect:/customer/invalid";
+    }
+
     @GetMapping("/session-expired")
     public String handleSessionExpired(HttpServletRequest request, Model model) {
-        System.out.println("/session-expiredis CALLED");
-        return "redirect:/customer/login?expired=true";
+        System.out.println("/session-expired is CALLED");
+        return "redirect:/customer/login?table=1";
         /*
         String lastVisited = "/"; // default fallback
         Cookie[] cookies = request.getCookies();
