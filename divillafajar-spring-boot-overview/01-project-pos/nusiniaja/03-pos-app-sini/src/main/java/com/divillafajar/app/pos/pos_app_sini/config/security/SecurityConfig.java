@@ -14,6 +14,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
@@ -31,18 +32,22 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Configuration
+@EnableWebSecurity
 public class SecurityConfig {
 
+    @Autowired
+    private CustomLogoutSuccessHandler customLogoutSuccessHandler;
 
     @Autowired
     private UserSessionLogRepository sessionLogRepo;
 
-    //@Autowired
-    //private SessionValidationFilter sessionValidationFilter;
+    @Autowired
+    private SessionValidationFilter sessionValidationFilter;
 
-    //@Autowired
-    //private CustomLogoutHandler customLogoutHandler;
+    @Autowired
+    private CustomLogoutHandler customLogoutHandler;
 
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
 
@@ -51,13 +56,14 @@ public class SecurityConfig {
 
     public SecurityConfig(@Lazy JwtUtil jwtUtil,
                           @Lazy UserDetailsService uds,
-                          CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler) {
+                          CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler,
+                          CustomAccessDeniedHandler customAccessDeniedHandler) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = uds;
         this.customAuthenticationSuccessHandler=customAuthenticationSuccessHandler;
+        this.customAccessDeniedHandler=customAccessDeniedHandler;
     }
-    //@Autowired
-    //private CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
+
     // Add support for JDBC
     @Bean
     public UserDetailsManager userDetailsManager(DataSource dataSource) {
@@ -69,61 +75,6 @@ public class SecurityConfig {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
-
-
-
-
-
-    /*
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        System.out.println("SecurityFilterChain START");
-        JwtAuthFilter jwtFilter = new JwtAuthFilter(jwtUtil, userDetailsService);
-        http.authorizeHttpRequests(configurer ->
-                configurer
-                        .requestMatchers("/home","/api/customer").hasRole("CUSTOMER")
-                        .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
-                        .requestMatchers(HttpMethod.GET, "/api/users").hasRole("EMPLOYEE")
-                        .requestMatchers(HttpMethod.GET, "/api/users/**").hasRole("EMPLOYEE")
-                        .requestMatchers(HttpMethod.POST, "/api/users").hasRole("MANAGER") //create employee
-                        .requestMatchers(HttpMethod.PUT, "/api/users").hasRole("MANAGER") //update employee
-                        .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasRole("ADMIN")
-                        .requestMatchers(
-
-                                "/customer/login","/customer-home","/customer/home","/customer-login","/customer/processLoginForm",
-                                "/api/login",
-                                "/api/users/register/**",      //sign up
-                                "/swagger-ui.html",         // untuk versi lama
-                                "/swagger-ui/**",           // UI assets
-                                "/v3/api-docs",             // root OpenAPI
-                                "/v3/api-docs/**",          // jika endpoint dibagi
-                                "/swagger-resources/**",    // kalau masih digunakan
-                                "/webjars/**"           //kebutuhan swagger
-                        ).permitAll()
-                        .anyRequest().authenticated()
-            )
-            .formLogin(form ->
-                    form
-                            .loginPage("/login")  //sesuai path
-                            .loginProcessingUrl("/authenticateTheUser")
-                            .successHandler(customAuthenticationSuccessHandler)
-                            //.defaultSuccessUrl("/home",true)
-                            .permitAll()
-            )
-            .logout(logout -> logout.permitAll()
-            )
-            .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-        ;
-        //use http Basic Authntication
-        http.httpBasic(Customizer.withDefaults());
-
-        //Disable SCRF
-        http.csrf(csrf -> csrf.disable());
-        System.out.println("SecurityFilterChain END");
-        return http.build();
-    }
-     */
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
@@ -141,6 +92,8 @@ public class SecurityConfig {
                 .securityMatcher("/api/**") // hanya untuk endpoint api
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/login", "/api/users/register/**").permitAll()
+                        .requestMatchers("/customer/session-expired","/session-expired").hasAnyRole("EMPLOYEE","MANAGER","ADMIN","CUSTOMER")
+                        .requestMatchers("/customer/home","/api/customer","/session-expired").hasRole("CUSTOMER")
                         .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
                         .requestMatchers("/api/users/**").hasAnyRole("EMPLOYEE", "MANAGER", "ADMIN")
                         .anyRequest().authenticated()
@@ -159,7 +112,8 @@ public class SecurityConfig {
         System.out.println("formFilterChain");
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/customer/home","/api/customer").hasRole("CUSTOMER")
+                        .requestMatchers("/customer/session-expired","/session-expired").hasAnyRole("EMPLOYEE","MANAGER","ADMIN","CUSTOMER")
+                        .requestMatchers("/customer/home","/api/customer","/session-expired").hasRole("CUSTOMER")
                         .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
                         .requestMatchers(HttpMethod.GET, "/home").hasAnyRole("EMPLOYEE","MANAGER","ADMIN","CUSTOMER")
                         .requestMatchers(HttpMethod.GET, "/api/users").hasRole("EMPLOYEE")
@@ -168,8 +122,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/users").hasRole("MANAGER") //update employee
                         .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasRole("ADMIN")
                         .requestMatchers(
-                                "/session-expired","/qrcode",
-                                "/login", //user login form
+                                "/qrcode","/invalid-url",
+                                "/login","/custom-logout", //user login form
                                 "/customer/login", //customer login form
                                 "/customer-login", //redirect page->versi autosubmit login via main-login (unused)
                                 "/customer/processLoginForm",  //process login
@@ -177,15 +131,19 @@ public class SecurityConfig {
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
+                /*
                 .formLogin(form -> form
-                        .loginPage("/login")
+                        .loginPage("/customer/login")
                         .loginProcessingUrl("/authenticateTheUser")
                         .successHandler(customAuthenticationSuccessHandler)
                         .permitAll()
                 )
+
+                 */
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        //.addLogoutHandler(customLogoutHandler) // pakai custom logout handler
+                        .addLogoutHandler(customLogoutHandler) // pakai custom logout handler
+                        .logoutSuccessHandler(customLogoutSuccessHandler)
                         /*
                         .addLogoutHandler((request, response, auth) -> {
                             if (request.getSession(false) != null) {
@@ -203,16 +161,16 @@ public class SecurityConfig {
                 //.logout(logout -> logout.permitAll())
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sess -> sess
-                        .invalidSessionUrl("/invalid-url")
+                        //.invalidSessionUrl("/invalid-url")
                         .maximumSessions(1)
                         .maxSessionsPreventsLogin(false)
-                        .expiredUrl("/session-expired")
+                        //.expiredUrl("/session-expired")
 
                         //.expiredUrl("/login?expired")
                         .sessionRegistry(sessionRegistry()))
                         //sess.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 ;
-        //http.addFilterBefore(sessionValidationFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(sessionValidationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -227,24 +185,5 @@ public class SecurityConfig {
         return new HttpSessionEventPublisher();
     }
 
-
-/*
-@Bean
-    public InMemoryUserDetailsManager userDetailsManager() {
-        UserDetails cust = User.builder()
-                .username("cust")
-                .password("{noop}cust")
-                .roles("CUSTOMER")
-                .build();
-
-        UserDetails me = User.builder()
-                .username("saya")
-                .password("{noop}saya")
-                .roles("ADMIN")
-                .build();
-
-        return new InMemoryUserDetailsManager(me);
-    }
- */
 
 }

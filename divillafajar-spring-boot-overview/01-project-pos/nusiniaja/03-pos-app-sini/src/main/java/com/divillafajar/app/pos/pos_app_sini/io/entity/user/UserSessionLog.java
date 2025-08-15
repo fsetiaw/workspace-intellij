@@ -26,7 +26,7 @@ public class UserSessionLog {
 
     @Column(updatable = false)
     private LocalDateTime loginTime = LocalDateTime.now();
-
+    private LocalDateTime lastAccessTime;
     private LocalDateTime logoutTime;
     // Getters & Setters
 }

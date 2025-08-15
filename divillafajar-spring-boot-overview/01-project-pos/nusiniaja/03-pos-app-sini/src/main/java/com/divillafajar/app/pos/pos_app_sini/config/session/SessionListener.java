@@ -22,7 +22,7 @@ public class SessionListener implements HttpSessionListener {
 
     @Override
     public void sessionCreated(HttpSessionEvent se) {
-        System.out.println("Session created: " + se.getSession().getId());
+        System.out.println("Session created 2: " + se.getSession().getId());
     }
 
     @Override
@@ -32,6 +32,7 @@ public class SessionListener implements HttpSessionListener {
 
         // Ambil data terakhir dari session
         String role = (String) session.getAttribute("USER_ROLE");
+        System.out.println("Session role destroyed: " + role);
         //String username = (String) session.getAttribute("USERNAME");
         String sessionId = se.getSession().getId();
         sessionLogRepo.findBySessionIdAndStatus(sessionId, "ACTIVE").ifPresent(log -> {

@@ -31,7 +31,7 @@ public class CustomerEntity implements Serializable {
     private String phoneNumber;
 
 
-    @Column(name = "alias_name", nullable = false, length = 25)
+    @Column(name = "alias_name", nullable = false, length = 255)
     private String aliasName;
 
 

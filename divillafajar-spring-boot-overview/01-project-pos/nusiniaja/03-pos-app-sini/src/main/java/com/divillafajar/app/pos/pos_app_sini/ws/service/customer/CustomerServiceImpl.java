@@ -61,7 +61,7 @@ public class CustomerServiceImpl implements CustomerService{
         /*
         ** cek apa customer hp sudah terdaftar
          */
-        CustomerEntity storedCustomer = csr.findCustomerByAliasName(customerDTO.getAliasName());
+        CustomerEntity storedCustomer = csr.findCustomerByPhoneNumber(customerDTO.getUsername());//csr.findCustomerByAliasName(customerDTO.getAliasName());
 
         /*
         **  Jika tidak ditemukan, langsung create customer
@@ -114,6 +114,13 @@ public class CustomerServiceImpl implements CustomerService{
             /*
              **  Jika ditemukan, proceed to login
              */
+            if(!storedCustomer.getAliasName().contains(customerDTO.getAliasName()) &&
+                (storedCustomer.getAliasName().length()+1+customerDTO.getAliasName().length()<255)
+            ) {
+                //jika pakai alias baru dan field < 255 char,maka append
+                storedCustomer.setAliasName(storedCustomer.getAliasName()+","+customerDTO.getAliasName());
+                csr.save(storedCustomer);
+            }
             System.out.println("CUSTOMER EXIST FOUND");
         }
 

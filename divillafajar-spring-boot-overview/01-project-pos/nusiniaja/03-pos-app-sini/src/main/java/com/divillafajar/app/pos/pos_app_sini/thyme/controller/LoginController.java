@@ -36,6 +36,7 @@ public class LoginController {
 
     @GetMapping("/login")
     public String showUserLoginForm(Model theModel) {
+        System.out.println("showUserLoginForm CALLED");
         CustomerLoginRequestModel custModel = new CustomerLoginRequestModel();
         theModel.addAttribute("customer",custModel);
         return  "main-login";
@@ -49,6 +50,12 @@ public class LoginController {
     public String showHome() {
         System.out.println("showHome CALLED");
         return "home";
+    }
+
+    @GetMapping("/custom-logout")
+    public String logMeOut() {
+        System.out.println("logout CALLED");
+        return "/custom-logout";
     }
 
     @GetMapping(path = "/qrcode", produces = MediaType.IMAGE_PNG_VALUE)
@@ -65,13 +72,13 @@ public class LoginController {
     @GetMapping("/invalid-url")
     public String handleInvalidUrl(HttpServletRequest request, Model model) {
         System.out.println("invalid-url is CALLED");
-        return "redirect:/customer/invalid";
+        return "customer/loginPage-form";
     }
 
-    @GetMapping("/session-expired")
-    public String handleSessionExpired(HttpServletRequest request, Model model) {
+    @GetMapping("/my-session-expired")
+    public String handleSessionExpired() {
         System.out.println("/session-expired is CALLED");
-        return "redirect:/customer/login?table=1";
+        return "/customer/login?table=1";
         /*
         String lastVisited = "/"; // default fallback
         Cookie[] cookies = request.getCookies();

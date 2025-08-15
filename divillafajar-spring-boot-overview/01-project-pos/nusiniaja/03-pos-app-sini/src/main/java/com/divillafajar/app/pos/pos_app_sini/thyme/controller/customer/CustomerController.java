@@ -64,6 +64,12 @@ public class CustomerController {
         return "customer/home";
     }
 
+    @GetMapping("/session-expired")
+    public String showSessionExpired(Model model) {
+        System.out.println("showSessionExpired is CALLED =");
+        return "test";
+    }
+
     @GetMapping("/login")
     public String showLoginForm(
             @RequestParam(value = "table", required = false) String table,
