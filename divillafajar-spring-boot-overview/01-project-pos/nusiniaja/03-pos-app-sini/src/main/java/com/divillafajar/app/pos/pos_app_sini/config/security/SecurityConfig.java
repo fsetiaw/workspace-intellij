@@ -92,7 +92,7 @@ public class SecurityConfig {
                 .securityMatcher("/api/**") // hanya untuk endpoint api
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/login", "/api/users/register/**").permitAll()
-                        .requestMatchers("/customer/session-expired","/session-expired").hasAnyRole("EMPLOYEE","MANAGER","ADMIN","CUSTOMER")
+                        //.requestMatchers("/customer/session-expired","/session-expired").hasAnyRole("EMPLOYEE","MANAGER","ADMIN","CUSTOMER")
                         .requestMatchers("/customer/home","/api/customer","/session-expired").hasRole("CUSTOMER")
                         .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
                         .requestMatchers("/api/users/**").hasAnyRole("EMPLOYEE", "MANAGER", "ADMIN")
@@ -112,8 +112,8 @@ public class SecurityConfig {
         System.out.println("formFilterChain");
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/customer/session-expired","/session-expired").hasAnyRole("EMPLOYEE","MANAGER","ADMIN","CUSTOMER")
-                        .requestMatchers("/customer/home","/api/customer","/session-expired").hasRole("CUSTOMER")
+                        //.requestMatchers("/customer/session-expired","/session-expired").hasAnyRole("EMPLOYEE","MANAGER","ADMIN","CUSTOMER")
+                        .requestMatchers("/customer/home","/api/customer").hasRole("CUSTOMER")
                         .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
                         .requestMatchers(HttpMethod.GET, "/home").hasAnyRole("EMPLOYEE","MANAGER","ADMIN","CUSTOMER")
                         .requestMatchers(HttpMethod.GET, "/api/users").hasRole("EMPLOYEE")
@@ -122,7 +122,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/users").hasRole("MANAGER") //update employee
                         .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasRole("ADMIN")
                         .requestMatchers(
-                                "/qrcode","/invalid-url",
+                                "/qrcode","/invalid-url","/session-expired","/something-wrong",
                                 "/login","/custom-logout", //user login form
                                 "/customer/login", //customer login form
                                 "/customer-login", //redirect page->versi autosubmit login via main-login (unused)

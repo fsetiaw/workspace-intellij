@@ -75,63 +75,15 @@ public class LoginController {
         return "customer/loginPage-form";
     }
 
-    @GetMapping("/my-session-expired")
+    @GetMapping("/session-expired")
     public String handleSessionExpired() {
         System.out.println("/session-expired is CALLED");
-        return "/customer/login?table=1";
-        /*
-        String lastVisited = "/"; // default fallback
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie c : cookies) {
-                if ("LAST_VISITED_URL".equals(c.getName())) {
-                    lastVisited = c.getValue();
-                    break;
-                }
-            }
-        }
-        model.addAttribute("lastVisited", lastVisited);
-        System.out.println("lastVisited: " + lastVisited);
-        HttpSession session = request.getSession(false);
-        String role = (session != null) ? (String) session.getAttribute("USER_ROLE") : null;
-
-
-
-        if (role != null) {
-            switch (role) {
-                case "ROLE_CUSTOMER":
-                    return "redirect:/customer/login?expired=true";
-                case "ROLE_EMPLOYEE":
-                case "ROLE_MANAGER":
-                case "ROLE_ADMIN":
-                    return "redirect:/login?expired=true";
-            }
-        }
-
-        return "redirect:/login?expired=true";
-         */
-
-
-        /*
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println("handleSessionExpired is CALLED".toUpperCase()+" =  "+auth.getAuthorities());
-        if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
-            if (auth.getAuthorities().stream().anyMatch(a ->
-                    a.getAuthority().equals("ROLE_EMPLOYEE")||a.getAuthority().equals("ROLE_MANAGER")||a.getAuthority().equals("ROLE_ADMIN")
-            )) {
-                System.out.println("return 1");
-                return "redirect:/login?expired=true";
-            } else if (auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_CUSTOMER"))) {
-                System.out.println("return 2");
-                return "redirect:/customer/login?expired=true";
-            }
-        }
-
-        // fallback, kalau tidak diketahui role atau belum login
-        System.out.println("return 3");
-        return "redirect:/login?expired=true";
-
-         */
+        return "session-expired";
+    }
+    @GetMapping("/something-wrong")
+    public String handleSomethingWrong() {
+        System.out.println("/something-wrong is CALLED");
+        return "something-wrong";
     }
 
     @GetMapping("/customer-home")

@@ -27,16 +27,12 @@ public class SessionValidationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        System.out.println("SessionValidationFilter.doInternalFilter");
         String path = request.getServletPath();
-        System.out.println("doInternalFilter path = "+path);
-        System.out.println("doInternalFilter path = "+request.getContextPath());
+
 
         if ("/logout".equals(path)||"/customer/login".equals(path)||"/customer/processLoginForm".equals(path)
-               ||"/login".equals(path)||"/session-expired".equals(path)) {
-        //if(!isSessionValid(request)){
-            System.out.println("isSessionValid tidak valid");
-            //response.sendRedirect("qrview");
+               ||"/login".equals(path)||path.contains("/session-expired")||path.contains("/something-wrong")
+        ) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -45,68 +41,40 @@ public class SessionValidationFilter extends OncePerRequestFilter {
 
             if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
                 HttpSession session = request.getSession(false);
-                System.out.println("Session "+session.getCreationTime());
-                System.out.println("Auth "+auth.getAuthorities());
                 if (session != null) {
                     String sessionId = session.getId();
-
-                    Optional<UserSessionLog> logOpt = sessionLogRepo.findBySessionIdAndStatus(sessionId, "ACTIVE");
-                    //if(false) {
-                    if (logOpt.isPresent()) {
-                        System.out.println("logOpt ditemukan");
-                        // Jika session log ditemukan
-                        UserSessionLog log = logOpt.get();
-                        //log.setLastAccessTime("LOGOUT");
+                    Optional<UserSessionLog> sessionExist = sessionLogRepo.findBySessionIdAndStatus(sessionId, "ACTIVE");
+                    if (sessionExist.isPresent()) {
+                        // Jika session log ditemukan, update last accss time
+                        UserSessionLog log = sessionExist.get();
                         log.setLastAccessTime(LocalDateTime.now());
                         sessionLogRepo.save(log);
                     } else {
-                        // session tidak valid di DB → logout user
-                        System.out.println("logOpt tidak ditemukan");
+                        /*
+                         *  sessionExist tidak ditemukan di DB (kasus bila tipa2 data di db hilang/corrupt
+                         */
                         SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
                         logoutHandler.logout(request, response, auth);
-
-                        // redirect ke login dengan parameter expired
-                        response.sendRedirect("aneh/login?expired");
+                        response.sendRedirect("/something-wrong");
                         return;
                     }
                 }
+                else {
+                    System.out.println("Session is null");
+                }
             }
             else {
-                System.out.println("Auth is NULL="+request.getContextPath());
-                if ("/logout".equals(path)||"/customer/login".equals(path)||"/customer/processLoginForm".equals(path)
-                        ||"/session-expired".equals(path)) {
-                    filterChain.doFilter(request, response);
-                    response.sendRedirect(request.getContextPath() + "/customer/login");
-                    //return;
-                }
+                /*
+                ** Lewat MaxIdleTime
+                 */
                 System.out.println("Auth is NULL else");
-                response.sendRedirect(request.getContextPath() + "/customer/login");
+                response.sendRedirect(request.getContextPath() + "/session-expired");
+                //response.sendRedirect(request.getContextPath() + "/login");
                 return;
-                //response.sendRedirect("customer/main-login");
             }
         }
-
-        System.out.println("filterChain.doFilter(request, response)");
         filterChain.doFilter(request, response);
     }
 
-    private boolean isSessionValid(HttpServletRequest request) {
-        HttpSession session = request.getSession(false); // false = jangan buat session baru
-        if (session == null) {
-            return false; // tidak ada session sama sekali
-        }
 
-        // Ambil Authentication dari SecurityContext
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return false; // tidak ada auth atau belum login
-        }
-
-        // Pastikan bukan anonymous user
-        if (authentication instanceof AnonymousAuthenticationToken) {
-            return false;
-        }
-
-        return true; // kalau lolos semua, berarti valid
-    }
 }

@@ -80,32 +80,21 @@ public class CustomerController {
         System.out.println("customer Login Controller /loginForm is called");
         System.out.println("table = "+table);
         if (authentication != null && authentication.isAuthenticated()) {
-            System.out.println("user sudah auntehenticated");
             /*
             ** cek apa session idnya masih ada di DB
              */
             HttpSession session = request.getSession(true);
             if(session!=null) {
-                System.out.println("user auntehenticated session= "+session.getId());
                 String sessionId=session.getId();
-                Optional<UserSessionLog> logOpt = sessionLogRepo.findBySessionIdAndStatus(sessionId, "ACTIVE");
-                if (logOpt.isPresent()) {
-                    System.out.println("logOpt ditemukan");
-                    // Jika session log ditemukan
-                    //UserSessionLog log = logOpt.get();
-                    //log.setStatus("LOGOUT");
-                    //log.setLogoutTime(LocalDateTime.now());
-                    //sessionLogRepo.save(log);
+                Optional<UserSessionLog> activeSession = sessionLogRepo.findBySessionIdAndStatus(sessionId, "ACTIVE");
+                if (activeSession.isPresent()) {
+                    String activeRole = activeSession.get().getRole();
                     return "customer/home";
                 } else {
-                    // session tidak valid di DB → logout user
-                    System.out.println("logOpt tidak ditemukan");
-                    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-                    SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
-                    logoutHandler.logout(request, response, auth);
-
-                    // redirect ke login dengan parameter expired
-                    //response.sendRedirect("/login?expired");
+                    /*
+                     *  sessionExist tidak ditemukan di DB (kasus bila tipa2 data di db hilang/corrupt
+                     *  -> sudah di handle SessionValidationFilter
+                     */
                 }
             }
 

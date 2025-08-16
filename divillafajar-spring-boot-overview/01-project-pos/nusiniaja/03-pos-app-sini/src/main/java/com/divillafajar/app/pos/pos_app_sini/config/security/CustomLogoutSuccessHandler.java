@@ -19,7 +19,7 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response,
                                 Authentication authentication) throws IOException {
         String redirectUrl = "/login"; // default redirect
-        //System.out.println("logout success ="+authentication.getAuthorities());
+        //System.out.println("lonLogoutSuccess ="+authentication.getAuthorities());
         if (authentication != null) {
             // Redirect berdasarkan role
             if (authentication.getAuthorities().stream()
@@ -31,6 +31,12 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
                 redirectUrl = "customer/login";
 
             }
+        }
+        else {
+            /*
+            ** > max iddle time / expired
+             */
+            redirectUrl = "/session-expired";
         }
         System.out.println("logout redirectUrl ="+redirectUrl);
         response.sendRedirect(redirectUrl);
