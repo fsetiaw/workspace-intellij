@@ -61,8 +61,8 @@ public class UserServiceImpl implements UserService {
         /*
         ** cek if user already exist
          */
-        Optional<UserEntity> existingUser = userRepo.findByEmailAndPhone(userDTO.getEmail(), userDTO.getPhone());
-        if (existingUser.isPresent()) {
+        UserEntity existingUser = userRepo.findByEmailAndPhone(userDTO.getEmail(), userDTO.getPhone());
+        if (existingUser!=null) {
             throw new UserAlreadyExistException("User already exist");
             // found
             //UserEntity foundUser = user.get();

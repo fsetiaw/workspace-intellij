@@ -10,7 +10,7 @@ public class GlobalViewAttributes {
 
     @ModelAttribute
     public void globalAttributes(HttpSession session, Model model) {
-        session.setMaxInactiveInterval(5);
+        //session.setMaxInactiveInterval(5); -> diatur di CustomAuthSuccessHandler
         //model.addAttribute("sessionId", session.getId());
         //model.addAttribute("sessionCreationTime", session.getCreationTime());
         //model.addAttribute("sessionMaxInactiveInternal", session.getMaxInactiveInterval());

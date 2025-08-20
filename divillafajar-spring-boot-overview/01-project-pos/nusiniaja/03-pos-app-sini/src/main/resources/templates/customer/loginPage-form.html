@@ -19,6 +19,7 @@
 <body>
 <h2>This is Customer Login Page 2</h2>
 <hr>
+<p>Anda login dari ClientId <b th:text="${#strings.isEmpty(customer.clientId) ? '3' : customer.clientId}"></b></p>
 <p>Anda login dari meja nomor <b th:text="${#strings.isEmpty(customer.table) ? '3' : customer.table}"></b></p>
     <!--form th:action="@{/customer/processLoginForm}" th:object="${customer}" method="POST"-->
 <form th:action="@{/customer/processLoginForm}" th:object="${customer}" method="POST">
@@ -26,7 +27,8 @@
         <span th:if="${#fields.hasErrors('username')}"
               th:errors="*{username}" class="error"></span>
         <br><br>
-        <input type="hidden" th:field="*{table}" />
+        <input type="hidden" th:field="*{clientId}" />
+    <input type="hidden" th:field="*{table}" />
         <input type="text" th:field="*{aliasName}" placeholder="Enter Name" />
         <!-- Add error message if present -->
         <span th:if="${#fields.hasErrors('aliasName')}"

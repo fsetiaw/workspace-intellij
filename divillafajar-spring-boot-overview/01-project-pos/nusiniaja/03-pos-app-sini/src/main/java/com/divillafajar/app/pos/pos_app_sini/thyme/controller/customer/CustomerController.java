@@ -72,6 +72,7 @@ public class CustomerController {
 
     @GetMapping("/login")
     public String showLoginForm(
+            @RequestParam(value = "clientId", required = false) Long clientId,
             @RequestParam(value = "table", required = false) String table,
             Model theModel,
             HttpServletRequest request,
@@ -103,9 +104,10 @@ public class CustomerController {
         //theModel.addAttribute("theDate", java.time.LocalDateTime.now());
 
         CustomerLoginRequestModel custModel = new CustomerLoginRequestModel();
-        System.out.println("custModel table = "+custModel.getTable());
+        custModel.setClientId(clientId);
         custModel.setTable(table);
-        System.out.println("custModel table2 = "+custModel.getTable());
+        System.out.println("custModel client id = "+custModel.getClientId());
+        System.out.println("custModel table = "+custModel.getTable());
         theModel.addAttribute("customer",custModel);
 
         return  "customer/loginPage-form";
@@ -134,6 +136,9 @@ public class CustomerController {
         }
         else {
 
+            // Prep Param TheCustomer biar bisa diakses di  customAuthenticationSuccessHandler
+            request.setAttribute("theCustomer", theCustomer);
+
             CustomerDTO customerDTO = new CustomerDTO();
             BeanUtils.copyProperties(theCustomer,customerDTO);
             CustomerDTO savedCust = custService.loginCustomer(customerDTO);
@@ -159,17 +164,24 @@ public class CustomerController {
 
                     /*
                     ** sukses aunthenticated, create session
-                     */
+
                     AuthenticatedCustomerModel nuCust = new AuthenticatedCustomerModel();
                     System.out.println("the Customer username = "+theCustomer.getUsername());
                     System.out.println("the Customer alias= "+theCustomer.getAliasName());
+                    System.out.println("the Customer clientId= "+theCustomer.getClientId());
+                    System.out.println("the Customer yable= "+theCustomer.getTable());
+
                     nuCust.setName(theCustomer.getAliasName());
                     nuCust.setPhone(theCustomer.getUsername());
                     nuCust.setTable(theCustomer.getTable());
+                    nuCust.setClientId(theCustomer.getClientId());
                     session.setAttribute("loggedInCustomer",nuCust);
+
+                     */
                 } catch (IOException | ServletException e) {
                     // Bisa log error atau redirect ke error page
                     e.printStackTrace();
+                    request.removeAttribute("theCustomer");
                     model.addAttribute("error", "Terjadi kesalahan saat login.");
                     //return "main-login"; // atau redirect ke halaman error khusus
                 }

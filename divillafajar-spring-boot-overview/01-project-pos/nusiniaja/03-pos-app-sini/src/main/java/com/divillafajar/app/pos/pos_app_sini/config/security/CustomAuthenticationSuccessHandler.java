@@ -2,6 +2,8 @@ package com.divillafajar.app.pos.pos_app_sini.config.security;
 
 import com.divillafajar.app.pos.pos_app_sini.io.entity.user.UserSessionLog;
 import com.divillafajar.app.pos.pos_app_sini.repo.session.UserSessionLogRepository;
+import com.divillafajar.app.pos.pos_app_sini.ws.model.customer.AuthenticatedCustomerModel;
+import com.divillafajar.app.pos.pos_app_sini.ws.model.customer.CustomerLoginRequestModel;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -89,6 +91,20 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 session.setMaxInactiveInterval(0); // never expired -> must logout
                 System.out.println("USER ROLE = CUSTOMER");
                 redirectUrl = "/customer/home";
+                CustomerLoginRequestModel theCustomer =
+                        (CustomerLoginRequestModel) request.getAttribute("theCustomer");
+
+                AuthenticatedCustomerModel nuCust = new AuthenticatedCustomerModel();
+                System.out.println("the Customer username = "+theCustomer.getUsername());
+                System.out.println("the Customer alias= "+theCustomer.getAliasName());
+                System.out.println("the Customer clientId= "+theCustomer.getClientId());
+                System.out.println("the Customer yable= "+theCustomer.getTable());
+
+                nuCust.setName(theCustomer.getAliasName());
+                nuCust.setPhone(theCustomer.getUsername());
+                nuCust.setTable(theCustomer.getTable());
+                nuCust.setClientId(theCustomer.getClientId());
+                session.setAttribute("loggedInCustomer",nuCust);
                 break;
             }
             else if (role.equals("ROLE_EMPLOYEE")) {

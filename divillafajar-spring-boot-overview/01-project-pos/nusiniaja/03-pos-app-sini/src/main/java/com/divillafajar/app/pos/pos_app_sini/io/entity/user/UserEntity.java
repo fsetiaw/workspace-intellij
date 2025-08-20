@@ -2,6 +2,8 @@ package com.divillafajar.app.pos.pos_app_sini.io.entity.user;
 
 import com.divillafajar.app.pos.pos_app_sini.io.entity.auth.NamePassEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.customer.CustomerEntity;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.employee.EmployeeEntity;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.employee.EmploymentEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -42,6 +44,9 @@ public class UserEntity implements Serializable {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private CustomerEntity customer;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private EmployeeEntity employee;
 
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
     private List<AddressEntity> addresses;

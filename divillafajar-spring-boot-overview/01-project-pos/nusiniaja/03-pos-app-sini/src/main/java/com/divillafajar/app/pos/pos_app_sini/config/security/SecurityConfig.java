@@ -91,7 +91,7 @@ public class SecurityConfig {
         http
                 .securityMatcher("/api/**") // hanya untuk endpoint api
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/login", "/api/users/register/**").permitAll()
+                        .requestMatchers("/api/login","/api/users/register","/api/users/register/**").permitAll()
                         //.requestMatchers("/customer/session-expired","/session-expired").hasAnyRole("EMPLOYEE","MANAGER","ADMIN","CUSTOMER")
                         .requestMatchers("/customer/home","/api/customer","/session-expired").hasRole("CUSTOMER")
                         .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
@@ -131,15 +131,15 @@ public class SecurityConfig {
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
-                /*
+
                 .formLogin(form -> form
-                        .loginPage("/customer/login")
+                        .loginPage("/login")
                         .loginProcessingUrl("/authenticateTheUser")
                         .successHandler(customAuthenticationSuccessHandler)
                         .permitAll()
                 )
 
-                 */
+
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .addLogoutHandler(customLogoutHandler) // pakai custom logout handler

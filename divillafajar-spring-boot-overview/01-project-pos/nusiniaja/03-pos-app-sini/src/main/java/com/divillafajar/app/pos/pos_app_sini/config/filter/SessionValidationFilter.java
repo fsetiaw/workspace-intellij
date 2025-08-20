@@ -2,6 +2,7 @@ package com.divillafajar.app.pos.pos_app_sini.config.filter;
 
 import com.divillafajar.app.pos.pos_app_sini.io.entity.user.UserSessionLog;
 import com.divillafajar.app.pos.pos_app_sini.repo.session.UserSessionLogRepository;
+import com.divillafajar.app.pos.pos_app_sini.ws.model.customer.AuthenticatedCustomerModel;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,9 +30,11 @@ public class SessionValidationFilter extends OncePerRequestFilter {
 
         String path = request.getServletPath();
 
-
+        //System.out.println("PATH FILTER = "+path);
         if ("/logout".equals(path)||"/customer/login".equals(path)||"/customer/processLoginForm".equals(path)
                ||"/login".equals(path)||path.contains("/session-expired")||path.contains("/something-wrong")
+                ||path.contains("swagger-ui")||"/authenticateTheUser".equals(path)
+                ||path.startsWith("/api/")
         ) {
             filterChain.doFilter(request, response);
             return;
@@ -67,7 +70,20 @@ public class SessionValidationFilter extends OncePerRequestFilter {
                 /*
                 ** Lewat MaxIdleTime
                  */
-                System.out.println("Auth is NULL else");
+                System.out.println("Auth is NULL else == "+path);
+                Optional<AuthenticatedCustomerModel> logoutCust = (Optional<AuthenticatedCustomerModel>) request.getSession().getAttribute("loggedInCustomer");
+                if(logoutCust==null) {
+                    System.out.println("logoutCust is NULL");
+                }
+                else {
+                    if(logoutCust.isEmpty()) {
+                        System.out.println("logoutCust is empty");
+                    }
+                    else {
+                        System.out.println("logoutCust is present="+logoutCust.get().getClientId());
+                    }
+                }
+
                 response.sendRedirect(request.getContextPath() + "/session-expired");
                 //response.sendRedirect(request.getContextPath() + "/login");
                 return;

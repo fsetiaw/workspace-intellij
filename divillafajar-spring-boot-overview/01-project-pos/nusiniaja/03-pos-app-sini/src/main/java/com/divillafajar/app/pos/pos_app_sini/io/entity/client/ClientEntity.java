@@ -1,6 +1,7 @@
 package com.divillafajar.app.pos.pos_app_sini.io.entity.client;
 
 import com.divillafajar.app.pos.pos_app_sini.io.entity.customer.CustomerEntity;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.employee.EmploymentEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,7 +9,9 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -26,14 +29,20 @@ public class ClientEntity implements Serializable {
 
     @Column(name = "client_name", length = 50, nullable = false)
     private String clientName;
-
+    /*
     @ManyToMany(fetch = FetchType.EAGER, cascade = {
             CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH}, mappedBy = "clients")
     List<CustomerEntity> customers;
 
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<EmploymentEntity> clients = new HashSet<>();
+     */
 
 
     @OneToOne(mappedBy = "client", cascade = CascadeType.ALL)
     private ClientDetailsEntity clientDetails;
+
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<EmploymentEntity> employments = new HashSet<>();
 }

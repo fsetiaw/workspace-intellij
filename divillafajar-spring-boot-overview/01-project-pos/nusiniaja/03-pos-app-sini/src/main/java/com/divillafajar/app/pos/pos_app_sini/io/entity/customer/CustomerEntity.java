@@ -9,7 +9,9 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -27,6 +29,7 @@ public class CustomerEntity implements Serializable {
     @Column(name = "id")
     private Long id;
 
+
     @Column(name = "phone_number", unique = true, nullable = false)
     private String phoneNumber;
 
@@ -35,6 +38,7 @@ public class CustomerEntity implements Serializable {
     private String aliasName;
 
 
+    /*
     @ManyToMany(fetch = FetchType.EAGER, cascade = {
             CascadeType.PERSIST, CascadeType.MERGE,
                     CascadeType.DETACH, CascadeType.REFRESH})
@@ -45,6 +49,8 @@ public class CustomerEntity implements Serializable {
     )
     private List<ClientEntity> clients;
 
+     */
+
     @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
     private CustomerDetailsEntity customerDetails;
 
@@ -53,5 +59,8 @@ public class CustomerEntity implements Serializable {
             CascadeType.DETACH, CascadeType.REFRESH})
     @JoinColumn(name = "user_id")
     private UserEntity user;
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<GuestEntity> guests = new HashSet<>();
 
 }

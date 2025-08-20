@@ -14,6 +14,7 @@ public class CustomerLoginRequestModel {
     private String username;
     private String password;
     private String table;
+    private long clientId;
     @NotNull(message = "Name is required")
     @Size(min = 2, message = "Name is required")
     private String aliasName;

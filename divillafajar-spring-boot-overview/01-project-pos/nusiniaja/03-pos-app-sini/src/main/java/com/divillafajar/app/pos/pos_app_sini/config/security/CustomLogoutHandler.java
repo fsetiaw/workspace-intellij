@@ -2,6 +2,7 @@ package com.divillafajar.app.pos.pos_app_sini.config.security;
 
 import com.divillafajar.app.pos.pos_app_sini.io.entity.user.UserSessionLog;
 import com.divillafajar.app.pos.pos_app_sini.repo.session.UserSessionLogRepository;
+import com.divillafajar.app.pos.pos_app_sini.ws.model.customer.AuthenticatedCustomerModel;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,12 @@ public class CustomLogoutHandler implements LogoutHandler {
                 sessionLogRepo.save(log);
                 System.out.println("Session log updated to LOGOUT");
             });
+
+            AuthenticatedCustomerModel logoutCust = (AuthenticatedCustomerModel) request.getSession().getAttribute("loggedInCustomer");
+            if(logoutCust!=null) {
+                request.setAttribute("logoutCust",logoutCust);
+                System.out.println("logoutCust.getClientId()="+logoutCust.getClientId());
+            }
 
             // Invalidate session
             request.getSession().invalidate();

@@ -17,7 +17,8 @@ public class UserSessionLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @Column(updatable = false)
+    //private Long clientId;
     private String username;
     private String role;
     private String sessionId;

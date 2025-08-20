@@ -3,22 +3,25 @@ package com.divillafajar.app.pos.pos_app_sini.ws.service.customer;
 import com.divillafajar.app.pos.pos_app_sini.config.security.CustomDefaultProperties;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.auth.AuthorityEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.auth.NamePassEntity;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.customer.CustomerEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.user.UserEntity;
-import com.divillafajar.app.pos.pos_app_sini.repo.AddressRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.AuthRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.NamePasRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.UserRepo;
+import com.divillafajar.app.pos.pos_app_sini.repo.client.ClientRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.customer.CustomerRepo;
 import com.divillafajar.app.pos.pos_app_sini.ws.model.shared.dto.CustomerDTO;
-import com.divillafajar.app.pos.pos_app_sini.ws.service.user.UserService;
 import com.divillafajar.app.pos.pos_app_sini.ws.utils.GeneratorUtils;
 import com.divillafajar.app.pos.pos_app_sini.ws.utils.MyStringUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CustomerServiceImpl implements CustomerService{
@@ -26,6 +29,7 @@ public class CustomerServiceImpl implements CustomerService{
     private final CustomDefaultProperties customDefaultProperties;
     private final PasswordEncoder passwordEncoder;
     private final CustomerRepo csr;
+    private final ClientRepo clientRepo;
 
     private NamePasRepo namePasRepo;
     //@Autowired
@@ -37,7 +41,8 @@ public class CustomerServiceImpl implements CustomerService{
                                NamePasRepo namePasRepo, AuthRepo authRepo,
                                PasswordEncoder passwordEncoder,
                                CustomDefaultProperties customDefaultProperties,
-                               GeneratorUtils generatorUtils
+                               GeneratorUtils generatorUtils,
+                               ClientRepo clientRepo
     ) {
         this.csr=csr;
         this.userRepo=userRepo;
@@ -46,35 +51,160 @@ public class CustomerServiceImpl implements CustomerService{
         this.passwordEncoder=passwordEncoder;
         this.customDefaultProperties=customDefaultProperties;
         this.generatorUtils=generatorUtils;
+        this.clientRepo=clientRepo;
     }
 
 
     @Override
     public CustomerDTO loginCustomer(CustomerDTO customerDTO) {
         System.out.println("CustomerServiceImpl.loginCustomer is CALLED");
-        System.out.println("customerDTO.getUsername = "+customerDTO.getUsername());
-
-        CustomerDTO returnVal = new CustomerDTO();
-        CustomerEntity customerEntity = new CustomerEntity();
-        BeanUtils.copyProperties(customerDTO, customerEntity);
-        customerEntity.setPhoneNumber(MyStringUtils.cleanPhoneNumber(customerDTO.getUsername()));
+        CustomerDTO returnVal=new CustomerDTO();
         /*
-        ** cek apa customer hp sudah terdaftar
+        ** Note:
+        ** Untuk Customer username == no hape
+        ** customerDTO.getUsername() == no hape
+         */
+        System.out.println("customerDTO.getUsername = "+customerDTO.getUsername());
+        System.out.println("customerDTO.getClientId() = "+customerDTO.getClientId());
+        System.out.println("customerDTO.getTable = "+customerDTO.getTable());
+
+        /*
+        ** get data client
+         */
+        ClientEntity client = clientRepo.findById(customerDTO.getClientId())
+                .orElseThrow(() -> new RuntimeException("Client not found with id " + customerDTO.getClientId()));
+
+
+        //CustomerDTO returnVal = new CustomerDTO();
+
+
+        /*
+         ** Cek apa no hape sudah ada di tabel customer
+         *
          */
         CustomerEntity storedCustomer = csr.findCustomerByPhoneNumber(customerDTO.getUsername());//csr.findCustomerByAliasName(customerDTO.getAliasName());
-
-        /*
-        **  Jika tidak ditemukan, langsung create customer
-         */
         if(storedCustomer==null) {
+            /*
+             ** bila tidak ditemukan, cek apa sudah ada di tabel user
+             * Note:
+             *   user tidak terikat ke salah satu client
+             */
+            UserEntity storedUser = userRepo.findByEmailAndPhone(customDefaultProperties.getCustomerDummyEmail(), customerDTO.getUsername());
+            if (storedUser == null) {
+                //step 1 - Create user then
+                System.out.println("CUSTOMER belum ada di USER");
+                UserEntity nuUser = new UserEntity();
+                //nuUser.setCustomer(storedCustomer);
+                nuUser.setPhone(customerDTO.getUsername());
+                nuUser.setEmail(customDefaultProperties.getCustomerDummyEmail());
+                nuUser.setPubId(generatorUtils.generatePubUserId(30));
+                String[] givenName = MyStringUtils.splitLastWord(customerDTO.getAliasName());
+                nuUser.setFirstName(givenName[0]);
+                if (givenName[1] != null && givenName[1].isBlank())
+                    nuUser.setLastName(givenName[1]);
+                System.out.println("TRY SAVE USER");
+                storedUser = userRepo.save(nuUser);
+                System.out.println("USER SAVED");
+
+                //step 2 - Create customer
+                CustomerEntity nuCust = new CustomerEntity();
+                nuCust.setUser(storedUser);
+                nuCust.setPhoneNumber(storedUser.getPhone());
+                nuCust.setAliasName(customerDTO.getAliasName());
+                //prep target client g dikunjungi
+                Optional<ClientEntity> targetClient = clientRepo.findById(customerDTO.getClientId());
+                List<ClientEntity> listClient = new ArrayList<>();
+                if(targetClient.isEmpty())
+                    throw new RuntimeException("TARGET CLIENT TIDAK TERFAFTAR");
+                listClient.add(targetClient.get());
+                ////nuCust.setClients(listClient);
+                storedCustomer = csr.save(nuCust);
+                
+                //step-3 lanjut save user pwd
+                NamePassEntity nape = new NamePassEntity();
+                nape.setUsername(storedCustomer.getPhoneNumber());
+                //nape.setPassword("{bcrypt}"+bCryptPasswordEncoder.encode("NoPwd"));
+                nape.setPassword(passwordEncoder.encode(customDefaultProperties.getCustomerPwd()));
+                nape.setUser(storedUser);
+                nape.setEnabled(true);
+                System.out.println("TRY SAVE NamePassEntity");
+                NamePassEntity storedNape = namePasRepo.save(nape);
+                System.out.println("NamePassEntity SAVED");
+
+                AuthorityEntity auth = new AuthorityEntity();
+                auth.setAuthority(customDefaultProperties.getCustomerRole());
+                auth.setUsername(storedNape.getUsername());
+                auth.setNamePass(storedNape);
+                System.out.println("TRY SAVE AuthorityEntity");
+                authRepo.save(auth);
+                System.out.println("AuthorityEntity SAVED");
+
+                //step-2 create customer entity
+                //List<ClientEntity> clientInfo = new ArrayList<>();
+                //clientInfo.add(client);
+                //CustomerEntity logInCustomerEntity = new CustomerEntity();
+                //BeanUtils.copyProperties(customerDTO, logInCustomerEntity);
+                //logInCustomerEntity.setPhoneNumber(MyStringUtils.cleanPhoneNumber(customerDTO.getUsername()));
+                //logInCustomerEntity.setId(null);
+                //logInCustomerEntity.setUser(storedUser);
+                //logInCustomerEntity.setClients(listClient);
+                //storedCustomer = csr.save(logInCustomerEntity);
+            } else {
+                //User Exist
+                //1. cek apa sudah pernah menjadi tamu target client
+                ////List<ClientEntity> listClientKunjungan = storedCustomer.getClients();
+                boolean clintSudahDikunjungi = false;
+                ////for (ClientEntity visitedClient : listClientKunjungan) {
+                ////    if (visitedClient.getId() == customerDTO.getClientId()) {
+                ////        clintSudahDikunjungi = true;
+                ////    }
+                ////}
+                ////if (!clintSudahDikunjungi) {
+                    //Baru pertama visit
+                    //1.add info client-customer
+                ////    Optional<ClientEntity> nuClient = clientRepo.findById(customerDTO.getClientId());
+                ////    nuClient.ifPresent(listClientKunjungan::add);
+                    //update Data Customer
+                    ////storedCustomer.setClients(listClientKunjungan);
+                /////    storedCustomer = csr.save(storedCustomer);
+                ////}
+
+            }
+        }
+        else {
+            /*
+             **  Customer sudah terdaftar
+             */
+            //1. cek apa sudah pernah menjadi tamu target client
+            ////List<ClientEntity> listClientKunjungan = storedCustomer.getClients();
+            boolean clintSudahDikunjungi = false;
+            ////for (ClientEntity visitedClient : listClientKunjungan) {
+            ////    if (visitedClient.getId() == customerDTO.getClientId()) {
+            ////        clintSudahDikunjungi = true;
+            ////    }
+            ////}
+            if (!clintSudahDikunjungi) {
+                //Baru pertama visit
+                //1.add info client-customer
+                Optional<ClientEntity> nuClient = clientRepo.findById(customerDTO.getClientId());
+                ////nuClient.ifPresent(listClientKunjungan::add);
+                //update Data Customer
+                ////storedCustomer.setClients(listClientKunjungan);
+                storedCustomer = csr.save(storedCustomer);
+            }
+        }
+        /*
             //prep buat create customer
             //1. set id = null, beanUtils ngasih default = 0 bukannya null(bikin error)
-            customerEntity.setId(null);
-            storedCustomer = csr.save(customerEntity);
 
+
+
+            if (storedCustomer == null) { // hampir mustahil, tapi kalau repo custom bisa saja
+                throw new RuntimeException("Gagal menyimpan customer");
+            }
             /*
              **  Cek apa sudah ada di tabel user
-             */
+
             UserEntity storedUser = userRepo.findUserByCustomer(storedCustomer);
             if(storedUser==null) {
                 System.out.println("CUSTOMER belum ada di USER");
@@ -113,7 +243,7 @@ public class CustomerServiceImpl implements CustomerService{
         else {
             /*
              **  Jika ditemukan, proceed to login
-             */
+
             if(!storedCustomer.getAliasName().contains(customerDTO.getAliasName()) &&
                 (storedCustomer.getAliasName().length()+1+customerDTO.getAliasName().length()<255)
             ) {
@@ -123,6 +253,8 @@ public class CustomerServiceImpl implements CustomerService{
             }
             System.out.println("CUSTOMER EXIST FOUND");
         }
+
+         */
 
         BeanUtils.copyProperties(storedCustomer,returnVal);
         return returnVal;

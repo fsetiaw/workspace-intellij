@@ -19,6 +19,7 @@ public class AuthenticatedCustomerModel implements Serializable {
     private static final long serialVersionUID = -6253292793547674789L;
     private String phone;
     private String table;
+    private long clientId;
     private String name;
 
 
