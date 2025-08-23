@@ -1,20 +1,13 @@
 package com.divillafajar.app.pos.pos_app_sini.thyme.controller;
 
-import com.divillafajar.app.pos.pos_app_sini.ws.model.customer.CustomerLoginRequestModel;
-import com.divillafajar.app.pos.pos_app_sini.ws.service.customer.CustomerService;
-import com.divillafajar.app.pos.pos_app_sini.ws.service.user.UserService;
-import com.divillafajar.app.pos.pos_app_sini.ws.utils.GeneratorUtils;
-import jakarta.servlet.http.Cookie;
+import com.divillafajar.app.pos.pos_app_sini.model.customer.CustomerLoginRequestModel;
+import com.divillafajar.app.pos.pos_app_sini.service.customer.CustomerService;
+import com.divillafajar.app.pos.pos_app_sini.service.user.UserService;
+import com.divillafajar.app.pos.pos_app_sini.utils.GeneratorUtils;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;

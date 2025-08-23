@@ -29,6 +29,8 @@ public class CustomerEntity implements Serializable {
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "pub_id", length = 30, nullable = false)
+    private String pubId;
 
     @Column(name = "phone_number", unique = true, nullable = false)
     private String phoneNumber;

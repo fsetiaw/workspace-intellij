@@ -1,15 +1,12 @@
 package com.divillafajar.app.pos.pos_app_sini.ws.controller;
 
-import com.divillafajar.app.pos.pos_app_sini.ws.exception.GenericCustomErrorException;
-import com.divillafajar.app.pos.pos_app_sini.ws.model.customer.CustomerLoginRequestModel;
-import com.divillafajar.app.pos.pos_app_sini.ws.model.user.CreateUserRequestModel;
-import com.divillafajar.app.pos.pos_app_sini.ws.model.user.UserDetailsResponseModel;
-import com.divillafajar.app.pos.pos_app_sini.ws.service.user.UserService;
-import com.divillafajar.app.pos.pos_app_sini.ws.model.shared.dto.UserDTO;
+import com.divillafajar.app.pos.pos_app_sini.exception.GenericCustomErrorException;
+import com.divillafajar.app.pos.pos_app_sini.model.user.CreateUserRequestModel;
+import com.divillafajar.app.pos.pos_app_sini.model.user.UserDetailsResponseModel;
+import com.divillafajar.app.pos.pos_app_sini.service.user.UserService;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.user.dto.UserDTO;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller

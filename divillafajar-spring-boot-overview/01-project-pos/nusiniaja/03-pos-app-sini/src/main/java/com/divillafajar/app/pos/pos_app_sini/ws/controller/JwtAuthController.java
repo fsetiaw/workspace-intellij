@@ -1,8 +1,8 @@
 package com.divillafajar.app.pos.pos_app_sini.ws.controller;
 
-import com.divillafajar.app.pos.pos_app_sini.ws.model.shared.dto.jwt.JwtLoginRequestDTO;
-import com.divillafajar.app.pos.pos_app_sini.ws.model.shared.dto.jwt.JwtLoginResponseDTO;
-import com.divillafajar.app.pos.pos_app_sini.ws.utils.JwtUtil;
+import com.divillafajar.app.pos.pos_app_sini.model.shared.dto.jwt.JwtLoginRequestDTO;
+import com.divillafajar.app.pos.pos_app_sini.model.shared.dto.jwt.JwtLoginResponseDTO;
+import com.divillafajar.app.pos.pos_app_sini.utils.JwtUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;

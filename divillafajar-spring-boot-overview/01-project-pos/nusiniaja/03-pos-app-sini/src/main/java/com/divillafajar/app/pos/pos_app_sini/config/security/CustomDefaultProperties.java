@@ -12,4 +12,5 @@ public class CustomDefaultProperties {
     private String customerRole;
     private String userRole;
     private String customerDummyEmail;
+    private String adminSuperKey;
 }

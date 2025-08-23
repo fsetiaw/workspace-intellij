@@ -1,12 +1,10 @@
 package com.divillafajar.app.pos.pos_app_sini.ws.controller.admin;
 
-import com.divillafajar.app.pos.pos_app_sini.io.entity.user.UserSessionLog;
 import com.divillafajar.app.pos.pos_app_sini.repo.session.UserSessionLogRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 

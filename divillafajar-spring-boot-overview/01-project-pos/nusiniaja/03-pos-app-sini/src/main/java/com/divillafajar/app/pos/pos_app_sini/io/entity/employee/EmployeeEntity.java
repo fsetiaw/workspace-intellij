@@ -1,7 +1,8 @@
 package com.divillafajar.app.pos.pos_app_sini.io.entity.employee;
 
+import com.divillafajar.app.pos.pos_app_sini.io.entity.auth.NamePassEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.user.UserEntity;
-import com.divillafajar.app.pos.pos_app_sini.ws.model.ContactPerson;
+import com.divillafajar.app.pos.pos_app_sini.model.ContactPerson;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -40,5 +41,8 @@ public class EmployeeEntity implements Serializable {
             CascadeType.DETACH, CascadeType.REFRESH})
     @JoinColumn(name = "user_id")
     private UserEntity user;
+
+    @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private NamePassEntity userAuthDetails;
 
 }

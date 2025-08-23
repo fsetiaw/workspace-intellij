@@ -21,7 +21,7 @@ public class CustomerDetailsEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private long id;
+    private Long id;
 
 
     @OneToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE,

@@ -1,6 +1,6 @@
 package com.divillafajar.app.pos.pos_app_sini.config.security.jwt;
 
-import com.divillafajar.app.pos.pos_app_sini.ws.utils.JwtUtil;
+import com.divillafajar.app.pos.pos_app_sini.utils.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

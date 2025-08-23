@@ -1,8 +1,8 @@
 package com.divillafajar.app.pos.pos_app_sini.config.filter;
 
-import com.divillafajar.app.pos.pos_app_sini.io.entity.user.UserSessionLog;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.employee.UserSessionLog;
 import com.divillafajar.app.pos.pos_app_sini.repo.session.UserSessionLogRepository;
-import com.divillafajar.app.pos.pos_app_sini.ws.model.customer.AuthenticatedCustomerModel;
+import com.divillafajar.app.pos.pos_app_sini.model.customer.AuthenticatedCustomerModel;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

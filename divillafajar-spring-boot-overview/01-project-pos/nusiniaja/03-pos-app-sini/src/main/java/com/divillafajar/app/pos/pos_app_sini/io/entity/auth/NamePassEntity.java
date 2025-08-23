@@ -1,5 +1,8 @@
 package com.divillafajar.app.pos.pos_app_sini.io.entity.auth;
 
+import com.divillafajar.app.pos.pos_app_sini.io.entity.customer.CustomerEntity;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.customer.GuestEntity;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.employee.EmployeeEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.user.UserEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -24,7 +27,7 @@ public class NamePassEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private Long id;
 
     @Column(length = 50, unique = true)
     private String username;
@@ -38,11 +41,25 @@ public class NamePassEntity implements Serializable {
     @OneToMany(mappedBy = "namePass", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AuthorityEntity> authorities = new ArrayList<>();
 
+    @OneToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE,
+            CascadeType.PERSIST, CascadeType.REFRESH })
+    @JoinColumn(name = "guest_id")
+    private GuestEntity guest;
 
+    @OneToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE,
+            CascadeType.PERSIST, CascadeType.REFRESH })
+    @JoinColumn(name = "employee_id")
+    private EmployeeEntity employee;
+
+    /*
     @OneToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE,
             CascadeType.PERSIST, CascadeType.REFRESH })
     @JoinColumn(name = "user_id")
     private UserEntity user;
+
+     */
+
+
     /*
 
 

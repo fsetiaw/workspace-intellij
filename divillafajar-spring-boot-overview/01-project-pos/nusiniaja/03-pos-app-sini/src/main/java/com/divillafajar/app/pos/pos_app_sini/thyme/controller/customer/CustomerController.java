@@ -1,13 +1,13 @@
 package com.divillafajar.app.pos.pos_app_sini.thyme.controller.customer;
 
 import com.divillafajar.app.pos.pos_app_sini.config.security.CustomDefaultProperties;
-import com.divillafajar.app.pos.pos_app_sini.io.entity.user.UserSessionLog;
+import com.divillafajar.app.pos.pos_app_sini.exception.user.CreateUserException;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.employee.UserSessionLog;
 import com.divillafajar.app.pos.pos_app_sini.repo.session.UserSessionLogRepository;
-import com.divillafajar.app.pos.pos_app_sini.ws.model.customer.AuthenticatedCustomerModel;
-import com.divillafajar.app.pos.pos_app_sini.ws.model.customer.CustomerLoginRequestModel;
-import com.divillafajar.app.pos.pos_app_sini.ws.model.shared.dto.CustomerDTO;
-import com.divillafajar.app.pos.pos_app_sini.ws.service.customer.CustomerService;
-import com.divillafajar.app.pos.pos_app_sini.ws.service.user.UserService;
+import com.divillafajar.app.pos.pos_app_sini.model.customer.CustomerLoginRequestModel;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.customer.dto.CustomerDTO;
+import com.divillafajar.app.pos.pos_app_sini.service.customer.CustomerService;
+import com.divillafajar.app.pos.pos_app_sini.service.user.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,7 +20,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,7 +27,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Controller
@@ -121,7 +119,7 @@ public class CustomerController {
 
 
     @PostMapping("/processLoginForm")
-    public void processForm(
+    public String processForm(
             @Valid @ModelAttribute("customer") CustomerLoginRequestModel theCustomer,
             BindingResult bindingResult,
             Model model,
@@ -141,8 +139,10 @@ public class CustomerController {
 
             CustomerDTO customerDTO = new CustomerDTO();
             BeanUtils.copyProperties(theCustomer,customerDTO);
-            CustomerDTO savedCust = custService.loginCustomer(customerDTO);
+
             try {
+                CustomerDTO savedCust = custService.loginCustomer(customerDTO);
+
                 /*
                 ** START AUTHENTICATION
                  */
@@ -151,6 +151,8 @@ public class CustomerController {
                 Authentication authentication = authenticationManager.authenticate(authRequest);
                 // set ke SecurityContext agar user dianggap sudah login
                 HttpSession session = request.getSession(true);
+                request.setAttribute("clientId", theCustomer.getClientId());
+                request.setAttribute("table", theCustomer.getTable());
                 session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
                         SecurityContextHolder.getContext());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -202,12 +204,18 @@ public class CustomerController {
                 ** OPSI KALO MO LEWAT AUTOSUBMIT LOGIN PAGE
                  */
                 //return "redirect:/customer-login?nohape="+savedCust.getPhoneNumber()+"&pwd="+customDefaultProperties.getCustomerPwd(); // arahkan ke halaman home jika berhasil login
-            } catch (AuthenticationException e) {
+            }
+            catch (CreateUserException ce) {
+                model.addAttribute("error", ce.getMessage());
+                //lanjurt return to loginPage-form
+            }
+            catch (AuthenticationException e) {
                 model.addAttribute("error", "Invalid username or password");
                 //return "main-login"; // kembali ke halaman login jika gagal
             }
-            //return "home";
+
         }
+        return  "customer/loginPage-form";
     }
 
 

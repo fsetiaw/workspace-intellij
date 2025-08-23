@@ -1,6 +1,6 @@
 package com.divillafajar.app.pos.pos_app_sini.repo.session;
 
-import com.divillafajar.app.pos.pos_app_sini.io.entity.user.UserSessionLog;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.employee.UserSessionLog;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

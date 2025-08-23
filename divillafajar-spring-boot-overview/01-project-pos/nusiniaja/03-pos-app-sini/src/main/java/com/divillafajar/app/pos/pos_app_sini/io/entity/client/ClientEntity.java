@@ -6,12 +6,14 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -25,7 +27,20 @@ public class ClientEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private Long id;
+
+
+
+    @Column(name = "pub_id", updatable = false, nullable = false)
+    private String pubId;
+
+    @PrePersist
+    public void generateId() {
+        if (pubId == null) {
+            pubId = UUID.randomUUID().toString(); // UUID jadi string
+        }
+    }
+
 
     @Column(name = "client_name", length = 50, nullable = false)
     private String clientName;

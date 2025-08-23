@@ -1,9 +1,8 @@
 package com.divillafajar.app.pos.pos_app_sini.io.entity.user;
 
-import com.divillafajar.app.pos.pos_app_sini.io.entity.auth.NamePassEntity;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.address.AddressEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.customer.CustomerEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.employee.EmployeeEntity;
-import com.divillafajar.app.pos.pos_app_sini.io.entity.employee.EmploymentEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,7 +27,7 @@ public class UserEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private Long id;
 
     @Column(name = "pub_id", length = 30, nullable = false)
     private String pubId;
@@ -39,8 +38,10 @@ public class UserEntity implements Serializable {
     @Column(name = "email_verification_status", nullable = false)
     private boolean emailVerificationStatus = false;
 
+    /*
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private NamePassEntity userAuthDetails;
+     */
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private CustomerEntity customer;
@@ -62,5 +63,9 @@ public class UserEntity implements Serializable {
 
     @Column(name = "phone", length = 25, nullable = false)
     private String phone;
+
+    //KTP
+    @Column(name = "nik", length = 55, nullable = true)
+    private String nik;
 
 }

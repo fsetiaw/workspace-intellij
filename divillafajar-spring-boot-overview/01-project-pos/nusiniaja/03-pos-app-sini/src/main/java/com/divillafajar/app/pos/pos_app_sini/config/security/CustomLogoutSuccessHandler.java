@@ -1,13 +1,12 @@
 package com.divillafajar.app.pos.pos_app_sini.config.security;
 
-import com.divillafajar.app.pos.pos_app_sini.ws.model.customer.AuthenticatedCustomerModel;
+import com.divillafajar.app.pos.pos_app_sini.model.customer.AuthenticatedCustomerModel;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.stereotype.Component;
-import org.springframework.ui.Model;
 
 import java.io.IOException;
 

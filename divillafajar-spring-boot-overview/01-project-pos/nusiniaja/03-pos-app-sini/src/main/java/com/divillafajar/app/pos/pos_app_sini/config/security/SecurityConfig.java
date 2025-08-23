@@ -3,7 +3,7 @@ package com.divillafajar.app.pos.pos_app_sini.config.security;
 import com.divillafajar.app.pos.pos_app_sini.config.filter.SessionValidationFilter;
 import com.divillafajar.app.pos.pos_app_sini.config.security.jwt.JwtAuthFilter;
 import com.divillafajar.app.pos.pos_app_sini.repo.session.UserSessionLogRepository;
-import com.divillafajar.app.pos.pos_app_sini.ws.utils.JwtUtil;
+import com.divillafajar.app.pos.pos_app_sini.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,8 +28,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 import javax.sql.DataSource;
-import java.time.Duration;
-import java.time.LocalDateTime;
 
 @Configuration
 @EnableWebSecurity
@@ -92,7 +90,7 @@ public class SecurityConfig {
                 .securityMatcher("/api/**") // hanya untuk endpoint api
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/login","/api/users/register","/api/users/register/**").permitAll()
-                        //.requestMatchers("/customer/session-expired","/session-expired").hasAnyRole("EMPLOYEE","MANAGER","ADMIN","CUSTOMER")
+                        .requestMatchers("/api/superman/register","/api/superman/**").permitAll()
                         .requestMatchers("/customer/home","/api/customer","/session-expired").hasRole("CUSTOMER")
                         .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
                         .requestMatchers("/api/users/**").hasAnyRole("EMPLOYEE", "MANAGER", "ADMIN")
