@@ -45,6 +45,12 @@ public class LoginController {
         return "home";
     }
 
+    @GetMapping("/super/home")
+    public String showSuperHome() {
+        System.out.println("showHome superadmin hpme CALLED");
+        return "super/home";
+    }
+
     @GetMapping("/custom-logout")
     public String logMeOut() {
         System.out.println("logout CALLED");

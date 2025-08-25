@@ -93,17 +93,11 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         for (GrantedAuthority authority : authorities) {
             if (role.equals("ROLE_CUSTOMER")) {
                 session.setMaxInactiveInterval(0); // never expired -> must logout
-                System.out.println("USER ROLE = CUSTOMER");
                 redirectUrl = "/customer/home";
                 CustomerLoginRequestModel theCustomer =
                         (CustomerLoginRequestModel) request.getAttribute("theCustomer");
 
                 AuthenticatedCustomerModel nuCust = new AuthenticatedCustomerModel();
-                System.out.println("the Customer username = "+theCustomer.getUsername());
-                System.out.println("the Customer alias= "+theCustomer.getAliasName());
-                System.out.println("the Customer clientId= "+theCustomer.getClientId());
-                System.out.println("the Customer yable= "+theCustomer.getTable());
-
                 nuCust.setName(theCustomer.getAliasName());
                 nuCust.setPhone(theCustomer.getUsername());
                 nuCust.setTable(theCustomer.getTable());
@@ -112,20 +106,18 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 break;
             }
             else if (role.equals("ROLE_EMPLOYEE")) {
-                session.setMaxInactiveInterval(60 * 60); //
-                System.out.println("USER ROLE = EMPLOYEE");
+                session.setMaxInactiveInterval(60); //
                 redirectUrl = "/home";
                 break;
             }
-            /*
-            else if (role.equals("ROLE_ADMIN")) {
-                redirectUrl = "/admin/home";
+            else if (role.equals("ROLE_SUPERADMIN")) {
+                session.setMaxInactiveInterval(60); //
+                redirectUrl = "/super/home";
                 break;
             }
 
-             */
+
         }
-        System.out.println("SEND redirectUrl="+redirectUrl);
         redirectStrategy.sendRedirect(request, response, redirectUrl);
         super.onAuthenticationSuccess(request, response, authentication);
     }

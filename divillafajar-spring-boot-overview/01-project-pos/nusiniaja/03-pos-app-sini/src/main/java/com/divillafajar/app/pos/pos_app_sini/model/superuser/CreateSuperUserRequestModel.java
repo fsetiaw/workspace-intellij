@@ -1,4 +1,4 @@
-package com.divillafajar.app.pos.pos_app_sini.model.superman;
+package com.divillafajar.app.pos.pos_app_sini.model.superuser;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -42,7 +42,6 @@ public class EmployeeEntity implements Serializable {
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
-    @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private NamePassEntity userAuthDetails;
+
 
 }

@@ -4,15 +4,19 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateClientRequestModel {
+public class CreateClientRequestModel  {
+
 
     private String clientName;
-    private String email;
-    private String address;
-    private String phone;
+    private String clientEmail;
+    private String clientPhone;
+    private String addressName;
     private String addressLine1;
     private String addressLine2;
     private String village;

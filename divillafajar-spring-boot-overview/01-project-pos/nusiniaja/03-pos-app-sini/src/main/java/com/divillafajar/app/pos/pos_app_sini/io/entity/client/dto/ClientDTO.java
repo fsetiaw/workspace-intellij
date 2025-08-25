@@ -18,12 +18,13 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClientDTO implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1172668069283731233L;
+public class ClientDTO {
     private Long id;
     private String pubId;
     private String clientName;
+    private String clientEmail;
+    private String clientPhone;
+    private String status;
     private ClientDetailsEntity clientDetails;
     private Set<EmploymentEntity> employments;
 }

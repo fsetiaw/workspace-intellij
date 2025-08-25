@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -29,8 +30,15 @@ public class UserEntity implements Serializable {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "pub_id", length = 30, nullable = false)
+    @Column(name = "pub_id", updatable = false, nullable = false)
     private String pubId;
+
+    @PrePersist
+    public void generateId() {
+        if (pubId == null) {
+            pubId = UUID.randomUUID().toString(); // UUID jadi string
+        }
+    }
 
     @Column(name = "email_verification_token", nullable = true)
     private String emailVerificationToken;

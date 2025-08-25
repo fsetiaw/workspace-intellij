@@ -14,10 +14,9 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDTO implements Serializable {
+public class UserDTO  {
 
-    @Serial
-    private static final long serialVersionUID = -4569776359027847181L;
+
     private Long id;
     private String pubId;
     private String emailVerificationToken;

@@ -1,6 +1,6 @@
 package com.divillafajar.app.pos.pos_app_sini.service.customer;
 
-import com.divillafajar.app.pos.pos_app_sini.config.security.CustomDefaultProperties;
+import com.divillafajar.app.pos.pos_app_sini.config.properties.CustomDefaultProperties;
 import com.divillafajar.app.pos.pos_app_sini.exception.user.CreateUserException;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.auth.AuthorityEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.auth.NamePassEntity;
@@ -8,9 +8,9 @@ import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.customer.CustomerEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.customer.GuestEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.user.UserEntity;
-import com.divillafajar.app.pos.pos_app_sini.repo.AuthRepo;
-import com.divillafajar.app.pos.pos_app_sini.repo.NamePasRepo;
-import com.divillafajar.app.pos.pos_app_sini.repo.UserRepo;
+import com.divillafajar.app.pos.pos_app_sini.repo.auth.AuthRepo;
+import com.divillafajar.app.pos.pos_app_sini.repo.auth.NamePasRepo;
+import com.divillafajar.app.pos.pos_app_sini.repo.user.UserRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.client.ClientRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.customer.CustomerRepo;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.customer.dto.CustomerDTO;

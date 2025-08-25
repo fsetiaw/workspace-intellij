@@ -13,9 +13,8 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CustomerDTO implements Serializable {
-    @Serial
-    private static final long serialVersionUID = -7032381008394561756L;
+public class CustomerDTO  {
+
     private Long id;
     private String pubId;
     private long clientId;

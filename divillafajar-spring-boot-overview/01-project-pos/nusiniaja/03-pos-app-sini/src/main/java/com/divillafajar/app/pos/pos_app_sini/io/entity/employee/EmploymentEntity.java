@@ -1,5 +1,6 @@
 package com.divillafajar.app.pos.pos_app_sini.io.entity.employee;
 
+import com.divillafajar.app.pos.pos_app_sini.io.entity.auth.NamePassEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -31,4 +32,7 @@ public class EmploymentEntity implements Serializable {
     @ManyToOne
     @JoinColumn(name = "client_id", nullable = false)
     private ClientEntity client;
+
+    @OneToOne(mappedBy = "employment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private NamePassEntity userAuthDetails;
 }

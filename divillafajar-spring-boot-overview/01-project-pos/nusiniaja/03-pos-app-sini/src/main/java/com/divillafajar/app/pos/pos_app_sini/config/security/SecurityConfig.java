@@ -76,7 +76,6 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
-        System.out.println("AuthenticationManager CALLED");
         return authConfig.getAuthenticationManager();
     }
 
@@ -89,7 +88,7 @@ public class SecurityConfig {
         http
                 .securityMatcher("/api/**") // hanya untuk endpoint api
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/login","/api/users/register","/api/users/register/**").permitAll()
+                        .requestMatchers("/api/login","/api/users/register","/api/register/**").permitAll()
                         .requestMatchers("/api/superman/register","/api/superman/**").permitAll()
                         .requestMatchers("/customer/home","/api/customer","/session-expired").hasRole("CUSTOMER")
                         .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
@@ -107,12 +106,12 @@ public class SecurityConfig {
     @Bean
     @Order(2) // lebih rendah prioritasnya
     public SecurityFilterChain formFilterChain(HttpSecurity http) throws Exception {
-        System.out.println("formFilterChain");
         http
                 .authorizeHttpRequests(auth -> auth
                         //.requestMatchers("/customer/session-expired","/session-expired").hasAnyRole("EMPLOYEE","MANAGER","ADMIN","CUSTOMER")
                         .requestMatchers("/customer/home","/api/customer").hasRole("CUSTOMER")
                         .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
+                        .requestMatchers(HttpMethod.GET, "/super/home").hasAnyRole("SUPERADMIN")
                         .requestMatchers(HttpMethod.GET, "/home").hasAnyRole("EMPLOYEE","MANAGER","ADMIN","CUSTOMER")
                         .requestMatchers(HttpMethod.GET, "/api/users").hasRole("EMPLOYEE")
                         .requestMatchers(HttpMethod.GET, "/api/users/**").hasRole("EMPLOYEE")

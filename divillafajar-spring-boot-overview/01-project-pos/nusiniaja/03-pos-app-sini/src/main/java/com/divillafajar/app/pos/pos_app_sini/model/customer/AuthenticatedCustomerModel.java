@@ -13,10 +13,8 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthenticatedCustomerModel implements Serializable {
+public class AuthenticatedCustomerModel  {
 
-    @Serial
-    private static final long serialVersionUID = -6253292793547674789L;
     private String phone;
     private String table;
     private Long clientId;

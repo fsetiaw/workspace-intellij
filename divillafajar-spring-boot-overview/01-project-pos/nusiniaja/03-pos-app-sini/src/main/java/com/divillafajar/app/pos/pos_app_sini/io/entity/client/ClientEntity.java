@@ -44,6 +44,15 @@ public class ClientEntity implements Serializable {
 
     @Column(name = "client_name", length = 50, nullable = false)
     private String clientName;
+
+    @Column(name = "client_email", length = 99, nullable = false)
+    private String clientEmail;
+
+    @Column(name = "client_phone", length = 50, nullable = false)
+    private String clientPhone;
+
+    @Column(name = "status", length = 50, nullable = false)
+    private String status;
     /*
     @ManyToMany(fetch = FetchType.EAGER, cascade = {
             CascadeType.PERSIST, CascadeType.MERGE,

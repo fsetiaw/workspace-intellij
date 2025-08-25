@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -28,6 +29,16 @@ public class AddressEntity implements Serializable {
     @Column(name = "id")
     private int id;
 
+    @Column(name = "pub_id", updatable = false, nullable = false)
+    private String pubId;
+
+    @PrePersist
+    public void generateId() {
+        if (pubId == null) {
+            pubId = UUID.randomUUID().toString(); // UUID jadi string
+        }
+    }
+
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE,
             CascadeType.PERSIST, CascadeType.REFRESH })
     @JoinColumn(name = "user_id")
@@ -40,8 +51,8 @@ public class AddressEntity implements Serializable {
     @Column(name = "recipient_name", nullable = false, length = 100)
     private String recipientName;
 
-    @Column(name = "phone_number", nullable = false, length = 20)
-    private String phoneNumber;
+    @Column(name = "address_phone_number", nullable = true, length = 20)
+    private String AddresPhoneNumber;
 
     @Column(name = "address_line1", nullable = false, length = 255)
     private String addressLine1;

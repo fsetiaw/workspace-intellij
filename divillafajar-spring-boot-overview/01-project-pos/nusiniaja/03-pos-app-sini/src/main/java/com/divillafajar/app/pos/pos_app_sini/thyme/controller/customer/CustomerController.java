@@ -1,6 +1,6 @@
 package com.divillafajar.app.pos.pos_app_sini.thyme.controller.customer;
 
-import com.divillafajar.app.pos.pos_app_sini.config.security.CustomDefaultProperties;
+import com.divillafajar.app.pos.pos_app_sini.config.properties.CustomDefaultProperties;
 import com.divillafajar.app.pos.pos_app_sini.exception.user.CreateUserException;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.employee.UserSessionLog;
 import com.divillafajar.app.pos.pos_app_sini.repo.session.UserSessionLogRepository;

@@ -1,4 +1,4 @@
-package com.divillafajar.app.pos.pos_app_sini.repo;
+package com.divillafajar.app.pos.pos_app_sini.repo.address;
 
 import com.divillafajar.app.pos.pos_app_sini.io.entity.address.AddressEntity;
 import org.springframework.data.repository.CrudRepository;

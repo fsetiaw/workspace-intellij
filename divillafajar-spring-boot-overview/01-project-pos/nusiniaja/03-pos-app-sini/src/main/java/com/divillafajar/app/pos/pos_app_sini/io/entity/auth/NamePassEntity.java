@@ -3,6 +3,7 @@ package com.divillafajar.app.pos.pos_app_sini.io.entity.auth;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.customer.CustomerEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.customer.GuestEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.employee.EmployeeEntity;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.employee.EmploymentEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.user.UserEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -48,8 +49,8 @@ public class NamePassEntity implements Serializable {
 
     @OneToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE,
             CascadeType.PERSIST, CascadeType.REFRESH })
-    @JoinColumn(name = "employee_id")
-    private EmployeeEntity employee;
+    @JoinColumn(name = "employment_id")
+    private EmploymentEntity employment;
 
     /*
     @OneToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE,
