@@ -1,12 +1,10 @@
 package com.divillafajar.app.pos.pos_app_sini.io.entity.client;
 
-import com.divillafajar.app.pos.pos_app_sini.io.entity.customer.CustomerEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.employee.EmploymentEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -51,6 +49,9 @@ public class ClientEntity implements Serializable {
     @Column(name = "client_phone", length = 50, nullable = false)
     private String clientPhone;
 
+    @Column(name = "client_type", length = 50, nullable = false)
+    private String clientType;
+
     @Column(name = "status", length = 50, nullable = false)
     private String status;
     /*
@@ -64,9 +65,13 @@ public class ClientEntity implements Serializable {
      */
 
 
-    @OneToOne(mappedBy = "client", cascade = CascadeType.ALL)
-    private ClientDetailsEntity clientDetails;
-
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
+    private List<ClientAddressEntity> clientAddresses;
+/*
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<EmploymentEntity> employments = new HashSet<>();
+
+ */
+
+
 }

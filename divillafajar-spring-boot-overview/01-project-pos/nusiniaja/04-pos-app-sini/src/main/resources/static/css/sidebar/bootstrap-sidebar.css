@@ -55,6 +55,15 @@ body {
     color: white;
 }
 
+.fixed-panel {
+    height: 250px;      /* ganti sesuai kebutuhan */
+    display: flex;
+    border-radius: 10px;
+    background: #EBEBEB;
+    align-items: center; /* biar konten di tengah vertikal */
+    justify-content: center; /* biar konten di tengah horizontal */
+}
+
 
 /* Bootstrap sidebar Toggle */
 

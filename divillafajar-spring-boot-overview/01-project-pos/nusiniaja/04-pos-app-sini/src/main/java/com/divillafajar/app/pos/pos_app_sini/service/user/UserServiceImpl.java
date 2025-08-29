@@ -7,6 +7,7 @@ import com.divillafajar.app.pos.pos_app_sini.io.entity.address.dto.AddressDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.address.AddressEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.auth.AuthorityEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.auth.NamePassEntity;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientAddressEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.customer.CustomerEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.employee.EmployeeEntity;
@@ -18,7 +19,7 @@ import com.divillafajar.app.pos.pos_app_sini.repo.auth.NamePasRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.user.UserRepo;
 import com.divillafajar.app.pos.pos_app_sini.exception.user.UserAlreadyExistException;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.user.dto.UserDTO;
-import com.divillafajar.app.pos.pos_app_sini.repo.client.ClientDetailsRepo;
+import com.divillafajar.app.pos.pos_app_sini.repo.client.ClientAddressRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.client.ClientRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.employee.EmployeeRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.employee.EmploymentRepo;
@@ -33,7 +34,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepo userRepo;
     private final EmployeeRepo employeeRepo;
     private final EmploymentRepo employmentRepo;
-    private final ClientDetailsRepo clientDetailsRepo;
+    private final ClientAddressRepo clientAddressRepo;
     private final ClientRepo clientRepo;
     private final AddressRepo addressRepo;
     private final NamePasRepo namePasRepo;
@@ -43,9 +44,9 @@ public class UserServiceImpl implements UserService {
     private final CustomDefaultProperties customDefaultProperties;
 
     public UserServiceImpl(UserRepo userRepo, NamePasRepo namePasRepo,
-                           AuthRepo authRepo,ClientRepo clientRepo,ClientDetailsRepo clientDetailsRepo,
-                           GeneratorUtils generatorUtils,AddressRepo addressRepo,EmploymentRepo employmentRepo,
-                           CustomDefaultProperties customDefaultProperties,EmployeeRepo employeeRepo,
+                           AuthRepo authRepo, ClientRepo clientRepo, ClientAddressRepo clientAddressRepo,
+                           GeneratorUtils generatorUtils, AddressRepo addressRepo, EmploymentRepo employmentRepo,
+                           CustomDefaultProperties customDefaultProperties, EmployeeRepo employeeRepo,
                            PasswordEncoder passwordEncoder
     ) {
         this.userRepo=userRepo;
@@ -55,7 +56,7 @@ public class UserServiceImpl implements UserService {
         this.passwordEncoder=passwordEncoder;
         this.generatorUtils=generatorUtils;
         this.clientRepo=clientRepo;
-        this.clientDetailsRepo=clientDetailsRepo;
+        this.clientAddressRepo = clientAddressRepo;
         this.customDefaultProperties=customDefaultProperties;
         this.employeeRepo=employeeRepo;
         this.employmentRepo=employmentRepo;
@@ -134,7 +135,9 @@ public class UserServiceImpl implements UserService {
                 //ClientEntity masterClient = clientRepo.findClientByClientNameAndClientEmail(
                 //        customDefaultProperties.getMasterClientName(),customDefaultProperties.getMasterClientEmail());
                 //employmentEntity.setClient(masterClient);
-                employmentEntity.setClient(storedSuperClient);
+                //employmentEntity.setClient(storedSuperClient);
+                ClientAddressEntity clientAddress = clientAddressRepo.findByClientId(storedSuperClient.getId());
+                employmentEntity.setClientAddress(clientAddress);
                 employmentEntity.setEmployee(savedEmployee);
                 EmploymentEntity savedEmployment = employmentRepo.save(employmentEntity);
 

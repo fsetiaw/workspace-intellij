@@ -31,6 +31,7 @@
 </head>
 
 <body>
+<form id="logoutForm" method="POST" th:action="@{/logout}" style="display:none"></form>
 <!-- boostrap wrapper -->
 <div id="wrapper">
     <!-- Navigation -->
@@ -71,7 +72,7 @@
                     </li>
                     <li><a href="#"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> <span sec:authentication="principal.authorities"></span></a>
                     </li>
-                    <li><a href="#"><span class="glyphicon glyphicon-off" aria-hidden="true"></span></a>
+                    <li><a href="#" onclick="document.getElementById('logoutForm').submit(); return false;"><span class="glyphicon glyphicon-off" aria-hidden="true"></span></a>
                     </li>
 
                 </ul>
@@ -132,10 +133,10 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="panel panel-default">
-                        <div class="panel-heading">Features</div>
+                        <div class="panel-heading">Features </div>
                         <div class="panel-body" id="feature-content">
                             <div class="col-md-2">
-                                <a th:href="@{/superuser/clients}" target="_blank" class="text-decoration-none">
+                                <a th:href="@{/superuser/clients}" target="_self" class="text-decoration-none">
                                     <div class="panel panel-primary">
                                         <div class="panel-body text-center">
                                             <span class="fa-solid fa-people-group icon-big" aria-hidden="true"></span>

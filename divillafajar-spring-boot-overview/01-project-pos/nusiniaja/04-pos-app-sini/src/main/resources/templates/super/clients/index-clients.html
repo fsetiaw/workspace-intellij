@@ -26,11 +26,28 @@
     <!-- bootstrap sidebar stylesheet -->
 
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
-    <link rel="stylesheet" th:href="@{/css/sidebar/bootstrap-sidebar.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/sidebar/bootstrap-sidebar.css}" />
 
+    <link rel="stylesheet" type="text/css" th:href="@{/css/form/registrasi/montserrat-font.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/font/material-design-iconic-font/css/material-design-iconic-font.min.css}">
+    <!-- Main Style Css -->
+    <link rel="stylesheet" th:href="@{/css/form/registrasi/style.css}"/>
+    <script>
+        function showSuccessPopup() {
+            alert("Client berhasil ditambahkan!");
+        }
+
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted || window.performance.navigation.type === 2) {
+                // Halaman dimuat dari cache (back button)
+                window.location.reload();
+            }
+        });
+    </script>
 </head>
 
 <body>
+<form id="logoutForm" method="POST" th:action="@{/logout}" style="display:none"></form>
 <!-- boostrap wrapper -->
 <div id="wrapper">
     <!-- Navigation -->
@@ -71,7 +88,8 @@
                     </li>
                     <li><a href="#"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> <span sec:authentication="principal.authorities"></span></a>
                     </li>
-                    <li><a href="#"><span class="glyphicon glyphicon-off" aria-hidden="true"></span></a>
+
+                    <li><a href="#" onclick="document.getElementById('logoutForm').submit(); return false;"><span class="glyphicon glyphicon-off" aria-hidden="true"></span></a>
                     </li>
 
                 </ul>
@@ -84,7 +102,7 @@
     <!-- Sidebar -->
     <div id="bootstrap-sidebar" class="blue-theme text-menu">
         <ul class="sidebar-nav">
-            <li class="active"> <a th:href="@{/superuser/home}" target="_blank" class="text-decoration-none"><span class="glyphicon glyphicon-dashboard" aria-hidden="true"></span> <span class="menu-text">Home</span></a>
+            <li class="active"> <a th:href="@{/superuser/home}" target="_self" class="text-decoration-none"><span class="glyphicon glyphicon-dashboard" aria-hidden="true"></span> <span class="menu-text">Home</span></a>
             </li>
             <!--li> <a href="#"><span class="glyphicon glyphicon-file" aria-hidden="true"></span> <span class="menu-text">Reports</span></a>
             </li>
@@ -125,13 +143,164 @@
     <!-- /#sidebar-wrapper -->
     <!-- Page Content -->
     <div id="main-page-content">
+        <!-- Modal Bootstrap 3 -->
+        <!-- ✅ Success Modal (Biru) -->
+
         <div class="container-fluid">
-            <h1><span sec:authentication="principal.authorities"></span></h1>
+            <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header bg-primary" style="color:white;">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <h4 class="modal-title" id="successModalLabel">Berhasil!</h4>
+                        </div>
+                        <div class="modal-body">
+                            Client berhasil ditambahkan ke daftar.
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ❌ Error Modal (Merah) -->
+            <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header bg-danger" style="color:white;">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <h4 class="modal-title" id="errorModalLabel">Gagal!</h4>
+                        </div>
+                        <div class="modal-body">
+                            <b>Client gagal ditambahkan. Silakan coba lagi.</b><br>
+                            <span th:text="${msg}"></span>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Tutup</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tampilkan modal kalau clientAdded=true -->
+            <div th:if="${clientAdded == 'true'}">
+                <script>
+                    $(document).ready(function() {
+                      $('#successModal').modal('show');
+                    });
+                </script>
+            </div>
+
+            <div th:if="${clientError == 'true'}">
+                <script>
+                    $(document).ready(function() {
+                      $('#errorModal').modal('show');
+                    });
+                </script>
+            </div>
+            <div th:unless="${isAdd}">
+            <p>Nilai dari isAdd = <span th:text="${param.add}"></span></p>
+            <h1><span th:text="${isAdd ?: 'Not Provided'}"></span><span th:text="${param.add}"></span></h1>
+            <div class="row">
+                <div class="col-lg-12" >
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Menu <span th:text="${isAdd ?: 'Not Provided'}"></span></div>
+                        <div class="panel-body" id="feature-content">
+                            <div class="col-md-2">
+                                <a th:href="@{/superuser/clients(add='true')}" target="_self" class="text-decoration-none">
+                                <div class="panel panel-primary">
+                                    <div class="panel-body text-center">
+                                        <span class="fa-solid fa-person-circle-plus icon-big" aria-hidden="true"></span>
+                                        <h3>Add New Clients</h3>
+                                    </div>
+                                </div>
+                                </a>
+                            </div>
+                        </div>
+                        <!--div class="panel-heading">List Clients</div>
+                        <div class="panel-body" id="feature-content2">
+                            <div class="col-md-2" th:each="client : ${ourClients}">
+                                <div class="panel panel-primary fixed-panel">
+                                    <div class="panel-body text-center">
+                                        <span class="fa-solid fa-people-group icon-big" aria-hidden="true"></span>
+                                        <h3><span th:text="${client.clientName}"></span></h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div-->
+                    </div>
+                </div>
+            </div>
+            <div class="row" th:if="${ourClients != null and #lists.size(ourClients) > 0}">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">List Clients</div>
+                        <div class="panel-body" id="feature-content3">
+                            <div class="col-md-2" th:each="client : ${ourClients}">
+                                <div class="panel panel-primary fixed-panel">
+                                    <div class="panel-body text-center">
+                                        <span class="fa-solid fa-people-group icon-big" aria-hidden="true"></span>
+                                        <h3><span th:text="${client.clientName}"></span></h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="clear:both"></div>
+            </div>
+            <div th:if="${isAdd}">
+                <p>Nilai dari isAdd = <span th:text="${param.add}"></span></p>
+                <h1><span th:text="${isAdd ?: 'Not Provided'}"></span><span th:text="${param.add}"></span></h1>
+                <div class="row">
+                    <div class="col-lg-12" >
+                        <div class="panel panel-default">
+                            <div class="panel-heading">Menu <span th:text="${isAdd ?: 'Not Provided'}"></span></div>
+                            <div class="panel-body" id="go-back">
+                                <div class="col-md-2">
+                                    <a th:href="@{/superuser/clients}" target="_self" class="text-decoration-none">
+                                        <div class="panel panel-primary">
+                                            <div class="panel-body text-center">
+                                                <span class="fa-solid fa-circle-left icon-big" aria-hidden="true"></span>
+                                                <h3>BACK</h3>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">List Clients</div>
+                            <div class="panel-body" id="feature-content4">
+                                <div class="col-md-12">
+                                    <iframe th:src="@{/form/superuser/register/client}"
+                                            style="width:100%; height:800px; border:none;"
+                                            id="clientsFrame">
+                                    </iframe>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="clear:both"></div>
+            </div>
+        </div>
+        <!-- div class="container-fluid">
             <div class="row">
                 <div class="col-lg-12">
                     <div class="panel panel-default">
-                        <div class="panel-heading">Features</div>
-                        <div class="panel-body" id="feature-content">
+                        <div class="panel-heading">Clients List</div>
+                        <div class="panel-body" id="list-client-content">
                             <div class="col-md-2">
                                 <div class="panel panel-primary">
                                     <div class="panel-body text-center">
@@ -140,7 +309,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <!--div class="col-md-4">
+                            <div class="col-md-4">
                                 <div class="panel panel-primary">
                                     <div class="panel-body text-center">
                                         <span class="glyphicon glyphicon-fullscreen icon-big" aria-hidden="true"></span>
@@ -203,18 +372,22 @@
                                         <h3>8 Themes</h3>
                                     </div>
                                 </div>
-                            </div-->
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div style="clear:both"></div>
-        </div>
+        </div -->
     </div>
 </div>
 <!-- /#wrapper -->
 <!-- Menu Toggle Script -->
 <script th:src="@{/js/sidebar.js?ver=2}"></script>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
 </body>
 
 </html>

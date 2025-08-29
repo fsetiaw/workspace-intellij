@@ -109,7 +109,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         //.requestMatchers("/customer/session-expired","/session-expired").hasAnyRole("EMPLOYEE","MANAGER","ADMIN","CUSTOMER")
-                        .requestMatchers("/user/**").hasAnyRole("SUPERADMIN")
+                        .requestMatchers("/user/**","/form/superuser/**").hasAnyRole("SUPERADMIN")
                         .requestMatchers("/customer/home","/api/customer").hasRole("CUSTOMER")
                         .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
                         .requestMatchers(HttpMethod.GET, "/super/home").hasAnyRole("SUPERADMIN")
@@ -125,7 +125,7 @@ public class SecurityConfig {
                                 "/customer/login", //customer login form
                                 "/customer-login", //redirect page->versi autosubmit login via main-login (unused)
                                 "/customer/processLoginForm",  //process login
-                                "/swagger-ui/**", "/v3/api-docs/**"
+                                "/swagger-ui/**", "/v3/api-docs/**"//,"/superuser/**","/super/**,/user/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
@@ -136,7 +136,9 @@ public class SecurityConfig {
                         .successHandler(customAuthenticationSuccessHandler)
                         .permitAll()
                 )
-
+                .headers(headers -> headers
+                        .frameOptions(frame -> frame.sameOrigin())
+                )
 
                 .logout(logout -> logout
                         .logoutUrl("/logout")

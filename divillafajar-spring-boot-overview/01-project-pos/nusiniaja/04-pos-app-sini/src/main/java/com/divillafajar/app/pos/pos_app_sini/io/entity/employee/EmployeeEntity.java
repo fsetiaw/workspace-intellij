@@ -30,7 +30,7 @@ public class EmployeeEntity implements Serializable {
     private Long id;
 
     @ElementCollection
-    @CollectionTable(name = "employee_contacts", joinColumns = @JoinColumn(name = "employee_id"))
+    @CollectionTable(name = "employee_emergency_contacts", joinColumns = @JoinColumn(name = "employee_id"))
     private List<ContactPerson> contacts = new ArrayList<>();
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
