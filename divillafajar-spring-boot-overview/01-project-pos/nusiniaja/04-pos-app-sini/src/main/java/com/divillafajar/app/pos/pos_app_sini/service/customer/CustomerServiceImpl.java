@@ -128,12 +128,12 @@ public class CustomerServiceImpl implements CustomerService{
                  */
                     GuestEntity guest = new GuestEntity();
                     guest.setCustomer(storedCustomer);
-                    guest.setClient(client);
+                    //guest.setClient(client);
                     System.out.println("TRY SAVE guest");
                     GuestEntity storedGuest = guestRepo.save(guest);
                     System.out.println("Guest Saved");
-
-                    if(storedGuest.getClient()==null || storedGuest.getCustomer()==null){
+                    if(false) {
+                    //if(storedGuest.getClient()==null || storedGuest.getCustomer()==null){
                         throw new CreateUserException("Gagal Membuat User Baru -> tidak ada client id"); // lempar lagi supaya trigger rollback
                     }
                     else {

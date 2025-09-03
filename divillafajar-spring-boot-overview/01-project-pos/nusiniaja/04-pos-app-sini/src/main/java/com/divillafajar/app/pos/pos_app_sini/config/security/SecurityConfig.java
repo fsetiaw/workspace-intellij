@@ -109,10 +109,9 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         //.requestMatchers("/customer/session-expired","/session-expired").hasAnyRole("EMPLOYEE","MANAGER","ADMIN","CUSTOMER")
-                        .requestMatchers("/user/**","/form/superuser/**").hasAnyRole("SUPERADMIN")
+                        .requestMatchers("/form/**","/superuser/**","/admin/**","/user/**").hasAnyRole("SUPERADMIN")
                         .requestMatchers("/customer/home","/api/customer").hasRole("CUSTOMER")
                         .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
-                        .requestMatchers(HttpMethod.GET, "/super/home").hasAnyRole("SUPERADMIN")
                         .requestMatchers(HttpMethod.GET, "/home").hasAnyRole("EMPLOYEE","MANAGER","ADMIN","CUSTOMER")
                         .requestMatchers(HttpMethod.GET, "/api/users").hasRole("EMPLOYEE")
                         .requestMatchers(HttpMethod.GET, "/api/users/**").hasRole("EMPLOYEE")
@@ -120,6 +119,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/users").hasRole("MANAGER") //update employee
                         .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasRole("ADMIN")
                         .requestMatchers(
+                                "/form/**","/shared/**","/admin/**","/user/**",
                                 "/qrcode","/invalid-url","/session-expired","/something-wrong",
                                 "/login","/custom-logout", //user login form
                                 "/customer/login", //customer login form

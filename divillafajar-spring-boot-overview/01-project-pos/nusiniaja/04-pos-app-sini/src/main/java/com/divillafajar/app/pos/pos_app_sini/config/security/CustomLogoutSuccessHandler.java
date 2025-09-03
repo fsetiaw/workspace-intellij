@@ -1,5 +1,6 @@
 package com.divillafajar.app.pos.pos_app_sini.config.security;
 
+import com.divillafajar.app.pos.pos_app_sini.io.entity.session.UserSessionLog;
 import com.divillafajar.app.pos.pos_app_sini.model.customer.AuthenticatedCustomerModel;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,9 +22,17 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
                                 Authentication authentication) throws IOException {
         String redirectUrl = "/login"; // default redirect
         AuthenticatedCustomerModel logoutCust = (AuthenticatedCustomerModel) request.getAttribute("logoutCust");
+        UserSessionLog userLog = (UserSessionLog) request.getAttribute("userLogInfo");
+        //String logout_role = (String) session.getAttribute("USER_ROLE");
+        //System.out.println("logout_role=="+logout_role);
         request.removeAttribute("logoutCust");
         //Long clientId = (Long)request.getAttribute("clientId");
-        if(logoutCust==null) {
+        if(userLog.getEmployeeClientId()!=null) {
+            System.out.println("userLog.getEmployeeClientId()=>"+userLog.getEmployeeClientId());
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+        else if(logoutCust==null) {
             System.out.println("onLogoutSuccess logoutCust is null=");
             /*
             ** Mencet logout setelah > maxIdleTime

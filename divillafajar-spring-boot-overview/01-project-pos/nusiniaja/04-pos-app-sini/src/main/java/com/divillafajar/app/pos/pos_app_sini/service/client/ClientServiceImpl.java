@@ -58,6 +58,7 @@ public class ClientServiceImpl implements ClientService{
             ClientEntity nuClient = new ClientEntity();
             BeanUtils.copyProperties(clientDTO,nuClient);
             nuClient.setPubId(customDefaultProperties.getMasterClientPubid());
+            nuClient.setClientName(customDefaultProperties.getMasterClientName());
             storedClient = clientRepo.save(nuClient);
 
             ClientAddressEntity nuClientDetails = new ClientAddressEntity();
@@ -92,6 +93,15 @@ public class ClientServiceImpl implements ClientService{
             BeanUtils.copyProperties(client,tmp);
             returnVal.add(tmp);
         }
+        return returnVal;
+    }
+
+    @Override
+    public ClientDTO getClientDetails(String pid) {
+        ClientDTO returnVal = new ClientDTO();
+        ClientEntity client =  clientRepo.findClientByPubId(pid);
+        System.out.println("address legth = "+ client.getClientAddresses().size());
+        BeanUtils.copyProperties(client,returnVal);
         return returnVal;
     }
 

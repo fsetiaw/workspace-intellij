@@ -52,13 +52,22 @@
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="#"><span class="glyphicon glyphicon-print" aria-hidden="true"></span> Print</a>
                     </li>
-                    <li class="dropdown"> <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span> CMS <span class="caret"></span></a>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                           aria-haspopup="true" aria-expanded="false">
+                            <span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>
+                            <span th:text="#{label.language}"></span> <span class="caret"></span>
+                        </a>
                         <ul class="dropdown-menu">
-                            <li><a href="#"><span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> Pages</a>
+                            <li>
+                                <a th:href="@{/shared/changeLanguage(lang=id)}">
+                                    <span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> Indonesia
+                                </a>
                             </li>
-                            <li><a href="#"><span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span> Posts</a>
-                            </li>
-                            <li><a href="#"><span class="glyphicon glyphicon-picture" aria-hidden="true"></span> Media</a>
+                            <li>
+                                <a th:href="@{/shared/changeLanguage(lang=en)}">
+                                    <span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span> English
+                                </a>
                             </li>
                         </ul>
                     </li>
@@ -85,9 +94,9 @@
     <!-- Sidebar -->
     <div id="bootstrap-sidebar" class="blue-theme text-menu">
         <ul class="sidebar-nav">
-            <li class="active"> <a href="#"><span class="glyphicon glyphicon-dashboard" aria-hidden="true"></span> <span class="menu-text">Home</span></a>
+            <li class="active"> <a href="#"><span class="glyphicon glyphicon-dashboard" aria-hidden="true"></span> <span class="menu-text" th:text="#{label.home}"></span></a>
             </li>
-            <li> <a href="#"><span class="fa-solid fa-people-group" aria-hidden="true"></span> <span class="menu-text">Clients</span></a>
+            <li> <a th:href="@{/superuser/clients}"><span class="fa-solid fa-people-group" aria-hidden="true"></span> <span class="menu-text" th:text="#{label.clients}"></span></a>
             </li>
             <!--li> <a href="#"><span class="glyphicon glyphicon-file" aria-hidden="true"></span> <span class="menu-text">Reports</span></a>
             </li>
@@ -129,18 +138,19 @@
     <!-- Page Content -->
     <div id="main-page-content">
         <div class="container-fluid">
-            <h1><span sec:authentication="principal.authorities"></span></h1>
+            <h1><span th:text="#{label.home}+' '+#{label.superuser}"></span></h1>
+            <h1 th:text="#{welcome.message} + ', ' + ${userLogInfo.fullName}">Welcome</h1>
             <div class="row">
                 <div class="col-lg-12">
                     <div class="panel panel-default">
-                        <div class="panel-heading">Features </div>
+                        <div class="panel-heading"><span th:text="#{label.list}+' '+#{label.clients}"></span> </div>
                         <div class="panel-body" id="feature-content">
                             <div class="col-md-2">
                                 <a th:href="@{/superuser/clients}" target="_self" class="text-decoration-none">
-                                    <div class="panel panel-primary">
+                                    <div class="panel panel-primary fixed-panel">
                                         <div class="panel-body text-center">
                                             <span class="fa-solid fa-people-group icon-big" aria-hidden="true"></span>
-                                            <h3>Clients</h3>
+                                            <h3><span th:text="#{label.clients}"></span></h3>
                                         </div>
                                     </div>
                                 </a>

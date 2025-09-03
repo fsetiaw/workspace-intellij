@@ -31,6 +31,37 @@
 							</span>
                         </div>
                     </div>
+                    <h2>Contact Details</h2>
+                    <!--div class="form-group">
+                        <div class="form-row form-row-1">
+                            <input type="text" name="pic-first_name" id="pic-first_name" class="input-text" placeholder="First Name" required>
+                        </div>
+                        <div class="form-row form-row-2">
+                            <input type="text" name="pic-last_name" id="pic-last_name" class="input-text" placeholder="Last Name" required>
+                        </div>
+                    </div-->
+                    <div class="form-row">
+                        <input type="text" name="contactName" id="contactName" class="input-text" placeholder="Full Name" required>
+                    </div>
+                    <div class="form-row">
+                        <select name="contactPosition">
+                            <option value="position">Position</option>
+                            <option value="director">Director</option>
+                            <option value="manager">Manager</option>
+                            <option value="employee">Employee</option>
+                        </select>
+                        <span class="select-btn">
+						  	<i class="zmdi zmdi-chevron-down"></i>
+						</span>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-row form-row-3">
+                            <input type="text" name="contactPhone" class="contactPhone" id="contactPhone" placeholder="Phone" required>
+                        </div>
+                        <div class="form-row form-row-1">
+                            <input type="text" name="contactEmail" id="contactEmail" class="input-text" required pattern="[^@]+@[^@]+.[a-zA-Z]{2,6}" placeholder="Email">
+                        </div>
+                    </div>
                     <!--div class="form-row">
                         <input type="text" name="co-email" class="co-email" id="co-email" placeholder="Company Email" required>
                     </div>
@@ -38,11 +69,27 @@
                         <input type="text" name="co-phone" class="co-phone" id="co-phone" placeholder="Company Phone" required>
                     </div-->
 
+
+                    <!--div class="form-row" style="padding-top:40px">
+                        <span style="padding-left:10px;font-weight:regular;color:#2271dd;font-size:20px;">Person In Charge</span>
+                    </div-->
+
+				</div>
+				<div class="form-right">
+                    <h2>Address Details</h2>
+                    <div class="form-group">
+                        <div class="form-row form-row-1">
+                            <input type="text" name="addressName" class="addressName" id="addressName" placeholder="Address Name (Home, etc)" required>
+                        </div>
+                        <div class="form-row form-row-2">
+                            <input type="text" name="addressNickname" class="addressNickname" id="addressNickname" placeholder="Address Nickname (Cabang 1, etc)" required>
+                        </div>
+                    </div>
                     <div class="form-row">
                         <input type="text" name="addressLine1" class="addressLine1" id="addressLine1" placeholder="Address" required>
                     </div>
                     <div class="form-row">
-                        <input type="text" name="addressLine2" class="addressLine2" id="addressLine2" placeholder="Additional Address Information" required>
+                        <input type="text" name="addressLine2" class="addressLine2" id="addressLine2" placeholder="Additional Address Information">
                     </div>
                     <div class="form-group">
                         <div class="form-row form-row-1">
@@ -74,43 +121,7 @@
                             <span class="checkmark"></span>
                         </label>
                     </div>
-                    <!--div class="form-row" style="padding-top:40px">
-                        <span style="padding-left:10px;font-weight:regular;color:#2271dd;font-size:20px;">Person In Charge</span>
-                    </div-->
 
-				</div>
-				<div class="form-right">
-					<h2>Contact Details</h2>
-                    <!--div class="form-group">
-                        <div class="form-row form-row-1">
-                            <input type="text" name="pic-first_name" id="pic-first_name" class="input-text" placeholder="First Name" required>
-                        </div>
-                        <div class="form-row form-row-2">
-                            <input type="text" name="pic-last_name" id="pic-last_name" class="input-text" placeholder="Last Name" required>
-                        </div>
-                    </div-->
-                    <div class="form-row">
-                        <input type="text" name="contactName" id="contactName" class="input-text" placeholder="Full Name" required>
-                    </div>
-                    <div class="form-row">
-                        <select name="contactPosition">
-                            <option value="position">Position</option>
-                            <option value="director">Director</option>
-                            <option value="manager">Manager</option>
-                            <option value="employee">Employee</option>
-                        </select>
-                        <span class="select-btn">
-						  	<i class="zmdi zmdi-chevron-down"></i>
-						</span>
-                    </div>
-                    <div class="form-group">
-                        <div class="form-row form-row-3">
-                            <input type="text" name="contactPhone" class="contactPhone" id="contactPhone" placeholder="Phone" required>
-                        </div>
-                        <div class="form-row form-row-1">
-                            <input type="text" name="contactEmail" id="contactEmail" class="input-text" required pattern="[^@]+@[^@]+.[a-zA-Z]{2,6}" placeholder="Email">
-                        </div>
-                    </div>
 					<div class="form-row-last">
 						<input type="submit" name="register" class="register" value="Add Client">
 					</div>

@@ -1,11 +1,17 @@
-package com.divillafajar.app.pos.pos_app_sini.controller;
+package com.divillafajar.app.pos.pos_app_sini.controller.thyme;
 
+import com.divillafajar.app.pos.pos_app_sini.config.properties.CustomDefaultProperties;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.session.UserSessionLog;
 import com.divillafajar.app.pos.pos_app_sini.model.customer.CustomerLoginRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.service.customer.CustomerService;
 import com.divillafajar.app.pos.pos_app_sini.service.user.UserService;
 import com.divillafajar.app.pos.pos_app_sini.utils.GeneratorUtils;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,18 +27,37 @@ public class LoginController {
     //@Autowired
     private final CustomerService cs;
     private final UserService us;
-    public LoginController(CustomerService cs, UserService us) {
+    private final CustomDefaultProperties customDefaultProperties;
+    public LoginController(CustomerService cs, UserService us,
+                           CustomDefaultProperties customDefaultProperties) {
         this.cs=cs;
         this.us=us;
+        this.customDefaultProperties=customDefaultProperties;
     }
+
+    @Value("${server.servlet.context-path}")
+    private String contextPath;
 
 
     @GetMapping("/login")
-    public String showUserLoginForm(Model theModel) {
+    public String showUserLoginForm(HttpSession session, Model theModel) {
         System.out.println("showUserLoginForm CALLED");
-        CustomerLoginRequestModel custModel = new CustomerLoginRequestModel();
-        theModel.addAttribute("customer",custModel);
-        return  "main-login";
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth != null && auth.isAuthenticated()
+                && !(auth.getPrincipal() instanceof String && auth.getPrincipal().equals("anonymousUser"))) {
+            System.out.println("User sudah login: " + auth.getName());
+            UserSessionLog userLogInfo = (UserSessionLog) session.getAttribute("userLogInfo");
+            theModel.addAttribute("userLogInfo", userLogInfo);
+            return "super/index";
+        } else {
+            System.out.println("User belum login");
+            CustomerLoginRequestModel custModel = new CustomerLoginRequestModel();
+            theModel.addAttribute("customer",custModel);
+            theModel.addAttribute("prefixContextPath", contextPath);
+            return  "main-login";
+        }
+
     }
 
     /*
@@ -44,13 +69,15 @@ public class LoginController {
         System.out.println("showHome CALLED");
         return "home";
     }
-
-    @GetMapping("/super/home")
+    /*
+    @GetMapping("/master/home")
     public String showSuperHome() {
         System.out.println("showHome superadmin hpme CALLED");
         //return "super/home";
         return "super/index";
     }
+
+     */
 
     @GetMapping("/custom-logout")
     public String logMeOut() {

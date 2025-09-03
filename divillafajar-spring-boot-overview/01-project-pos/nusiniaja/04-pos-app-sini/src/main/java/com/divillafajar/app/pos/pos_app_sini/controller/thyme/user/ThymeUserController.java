@@ -8,12 +8,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("user")
 public class ThymeUserController {
+    /*
     @GetMapping("/add/client")
     public String showTestForm(Model model) {
         //model.addAttribute("userForm", new UserForm());
         //return "form/add-new-client";
         return "main-index-dark";
     }
+
+     */
 
 
 }

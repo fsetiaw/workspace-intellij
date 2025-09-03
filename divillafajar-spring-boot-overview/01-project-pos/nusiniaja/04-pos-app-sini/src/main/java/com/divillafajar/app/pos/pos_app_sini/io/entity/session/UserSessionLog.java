@@ -19,12 +19,15 @@ public class UserSessionLog {
     @Column(updatable = false)
     //private Long clientId;
     private String username;
+    private String userPid;
+    private String fullName;
     private String role;
     private String sessionId;
     private String ipAddress;
     private String userAgent;
     private String status;
-    private Long clientId;
+    private Long employeeClientId;
+    private Long customerClientId;
     private String tableId;
 
     @Column(updatable = false)

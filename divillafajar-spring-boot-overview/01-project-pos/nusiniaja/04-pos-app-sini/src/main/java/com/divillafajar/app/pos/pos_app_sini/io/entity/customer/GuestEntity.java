@@ -2,6 +2,7 @@ package com.divillafajar.app.pos.pos_app_sini.io.entity.customer;
 
 import com.divillafajar.app.pos.pos_app_sini.io.entity.auth.NamePassEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientEntity;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.order.OrderEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -28,9 +30,11 @@ public class GuestEntity implements Serializable {
     @Column(name = "pub_id", length = 30, nullable = false)
     private String pubId;
 
+    /*
     @ManyToOne
     @JoinColumn(name = "client_id", nullable = false)
     private ClientEntity client;
+     */
 
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
@@ -38,5 +42,8 @@ public class GuestEntity implements Serializable {
 
     @OneToOne(mappedBy = "guest", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private NamePassEntity userAuthDetails;
+
+    @OneToMany(mappedBy = "guest", cascade = CascadeType.ALL)
+    private List<OrderEntity> orders;
 
 }

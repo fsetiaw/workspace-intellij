@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ClientAddressRepo extends CrudRepository<ClientAddressEntity, Long> {
     ClientAddressEntity findByClientId(Long clientId);
+    ClientAddressEntity findById(long id);
 }

@@ -1,10 +1,9 @@
 package com.divillafajar.app.pos.pos_app_sini.io.entity.client;
 
+import com.divillafajar.app.pos.pos_app_sini.io.entity.client.area.ClientAreaEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.employee.EmploymentEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -12,7 +11,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -23,6 +23,7 @@ public class ClientAddressEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     @Column(name = "id")
     private Long id;
 
@@ -37,8 +38,14 @@ public class ClientAddressEntity implements Serializable {
     @OneToMany(mappedBy = "clientAddress", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<EmploymentEntity> employments = new HashSet<>();
 
-    @Column(name = "address_name", length = 50, nullable = true)
+    @OneToMany(mappedBy = "clientAddress", cascade = CascadeType.ALL)
+    private List<ClientAreaEntity> areas;
+
+    @Column(name = "address_name", length = 99, nullable = true)
     private String addressName;
+
+    @Column(name = "address_nickname", length = 99, nullable = true)
+    private String addressNickname;
 
     @Column(name = "address_line1", length = 250, nullable = true)
     private String addressLine1;

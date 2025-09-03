@@ -6,19 +6,25 @@ import com.divillafajar.app.pos.pos_app_sini.exception.user.CreateUserException;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.address.dto.AddressDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientContactDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientDTO;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.session.UserSessionLog;
 import com.divillafajar.app.pos.pos_app_sini.model.client.ClientDetailsResponseModel;
 import com.divillafajar.app.pos.pos_app_sini.model.client.CreateClientAndContactPersonRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.model.client.CreateClientRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.service.client.ClientService;
 import com.divillafajar.app.pos.pos_app_sini.service.user.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.LocaleResolver;
 
 import java.util.List;
+import java.util.Locale;
 
 @Controller
 @RequestMapping("superuser")
@@ -26,18 +32,28 @@ public class ThymeSuperuserController {
 
     private final UserService userService;
     private final ClientService clientService;
+    private LocaleResolver localeResolver;
 
-    public ThymeSuperuserController(UserService userService, ClientService clientService) {
+    public ThymeSuperuserController(UserService userService, ClientService clientService,
+                                    LocaleResolver localeResolver) {
         this.userService=userService;
         this.clientService=clientService;
+        this.localeResolver=localeResolver;
     }
 
     @GetMapping("/home")
-    public String showHome(Model model) {
-        //model.addAttribute("userForm", new UserForm());
+    public String showHome(HttpServletRequest request,
+               HttpServletResponse response,
+               HttpSession session,
+               //@RequestParam(name = "lang", required = false) String lang,
+               Model model) {
+        System.out.println("GOTO MASTER HOME");
+
+        UserSessionLog userLogInfo = (UserSessionLog) session.getAttribute("userLogInfo");
+        model.addAttribute("userLogInfo", userLogInfo);
         //return "form/add-new-client";
 
-        return "super/index.html";
+        return "super/index";
     }
 
     @GetMapping("/clients")
@@ -47,6 +63,16 @@ public class ThymeSuperuserController {
         model.addAttribute("ourClients", clients);
         System.out.println("model attr val = " + model.getAttribute("isAdd"));
         return "super/clients/index-clients";
+    }
+
+    @GetMapping("/clients/home")
+    public String showClientHome(@RequestParam(name = "pid", required = true) String pid,
+                  @RequestParam(name = "lang", required = false) String lang,
+                  Model model) {
+        System.out.println("showCclientHome IS CALLED = " + pid);
+        System.out.println("showCclientHome lang = " + lang);
+        model.addAttribute("client", clientService.getClientDetails(pid));
+        return "super/clients/home/home-client";
     }
 
     @PostMapping("/clients")

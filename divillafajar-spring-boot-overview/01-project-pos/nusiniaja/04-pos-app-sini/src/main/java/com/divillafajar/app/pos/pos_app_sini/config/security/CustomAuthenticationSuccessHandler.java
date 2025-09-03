@@ -1,37 +1,45 @@
 package com.divillafajar.app.pos.pos_app_sini.config.security;
 
 import com.divillafajar.app.pos.pos_app_sini.io.entity.session.UserSessionLog;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.session.UserSessionLogDTO;
 import com.divillafajar.app.pos.pos_app_sini.repo.session.UserSessionLogRepository;
 import com.divillafajar.app.pos.pos_app_sini.model.customer.AuthenticatedCustomerModel;
 import com.divillafajar.app.pos.pos_app_sini.model.customer.CustomerLoginRequestModel;
+import com.divillafajar.app.pos.pos_app_sini.service.log.UserSessionLogService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.LocaleResolver;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 @Component
 public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler  {
 //public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     //@Autowired
-    //private final UserSessionHistoryRepo userSessionHistoryRepo;
+    private final UserSessionLogService userSessionLogService;
     private final UserSessionLogRepository sessionLogRepo;
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+    private LocaleResolver localeResolver;
 
-    public CustomAuthenticationSuccessHandler(UserSessionLogRepository sessionLogRepo) {
-        //this.userSessionHistoryRepo=userSessionHistoryRepo;
+    public CustomAuthenticationSuccessHandler(UserSessionLogRepository sessionLogRepo,
+              UserSessionLogService userSessionLogService, LocaleResolver localeResolver) {
+        this.userSessionLogService=userSessionLogService;
         this.sessionLogRepo=sessionLogRepo;
+        this.localeResolver=localeResolver;
     }
 
     @Override
@@ -40,7 +48,10 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                                         Authentication authentication) throws IOException, ServletException {
 
         System.out.println("CustomAuthenticationSuccessHandler START");
-
+        String lang = request.getParameter("lang"); // ambil dari form login
+        if(lang != null) {
+            localeResolver.setLocale(request, response, new Locale(lang));
+        }
         HttpSession session = request.getSession(false);
         if (session == null) {
             session = request.getSession();
@@ -52,7 +63,7 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String role = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .findFirst().orElse(null);
-        session.setAttribute("USER_ROLE", role);
+        //session.setAttribute("USER_ROLE", role);
 
 
 
@@ -79,19 +90,21 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String username = authentication.getName();
         String sessionId = session.getId();
 
-
+        UserSessionLogDTO prepDTO = userSessionLogService.prepUserSessionLog(username);
 
         UserSessionLog log = new UserSessionLog();
+        BeanUtils.copyProperties(prepDTO,log);
         log.setUsername(username);
         log.setSessionId(sessionId);
         log.setIpAddress(userIp);
         log.setUserAgent(userIp);
         log.setStatus("ACTIVE");
         log.setRole(role);
-        log.setClientId(clientId);
+        //log.setClientId(clientId);
         log.setTableId(table);
 
-        sessionLogRepo.save(log);
+        UserSessionLog userLog =  sessionLogRepo.save(log);
+        session.setAttribute("userLogInfo",userLog);
         /*
         UserSessionHistory history = new UserSessionHistory();
         history.setUsername(authentication.getName());
@@ -118,6 +131,9 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 CustomerLoginRequestModel theCustomer =
                         (CustomerLoginRequestModel) request.getAttribute("theCustomer");
 
+                /*
+                sementara biarin aja ini dipakai untuk customer login
+                 */
                 AuthenticatedCustomerModel nuCust = new AuthenticatedCustomerModel();
                 nuCust.setName(theCustomer.getAliasName());
                 nuCust.setPhone(theCustomer.getUsername());
@@ -133,7 +149,7 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             }
             else if (role.equals("ROLE_SUPERADMIN")) {
                 session.setMaxInactiveInterval(-1); //
-                redirectUrl = "/super/home";
+                redirectUrl = "/superuser/home";
                 break;
             }
 

@@ -43,15 +43,27 @@ body {
     padding-top: 50px;
 }
 
-#feature-content .panel {
+.feature-content .panel {
     border-radius: 10px;
     background: #202938;
     color: white;
     border: none;
 }
 
-#feature-content .panel:hover {
+.feature-content .panel:hover {
     background-color: #45536b;
+    color: white;
+}
+
+.feature-list-content .panel {
+    border-radius: 10px;
+    background: #011469;
+    color: white;
+    border: none;
+}
+
+.feature-list-content .panel:hover {
+    background-color: #495DB8;
     color: white;
 }
 
@@ -61,7 +73,34 @@ body {
     border-radius: 10px;
     background: #EBEBEB;
     align-items: center; /* biar konten di tengah vertikal */
+    justify-content: center;
+    flex-direction: column;/* biar konten di tengah horizontal */
+}
+
+
+.fixed-panel .panel-body h3 {
+    word-wrap: break-word;
+    text-align: center;
+    max-width: 30%;
+    margin: 0; /* optional supaya rapih */
+}
+
+.fixed-panel-menu {
+    height: flex;      /* ganti sesuai kebutuhan */
+    display: flex;
+    border-radius: 10px;
+    background: #EBEBEB;
+    align-items: center; /* biar konten di tengah vertikal */
     justify-content: center; /* biar konten di tengah horizontal */
+}
+
+.fixed-panel-menu.h-150 {
+    height: 150px;
+}
+
+.fixed-panel-menu.h-150-lightBlue {
+    height: 150px;
+    background: #51E2F5;
 }
 
 

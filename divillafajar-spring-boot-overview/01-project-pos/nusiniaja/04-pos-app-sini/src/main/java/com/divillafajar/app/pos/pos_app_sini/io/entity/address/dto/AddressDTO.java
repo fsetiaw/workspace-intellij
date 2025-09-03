@@ -14,6 +14,7 @@ public class AddressDTO {
     private String pubId;
     private UserEntity user;
     private String addressName;
+    private String addressNickname;
     private String recipientName;
     private String AddressPhoneNumber;
     private String addressLine1;

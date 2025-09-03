@@ -17,4 +17,13 @@ public class ThymeFormController {
         //return "form/add-new-client";
         return "form/registrasi/client";
     }
+
+    @GetMapping("/admin/register/client/address")
+    public String showClientAddressForm(Model model) {
+        System.out.println("showClientAddressForm is CALLED");
+        //model.addAttribute("userForm", new UserForm());
+        //return "form/add-new-client";
+        return "form/registrasi/client-address";
+    }
 }
+

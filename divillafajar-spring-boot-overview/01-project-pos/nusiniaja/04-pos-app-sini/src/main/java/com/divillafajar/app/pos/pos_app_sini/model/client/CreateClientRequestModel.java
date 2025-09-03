@@ -17,6 +17,7 @@ public class CreateClientRequestModel  {
     private String clientPhone;
     private String clientType;
     private String addressName;
+    private String addressNickname;
     private String addressLine1;
     private String addressLine2;
     private String village;
