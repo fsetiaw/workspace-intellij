@@ -68,21 +68,24 @@ body {
 }
 
 .fixed-panel {
-    height: 250px;      /* ganti sesuai kebutuhan */
+    min-height: 200px;      /* ganti sesuai kebutuhan */
     display: flex;
     border-radius: 10px;
     background: #EBEBEB;
     align-items: center; /* biar konten di tengah vertikal */
     justify-content: center;
     flex-direction: column;/* biar konten di tengah horizontal */
+    min-width: 130px;   panel minimal 300px lebarnya */
+    width: 100%;       /* tetap fleksibel */
+    box-sizing: border-box;
 }
 
 
 .fixed-panel .panel-body h3 {
-    word-wrap: break-word;
+    white-space: normal;      /* biar bisa wrap normal */      /* jangan paksa pecah huruf */
     text-align: center;
-    max-width: 30%;
-    margin: 0; /* optional supaya rapih */
+    max-width: 90%;
+    margin: 0;
 }
 
 .fixed-panel-menu {

@@ -30,4 +30,9 @@ public class ThymeShareController {
         String referer = request.getHeader("Referer");
         return "redirect:" + (referer != null ? referer : "/logout");
     }
+
+    @GetMapping("/zoneSpaceArea")
+    public String goToIndexSpaceArea() {
+        return "space/index-space-area";
+    }
 }

@@ -111,7 +111,7 @@
     <!-- Sidebar -->
     <div id="bootstrap-sidebar" class="blue-theme text-menu">
         <ul class="sidebar-nav">
-            <li sec:authorize="hasAuthority('ROLE_SUPERADMIN')">
+            <li sec:authorize="hasAnyAuthority('ROLE_SUPERADMIN','ROLE_ADMIN','ROLE_MANAGER')">
                 <a th:href="@{/superuser/clients}" target="_self" class="text-decoration-none">
                     <span class="fa fa-fw fa-circle-arrow-left icon-big" aria-hidden="true"></span>
                     <span th:text="#{label.back}"></span>
@@ -182,38 +182,18 @@
                     });
                 </script>
             </div>
-            <h1>MANAGER HOME : pid = <span th:text="${pid}+' - '+${aid}"></span></h1>
+            <h1>SPACE AREA HOME</h1>
             <div class="row" th:unless="${isAdd}">
                 <div class="col-lg-12" >
                     <div class="panel panel-default">
                         <div class="panel-heading"><span th:text="#{label.quickMenu}"></span></div>
                         <div class="panel-body feature-content">
                             <div class="col-md-2">
-                                <a th:href="@{/manager/home(add='true',pid=${pid},aid=${aid},target='nuArea')}" target="_self" class="text-decoration-none">
+                                <a th:href="@{/manager/home(add='true',pid=${clientPubId},aid=${addressId},target='nuArea')}" target="_self" class="text-decoration-none">
                                     <div class="panel panel-primary fixed-panel-menu h-150">
                                         <div class="panel-body text-center">
                                             <span class="fa-solid fa-circle-plus icon-big" aria-hidden="true"></span>
                                             <h3><span th:text="#{label.addGuestArea}"></span></h3>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-md-2">
-                                <a th:href="@{/admin/home(add='true',pid=${pid})}" target="_self" class="text-decoration-none">
-                                    <div class="panel panel-primary fixed-panel-menu h-150">
-                                        <div class="panel-body text-center">
-                                            <span class="fa-solid fa-circle-plus icon-big" aria-hidden="true"></span>
-                                            <h3>Add New Product Category</h3>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-md-2">
-                                <a th:href="@{/admin/home(add='true',pid=${pid})}" target="_self" class="text-decoration-none">
-                                    <div class="panel panel-primary fixed-panel-menu h-150">
-                                        <div class="panel-body text-center">
-                                            <span class="fa-solid fa-circle-plus icon-big" aria-hidden="true"></span>
-                                            <h3>Add New Product Items</h3>
                                         </div>
                                     </div>
                                 </a>
@@ -229,17 +209,17 @@
                             <div class="panel-heading"><span th:text="#{label.menu}"></span></div>
                             <div class="panel-body feature-list-content">
                                 <div class="col-md-2">
-                                    <a th:href="@{/manager/guest/area(addressId=${aid},clientPubId=${pid})}" target="_self" class="text-decoration-none">
+                                    <a th:href="@{/admin/home(add='true',pid=${clientPubId})}" target="_self" class="text-decoration-none">
                                         <div class="panel panel-primary fixed-panel-menu h-150-lightBlue">
                                             <div class="panel-body text-center">
                                                 <span class="fa-solid fa-people-line icon-big" aria-hidden="true"></span>
-                                                <h3><span th:text="#{label.zoneArea}"></span></h3>
+                                                <h3>Employements</h3>
                                             </div>
                                         </div>
                                     </a>
                                 </div>
                                 <div class="col-md-2">
-                                    <a th:href="@{/admin/home(add='true',pid=${pid})}" target="_self" class="text-decoration-none">
+                                    <a th:href="@{/admin/home(add='true',pid=${clientPubId})}" target="_self" class="text-decoration-none">
                                         <div class="panel panel-primary fixed-panel-menu h-150-lightBlue">
                                             <div class="panel-body text-center">
                                                 <span class="fa-solid fa-sitemap icon-big" aria-hidden="true"></span>
@@ -249,7 +229,7 @@
                                     </a>
                                 </div>
                                 <div class="col-md-2">
-                                    <a th:href="@{/admin/home(add='true',pid=${pid})}" target="_self" class="text-decoration-none">
+                                    <a th:href="@{/admin/home(add='true',pid=${clientPubId})}" target="_self" class="text-decoration-none">
                                         <div class="panel panel-primary fixed-panel-menu h-150-lightBlue">
                                             <div class="panel-body text-center">
                                                 <span class="fa-solid fa-gift icon-big" aria-hidden="true"></span>
@@ -259,7 +239,7 @@
                                     </a>
                                 </div>
                                 <div class="col-md-2">
-                                    <a th:href="@{/admin/home(add='true',pid=${pid})}" target="_self" class="text-decoration-none">
+                                    <a th:href="@{/admin/home(add='true',pid=${clientPubId})}" target="_self" class="text-decoration-none">
                                         <div class="panel panel-primary fixed-panel-menu h-150-lightBlue">
                                             <div class="panel-body text-center">
                                                 <span class="fa-solid fa-warehouse icon-big" aria-hidden="true"></span>
@@ -272,56 +252,6 @@
                         </div>
                     </div>
                 </div>
-                <div class="row" th:if="${store != null}">
-                    <div class="col-lg-12">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">View/Spectator</div>
-                            <div class="panel-body feature-list-content">
-                                <div class="col-md-2">
-                                    <a th:href="@{/admin/home(add='true',pid=${pid})}" target="_self" class="text-decoration-none">
-                                        <div class="panel panel-primary fixed-panel-menu h-150-lightBlue">
-                                            <div class="panel-body text-center">
-                                                <span class="fa-solid fa-people-line icon-big" aria-hidden="true"></span>
-                                                <h3>KASIR</h3>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                                <div class="col-md-2">
-                                    <a th:href="@{/admin/home(add='true',pid=${pid})}" target="_self" class="text-decoration-none">
-                                        <div class="panel panel-primary fixed-panel-menu h-150-lightBlue">
-                                            <div class="panel-body text-center">
-                                                <span class="fa-solid fa-sitemap icon-big" aria-hidden="true"></span>
-                                                <h3>ORDER</h3>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                                <div class="col-md-2">
-                                    <a th:href="@{/admin/home(add='true',pid=${pid})}" target="_self" class="text-decoration-none">
-                                        <div class="panel panel-primary fixed-panel-menu h-150-lightBlue">
-                                            <div class="panel-body text-center">
-                                                <span class="fa-solid fa-gift icon-big" aria-hidden="true"></span>
-                                                <h3>KITCHEN</h3>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                                <div class="col-md-2">
-                                    <a th:href="@{/admin/home(add='true',pid=${pid})}" target="_self" class="text-decoration-none">
-                                        <div class="panel panel-primary fixed-panel-menu h-150-lightBlue">
-                                            <div class="panel-body text-center">
-                                                <span class="fa-solid fa-warehouse icon-big" aria-hidden="true"></span>
-                                                <h3>inventory</h3>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div style="clear:both"></div>
             </div>
         </div>
         <div th:if="${isAdd}">
@@ -331,7 +261,7 @@
                         <div class="panel-heading">Menu</div>
                         <div class="panel-body" id="go-back">
                             <div class="col-md-2">
-                                <a th:href="@{/manager/home(pid=${pid}, aid=${aid})}" target="_self" class="text-decoration-none">
+                                <a th:href="@{/manager/home(pid=${clientPubId}, aid=${addressId})}" target="_self" class="text-decoration-none">
                                     <div class="panel panel-primary">
                                         <div class="panel-body text-center">
                                             <span class="fa-solid fa-circle-left icon-big" aria-hidden="true"></span>
@@ -350,7 +280,7 @@
                         <div class="panel-heading">Form</div>
                         <div class="panel-body" id="feature-content4">
                             <div class="col-md-12">
-                                <iframe th:src="@{/form/manager/guest/area(clientPubId=${pid}, addressId=${aid})}"
+                                <iframe th:src="@{/form/manager/guest/area}"
                                         style="width:100%; height:800px; border:none;"
                                         id="clientsFrame">
                                 </iframe>

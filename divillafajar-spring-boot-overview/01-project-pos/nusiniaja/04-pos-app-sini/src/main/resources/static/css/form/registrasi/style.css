@@ -101,6 +101,15 @@ body {
 	width: 100%;
 	padding: 0 50px 0 12px;
 }
+.form-v10-content .form-detail .form-right .form-group .form-row.form-row-1A {
+	width: 50%;
+	padding: 0 12px 0 60px;
+}
+
+.form-v10-content .form-detail .form-right .form-group .form-row.form-row-2A {
+	width: 50%;
+    padding: 0 50px 0 60px;
+}
 .form-v10-content .form-detail select,
 .form-v10-content .form-detail input {
 	width: 100%;
@@ -259,6 +268,30 @@ body {
 .form-v10-content .form-detail .form-right .register:hover {
 	background: #ccc;
 }
+
+.form-v10-content .form-detail .form-right .cancel {
+	background: #e74c3c; /* merah */
+	border-radius: 25px;
+	-o-border-radius: 25px;
+	-ms-border-radius: 25px;
+	-moz-border-radius: 25px;
+	-webkit-border-radius: 25px;
+	box-shadow: 0px 6px 17px 0px rgba(0, 0, 0, 0.15);
+	-o-box-shadow: 0px 6px 17px 0px rgba(0, 0, 0, 0.15);
+	-ms-box-shadow: 0px 6px 17px 0px rgba(0, 0, 0, 0.15);
+	-moz-box-shadow: 0px 6px 17px 0px rgba(0, 0, 0, 0.15);
+	-webkit-box-shadow: 0px 6px 17px 0px rgba(0, 0, 0, 0.15);
+	width: 180px;
+	border: none;
+	margin: 6px 0 50px 10px; /* kasih jarak dari Add Client */
+	cursor: pointer;
+	color: #fff;
+	font-weight: 700;
+	font-size: 15px;
+}
+.form-v10-content .form-detail .form-right .cancel:hover {
+	background: #c0392b; /* merah gelap pas hover */
+}
 .form-v10-content .form-detail .form-right .form-row-last input {
 	padding: 12.5px;
 }
@@ -378,4 +411,6 @@ body {
 		text-align: center;
 	    margin: 44px 0 30px;
 	}
+
+
 }

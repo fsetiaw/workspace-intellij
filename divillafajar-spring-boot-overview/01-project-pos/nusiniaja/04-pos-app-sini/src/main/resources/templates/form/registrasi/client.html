@@ -16,13 +16,14 @@
 		<div class="form-v10-content">
 			<form class="form-detail" th:action="@{/superuser/clients}" method="post" id="myform" target="_top">
 				<div class="form-left">
-					<h2>Company Infomation</h2>
+                    <h2><span th:text="#{label.infoCompany}"></span></h2>
                     <div class="form-group">
                         <div class="form-row form-row-1">
-                            <input type="text" name="clientName" class="clientName" id="clientName" placeholder="Company Name" required>
+                            <input type="text" name="clientName" class="clientName" id="clientName" th:placeholder="#{label.companyName}" required>
                         </div>
                         <div class="form-row form-row-2">
                             <select name="clientType">
+                                <option value="null"><span th:text="#{label.companyField}"></span></option>
                                 <option value="caffe">Caffe & Resto</option>
                                 <option value="hotel">Hotel</option>
                             </select>
@@ -31,7 +32,7 @@
 							</span>
                         </div>
                     </div>
-                    <h2>Contact Details</h2>
+                    <h2><span th:text="#{label.companyContact}"></span></h2>
                     <!--div class="form-group">
                         <div class="form-row form-row-1">
                             <input type="text" name="pic-first_name" id="pic-first_name" class="input-text" placeholder="First Name" required>
@@ -41,11 +42,11 @@
                         </div>
                     </div-->
                     <div class="form-row">
-                        <input type="text" name="contactName" id="contactName" class="input-text" placeholder="Full Name" required>
+                        <input type="text" name="contactName" id="contactName" class="input-text" th:placeholder="#{label.fullName}" required>
                     </div>
                     <div class="form-row">
                         <select name="contactPosition">
-                            <option value="position">Position</option>
+                            <option value="null"><span th:text="#{label.position}"></span></option>
                             <option value="director">Director</option>
                             <option value="manager">Manager</option>
                             <option value="employee">Employee</option>
@@ -76,55 +77,55 @@
 
 				</div>
 				<div class="form-right">
-                    <h2>Address Details</h2>
+                    <h2><span th:text="#{label.companyAddress}"></span></h2>
                     <div class="form-group">
                         <div class="form-row form-row-1">
-                            <input type="text" name="addressName" class="addressName" id="addressName" placeholder="Address Name (Home, etc)" required>
+                            <input type="text" name="addressName" class="addressName" id="addressName" th:placeholder="#{label.locationName}" required>
                         </div>
                         <div class="form-row form-row-2">
-                            <input type="text" name="addressNickname" class="addressNickname" id="addressNickname" placeholder="Address Nickname (Cabang 1, etc)" required>
+                            <input type="text" name="addressNickname" class="addressNickname" id="addressNickname" th:placeholder="#{label.locationNickName}" required>
                         </div>
                     </div>
                     <div class="form-row">
-                        <input type="text" name="addressLine1" class="addressLine1" id="addressLine1" placeholder="Address" required>
+                        <input type="text" name="addressLine1" class="addressLine1" id="addressLine1" th:placeholder="#{label.addressLine1}" required>
                     </div>
                     <div class="form-row">
-                        <input type="text" name="addressLine2" class="addressLine2" id="addressLine2" placeholder="Additional Address Information">
+                        <input type="text" name="addressLine2" class="addressLine2" id="addressLine2" th:placeholder="#{label.addressLine2}">
                     </div>
                     <div class="form-group">
                         <div class="form-row form-row-1">
-                            <input type="text" name="city" class="city" id="city" placeholder="City" required>
+                            <input type="text" name="city" class="city" id="city" th:placeholder="#{label.city}" required>
                         </div>
                         <div class="form-row form-row-2">
-                            <input type="text" name="province" class="province" id="province" placeholder="Province" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="form-row form-row-1">
-                            <input type="text" name="country" class="country" id="country" placeholder="Country" required>
-                        </div>
-                        <div class="form-row form-row-2">
-                            <input type="text" name="postalCode" class="postalCode" id="postalCode" placeholder="Postal Code" required>
+                            <input type="text" name="province" class="province" id="province" th:placeholder="#{label.province}" required>
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="form-row form-row-1">
-                            <input type="text" name="clientEmail" id="clientEmail" class="input-text" required pattern="[^@]+@[^@]+.[a-zA-Z]{2,6}" placeholder="Company Email">
+                            <input type="text" name="country" class="country" id="country" th:placeholder="#{label.country}" required>
                         </div>
                         <div class="form-row form-row-2">
-                            <input type="text" name="clientPhone" class="clientPhone" id="clientPhone" placeholder="Company Phone" required>
+                            <input type="text" name="postalCode" class="postalCode" id="postalCode" th:placeholder="#{label.postalCode}" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-row form-row-1">
+                            <input type="text" name="clientEmail" id="clientEmail" class="input-text" required pattern="[^@]+@[^@]+.[a-zA-Z]{2,6}" th:placeholder="#{label.company}+' Email'">
+                        </div>
+                        <div class="form-row form-row-2">
+                            <input type="text" name="clientPhone" class="clientPhone" id="clientPhone" th:placeholder="#{label.company}+' Phone'" required>
                         </div>
                     </div>
                     <div class="form-checkbox">
-                        <label class="container"><p>I do accept the <a href="#" class="text">Terms and Conditions</a> of your site.</p>
+                        <label class="container"><p><span th:text="#{label.iAccept}"></span> <a href="#" class="text"><span th:text="#{label.termAndCondition}"></span></a> <span th:text="#{label.ofYourSite}"></span>.</p>
                             <input type="checkbox" name="checkbox">
                             <span class="checkmark"></span>
                         </label>
                     </div>
-
-					<div class="form-row-last">
-						<input type="submit" name="register" class="register" value="Add Client">
-					</div>
+                    <div class="form-row-last">
+                        <input type="submit" name="register" class="register" value="Add Client">
+                        <input type="button" class="cancel" value="Cancel" onclick="window.history.back();">
+                    </div>
 				</div>
 			</form>
 		</div>

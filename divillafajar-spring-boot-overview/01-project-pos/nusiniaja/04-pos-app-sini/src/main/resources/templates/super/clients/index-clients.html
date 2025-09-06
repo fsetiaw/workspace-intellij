@@ -9,7 +9,7 @@
     <title>Boostrap Sidebar :: Text + Icon Menu</title>
     <link rel="shortcut icon" th:href="@{images/favicon.png}">
     <!-- Latest compiled and minified CSS -->
-    <!--link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous"-->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
     <!-- bootstrap jquery -->
@@ -68,13 +68,22 @@
                     <ul class="nav navbar-nav navbar-right">
                         <li><a href="#"><span class="glyphicon glyphicon-print" aria-hidden="true"></span> Print</a>
                         </li>
-                        <li class="dropdown"> <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span> CMS <span class="caret"></span></a>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                               aria-haspopup="true" aria-expanded="false">
+                                <span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>
+                                <span th:text="#{label.language}"></span> <span class="caret"></span>
+                            </a>
                             <ul class="dropdown-menu">
-                                <li><a href="#"><span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> Pages</a>
+                                <li>
+                                    <a th:href="@{/shared/changeLanguage(lang=id)}">
+                                        <span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> Indonesia
+                                    </a>
                                 </li>
-                                <li><a href="#"><span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span> Posts</a>
-                                </li>
-                                <li><a href="#"><span class="glyphicon glyphicon-picture" aria-hidden="true"></span> Media</a>
+                                <li>
+                                    <a th:href="@{/shared/changeLanguage(lang=en)}">
+                                        <span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span> English
+                                    </a>
                                 </li>
                             </ul>
                         </li>
@@ -88,10 +97,8 @@
                         </li>
                         <li><a href="#"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> <span sec:authentication="principal.authorities"></span></a>
                         </li>
-
                         <li><a href="#" onclick="document.getElementById('logoutForm').submit(); return false;"><span class="glyphicon glyphicon-off" aria-hidden="true"></span></a>
                         </li>
-
                     </ul>
                 </div>
                 <!-- /.navbar-collapse -->
@@ -102,7 +109,7 @@
         <!-- Sidebar -->
         <div id="bootstrap-sidebar" class="blue-theme text-menu">
             <ul class="sidebar-nav">
-                <li class="active"> <a th:href="@{/superuser/home}" target="_self" class="text-decoration-none"><span class="fa fa-fw fa-circle-arrow-left icon-big" aria-hidden="true"></span> Back</a>
+                <li class="active"> <a th:href="@{/superuser/home}" target="_self" class="text-decoration-none"><span class="fa fa-fw fa-circle-arrow-left icon-big" aria-hidden="true"></span><span th:text="#{label.back}"></span></a>
                 </li>
                 <!--li> <a href="#"><span class="glyphicon glyphicon-file" aria-hidden="true"></span> <span class="menu-text">Reports</span></a>
                 </li>
@@ -154,10 +161,10 @@
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
-                                <h4 class="modal-title" id="successModalLabel">Berhasil!</h4>
+                                <h4 class="modal-title" id="successModalLabel"><span th:text="#{label.success}"></span></h4>
                             </div>
                             <div class="modal-body">
-                                Client berhasil ditambahkan ke daftar.
+                                <span th:text="#{modal.addClientSuccess}+'.'"></span>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
@@ -174,10 +181,10 @@
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
-                                <h4 class="modal-title" id="errorModalLabel">Gagal!</h4>
+                                <h4 class="modal-title" id="errorModalLabel"><span th:text="#{label.failed}"></span></h4>
                             </div>
                             <div class="modal-body">
-                                <b>Client gagal ditambahkan. Silakan coba lagi.</b><br>
+                                <b><span th:text="#{modal.addClientFailed}+'. '+#{label.pleasTryAgain}+'.'"></span></b><br>
                                 <span th:text="${msg}"></span>
                             </div>
                             <div class="modal-footer">
@@ -206,14 +213,14 @@
                 <div class="row" th:unless="${isAdd}">
                     <div class="col-lg-12" >
                         <div class="panel panel-default">
-                            <div class="panel-heading">Menu</div>
+                            <div class="panel-heading"><span th:text="#{label.menu}"></span></div>
                             <div class="panel-body feature-content">
                                 <div class="col-md-2">
                                     <a th:href="@{/superuser/clients(add='true')}" target="_self" class="text-decoration-none">
-                                        <div class="panel panel-primary">
+                                        <div class="panel panel-primary fixed-panel">
                                             <div class="panel-body text-center">
                                                 <span class="fa-solid fa-person-circle-plus icon-big" aria-hidden="true"></span>
-                                                <h3>Add New Clients</h3>
+                                                <h3><span th:text="#{label.addNuClient}"></span></h3>
                                             </div>
                                         </div>
                                     </a>
@@ -225,7 +232,7 @@
                 <div class="row" th:if="${ourClients != null and #lists.size(ourClients) > 0}">
                     <div class="col-lg-12">
                         <div class="panel panel-default">
-                            <div class="panel-heading">List Clients</div>
+                            <div class="panel-heading"><span th:text="#{label.list}+' '+#{label.clients}"></span></div>
                             <div class="panel-body feature-list-content" id="${client.clientName}">
                                 <div class="col-md-2" th:each="client : ${ourClients}">
                                     <!--a th:href="@{/superuser/clients/home(pid=${client.pubId})}" target="_self" class="text-decoration-none"-->
@@ -245,29 +252,11 @@
                 <div style="clear:both"></div>
             </div>
             <div th:if="${isAdd}">
-                <div class="row">
-                    <div class="col-lg-12" >
-                        <div class="panel panel-default">
-                            <div class="panel-heading"><span th:text="#{label.menu}"></span></div>
-                            <div class="panel-body" id="go-back">
-                                <div class="col-md-2">
-                                    <a th:href="@{/superuser/clients}" target="_self" class="text-decoration-none">
-                                        <div class="panel panel-primary">
-                                            <div class="panel-body text-center">
-                                                <span class="fa-solid fa-circle-left icon-big" aria-hidden="true"></span>
-                                                <h3><span th:text="#{label.back}"></span></h3>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="panel panel-default">
-                            <div class="panel-heading">List Clients</div>
+                            <div class="panel-heading"><h1><span th:text="#{label.addNuClient}"></span></h1></div>
                             <div class="panel-body" id="feature-content4">
                                 <div class="col-md-12">
                                     <iframe th:src="@{/form/superuser/register/client}"

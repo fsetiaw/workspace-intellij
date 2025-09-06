@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<title>Form-v10 by Colorlib</title>
+	<!-- Mobile Specific Metas -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<!-- Font-->
+	<link rel="stylesheet" type="text/css" th:href="@{/css/form/registrasi/montserrat-font.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/font/material-design-iconic-font/css/material-design-iconic-font.min.css}">
+	<!-- Main Style Css -->
+    <link rel="stylesheet" th:href="@{/css/form/registrasi/style.css}"/>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+<body class="form-v10">
+	<div class="page-content">
+		<div class="form-v10-content">
+            <h1><span th:text="${addressId}+'->'+${clientPubId}"></span></h1>
+			<form class="form-detail" th:action="@{/manager/guest/area(clientPubId=${clientPubId},addressId=${addressId})}" method="post" id="myform" target="_top">
+				<!--div class="form-left">
+                    <h2><span th:text="#{label.information}+' '+#{label.zoneArea}"></span></h2>
+                    <div class="form-group">
+                        <div class="form-row form-row-1">
+                            <input type="text" name="name" class="name" id="name" th:placeholder="#{label.name}+' '+#{label.zoneArea}" required>
+                        </div>
+                        <div class="form-row form-row-2">
+                            <input type="text" name="alias" class="alias" id="alias" th:placeholder="#{label.nickname}+' '+#{label.zoneArea}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-row form-row-1">
+                            <select name="reservationType" required>
+                                <option value="" selected disabled><span th:text="#{label.reservationType}"></span></option>
+                                <option value="non"><span th:text="#{label.nonReservable}"></span></option>
+                                <option value="by table"><span th:text="#{label.reservationByTable}"></span></option>
+                                <option value="by room"><span th:text="#{label.reservationByRoom}"></span></option>
+                                <option value="by both"><span th:text="#{label.reservationByTableOrRoom}"></span></option>
+                            </select>
+                            <span class="select-btn">
+                                <i class="zmdi zmdi-chevron-down"></i>
+                            </span>
+                        </div>
+                        <div class="form-row form-row-2">
+                            <select name="roomFunction" required>
+                                <option value="" selected disabled><span th:text="#{label.roomFunction}"></span></option>
+                                <option value="multi"><span th:text="#{label.multiPurpose}"></span></option>
+                                <option value="meeting"><span th:text="#{label.meetingRoom}"></span></option>
+                            </select>
+                            <span class="select-btn">
+                                <i class="zmdi zmdi-chevron-down"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-row form-row-1">
+                            <input type="time" name="startingOperationTime" class="startingOperationTime" id="startingOperationTime" th:placeholder="#{label.startingOperationTime}" required>
+                        </div>
+                        <div class="form-row form-row-2">
+                            <input type="number" name="durationOperationHour" class="durationOperationHour" id="durationOperationHour" th:placeholder="#{label.durationOperationHour}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-row form-row-1">
+                            <select name="location" required>
+                                <option value="" selected disabled><span th:text="#{label.location}"></span></option>
+                                <option value="indoor"><span th:text="#{label.indoor}"></span></option>
+                                <option value="manager"><span th:text="#{label.outdoor}"></span></option>
+                            </select>
+                            <span class="select-btn">
+                                <i class="zmdi zmdi-chevron-down"></i>
+                            </span>
+                        </div>
+                        <div class="form-row form-row-2">
+                            <select name="coolingSystem" required>
+                                <option value="" selected disabled><span th:text="#{label.coolerSystem}"></span></option>
+                                <option value="noneAc"><span th:text="#{label.nonAC}"></span></option>
+                                <option value="ac"><span th:text="#{label.airConditioner}"></span></option>
+                            </select>
+                            <span class="select-btn">
+                                <i class="zmdi zmdi-chevron-down"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-row form-row-1">
+                            <select name="roomType" required>
+                                <option value="" selected disabled><span th:text="#{label.roomType}"></span></option>
+                                <option value="nonSmoking"><span th:text="#{label.nonSmokingArea}"></span></option>
+                                <option value="smoking"><span th:text="#{label.smokingArea}"></span></option>
+                                <option value="vape"><span th:text="#{label.vapeOnlyArea}"></span></option>
+                                <option value="iqos"><span th:text="#{label.iqosOnlyArea}"></span></option>
+                            </select>
+                            <span class="select-btn">
+                                <i class="zmdi zmdi-chevron-down"></i>
+                            </span>
+                        </div>
+                        <div class="form-row form-row-2">
+                            <select name="reservationType" required>
+                                <option value="" selected disabled><span th:text="#{label.reservationType}"></span></option>
+                                <option value="non"><span th:text="#{label.nonReservable}"></span></option>
+                                <option value="by table"><span th:text="#{label.reservationByTable}"></span></option>
+                                <option value="by room"><span th:text="#{label.reservationByRoom}"></span></option>
+                                <option value="by both"><span th:text="#{label.reservationByTableOrRoom}"></span></option>
+                            </select>
+                            <span class="select-btn">
+                                <i class="zmdi zmdi-chevron-down"></i>
+                            </span>
+                        </div>
+                    </div-->
+                    <!--h2><span th:text="#{label.capacity}"></span></h2>
+                    <div class="form-group">
+                        <div class="form-row form-row-1">
+                            <input type="text" name="pic-first_name" id="pic-first_name" class="input-text" placeholder="First Name" required>
+                        </div>
+                        <div class="form-row form-row-2">
+                            <input type="text" name="pic-last_name" id="pic-last_name" class="input-text" placeholder="Last Name" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <input type="text" name="contactName" id="contactName" class="input-text" th:placeholder="#{label.fullName}" required>
+                    </div>
+                    <div class="form-row">
+                        <select name="contactPosition">
+                            <option value="null"><span th:text="#{label.position}"></span></option>
+                            <option value="director">Director</option>
+                            <option value="manager">Manager</option>
+                            <option value="employee">Employee</option>
+                        </select>
+                        <span class="select-btn">
+						  	<i class="zmdi zmdi-chevron-down"></i>
+						</span>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-row form-row-3">
+                            <input type="text" name="contactPhone" class="contactPhone" id="contactPhone" placeholder="Phone" required>
+                        </div>
+                        <div class="form-row form-row-1">
+                            <input type="text" name="contactEmail" id="contactEmail" class="input-text" required pattern="[^@]+@[^@]+.[a-zA-Z]{2,6}" placeholder="Email">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <input type="text" name="co-email" class="co-email" id="co-email" placeholder="Company Email" required>
+                    </div>
+                    <div class="form-row">
+                        <input type="text" name="co-phone" class="co-phone" id="co-phone" placeholder="Company Phone" required>
+                    </div-->
+
+
+                    <!--div class="form-row" style="padding-top:40px">
+                        <span style="padding-left:10px;font-weight:regular;color:#2271dd;font-size:20px;">Person In Charge</span>
+                    </div>
+				</div-->
+				<div class="form-right">
+                    <h2><span th:text="#{label.information}+' '+#{label.zoneArea}"></span></h2>
+                    <div class="form-group">
+                        <div class="form-row form-row-1">
+                            <input type="text" name="areaName" class="areaName" id="areaName" th:placeholder="#{label.name}+' '+#{label.zoneArea}" required>
+                        </div>
+                        <div class="form-row form-row-2">
+                            <input type="text" name="alias" class="alias" id="alias" th:placeholder="#{label.nickname}+' '+#{label.zoneArea}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-row form-row-1">
+                            <select name="reservationType" required>
+                                <option value="" selected disabled><span th:text="#{label.reservationType}"></span></option>
+                                <option value="non"><span th:text="#{label.nonReservable}"></span></option>
+                                <option value="by table"><span th:text="#{label.reservationByTable}"></span></option>
+                                <option value="by room"><span th:text="#{label.reservationByRoom}"></span></option>
+                                <option value="by both"><span th:text="#{label.reservationByTableOrRoom}"></span></option>
+                            </select>
+                            <span class="select-btn">
+                                <i class="zmdi zmdi-chevron-down"></i>
+                            </span>
+                        </div>
+                        <div class="form-row form-row-2">
+                            <select name="roomFunction" required>
+                                <option value="" selected disabled><span th:text="#{label.roomFunction}"></span></option>
+                                <option value="multi"><span th:text="#{label.multiPurpose}"></span></option>
+                                <option value="meeting"><span th:text="#{label.meetingRoom}"></span></option>
+                            </select>
+                            <span class="select-btn">
+                                <i class="zmdi zmdi-chevron-down"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-row form-row-1">
+                            <input type="time" name="startingOperationTime" class="startingOperationTime" id="startingOperationTime" th:placeholder="#{label.startingOperationTime}" required>
+                        </div>
+                        <div class="form-row form-row-2">
+                            <input type="number" name="durationOperationHour" class="durationOperationHour" id="durationOperationHour" th:placeholder="#{label.durationOperationHour}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-row form-row-1">
+                            <select name="location" required>
+                                <option value="" selected disabled><span th:text="#{label.location}"></span></option>
+                                <option value="indoor"><span th:text="#{label.indoor}"></span></option>
+                                <option value="manager"><span th:text="#{label.outdoor}"></span></option>
+                            </select>
+                            <span class="select-btn">
+                                <i class="zmdi zmdi-chevron-down"></i>
+                            </span>
+                        </div>
+                        <div class="form-row form-row-2">
+                            <select name="coolingSystem" required>
+                                <option value="" selected disabled><span th:text="#{label.coolerSystem}"></span></option>
+                                <option value="noneAc"><span th:text="#{label.nonAC}"></span></option>
+                                <option value="ac"><span th:text="#{label.airConditioner}"></span></option>
+                            </select>
+                            <span class="select-btn">
+                                <i class="zmdi zmdi-chevron-down"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-row form-row-1">
+                            <select name="roomType" required>
+                                <option value="" selected disabled><span th:text="#{label.roomType}"></span></option>
+                                <option value="nonSmoking"><span th:text="#{label.nonSmokingArea}"></span></option>
+                                <option value="smoking"><span th:text="#{label.smokingArea}"></span></option>
+                                <option value="vape"><span th:text="#{label.vapeOnlyArea}"></span></option>
+                                <option value="iqos"><span th:text="#{label.iqosOnlyArea}"></span></option>
+                            </select>
+                            <span class="select-btn">
+                                <i class="zmdi zmdi-chevron-down"></i>
+                            </span>
+                        </div>
+                        <div class="form-row form-row-2">
+                            <select name="reservationType" required>
+                                <option value="" selected disabled><span th:text="#{label.reservationType}"></span></option>
+                                <option value="non"><span th:text="#{label.nonReservable}"></span></option>
+                                <option value="by table"><span th:text="#{label.reservationByTable}"></span></option>
+                                <option value="by room"><span th:text="#{label.reservationByRoom}"></span></option>
+                                <option value="by both"><span th:text="#{label.reservationByTableOrRoom}"></span></option>
+                            </select>
+                            <span class="select-btn">
+                                <i class="zmdi zmdi-chevron-down"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-row-last">
+                        <input type="submit" name="register" class="register" th:value="#{label.add}">
+                        <!--input type="button" class="cancel" th:value="#{label.cancel}" onclick="window.history.back();"-->
+                        <input type="button" class="cancel" th:value="#{label.cancel}" data-toggle="modal" data-target="#cancelModal">
+                    </div>
+				</div>
+			</form>
+		</div>
+	</div>
+    <!-- Modal Konfirmasi Cancel -->
+    <div class="modal fade" id="cancelModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Konfirmasi</h4>
+                </div>
+
+                <div class="modal-body">
+                    <p>Apakah Anda yakin ingin membatalkan?</p>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" id="btnConfirmCancel">Ya</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Tidak</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery + Bootstrap JS -->
+    <script th:src="@{/js/jquery-1.12.4.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+
+    <script th:inline="javascript">
+        $(document).ready(function () {
+          // validasi form (kode kamu sebelumnya)
+          //$("#myform").on("submit", function(e) {
+          //  const paxFields = [
+          //    $("#pax1"), $("#pax2"), $("#pax3"), $("#pax4"), $("#pax5"),
+          //    $("#pax6"), $("#pax7"), $("#pax8"), $("#pax9"), $("#pax10")
+          //  ].filter(f => f.length > 0);
+
+          //  const isAnyFilled = paxFields.some(f => $.trim(f.val()) !== "");
+          //  if (!isAnyFilled) {
+          //    e.preventDefault();
+          //    alert([[#{modal.mustInsertCapacity}]]);
+          //  }
+          //});
+
+          // confirm cancel
+          $("#btnConfirmCancel").on("click", function () {
+            window.history.back();
+          });
+        });
+    </script>
+
+</body><!-- This templates was made by Colorlib (https://colorlib.com) -->
+</html>

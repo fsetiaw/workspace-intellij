@@ -25,5 +25,16 @@ public class ThymeFormController {
         //return "form/add-new-client";
         return "form/registrasi/client-address";
     }
+
+    @GetMapping("/manager/guest/area")
+    public String showAddGuestAreaForm(@RequestParam(name = "addressId", required = true) Long addressId,
+                           @RequestParam(name = "clientPubId", required = true) String clientPubId,
+                           Model model) {
+        System.out.println("showClientAddressForm is CALLED");
+        model.addAttribute("addressId", addressId);
+        model.addAttribute("clientPubId", clientPubId);
+        //return "form/add-new-client";
+        return "form/area/guest-area";
+    }
 }
 

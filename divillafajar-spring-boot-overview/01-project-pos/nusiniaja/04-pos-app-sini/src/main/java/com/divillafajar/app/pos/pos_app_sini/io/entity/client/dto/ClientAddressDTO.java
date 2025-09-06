@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class ClientAddressDTO {
-
+    private String id;
     private String addressName;
     private String addressNickname;
     private String addressLine1;

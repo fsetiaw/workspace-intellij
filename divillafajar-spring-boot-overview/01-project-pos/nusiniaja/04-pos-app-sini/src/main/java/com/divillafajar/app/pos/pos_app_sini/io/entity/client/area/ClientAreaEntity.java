@@ -28,29 +28,35 @@ public class ClientAreaEntity implements Serializable {
     @Column(name = "area_name", length = 99, nullable = false)
     private String areaName;
 
-    @Column(name = "area_desc", length = 255, nullable = true)
-    private String areaDesc;
+    @Column(name = "alias", length = 255, nullable = true)
+    private String alias;
 
-    @Column(name = "outdoor")
-    private Boolean outdoor;
+    @Column(name = "location")
+    private String location;
 
-    @Column(name = "non_smoking")
-    private Boolean nonSmoking;
+    @Column(name = "reservation_type")
+    private String reservationType;
 
-    @Column(name = "open_time", nullable = true)
-    private Time openTime;
+    @Column(name = "cooling_system")
+    private String coolingSystem;
 
-    @Column(name = "close_time", nullable = true)
-    private Time closeTime;
+    @Column(name = "room_type")
+    private String room_type;
 
-    @Column(name = "ac")
-    private Boolean ac;
+    @Column(name = "room_function")
+    private String roomFunction;
+
+    @Column(name = "starting_operation_time", nullable = true)
+    private Time startingOperationTime;
+
+    @Column(name = "duration_operation_hour", nullable = true)
+    private Long durationOperationHour;
 
     @OneToMany(mappedBy = "area", cascade = CascadeType.ALL)
     private List<GuestTableEntity> tables;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE,
-            CascadeType.PERSIST, CascadeType.REFRESH })
+            CascadeType.REFRESH })
     @JoinColumn(name = "client_address_id")
     private ClientAddressEntity clientAddress;
 }
