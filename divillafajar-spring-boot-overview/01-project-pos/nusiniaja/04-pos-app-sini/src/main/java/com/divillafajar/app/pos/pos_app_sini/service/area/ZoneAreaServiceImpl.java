@@ -25,20 +25,23 @@ public class ZoneAreaServiceImpl implements ZoneAreaService {
     }
 
     @Override
-    public ClientAreaDTO addNewZoneArea(ClientAreaDTO zoneArea, ClientAddressDTO addressDTO) {
-        ClientAddressEntity existingAddress = addressRepo.findById(addressId)
-                .orElseThrow(() -> new RuntimeException("Address tidak ditemukan"));
-        nuArea.setClientAddress(existingAddress);
-        areaRepo.save(nuArea); // ✅ berhasil
-        areaRepo.save(nuArea);
-        BeanUtils.copyProperties(addressDTO, address);
-        //zoneArea.setClientAddress(address);
-        ClientAreaEntity newArea = new ClientAreaEntity();
-        BeanUtils.copyProperties(zoneArea,newArea);
-        newArea.setClientAddress(address);
-        ClientAreaEntity addedArea = areaRepo.save(newArea);
-        BeanUtils.copyProperties(addedArea,returnVal);
+    public ClientAreaDTO addClientNewZoneArea(ClientAreaDTO zoneArea, Long clientAddressId) {
+        ClientAreaDTO returnVal = new ClientAreaDTO();
+        Optional<ClientAddressEntity> clientLocation = addressRepo.findById(clientAddressId);
+        if(clientLocation.isPresent()) {
+            ClientAreaEntity nuArea = new ClientAreaEntity();
+            BeanUtils.copyProperties(zoneArea,nuArea);
+            nuArea.setClientAddress(clientLocation.get());
+            ClientAreaEntity addedArea = areaRepo.save(nuArea); // ✅ berhasil
+            BeanUtils.copyProperties(addedArea,returnVal);
+        }
+        else {
+            System.out.println("addClientNewZoneArea Adress entity is null");
+        }
+
+
         return returnVal;
+
     }
 
     @Override

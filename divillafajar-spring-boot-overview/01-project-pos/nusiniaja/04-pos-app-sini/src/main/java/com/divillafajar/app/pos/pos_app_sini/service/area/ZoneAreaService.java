@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ZoneAreaService {
-    ClientAreaDTO addNewZoneArea(ClientAreaDTO zoneArea, ClientAddressDTO addressDTO);
+    ClientAreaDTO addClientNewZoneArea(ClientAreaDTO zoneArea, Long clientAddressId);
     Optional<ClientAreaDTO> getClientByAreaNameOrAlias(String name, String alias);
     Optional<List<ClientAreaDTO>> getAllAreaByAddressId(Long aid);
 }

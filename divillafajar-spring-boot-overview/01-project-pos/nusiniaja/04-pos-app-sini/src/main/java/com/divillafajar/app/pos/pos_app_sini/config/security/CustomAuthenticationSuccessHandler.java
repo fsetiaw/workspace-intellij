@@ -149,7 +149,7 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             }
             else if (role.equals("ROLE_SUPERADMIN")) {
                 session.setMaxInactiveInterval(-1); //
-                redirectUrl = "/superuser/home";
+                redirectUrl = "/v1/superuser/home";
                 break;
             }
 

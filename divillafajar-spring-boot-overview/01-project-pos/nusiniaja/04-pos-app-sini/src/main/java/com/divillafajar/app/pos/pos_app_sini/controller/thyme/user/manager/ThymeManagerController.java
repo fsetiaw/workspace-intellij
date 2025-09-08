@@ -56,7 +56,7 @@ public class ThymeManagerController {
         return "manager/index-mgm";
     }
 
-    @PostMapping("/guest/area")
+    @PostMapping("/client/area")
     public String addGuestArea(@RequestParam(name = "addressId", required = true) Long addressId,
                @RequestParam(name = "clientPubId", required = true) String clientPubId,
                 @ModelAttribute GuestAreaRequestModel guestAreaRequestModel,
@@ -73,29 +73,32 @@ public class ThymeManagerController {
                 guestAreaRequestModel.getAlias()
         );
 
-        if(storedArea.isPresent()) {
-            //throw new
-        }
-
-
         Optional<List<ClientAreaDTO>> listOfArea= zoneAreaService.getAllAreaByAddressId(addressId);
-
-        if (listOfArea.isEmpty() || listOfArea.get().isEmpty()) {
-            // list kosong atau Optional memang tidak ada data, lanjut add
-            ClientAreaDTO nuArea = new ClientAreaDTO();
-            BeanUtils.copyProperties(guestAreaRequestModel,nuArea);
-            zoneAreaService.addNewZoneArea(nuArea,store);
-
-
-
-            //setelah selai diinput
-            listOfArea= zoneAreaService.getAllAreaByAddressId(addressId);
-        } else {
-            // listOfArea ada isinya
-            List<ClientAreaDTO> areas = listOfArea.get();
-            areas.forEach(area -> System.out.println(area.getAreaName()));
+        if(storedArea.isPresent()) {
+            //Nama Area sudah ada
+            model.addAttribute("msg","Nama Area: "+guestAreaRequestModel.getAreaName()+" sudah digunakan");
+            model.addAttribute("clientError", "true");
         }
+        else {
 
+
+            //if (listOfArea.isEmpty() || listOfArea.get().isEmpty()) {
+                // list kosong atau Optional memang tidak ada data, lanjut add
+                ClientAreaDTO nuArea = new ClientAreaDTO();
+                BeanUtils.copyProperties(guestAreaRequestModel,nuArea);
+                zoneAreaService.addClientNewZoneArea(nuArea,addressId);
+
+                //setelah selai diinput
+                listOfArea= zoneAreaService.getAllAreaByAddressId(addressId);
+            /*
+            } else {
+                // listOfArea ada isinya
+                List<ClientAreaDTO> areas = listOfArea.get();
+                areas.forEach(area -> System.out.println(area.getAreaName()));
+            }
+
+             */
+        }
 
         model.addAttribute("addressId",addressId);
         model.addAttribute("clientPubId",clientPubId);
@@ -113,7 +116,7 @@ public class ThymeManagerController {
     }
 
 
-    @GetMapping("/guest/area")
+    @GetMapping("/client/area")
     public String goToIndexArea(@RequestParam(name = "addressId", required = true) Long addressId,
                @RequestParam(name = "clientPubId", required = true) String clientPubId,
                Model model) {

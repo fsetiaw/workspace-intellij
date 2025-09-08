@@ -110,6 +110,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         //.requestMatchers("/customer/session-expired","/session-expired").hasAnyRole("EMPLOYEE","MANAGER","ADMIN","CUSTOMER")
                         .requestMatchers("/form/**","/superuser/**","/admin/**","/user/**").hasAnyRole("SUPERADMIN")
+                        .requestMatchers("/v1/form/**","/v1/superuser/**","/v1/admin/**","/v1/user/**").hasAnyRole("SUPERADMIN")
                         .requestMatchers("/customer/home","/api/customer").hasRole("CUSTOMER")
                         .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
                         .requestMatchers(HttpMethod.GET, "/home").hasAnyRole("EMPLOYEE","MANAGER","ADMIN","CUSTOMER")

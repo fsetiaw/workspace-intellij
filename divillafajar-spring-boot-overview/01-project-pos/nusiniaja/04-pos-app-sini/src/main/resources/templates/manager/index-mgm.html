@@ -193,7 +193,7 @@
                                     <div class="panel panel-primary fixed-panel-menu h-150">
                                         <div class="panel-body text-center">
                                             <span class="fa-solid fa-circle-plus icon-big" aria-hidden="true"></span>
-                                            <h3><span th:text="#{label.addGuestArea}"></span></h3>
+                                            <h3><span th:text="#{label.addClientArea}"></span></h3>
                                         </div>
                                     </div>
                                 </a>
@@ -229,7 +229,7 @@
                             <div class="panel-heading"><span th:text="#{label.menu}"></span></div>
                             <div class="panel-body feature-list-content">
                                 <div class="col-md-2">
-                                    <a th:href="@{/manager/guest/area(addressId=${aid},clientPubId=${pid})}" target="_self" class="text-decoration-none">
+                                    <a th:href="@{/manager/client/area(addressId=${aid},clientPubId=${pid})}" target="_self" class="text-decoration-none">
                                         <div class="panel panel-primary fixed-panel-menu h-150-lightBlue">
                                             <div class="panel-body text-center">
                                                 <span class="fa-solid fa-people-line icon-big" aria-hidden="true"></span>
@@ -350,7 +350,7 @@
                         <div class="panel-heading">Form</div>
                         <div class="panel-body" id="feature-content4">
                             <div class="col-md-12">
-                                <iframe th:src="@{/form/manager/guest/area(clientPubId=${pid}, addressId=${aid})}"
+                                <iframe th:src="@{/form/manager/client/area(clientPubId=${pid}, addressId=${aid})}"
                                         style="width:100%; height:800px; border:none;"
                                         id="clientsFrame">
                                 </iframe>
