@@ -57,7 +57,7 @@ public class ThymeSuperuserControllerV1 {
         model.addAttribute("userLogInfo", userLogInfo);
         //return "form/add-new-client";
 
-        return "super/v1/index";
+        return "pages/v1/index";
     }
 
     @GetMapping("/clients")
@@ -65,9 +65,20 @@ public class ThymeSuperuserControllerV1 {
         List<ClientDTO> clients = clientService.getAllClients();
         model.addAttribute("isAdd", add);
         model.addAttribute("ourClients", clients);
+        model.addAttribute("activePage", "dashboard");
         System.out.println("model attr val = " + model.getAttribute("isAdd"));
-        return "super/clients/index-clients";
+        System.out.println("activePage attr val = " + model.getAttribute("activePage"));
+        return "pages/v1/clients/index-clients";
     }
+    @GetMapping("/clients/add")
+    public String showAddClientForm(@RequestParam(name = "add", required = false) Boolean add, Model model) {
+        model.addAttribute("isAdd", add);
+        model.addAttribute("activePage", "clients");
+        model.addAttribute("activeSub", "addClient");
+        System.out.println("showAddClientForm is called");
+        return "pages/v1/clients/add-clients";
+    }
+
 
     @GetMapping("/clients/home")
     public String showClientHome(@RequestParam(name = "pid", required = true) String pid,
