@@ -66,39 +66,32 @@
                 <div class="sidebar-menu">
                     <ul class="menu">
                         <li class="sidebar-title">Menu</li>
-                        <li
-                            class="sidebar-item active ">
+                        <li class="sidebar-item active ">
                             <a th:href="@{/v1/superuser/home}" class='sidebar-link'>
                                 <i class="bi bi-grid-fill"></i>
                                 <span th:text="#{label.dashboardMain}"></span>
                             </a>
                         </li>
-                        <li
-                            class="sidebar-item  has-sub">
-                            <a href="#" class='sidebar-link'>
+                        <li class="sidebar-item ">
+                            <a th:href="@{/v1/superuser/clients}" class='sidebar-link'>
                                 <i class="bi bi-people"></i>
                                 <span th:text="#{label.clients}"></span>
                             </a>
+                        </li>
+                        <li class="sidebar-item  has-sub">
+                            <a href="#" class='sidebar-link'>
+                                <i class="bi bi-gear-fill"></i>
+                                <span th:text="#{label.setting}"></span>
+                            </a>
                             <ul class="submenu ">
-                                <li class="submenu-item  ">
-                                    <a th:href="@{/v1/superuser/clients}" class="submenu-link" th:text="#{label.list}+' '+#{label.clients}"></a>
-                                </li>
                                 <li class="submenu-item  has-sub">
-                                    <a href="#" class="submenu-link">ManageClient</a>
+                                    <a href="#" class="submenu-link"><span th:text="#{label.language}"></span></a>
                                     <ul class="submenu submenu-level-2 ">
                                         <li class="submenu-item ">
-                                            <a href="ui-multi-level-menu.html" class="submenu-link">Add New Client</a>
+                                            <a th:href="@{/shared/changeLanguage(lang=id)}" class="submenu-link">Indonesia</a>
                                         </li>
                                         <li class="submenu-item ">
-                                            <a href="#" class="submenu-link">Edit Client</a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li class="submenu-item  has-sub">
-                                    <a href="#" class="submenu-link">Another Menu</a>
-                                    <ul class="submenu submenu-level-2 ">
-                                        <li class="submenu-item ">
-                                            <a href="#" class="submenu-link">Second Level Menu</a>
+                                            <a th:href="@{/shared/changeLanguage(lang=en)}" class="submenu-link">English</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -106,7 +99,7 @@
                         </li>
                         <li class="sidebar-item">
                             <a href="#" onclick="document.getElementById('logoutForm').submit(); return false;" class='sidebar-link'>
-                                <i class="bi bi-grid-fill"></i>
+                                <i class="bi bi-box-arrow-right"></i>
                                 <span>Logout</span>
                             </a>
                         </li>
@@ -306,15 +299,10 @@
     </div>
     <script th:src="@{/assets/static/js/components/dark.js}"></script>
     <script th:src="@{/assets/extensions/perfect-scrollbar/perfect-scrollbar.min.js}"></script>
-    
-    
     <script th:src="@{/assets/compiled/js/app.js}"></script>
-    
-
-    
 <!-- Need: Apexcharts -->
-<script th:src="@{/assets/extensions/apexcharts/apexcharts.min.js}"></script>
-<script th:src="@{/assets/static/js/pages/dashboard.js}"></script>
+    <script th:src="@{/assets/extensions/apexcharts/apexcharts.min.js}"></script>
+    <script th:src="@{/assets/static/js/pages/dashboard.js}"></script>
 
 </body>
 

@@ -23,16 +23,15 @@
     <script img th:src="@{/assets/static/js/initTheme.js}"></script>
     <form id="logoutForm" method="POST" th:action="@{/logout}" style="display:none"></form>
     <div id="app">
-        <div th:replace="pages/v1/clients/fragments/sidebar.html :: sidebar(${activePage}, ${activeSub})"></div>
+        <div th:replace="pages/v1/client-admin/fragments/sidebar.html :: sidebar(${activePage}, ${activeSub})"></div>
         <div id="main">
             <header class="mb-3">
                 <a href="#" class="burger-btn d-block d-xl-none">
                     <i class="bi bi-justify fs-3"></i>
                 </a>
             </header>
-            
         <div class="page-heading">
-            <h3>ADD CLIENTS</h3>
+            <h3 th:text="'@'+${clientName}"></h3>
         </div>
         <div class="page-content">
             <section class="row">
@@ -110,7 +109,7 @@
                     <div class="row">
                         <div class="col-12 col-xl-12">
                             <div class="card">
-                                <div th:replace="pages/v1/clients/fragments/form/form-add-new-client.html :: add-client"></div>
+                                <div th:replace="pages/v1/client-admin/fragments/form/form-add-new-location.html :: add-location"></div>
                             </div>
                         </div>
                     </div>

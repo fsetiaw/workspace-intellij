@@ -4,8 +4,12 @@ import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientAddressEntit
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface ClientAddressRepo extends CrudRepository<ClientAddressEntity, Long> {
     ClientAddressEntity findByClientId(Long clientId);
     ClientAddressEntity findById(long id);
+    List<ClientAddressEntity> findByClientIdAndAddressNameAndAddressNickname(
+            Long clientId, String addressName, String addressNickname);
 }

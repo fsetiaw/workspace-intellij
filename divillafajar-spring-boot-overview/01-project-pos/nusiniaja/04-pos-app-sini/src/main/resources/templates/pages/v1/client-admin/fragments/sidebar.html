@@ -1,6 +1,5 @@
-<html xmlns:th="http://www.thymeleaf.org">
-<body>
-<div th:fragment="sidebar(activePage, activeSub)" xmlns:th="http://www.w3.org/1999/xhtml">
+<div th:fragment="sidebar(activePage, activeSub)" xmlns:th="http://www.w3.org/1999/xhtml"
+     xmlns:sec="http://www.w3.org/1999/xhtml">
     <div id="sidebar">
         <div class="sidebar-wrapper active">
             <div class="sidebar-header position-relative">
@@ -44,33 +43,33 @@
             <div class="sidebar-menu">
                 <ul class="menu">
                     <li class="sidebar-title">Menu</li>
-                    <li
+                    <li sec:authorize="hasRole('SUPERADMIN')"
                             class="sidebar-item">
-                        <a th:href="@{/v1/superuser/home}" class='sidebar-link'>
+                        <a th:href="@{/v1/superuser/clients}" class='sidebar-link'>
                             <i class="bi bi-arrow-left-square-fill"></i>
                             <span th:text="#{label.previousPage}"></span>
                         </a>
                     </li>
                     <li class="sidebar-item" th:classappend="${activePage == 'dashboard'} ? ' active'">
-                        <a th:href="@{/v1/superuser/clients}" class='sidebar-link'>
+                        <a th:href="@{/v1/admin/home(pid=${pid})}" class='sidebar-link'>
                             <i class="bi bi-grid-fill"></i>
                             <span th:text="#{label.dashboardClient}"></span>
                         </a>
                     </li>
-                    <li class="sidebar-item  has-sub"  th:classappend="${activePage == 'clients'} ? ' active'">
+                    <li class="sidebar-item  has-sub"  th:classappend="${activePage == 'location'} ? ' active'">
                         <a href="#" class='sidebar-link'>
                             <i class="bi bi-people"></i>
-                            <span th:text="#{label.manage}+' '+#{label.clients}"></span>
+                            <span th:text="#{label.manage}+' '+#{label.location}"></span>
                         </a>
                         <ul class="submenu ">
-                            <li class="submenu-item" th:classappend="${activeSub == 'addClient'} ? ' active'">
-                                <a th:href="@{/v1/superuser/clients/add}" class="submenu-link" th:text="#{label.add}+' '+#{label.clients}"></a>
+                            <li class="submenu-item" th:classappend="${activeSub == 'addCLocation'} ? ' active'">
+                                <a th:href="@{/v1/admin/location/add(pid=${pid},clientName=${clientName})}" class="submenu-link" th:text="#{label.add}+' '+#{label.location}"></a>
                             </li>
                             <li class="submenu-item  ">
-                                <a href="component-accordion.html" class="submenu-link" th:text="#{label.update}+' '+#{label.clients}"></a>
+                                <a href="component-accordion.html" class="submenu-link" th:text="#{label.update}+' '+#{label.location}"></a>
                             </li>
                             <li class="submenu-item  ">
-                                <a href="component-accordion.html" class="submenu-link" th:text="#{label.delete}+' '+#{label.clients}"></a>
+                                <a href="component-accordion.html" class="submenu-link" th:text="#{label.delete}+' '+#{label.location}"></a>
                             </li>
                         </ul>
                     </li>
@@ -104,5 +103,3 @@
         </div>
     </div>
 </div>
-</body>
-</html>

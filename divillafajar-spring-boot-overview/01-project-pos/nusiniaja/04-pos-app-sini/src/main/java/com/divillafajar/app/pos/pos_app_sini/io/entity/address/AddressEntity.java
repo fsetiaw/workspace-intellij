@@ -44,7 +44,6 @@ public class AddressEntity implements Serializable {
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
-
     @Column(name = "address_name", nullable = false, length = 100)
     private String addressName;
 

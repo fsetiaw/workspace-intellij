@@ -142,5 +142,42 @@ public class ClientServiceImpl implements ClientService{
         return returnVal;
     }
 
+    @Override
+    @Transactional
+    public ClientDTO addClientLocation(ClientDTO clientDTO, AddressDTO addressDTO, ClientContactDTO contactDTO) {
+        //initialize return value
+        ClientDTO returnVal = new ClientDTO();
+
+        //find if super client exist
+        List<ClientAddressEntity> clientLocation = clientAddressRepo.findByClientIdAndAddressNameAndAddressNickname(clientDTO.getId(),addressDTO.getAddressName(),addressDTO.getAddressNickname());
+        if(clientLocation!=null)
+            throw new ClientAlreadyExistException("Client name with phone number "+clientDTO.getClientPhone()+" already exist");
+        clientRepo.findClientByClientNameAndClientEmail(clientDTO.getClientName(), clientDTO.getClientEmail());
+        if(storedClient!=null)
+            throw new ClientAlreadyExistException("Client name with email "+clientDTO.getClientEmail()+" already exist");
+
+        try {
+            //lanjut save
+            ClientEntity nuClient = new ClientEntity();
+            BeanUtils.copyProperties(clientDTO,nuClient);
+            storedClient = clientRepo.save(nuClient);
+            ClientAddressEntity nuClientDetails = new ClientAddressEntity();
+            BeanUtils.copyProperties(addressDTO,nuClientDetails);
+            nuClientDetails.setClient(storedClient);
+            ClientAddressEntity storedClientAddress =  clientAddressRepo.save(nuClientDetails);
+            ClientContactEntity pic = new ClientContactEntity();
+            BeanUtils.copyProperties(contactDTO,pic);
+            pic.setClientAddress(storedClientAddress);
+            clientContactRepo.save(pic);
+            storedClient = clientRepo.findClientByClientNameAndClientEmail(clientDTO.getClientName(),clientDTO.getClientEmail());
+            BeanUtils.copyProperties(storedClient,returnVal);
+        }
+        catch (Exception e) {
+            // Transaction akan rollback otomatis
+            throw new CreateUserException("Gagal Membuat Client Baru"); // lempar lagi supaya trigger rollback
+        }
+        return returnVal;
+    }
+
 
 }

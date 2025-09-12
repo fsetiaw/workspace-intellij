@@ -1,18 +1,17 @@
-package com.divillafajar.app.pos.pos_app_sini.controller.thyme.user.superuser;
+package com.divillafajar.app.pos.pos_app_sini.controller.thyme.user.admin;
 
 import com.divillafajar.app.pos.pos_app_sini.exception.client.ClientAlreadyExistException;
 import com.divillafajar.app.pos.pos_app_sini.exception.user.CreateUserException;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.address.dto.AddressDTO;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientAddressEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientContactDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientDTO;
-import com.divillafajar.app.pos.pos_app_sini.io.entity.session.UserSessionLog;
 import com.divillafajar.app.pos.pos_app_sini.model.client.ClientDetailsResponseModel;
 import com.divillafajar.app.pos.pos_app_sini.model.client.CreateClientRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.service.client.ClientService;
 import com.divillafajar.app.pos.pos_app_sini.service.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
@@ -20,81 +19,85 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.LocaleResolver;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 
 @Controller
-@RequestMapping("v1/superuser")
-public class ThymeSuperuserControllerV1 {
+@RequestMapping("v1/admin")
+public class ThymeAdminControllerV1 {
 
-    private final UserService userService;
     private final ClientService clientService;
-    private LocaleResolver localeResolver;
-    private MessageSource messageSource;
+    private final LocaleResolver localeResolver;
+    private final UserService userService;
+    private final MessageSource messageSource;
 
-    public ThymeSuperuserControllerV1(UserService userService, ClientService clientService,
-                                      LocaleResolver localeResolver,MessageSource messageSource) {
-        this.userService=userService;
+    public ThymeAdminControllerV1(ClientService clientService, LocaleResolver localeResolver,
+                  UserService userService, MessageSource messageSource) {
         this.clientService=clientService;
         this.localeResolver=localeResolver;
         this.messageSource=messageSource;
+        this.userService=userService;
     }
-
+/*
     @GetMapping("/home")
-    public String showHome(HttpServletRequest request,
-               HttpServletResponse response,
-               HttpSession session,
-               //@RequestParam(name = "lang", required = false) String lang,
-               Model model) {
-        System.out.println("GOTO MASTER HOME V1");
-        /*
-        GET TOTAL CLIENTS
-         */
-        List<ClientDTO> listClients = Optional.ofNullable(clientService.getAllClients())
-                .orElse(Collections.emptyList());
-        int size=0;
-
-        model.addAttribute("listClients", listClients);
+    public String showHome(HttpSession session, Model model) {
+        System.out.println("GOTO MASTER HOME");
         UserSessionLog userLogInfo = (UserSessionLog) session.getAttribute("userLogInfo");
         model.addAttribute("userLogInfo", userLogInfo);
         //return "form/add-new-client";
 
-        return "pages/v1/index";
+        return "admin/index";
     }
 
-    @GetMapping("/clients")
-    public String gotoIndexClients(@RequestParam(name = "add", required = false) Boolean add, Model model) {
-        List<ClientDTO> clients = clientService.getAllClients();
+ */
+
+    @GetMapping("/home")
+    public String showAdminHome(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @RequestParam(name = "pid", required = true) String pid,
+            @RequestParam(name = "add", required = false) Boolean add,
+            //@RequestParam(name = "lang", required = false) String lang,
+            Model model
+    ) {
+        System.out.println("showAdminHome IS CALLED = " + pid);
+        /*
+        if (lang != null) {
+            Locale locale = new Locale(lang);
+            localeResolver.setLocale(request, response, locale);
+        }
+
+         */
+
+        ClientDTO client = clientService.getClientDetails(pid);
+        List<ClientAddressEntity> storesLocation = client.getClientAddresses();
         model.addAttribute("isAdd", add);
-        model.addAttribute("ourClients", clients);
+        model.addAttribute("pid",pid);
         model.addAttribute("activePage", "dashboard");
-        System.out.println("model attr val = " + model.getAttribute("isAdd"));
-        System.out.println("activePage attr val = " + model.getAttribute("activePage"));
-        return "pages/v1/clients/index-clients";
+        model.addAttribute("clientType", client.getClientType());
+        model.addAttribute("clientName", client.getClientName());
+        model.addAttribute("ourStores", storesLocation);
+        //System.out.println("val lang client.clientName= " + model.getAttribute("client"));
+        //return "super/clients/home/home-client";
+        return "pages/v1/client-admin/index-admin";
     }
-    @GetMapping("/clients/add")
-    public String showAddClientForm(@RequestParam(name = "add", required = false) Boolean add, Model model) {
+
+    @GetMapping("/location/add")
+    public String showAddLocationForm(
+            @RequestParam(name = "pid", required = true) String pid,
+            @RequestParam(name = "clientName", required = true) String clientName,
+          @RequestParam(name = "add", required = false) Boolean add, Model model) {
+        System.out.println("showAddLocationForm CALLED = "+clientName);
+        model.addAttribute("pid", pid);
+        model.addAttribute("clientName", clientName);
         model.addAttribute("isAdd", add);
-        model.addAttribute("activePage", "clients");
-        model.addAttribute("activeSub", "addClient");
+        model.addAttribute("activePage", "loaction");
+        model.addAttribute("activeSub", "addLocation");
         System.out.println("showAddClientForm is called");
-        return "pages/v1/clients/add-clients";
+        return "pages/v1/client-admin/add-location";
     }
 
-
-    @GetMapping("/clients/home")
-    public String showClientHome(@RequestParam(name = "pid", required = true) String pid,
-                  @RequestParam(name = "lang", required = false) String lang,
-                  Model model) {
-        System.out.println("showCclientHome IS CALLED = " + pid);
-        System.out.println("showCclientHome lang = " + lang);
-        model.addAttribute("client", clientService.getClientDetails(pid));
-        return "super/clients/home/home-client";
-    }
-
-    @PostMapping("/clients")
+    @PostMapping("/location/add")
     public String addClients(@ModelAttribute CreateClientRequestModel createClientRequestModel, Model model, Locale locale
     ) {
         String msg = "false";
@@ -125,14 +128,14 @@ public class ThymeSuperuserControllerV1 {
 
             //return ResponseEntity.status(HttpStatus.CREATED).body(returnVal);
         } catch (
-        ClientAlreadyExistException ex) {
+                ClientAlreadyExistException ex) {
             // gagal server / unexpected error
 
             //model.addAttribute("msg",ex.getMessage());
             //model.addAttribute("clientError", "true");
             model.addAttribute("errorMessage", labelClient+" "+msgAddFailed+"<br>"+errorClientAlreadyExist);
         } catch (
-        CreateUserException ex) {
+                CreateUserException ex) {
             // gagal server / unexpected error
             model.addAttribute("errorMessage", labelClient+" "+msgAddFailed+"<br>"+unexpectedError);
         } catch (Exception ex) {
@@ -146,6 +149,7 @@ public class ThymeSuperuserControllerV1 {
         }
         //model.addAttribute("isAdd", false);
         //return "super/clients/index-clients";
-        return "pages/v1/clients/index-clients";
+        return "pages/v1/client-admin/index-admin";
     }
+
 }
