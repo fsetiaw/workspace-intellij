@@ -1,0 +1,28 @@
+        .toast-confirm {
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          min-width: 250px;
+          background: #fff;
+          border: 1px solid #dc3545;
+          color: #dc3545;
+          padding: 15px;
+          border-radius: 8px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+          z-index: 9999;
+          display: none;
+          text-align: center;
+        }
+        .toast-confirm.show {
+          display: block;
+          animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .toast-actions {
+          margin-top: 10px;
+          text-align: right;
+        }
+        .toast-actions button {
+          margin-left: 8px;
+        }

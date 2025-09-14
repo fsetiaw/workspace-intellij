@@ -1,14 +1,13 @@
-package com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto;
+package com.divillafajar.app.pos.pos_app_sini.model.client.location;
 
-import lombok.Getter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
-public class ClientAddressDTO {
-    private String id;
+@AllArgsConstructor
+public class CreateClientLocationRequestModel {
     private String locationCategory;
     private String addressName;
     private String addressNickname;
@@ -20,4 +19,9 @@ public class ClientAddressDTO {
     private String province;
     private String postalCode;
     private String country;
+    private String contactName;
+    private String contactPhone;
+    private String contactEmail;
+    private String contactPosition;
+    private String status;
 }

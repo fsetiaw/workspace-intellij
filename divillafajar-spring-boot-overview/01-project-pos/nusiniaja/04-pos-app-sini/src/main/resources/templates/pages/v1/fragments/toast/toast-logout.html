@@ -1,0 +1,16 @@
+<!-- fragments/toast.html -->
+<div th:fragment="toast-logout">
+    <!-- Toast Logout -->
+    <div id="toast-logout" class="toast-container position-fixed top-50 start-50 translate-middle p-3" style="z-index: 1100; display: none;">
+        <div class="toast align-items-center text-bg-warning border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    🔒 Are you sure you want to logout?
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-secondary me-2" id="confirm-logout">Yes</button>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" id="cancel-logout"></button>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>

@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface ClientService {
     ClientDTO createClient(ClientDTO clientDTO, AddressDTO addressDTO, ClientContactDTO contactDTO);
-    ClientDTO addClientLocation(ClientDTO clientDTO, AddressDTO addressDTO, ClientContactDTO contactDTO);
+    //ClientDTO addClientLocation(ClientDTO clientDTO, AddressDTO addressDTO, ClientContactDTO contactDTO);
     ClientDTO createSuperClient(ClientDTO clientDTO, AddressDTO addressDTO, ClientContactDTO contact, String pubId, String key);
     List<ClientDTO> getAllClients();
     ClientDTO getClientDetails(String pid);

@@ -1,0 +1,30 @@
+<div th:fragment="right-header" xmlns:th="http://www.w3.org/1999/xhtml"
+     xmlns:sec="http://www.w3.org/1999/xhtml">
+    <header class="mb-3 d-flex justify-content-between align-items-center">
+        <!-- Left: Burger Button -->
+        <a href="#" class="burger-btn d-block d-xl-none">
+            <i class="bi bi-justify fs-3"></i>
+        </a>
+
+        <!-- Right: Action Icons -->
+        <div class="d-flex align-items-center gap-3">
+            <!-- Notification -->
+            <a href="#" class="position-relative">
+                <div class="icon-circle bg-white shadow-sm d-flex align-items-center justify-content-center">
+                    <i class="bi bi-bell text-dark fs-5"></i>
+                </div>
+                <!-- Badge notif -->
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                3
+                            </span>
+            </a>
+
+            <!-- Logout -->
+            <a href="#" id="logoutLink2">
+                <div class="icon-circle bg-white shadow-sm d-flex align-items-center justify-content-center">
+                    <i class="bi bi-box-arrow-right text-dark fs-5"></i>
+                </div>
+            </a>
+        </div>
+    </header>
+</div>

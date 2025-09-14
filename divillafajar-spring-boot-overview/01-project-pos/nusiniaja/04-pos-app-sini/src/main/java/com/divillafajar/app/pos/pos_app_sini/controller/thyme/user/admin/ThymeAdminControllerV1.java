@@ -1,13 +1,17 @@
 package com.divillafajar.app.pos.pos_app_sini.controller.thyme.user.admin;
 
+import com.divillafajar.app.pos.pos_app_sini.exception.DuplicationErrorException;
 import com.divillafajar.app.pos.pos_app_sini.exception.client.ClientAlreadyExistException;
 import com.divillafajar.app.pos.pos_app_sini.exception.user.CreateUserException;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.address.dto.AddressDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientAddressEntity;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientAddressDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientContactDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientDTO;
 import com.divillafajar.app.pos.pos_app_sini.model.client.ClientDetailsResponseModel;
 import com.divillafajar.app.pos.pos_app_sini.model.client.CreateClientRequestModel;
+import com.divillafajar.app.pos.pos_app_sini.model.client.location.CreateClientLocationRequestModel;
+import com.divillafajar.app.pos.pos_app_sini.service.client.ClientAddressService;
 import com.divillafajar.app.pos.pos_app_sini.service.client.ClientService;
 import com.divillafajar.app.pos.pos_app_sini.service.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,25 +22,27 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Locale;
 
 @Controller
-@RequestMapping("v1/admin")
+@RequestMapping("v1/admin/client")
 public class ThymeAdminControllerV1 {
-
+    private final ClientAddressService clientAddressService;
     private final ClientService clientService;
     private final LocaleResolver localeResolver;
     private final UserService userService;
     private final MessageSource messageSource;
 
     public ThymeAdminControllerV1(ClientService clientService, LocaleResolver localeResolver,
-                  UserService userService, MessageSource messageSource) {
+                  UserService userService, ClientAddressService clientAddressService, MessageSource messageSource) {
         this.clientService=clientService;
         this.localeResolver=localeResolver;
         this.messageSource=messageSource;
         this.userService=userService;
+        this.clientAddressService=clientAddressService;
     }
 /*
     @GetMapping("/home")
@@ -87,69 +93,83 @@ public class ThymeAdminControllerV1 {
             @RequestParam(name = "pid", required = true) String pid,
             @RequestParam(name = "clientName", required = true) String clientName,
           @RequestParam(name = "add", required = false) Boolean add, Model model) {
-        System.out.println("showAddLocationForm CALLED = "+clientName);
+        System.out.println("showAddLocationForm CALLED = "+clientName+pid);
         model.addAttribute("pid", pid);
         model.addAttribute("clientName", clientName);
         model.addAttribute("isAdd", add);
-        model.addAttribute("activePage", "loaction");
+        model.addAttribute("activePage", "location");
         model.addAttribute("activeSub", "addLocation");
         System.out.println("showAddClientForm is called");
         return "pages/v1/client-admin/add-location";
     }
 
     @PostMapping("/location/add")
-    public String addClients(@ModelAttribute CreateClientRequestModel createClientRequestModel, Model model, Locale locale
+    public String addLokasiCabang(
+            @ModelAttribute CreateClientLocationRequestModel createClientLocationRequestModel,
+            @RequestParam(name = "pid", required = true) String pid,
+            RedirectAttributes redirectAttributes,
+            Model model, Locale locale
     ) {
         String msg = "false";
-        String labelClient = messageSource.getMessage("label.client", null, locale);
+        String labelLocation = messageSource.getMessage("label.location", null, locale);
         String successMessage = messageSource.getMessage("label.addSuccessfully", null, locale);
         String msgAddFailed = messageSource.getMessage("label.addFailed", null, locale);
-        String errorClientAlreadyExist = messageSource.getMessage("modal.errorClientAlreadyExist", null, locale);
+        String errorClientLocationAlreadyExist = messageSource.getMessage("modal.errorClientLocationAlreadyExist", null, locale);
         String unexpectedError = messageSource.getMessage("modal.errorUnexpected", null, locale);
-        System.out.println("ADD CLIENT IS CALLED");
+        System.out.println("ADD CLIENT IS CALLED V!");
+        System.out.println("ADD CLIENT PID="+pid);
 
         try {
-            ClientDetailsResponseModel returnVal = new ClientDetailsResponseModel();
-
-            ClientDTO client = new ClientDTO();
-            BeanUtils.copyProperties(createClientRequestModel,client);
-            client.setStatus("ok");
-
-            AddressDTO address = new AddressDTO();
-            BeanUtils.copyProperties(createClientRequestModel,address);
-
+            ClientDTO ownerClient = clientService.getClientDetails(pid);
+            System.out.println("pit 2");
+            ClientAddressDTO address = new ClientAddressDTO();
+            BeanUtils.copyProperties(createClientLocationRequestModel,address);
+            System.out.println("pit 3");
             ClientContactDTO pic = new ClientContactDTO();
-            BeanUtils.copyProperties(createClientRequestModel,pic);
+            BeanUtils.copyProperties(createClientLocationRequestModel,pic);
 
+            System.out.println("pit 4");
+            clientAddressService.addNewStoreOrBranch(ownerClient.getClientAddresses().getFirst().getId(),address, pic);
+            System.out.println("pit 5");
 
-            ClientDTO createdClient = clientService.createClient(client,address,pic);
-            model.addAttribute("successMessage", labelClient+" "+successMessage);
+            redirectAttributes.addFlashAttribute("successMessage",
+                    labelLocation+" "+successMessage);
+            //model.addAttribute("successMessage", labelLocation+" "+successMessage);
             //BeanUtils.copyProperties(createdClient,returnVal);
-
+            System.out.println("pit 6");
             //return ResponseEntity.status(HttpStatus.CREATED).body(returnVal);
-        } catch (
-                ClientAlreadyExistException ex) {
+        } catch (DuplicationErrorException ex) {
             // gagal server / unexpected error
+            System.out.println("berhasilditangkap");
 
             //model.addAttribute("msg",ex.getMessage());
             //model.addAttribute("clientError", "true");
-            model.addAttribute("errorMessage", labelClient+" "+msgAddFailed+"<br>"+errorClientAlreadyExist);
-        } catch (
-                CreateUserException ex) {
+            //model.addAttribute("errorMessage", labelLocation+" "+msgAddFailed+"<br>"+errorClientLocationAlreadyExist);
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    labelLocation + " " + msgAddFailed + "<br>" + errorClientLocationAlreadyExist);
+        //} catch (
+        //        CreateUserException ex) {
             // gagal server / unexpected error
-            model.addAttribute("errorMessage", labelClient+" "+msgAddFailed+"<br>"+unexpectedError);
+        //    model.addAttribute("errorMessage", labelLocation+" "+msgAddFailed+"<br>"+unexpectedError);
         } catch (Exception ex) {
             // gagal server / unexpected error
-            model.addAttribute("errorMessage", labelClient+" "+msgAddFailed+"<br>"+unexpectedError);
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    labelLocation + " " + msgAddFailed + "<br>" + unexpectedError);
+            //model.addAttribute("errorMessage", labelLocation+" "+msgAddFailed+"<br>"+unexpectedError);
         }
         finally {
+            //model.addAttribute("pid", pid);
             List<ClientDTO> clients = clientService.getAllClients();
-            model.addAttribute("ourClients", clients);
-            model.addAttribute("toast-delay", 1000);
+            //model.addAttribute("ourClients", clients);
+            redirectAttributes.addFlashAttribute("ourClients", clients);
+            redirectAttributes.addFlashAttribute("toastDelay", 1500);
+
+            //model.addAttribute("toast-delay", 1000);
         }
         //model.addAttribute("isAdd", false);
         //return "super/clients/index-clients";
-        return "pages/v1/client-admin/index-admin";
+        //return "pages/v1/client-admin/index-admin";
+        return "redirect:/v1/admin/client/home?pid=" + pid + "&add=false";
     }
 
 }

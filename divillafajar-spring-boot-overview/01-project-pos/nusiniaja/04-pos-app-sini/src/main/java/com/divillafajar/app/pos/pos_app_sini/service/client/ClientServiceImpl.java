@@ -141,7 +141,7 @@ public class ClientServiceImpl implements ClientService{
         }
         return returnVal;
     }
-
+/*
     @Override
     @Transactional
     public ClientDTO addClientLocation(ClientDTO clientDTO, AddressDTO addressDTO, ClientContactDTO contactDTO) {
@@ -179,5 +179,7 @@ public class ClientServiceImpl implements ClientService{
         return returnVal;
     }
 
+
+ */
 
 }

@@ -38,7 +38,7 @@
                         <div class="col-12">
                             <div class="row" th:if="${ourClients != null and #lists.size(ourClients) > 0}">
                                 <div class="col-6 col-lg-3 col-md-6" th:each="client : ${ourClients}">
-                                    <a th:href="@{/v1/admin/home(pid=${client.pubId},clientName=${client.clientName})}" target="_self" class="text-decoration-none">
+                                    <a th:href="@{/v1/admin/client/home(pid=${client.pubId},clientName=${client.clientName})}" target="_self" class="text-decoration-none">
                                         <div class="card">
                                             <div class="card-body px-4 py-4-5">
                                                 <div class="row">

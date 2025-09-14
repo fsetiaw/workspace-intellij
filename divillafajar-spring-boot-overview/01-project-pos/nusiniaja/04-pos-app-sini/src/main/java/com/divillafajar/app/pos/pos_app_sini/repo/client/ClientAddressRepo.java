@@ -10,6 +10,6 @@ import java.util.List;
 public interface ClientAddressRepo extends CrudRepository<ClientAddressEntity, Long> {
     ClientAddressEntity findByClientId(Long clientId);
     ClientAddressEntity findById(long id);
-    List<ClientAddressEntity> findByClientIdAndAddressNameAndAddressNickname(
+    List<ClientAddressEntity> findByClientIdAndAddressNameIgnoreCaseAndAddressNicknameIgnoreCase(
             Long clientId, String addressName, String addressNickname);
 }

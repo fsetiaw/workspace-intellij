@@ -143,6 +143,8 @@ public class ThymeSuperuserControllerV1 {
             List<ClientDTO> clients = clientService.getAllClients();
             model.addAttribute("ourClients", clients);
             model.addAttribute("toast-delay", 1000);
+            model.addAttribute("activePage", "dashboard");
+            //model.addAttribute("activeSub", "addClient");
         }
         //model.addAttribute("isAdd", false);
         //return "super/clients/index-clients";
