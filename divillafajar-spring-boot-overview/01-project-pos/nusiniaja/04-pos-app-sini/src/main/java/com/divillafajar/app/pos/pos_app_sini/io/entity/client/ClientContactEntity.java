@@ -45,6 +45,6 @@ public class ClientContactEntity implements Serializable {
     @Column(name = "contact_position")
     private String contactPosition;
 
-    @Column(name = "deleted")
-    private Boolean deleted=false;
+    @Column(name = "deleted", nullable = true, columnDefinition = "TINYINT(1)")
+    private Boolean deleted = false;
 }

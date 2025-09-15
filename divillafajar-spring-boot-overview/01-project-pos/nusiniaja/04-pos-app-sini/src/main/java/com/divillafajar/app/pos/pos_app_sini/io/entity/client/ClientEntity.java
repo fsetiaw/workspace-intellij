@@ -2,9 +2,12 @@ package com.divillafajar.app.pos.pos_app_sini.io.entity.client;
 
 import com.divillafajar.app.pos.pos_app_sini.io.entity.employee.EmploymentEntity;
 import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.*;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -13,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+@FilterDef(name = "deletedFilter", parameters = @ParamDef(name = "isDeleted", type = Boolean.class))
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -55,8 +59,8 @@ public class ClientEntity implements Serializable {
     @Column(name = "status", length = 50, nullable = false)
     private String status;
 
-    @Column(name = "deleted")
-    private Boolean deleted=false;
+    @Column(name = "deleted", nullable = true, columnDefinition = "TINYINT(1)")
+    private Boolean deleted = false;
     /*
     @ManyToMany(fetch = FetchType.EAGER, cascade = {
             CascadeType.PERSIST, CascadeType.MERGE,
@@ -68,6 +72,9 @@ public class ClientEntity implements Serializable {
      */
 
 
+    @Filters({
+            @Filter(name = "deletedFilter", condition = "deleted = :isDeleted")
+    })
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
     private List<ClientAddressEntity> clientAddresses;
 /*

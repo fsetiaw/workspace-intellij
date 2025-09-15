@@ -71,6 +71,6 @@ public class ClientAddressEntity implements Serializable {
     @Column(name = "country", length = 50, nullable = true)
     private String country;
 
-    @Column(name = "deleted")
-    private Boolean deleted=false;
+    @Column(name = "deleted", nullable = true, columnDefinition = "TINYINT(1)")
+    private Boolean deleted = false;
 }
