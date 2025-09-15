@@ -82,6 +82,7 @@
 </head>
     <body>
         <script th:src="@{/assets/static/js/initTheme.js}"></script>
+        <form id="updateForm" method="POST" th:action="@{/logout}" style="display:none"></form>
         <form id="logoutForm" method="POST" th:action="@{/logout}" style="display:none"></form>
         <div id="app">
             <div th:replace="pages/v1/client-admin/fragments/sidebar.html :: sidebar(${activePage}, ${activeSub})"></div>
@@ -122,13 +123,11 @@
 
                                             <!-- icon delete -->
                                             <button class="btn btn-sm btn-danger delete-btn" type="button"
-                                                    th:if="${activePage != 'dashboard'}"
                                                     th:attr="data-store-name=${store.addressName}">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                             <!-- update delete -->
                                             <button class="btn btn-sm btn-success update-btn" type="button"
-                                                    th:if="${activePage != 'dashboard'}"
                                                     th:attr="data-store-name=${store.addressName}">
                                                 <i class="bi bi-gear-fill"></i>
                                             </button>
@@ -143,11 +142,18 @@
             </div>
         </div>
         <div th:replace="pages/v1/fragments/toast/toast-status-process-result :: toast-messages(${successMessage}, ${errorMessage}, 5000)"></div>
-        <div id="confirmToast" class="toast-confirm">
+        <div id="confirmDeleteToast" class="toast-confirm">
             <div id="confirmMessage"></div>
             <div class="toast-actions">
                 <button id="cancelDelete" class="btn btn-sm btn-secondary">Batal</button>
                 <button id="confirmDelete" class="btn btn-sm btn-danger">Hapus</button>
+            </div>
+        </div>
+        <div id="confirmUpdateToast" class="toast-confirm">
+            <div id="confirmUpdateMessage"></div>
+            <div class="toast-actions">
+                <button id="cancelUpdate" class="btn btn-sm btn-secondary">Batal</button>
+                <button id="confirmUpdate" class="btn btn-sm btn-danger">Update</button>
             </div>
         </div>
         <script th:src="@{/assets/static/js/components/dark.js}"></script>
@@ -163,6 +169,13 @@
 
             let isShaking = false; // state global
 
+            document.addEventListener("DOMContentLoaded", function() {
+                // setelah page load → langsung sembunyikan semua tombol
+                const cards = document.querySelectorAll(".store-card");
+                cards.forEach(card => {
+                    card.querySelectorAll(".delete-btn, .update-btn").forEach(btn => btn.style.display = "none");
+                });
+            });
 
 
             document.addEventListener("click", function(e) {
@@ -204,7 +217,7 @@
 
 
             <!-- buat handle delete-->
-            const toast = document.getElementById("confirmToast");
+            const toast = document.getElementById("confirmDeleteToast");
             const confirmMessage = document.getElementById("confirmMessage");
             const cancelDelete = document.getElementById("cancelDelete");
             const confirmDelete = document.getElementById("confirmDelete");
@@ -237,6 +250,49 @@
               }
               toast.classList.remove("show");
             });
+
+            <!-- buat handle update-->
+            const toastUpdate = document.getElementById("confirmUpdateToast");
+            const confirmUpdateMessage = document.getElementById("confirmUpdateMessage");
+            const cancelUpdate = document.getElementById("cancelUpdate");
+            const confirmUpdate = document.getElementById("confirmUpdate");
+
+
+
+            document.querySelectorAll(".update-btn").forEach(btn => {
+              btn.addEventListener("click", function () {
+                const card = this.closest(".store-card");
+                const storeName = this.getAttribute("data-store-name");
+
+                currentCard = card;
+
+                confirmUpdateMessage.textContent = `Anda yakin mau update ${storeName}?`;
+                toastUpdate.classList.add("show");
+              });
+            });
+
+            // batal
+            cancelUpdate.addEventListener("click", () => {
+              toastUpdate.classList.remove("show");
+              currentCard = null;
+            });
+
+            // konfirmasi
+            confirmUpdate.addEventListener("click", () => {
+              if (currentCard) {
+                const storeName = currentCard.querySelector(".update-btn").getAttribute("data-store-name");
+
+                // set action ke path sesuai storeName
+                const form = document.getElementById("updateForm");
+                //form.setAttribute("action", `/store/update/${storeName}`);
+                //form.setAttribute("action", `/store/update/${storeName}`);
+                form.submit();
+
+                currentCard = null;
+              }
+              toastUpdate.classList.remove("show");
+            });
+
         </script>
     </body>
 

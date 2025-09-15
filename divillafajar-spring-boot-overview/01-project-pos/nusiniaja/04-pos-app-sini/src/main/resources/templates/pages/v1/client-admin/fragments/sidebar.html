@@ -44,7 +44,7 @@
                 <ul class="menu">
                     <li class="sidebar-title">Menu</li>
                     <li sec:authorize="hasRole('SUPERADMIN')" class="sidebar-item"
-                        th:if="${activePage != 'location'}">>
+                        th:if="${activePage != 'location'}">
                         <a th:href="@{/v1/superuser/clients}" class='sidebar-link'>
                             <i class="bi bi-arrow-left-square-fill"></i>
                             <span th:text="#{label.previousPage}"></span>
@@ -65,14 +65,16 @@
                             <li class="submenu-item" th:classappend="${activeSub == 'addLocation'} ? ' active'">
                                 <a th:href="@{/v1/admin/client/location/add(pid=${pid},clientName=${clientName})}" class="submenu-link" th:text="#{label.add}+' '+#{label.location}"></a>
                             </li>
-                            <li class="submenu-item" th:classappend="${activeSub == 'updLocation'} ? ' active'">
+                            <li th:if="${activeSub != 'addLocation'}"
+                                class="submenu-item" th:classappend="${activeSub == 'updLocation'} ? ' active'">
                                 <a href="#"
                                    class="submenu-link shake-trigger"
                                    data-target-btn="update-btn"
                                    th:text="#{label.update}+' '+#{label.location}">
                                 </a>
                             </li>
-                            <li class="submenu-item" th:classappend="${activeSub == 'delLocation'} ? ' active'">
+                            <li th:if="${activeSub != 'addLocation'}"
+                                class="submenu-item" th:classappend="${activeSub == 'delLocation'} ? ' active'">
                                 <a href="#"
                                    class="submenu-link shake-trigger"
                                    data-target-btn="delete-btn"
