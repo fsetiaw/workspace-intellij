@@ -54,6 +54,9 @@ public class ClientEntity implements Serializable {
 
     @Column(name = "status", length = 50, nullable = false)
     private String status;
+
+    @Column(name = "deleted")
+    private Boolean deleted=false;
     /*
     @ManyToMany(fetch = FetchType.EAGER, cascade = {
             CascadeType.PERSIST, CascadeType.MERGE,

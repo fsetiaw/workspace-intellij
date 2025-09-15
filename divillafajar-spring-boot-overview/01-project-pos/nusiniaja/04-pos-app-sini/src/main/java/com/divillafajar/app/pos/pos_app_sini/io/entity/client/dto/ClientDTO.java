@@ -22,4 +22,5 @@ public class ClientDTO {
     private String status;
     private List<ClientAddressEntity> clientAddresses;
     private Set<EmploymentEntity> employments;
+    private Boolean deleted;
 }
