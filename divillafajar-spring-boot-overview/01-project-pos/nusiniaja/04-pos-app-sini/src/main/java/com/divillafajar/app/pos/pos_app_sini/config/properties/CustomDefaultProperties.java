@@ -16,4 +16,5 @@ public class CustomDefaultProperties {
     private String masterClientName;
     private String masterClientEmail;
     private String masterClientPubid;
+    private String basicFeatureName;
 }

@@ -2,6 +2,7 @@ package com.divillafajar.app.pos.pos_app_sini.io.entity.client;
 
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.area.ClientAreaEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.employee.EmploymentEntity;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.scope.ScopeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -40,6 +41,9 @@ public class ClientAddressEntity implements Serializable {
 
     @OneToMany(mappedBy = "clientAddress", cascade = CascadeType.ALL)
     private List<ClientAreaEntity> areas;
+
+    @OneToMany(mappedBy = "clientAddress", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ScopeEntity> scopes = new HashSet<>();
 
     @Column(name = "address_name", length = 99, nullable = true)
     private String addressName;

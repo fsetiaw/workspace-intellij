@@ -103,7 +103,7 @@ public class ThymeSuperuserControllerV1 {
         String msgAddFailed = messageSource.getMessage("label.addFailed", null, locale);
         String errorClientAlreadyExist = messageSource.getMessage("modal.errorClientAlreadyExist", null, locale);
         String unexpectedError = messageSource.getMessage("modal.errorUnexpected", null, locale);
-        System.out.println("ADD CLIENT IS CALLED");
+        //System.out.println("ADD CLIENT IS CALLED");
 
         try {
             ClientDetailsResponseModel returnVal = new ClientDetailsResponseModel();
@@ -119,7 +119,7 @@ public class ThymeSuperuserControllerV1 {
             BeanUtils.copyProperties(createClientRequestModel,pic);
 
 
-            ClientDTO createdClient = clientService.createClient(client,address,pic);
+            ClientDTO createdClient = clientService.createClientWithBasicFiture(client,address,pic);
             model.addAttribute("successMessage", labelClient+" "+successMessage);
             //BeanUtils.copyProperties(createdClient,returnVal);
 

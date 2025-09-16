@@ -1,6 +1,5 @@
 package com.divillafajar.app.pos.pos_app_sini.io.entity.client;
 
-import com.divillafajar.app.pos.pos_app_sini.io.entity.employee.EmploymentEntity;
 import jakarta.persistence.*;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Table;
@@ -11,9 +10,7 @@ import org.hibernate.annotations.*;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @FilterDef(name = "deletedFilter", parameters = @ParamDef(name = "isDeleted", type = Boolean.class))
@@ -77,6 +74,7 @@ public class ClientEntity implements Serializable {
     })
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
     private List<ClientAddressEntity> clientAddresses;
+
 /*
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<EmploymentEntity> employments = new HashSet<>();

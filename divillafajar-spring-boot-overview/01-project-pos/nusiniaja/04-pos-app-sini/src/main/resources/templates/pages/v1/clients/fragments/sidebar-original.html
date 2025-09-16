@@ -1,5 +1,6 @@
-<div th:fragment="sidebar(activePage, activeSub)" xmlns:th="http://www.w3.org/1999/xhtml"
-     xmlns:sec="http://www.w3.org/1999/xhtml">
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="sidebar(activePage, activeSub)" xmlns:th="http://www.w3.org/1999/xhtml">
     <div id="sidebar">
         <div class="sidebar-wrapper active">
             <div class="sidebar-header position-relative">
@@ -43,43 +44,33 @@
             <div class="sidebar-menu">
                 <ul class="menu">
                     <li class="sidebar-title">Menu</li>
-                    <li sec:authorize="hasRole('SUPERADMIN')" class="sidebar-item"
-                        th:if="${activePage != 'location'}">
+                    <li
+                            class="sidebar-item">
                         <a th:href="@{/v1/superuser/home}" class='sidebar-link'>
                             <i class="bi bi-arrow-left-square-fill"></i>
                             <span th:text="#{label.previousPage}"></span>
                         </a>
                     </li>
                     <li class="sidebar-item" th:classappend="${activePage == 'dashboard'} ? ' active'">
-                        <a th:href="@{/v1/admin/client/home(pid=${pid})}" class='sidebar-link'>
+                        <a th:href="@{/v1/admin/clients/home}" class='sidebar-link'>
                             <i class="bi bi-grid-fill"></i>
-                            <span th:text="${activePage == 'location'} ? #{label.backToDashboard} : #{label.dashboardClient}"></span>
+                            <span th:text="#{label.dashboardClient}"></span>
                         </a>
                     </li>
-                    <li class="sidebar-item  has-sub"  th:classappend="${activePage == 'location'} ? ' active'">
+                    <li class="sidebar-item  has-sub"  th:classappend="${activePage == 'clients'} ? ' active'">
                         <a href="#" class='sidebar-link'>
                             <i class="bi bi-people"></i>
-                            <span th:text="#{label.manage}+' '+#{label.client}"></span>
+                            <span th:text="#{label.manage}+' '+#{label.clients}"></span>
                         </a>
                         <ul class="submenu ">
-                            <li class="submenu-item" th:classappend="${activeSub == 'add'} ? ' active'">
-                                <a th:href="@{/v1/superuser/clients/add}" class="submenu-link" th:text="#{label.add}+' '+#{label.client}"></a>
+                            <li class="submenu-item" th:classappend="${activeSub == 'addClient'} ? ' active'">
+                                <a th:href="@{/v1/superuser/clients/add}" class="submenu-link" th:text="#{label.add}+' '+#{label.clients}"></a>
                             </li>
-                            <li th:if="${activeSub != 'addLocation'}"
-                                class="submenu-item" th:classappend="${activeSub == 'upd'} ? ' active'">
-                                <a href="#"
-                                   class="submenu-link shake-trigger"
-                                   data-target-btn="update-btn"
-                                   th:text="#{label.update}+' '+#{label.client}">
-                                </a>
+                            <li class="submenu-item  ">
+                                <a href="component-accordion.html" class="submenu-link" th:text="#{label.update}+' '+#{label.clients}"></a>
                             </li>
-                            <li th:if="${activeSub != 'addLocation'}"
-                                class="submenu-item" th:classappend="${activeSub == 'del'} ? ' active'">
-                                <a href="#"
-                                   class="submenu-link shake-trigger"
-                                   data-target-btn="delete-btn"
-                                   th:text="#{label.delete}+' '+#{label.client}">
-                                </a>
+                            <li class="submenu-item  ">
+                                <a href="component-accordion.html" class="submenu-link" th:text="#{label.delete}+' '+#{label.clients}"></a>
                             </li>
                         </ul>
                     </li>
@@ -103,8 +94,7 @@
                         </ul>
                     </li>
                     <li class="sidebar-item">
-                        <!--a href="#" onclick="document.getElementById('logoutForm').submit(); return false;" class='sidebar-link'-->
-                        <a href="#" class='sidebar-link' id="logoutLink">
+                        <a href="#" onclick="document.getElementById('logoutForm').submit(); return false;" class='sidebar-link'>
                             <i class="bi bi-box-arrow-right"></i>
                             <span>Logout</span>
                         </a>
@@ -114,3 +104,5 @@
         </div>
     </div>
 </div>
+</body>
+</html>

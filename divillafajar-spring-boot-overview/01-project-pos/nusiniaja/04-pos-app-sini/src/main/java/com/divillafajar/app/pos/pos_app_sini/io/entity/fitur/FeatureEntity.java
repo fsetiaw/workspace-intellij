@@ -1,0 +1,35 @@
+package com.divillafajar.app.pos.pos_app_sini.io.entity.fitur;
+
+import com.divillafajar.app.pos.pos_app_sini.io.entity.scope.ScopeEntity;
+import jakarta.persistence.*;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
+
+@Entity
+@Table(name = "feature")
+public class FeatureEntity implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 3109169141811604281L;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+
+    @Column(name = "feature_name", nullable = false, unique = true)
+    private String featureName;
+
+    // Contoh kolom tambahan
+    @Column(name = "avail_time", nullable = true)
+    private LocalDateTime availTime;
+
+    @OneToMany(mappedBy = "feature", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ScopeEntity> scopes = new HashSet<>();
+
+    @Column(name = "active", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 1")
+    private Boolean active = false;
+}

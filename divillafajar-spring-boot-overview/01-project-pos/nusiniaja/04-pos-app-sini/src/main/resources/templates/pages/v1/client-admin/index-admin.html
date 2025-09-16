@@ -13,8 +13,9 @@
     <link rel="stylesheet" th:href="@{/assets/compiled/css/app-dark.css}">
     <link rel="stylesheet" th:href="@{/assets/compiled/css/iconly.css}">
     <link rel="stylesheet" th:href="@{/mine/js/css/toast.css}">
+    <link rel="stylesheet" th:href="@{/mine/js/css/additional-index.css}">
     <!--link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"-->
-    <style>
+    <!--style>
         .icon-circle {
             padding: 0 0 18px 0;
             width: 35px;
@@ -77,24 +78,26 @@
           position: relative; /* supaya .delete-btn absolute posisinya relatif ke card */
           transition: transform 0.2s;
         }
-
-
-
-    </style>
+    </style-->
 </head>
     <body>
-        <script th:src="@{/assets/static/js/initTheme.js}"></script>
+        <!--script th:src="@{/assets/static/js/initTheme.js}"></script-->
+        <!--
         <form id="updateForm" method="POST" th:action="@{/logout}" style="display:none"></form>
         <form id="logoutForm" method="POST" th:action="@{/logout}" style="display:none"></form>
+        -->
         <div id="app">
-            <div th:replace="pages/v1/client-admin/fragments/sidebar.html :: sidebar(${activePage}, ${activeSub})"></div>
+            <div th:replace="~{/pages/v1/client-admin/fragments/sidebar.html :: sidebar(${activePage}, ${activeSub})}"></div>
             <div id="main">
-                <div th:replace="pages/v1/client-admin/fragments/notification-header.html :: right-header"></div>
+                <div th:replace="~{/pages/v1/client-admin/fragments/notification-header.html :: right-header}"></div>
+                <div th:replace="~{/pages/v1/client-admin/fragments/index-header.html :: index-header(${clientName}, 'ADMIN')}"></div>
+                <!--
                 <div class="page-heading">
                     <h3>INDEX ADMIN CLIENT <span th:text="${clientName}"></span></h3>
                 </div>
+                -->
                 <div class="page-content">
-                    <div th:replace="pages/v1/client-admin/fragments/quickmenu.html :: quickmenu"></div>
+                    <div th:replace="~{/pages/v1/client-admin/fragments/quickmenu.html :: quickmenu}"></div>
 
                     <section class="row">
                         <h6 class="font-extrabold mb-0" th:text="#{label.listLocation}" style="text-transform: uppercase;"></h6>
@@ -140,11 +143,12 @@
                         </div>
                     </section>
                 </div>
-                <div th:replace="pages/v1/client-admin/fragments/footer.html :: footer"></div>
+                <div th:replace="~{/pages/v1/client-admin/fragments/footer.html :: footer}"></div>
             </div>
         </div>
-        <div th:replace="pages/v1/fragments/toast/toast-status-process-result :: toast-messages(${successMessage}, ${errorMessage}, 5000)"></div>
-        <div id="confirmDeleteToast" class="toast-confirm">
+        <div th:replace="~{/pages/v1/fragments/toast/toast-status-process-result :: toast-messages(${successMessage}, ${errorMessage}, 5000)}"></div>
+        <div th:replace="~{/pages/v1/client-admin/fragments/toast-confirm.html :: toast-confirm('cancel', 'update', 'delete')}"></div>
+        <!--div id="confirmDeleteToast" class="toast-confirm">
             <div id="confirmMessage"></div>
             <div class="toast-actions">
                 <button id="cancelDelete" class="btn btn-sm btn-secondary">Batal</button>
@@ -157,7 +161,8 @@
                 <button id="cancelUpdate" class="btn btn-sm btn-secondary">Batal</button>
                 <button id="confirmUpdate" class="btn btn-sm btn-danger">Update</button>
             </div>
-        </div>
+        </div-->
+        <script th:src="@{/assets/static/js/initTheme.js}"></script>
         <script th:src="@{/assets/static/js/components/dark.js}"></script>
         <script th:src="@{/assets/extensions/perfect-scrollbar/perfect-scrollbar.min.js}"></script>
         <script th:src="@{/assets/compiled/js/app.js}"></script>
@@ -167,7 +172,8 @@
 
         <!-- Panggil handler toast -->
         <script th:src="@{/mine/js/toast-handler.js}"></script>
-        <script>
+        <script th:src="@{/mine/js/additional-index.js}"></script>
+        <!--script>
 
             let isShaking = false; // state global
 
@@ -218,7 +224,7 @@
 
 
 
-            <!-- buat handle delete-->
+            // buat handle delete
             const toast = document.getElementById("confirmDeleteToast");
             const confirmMessage = document.getElementById("confirmMessage");
             const cancelDelete = document.getElementById("cancelDelete");
@@ -253,7 +259,7 @@
               toast.classList.remove("show");
             });
 
-            <!-- buat handle update-->
+            // buat handle update
             const toastUpdate = document.getElementById("confirmUpdateToast");
             const confirmUpdateMessage = document.getElementById("confirmUpdateMessage");
             const cancelUpdate = document.getElementById("cancelUpdate");
@@ -295,7 +301,7 @@
               toastUpdate.classList.remove("show");
             });
 
-        </script>
+        </script-->
     </body>
 
     </html>

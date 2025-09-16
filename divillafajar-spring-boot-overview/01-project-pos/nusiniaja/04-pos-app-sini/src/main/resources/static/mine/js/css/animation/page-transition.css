@@ -1,0 +1,20 @@
+/* ===== Page Transition ===== */
+.page-transition-enter {
+  animation: slideIn 0.4s ease forwards;
+}
+
+.page-transition-exit {
+  animation: slideOut 0.4s ease forwards;
+}
+
+/* Keyframes slide in (dari kanan masuk) */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(50px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Keyframes slide out (ke kiri keluar) */
+@keyframes slideOut {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(-50px); }
+}

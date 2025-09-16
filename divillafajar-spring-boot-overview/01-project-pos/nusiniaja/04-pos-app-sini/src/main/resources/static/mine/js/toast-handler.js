@@ -22,7 +22,18 @@ document.addEventListener("DOMContentLoaded", function() {
           const toastContainer = document.createElement('div');
           toastContainer.className = 'toast-container position-fixed top-50 start-50 translate-middle p-3';
           toastContainer.style.zIndex = 1100;
-
+            toastContainer.innerHTML = `
+              <div class="toast text-bg-warning border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-body text-center">
+                  🔒 Are you sure you want to logout?
+                </div>
+                <div class="toast-actions d-flex justify-content-center gap-2 pb-2">
+                  <button id="cancel-logout" class="btn btn-sm btn-secondary">Cancel</button>
+                  <button id="confirm-logout" class="btn btn-sm btn-danger">Logout</button>
+                </div>
+              </div>
+            `;
+                    /*
           toastContainer.innerHTML = `
             <div class="toast align-items-center text-bg-warning border-0" role="alert" aria-live="assertive" aria-atomic="true">
               <div class="d-flex">
@@ -34,6 +45,7 @@ document.addEventListener("DOMContentLoaded", function() {
               </div>
             </div>
           `;
+          */
 
           document.body.appendChild(toastContainer);
 

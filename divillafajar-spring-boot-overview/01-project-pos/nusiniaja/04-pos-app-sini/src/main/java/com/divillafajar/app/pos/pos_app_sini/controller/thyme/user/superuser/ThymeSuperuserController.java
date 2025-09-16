@@ -94,7 +94,7 @@ public class ThymeSuperuserController {
             BeanUtils.copyProperties(createClientRequestModel,pic);
 
 
-            ClientDTO createdClient = clientService.createClient(client,address,pic);
+            ClientDTO createdClient = clientService.createClientWithBasicFiture(client,address,pic);
             model.addAttribute("clientAdded", "true");
             //BeanUtils.copyProperties(createdClient,returnVal);
 
@@ -105,8 +105,7 @@ public class ThymeSuperuserController {
 
             model.addAttribute("msg",ex.getMessage());
             model.addAttribute("clientError", "true");
-        } catch (
-        CreateUserException ex) {
+        } catch (CreateUserException ex) {
             // gagal server / unexpected error
             model.addAttribute("msg",ex.getMessage());
             model.addAttribute("clientError", "true");
