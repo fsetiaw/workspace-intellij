@@ -3,21 +3,32 @@ package com.divillafajar.app.pos.pos_app_sini.controller.thyme.user.superuser;
 import com.divillafajar.app.pos.pos_app_sini.exception.client.ClientAlreadyExistException;
 import com.divillafajar.app.pos.pos_app_sini.exception.user.CreateUserException;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.address.dto.AddressDTO;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientAddressEntity;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientContactEntity;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientAddressDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientContactDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientDTO;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.employee.EmployeeEntity;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.employee.EmploymentEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.session.UserSessionLog;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.user.UserEntity;
 import com.divillafajar.app.pos.pos_app_sini.model.client.ClientDetailsResponseModel;
 import com.divillafajar.app.pos.pos_app_sini.model.client.CreateClientRequestModel;
+import com.divillafajar.app.pos.pos_app_sini.service.client.ClientAddressService;
+import com.divillafajar.app.pos.pos_app_sini.service.client.ClientContactService;
 import com.divillafajar.app.pos.pos_app_sini.service.client.ClientService;
 import com.divillafajar.app.pos.pos_app_sini.service.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.MessageSource;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.LocaleResolver;
 
 import java.util.Collections;
@@ -27,13 +38,16 @@ import java.util.Optional;
 
 @Controller
 @RequestMapping("v1/superuser")
+@RequiredArgsConstructor
 public class ThymeSuperuserControllerV1 {
 
     private final UserService userService;
     private final ClientService clientService;
-    private LocaleResolver localeResolver;
-    private MessageSource messageSource;
-
+    private final LocaleResolver localeResolver;
+    private final MessageSource messageSource;
+    private final ClientAddressService clientAddressService;
+    private final ClientContactService clientContactService;
+/*
     public ThymeSuperuserControllerV1(UserService userService, ClientService clientService,
                                       LocaleResolver localeResolver,MessageSource messageSource) {
         this.userService=userService;
@@ -41,6 +55,8 @@ public class ThymeSuperuserControllerV1 {
         this.localeResolver=localeResolver;
         this.messageSource=messageSource;
     }
+
+ */
 
     @GetMapping("/home")
     public String showHome(HttpServletRequest request,
@@ -78,9 +94,31 @@ public class ThymeSuperuserControllerV1 {
     public String showAddClientForm(@RequestParam(name = "add", required = false) Boolean add, Model model) {
         model.addAttribute("isAdd", add);
         model.addAttribute("activePage", "clients");
-        model.addAttribute("activeSub", "addClient");
+        model.addAttribute("activeSub", "add");
         System.out.println("showAddClientForm is called");
         return "pages/v1/clients/add-clients";
+    }
+
+    @GetMapping("/clients/upd")
+    public String showUpdateClientForm(@RequestParam(name = "pid", required = true) String pid, Model model) {
+        System.out.println("showUpdateClientForm is called = "+pid);
+        ClientDTO targetClient = clientService.getClientDetails(pid);
+        ClientAddressEntity clientAddress = targetClient.getClientAddresses().getFirst();
+        //ClientAddressDTO clientAddressDTO = new ClientAddressDTO();
+        //BeanUtils.copyProperties(clientAddress,clientAddressDTO);
+        //
+        ClientContactDTO contact = clientContactService.findClientContactByAddressId(clientAddress.getId());
+        //biar tidak passing idnya
+        clientAddress.setId(null);
+        contact.setId(null);
+        model.addAttribute("clientContact",contact);
+        model.addAttribute("clientAddress",clientAddress);
+        model.addAttribute("targetClient",targetClient);
+        model.addAttribute("pid", pid);
+        model.addAttribute("activePage", "clients");
+        model.addAttribute("activeSub", "upd");
+
+        return "pages/v1/clients/update-clients";
     }
 
 

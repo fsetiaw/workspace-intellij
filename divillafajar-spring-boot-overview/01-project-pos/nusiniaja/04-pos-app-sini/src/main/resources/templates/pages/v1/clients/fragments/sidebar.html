@@ -44,28 +44,28 @@
                 <ul class="menu">
                     <li class="sidebar-title">Menu</li>
                     <li sec:authorize="hasRole('SUPERADMIN')" class="sidebar-item"
-                        th:if="${activePage != 'location'}">
+                        th:if="${activePage == 'dashboard'}">
                         <a th:href="@{/v1/superuser/home}" class='sidebar-link'>
                             <i class="bi bi-arrow-left-square-fill"></i>
                             <span th:text="#{label.previousPage}"></span>
                         </a>
                     </li>
                     <li class="sidebar-item" th:classappend="${activePage == 'dashboard'} ? ' active'">
-                        <a th:href="@{/v1/admin/client/home(pid=${pid})}" class='sidebar-link'>
+                        <a th:href="@{/v1/superuser/clients}" class='sidebar-link'>
                             <i class="bi bi-grid-fill"></i>
-                            <span th:text="${activePage == 'location'} ? #{label.backToDashboard} : #{label.dashboardClient}"></span>
+                            <span th:text="${activePage == 'clients'} ? #{label.backToDashboard} : #{label.dashboardClient}"></span>
                         </a>
                     </li>
-                    <li class="sidebar-item  has-sub"  th:classappend="${activePage == 'location'} ? ' active'">
+                    <li class="sidebar-item  has-sub"  th:classappend="${activePage == 'clients'} ? ' active'">
                         <a href="#" class='sidebar-link'>
                             <i class="bi bi-people"></i>
                             <span th:text="#{label.manage}+' '+#{label.client}"></span>
                         </a>
                         <ul class="submenu ">
-                            <li class="submenu-item" th:classappend="${activeSub == 'add'} ? ' active'">
+                            <li th:if="${activeSub != 'upd' && activeSub != 'del'}" class="submenu-item" th:classappend="${activeSub == 'add'} ? ' active'">
                                 <a th:href="@{/v1/superuser/clients/add}" class="submenu-link" th:text="#{label.add}+' '+#{label.client}"></a>
                             </li>
-                            <li th:if="${activeSub != 'addLocation'}"
+                            <li th:if="${activeSub != 'add' && activeSub != 'del'}"
                                 class="submenu-item" th:classappend="${activeSub == 'upd'} ? ' active'">
                                 <a href="#"
                                    class="submenu-link shake-trigger"
@@ -73,7 +73,7 @@
                                    th:text="#{label.update}+' '+#{label.client}">
                                 </a>
                             </li>
-                            <li th:if="${activeSub != 'addLocation'}"
+                            <li th:if="${activeSub != 'add' && activeSub != 'upd'}"
                                 class="submenu-item" th:classappend="${activeSub == 'del'} ? ' active'">
                                 <a href="#"
                                    class="submenu-link shake-trigger"

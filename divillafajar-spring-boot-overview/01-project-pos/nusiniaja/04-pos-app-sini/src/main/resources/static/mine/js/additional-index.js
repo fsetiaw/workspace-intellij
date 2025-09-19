@@ -4,8 +4,21 @@ document.addEventListener("DOMContentLoaded", function() {
     // setelah page load → langsung sembunyikan semua tombol
     const cards = document.querySelectorAll(".store-card");
     cards.forEach(card => {
-        card.querySelectorAll(".delete-btn, .update-btn").forEach(btn => btn.style.display = "none");
+        card.querySelectorAll(".delete-btn, .update-btn").forEach(btn => {
+            btn.style.display = "none";
+            btn.addEventListener("click", function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+
+                if (btn.classList.contains("delete-btn")) {
+                  document.getElementById("confirmDeleteToast").style.display = "block";
+                } else if (btn.classList.contains("update-btn")) {
+                  document.getElementById("confirmUpdateToast").style.display = "block";
+                }
+              });
+        });
     });
+
 });
 
 
@@ -26,6 +39,9 @@ document.addEventListener("click", function(e) {
     // mulai goyang
     cards.forEach(card => {
       card.classList.add("shake");
+      // disable semua link di dalam card
+      card.querySelectorAll("a.text-decoration-none").forEach(link => link.classList.add("disabled-link"));
+
       // hanya tampilkan tombol target
       card.querySelectorAll(`.${targetBtnClass}`).forEach(btn => btn.style.display = "inline-block");
     });
@@ -38,14 +54,15 @@ document.addEventListener("click", function(e) {
     isShaking = true;
   } else {
     // stop goyang
-    cards.forEach(card => card.classList.remove("shake"));
+    cards.forEach(card => {
+        card.classList.remove("shake");
+        // enable lagi link
+        card.querySelectorAll("a.text-decoration-none").forEach(link => link.classList.remove("disabled-link"));
+    });
     document.querySelectorAll(".shake-trigger.shake").forEach(t => t.classList.remove("shake"));
     isShaking = false;
   }
 });
-
-
-
 
 <!-- buat handle delete-->
 const toast = document.getElementById("confirmDeleteToast");
@@ -112,14 +129,19 @@ cancelUpdate.addEventListener("click", () => {
 confirmUpdate.addEventListener("click", () => {
   if (currentCard) {
     const storeName = currentCard.querySelector(".update-btn").getAttribute("data-store-name");
-
+    const storePid = currentCard.querySelector(".update-btn").getAttribute("data-store-pid");
     // set action ke path sesuai storeName
     const form = document.getElementById("updateForm");
     //form.setAttribute("action", `/store/update/${storeName}`);
-    //form.setAttribute("action", `/store/update/${storeName}`);
+
+    //form.setAttribute("action", `/v1/superuser/clients/upd?pid=${pid}`);
+
+
+    const pidField = document.getElementById("pidField");
+
+    pidField.value = storePid;
     form.submit();
 
-    currentCard = null;
   }
   toastUpdate.classList.remove("show");
 });

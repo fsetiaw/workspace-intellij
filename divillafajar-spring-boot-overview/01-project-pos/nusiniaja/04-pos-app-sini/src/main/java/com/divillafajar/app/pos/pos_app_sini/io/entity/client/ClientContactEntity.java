@@ -17,6 +17,7 @@ public class ClientContactEntity implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 5685114200320526829L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

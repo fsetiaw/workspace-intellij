@@ -126,7 +126,10 @@ public class ClientServiceImpl implements ClientService{
         ClientDTO returnVal = new ClientDTO();
         ClientEntity client =  clientRepo.findClientByPubId(pid);
         System.out.println("address legth = "+ client.getClientAddresses().size());
+        System.out.println("address name = "+ client.getClientAddresses().getFirst().getAddressName());
         BeanUtils.copyProperties(client,returnVal);
+        System.out.println("returnVal name = "+ returnVal.getClientAddresses().getFirst().getAddressName());
+        System.out.println("returnVal address id = "+ returnVal.getClientAddresses().getFirst().getId());
         return returnVal;
     }
 

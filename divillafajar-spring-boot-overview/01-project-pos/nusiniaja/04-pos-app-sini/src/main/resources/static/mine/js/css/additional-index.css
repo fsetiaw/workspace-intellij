@@ -26,12 +26,12 @@
 .shake {
   animation: shake 0.4s ease-in-out;
   animation-iteration-count: infinite;
-  border: 2px solid red; /* optional biar ada highlight */
+  /*border: 2px solid red;  optional biar ada highlight */
 }
 
 .shake-trigger.shake {
   border: none !important;
-  background-color: rgba(220,53,69,0.1); /* sedikit highlight biar ketahuan */
+  /*background-color: rgba(220,53,69,0.1);  sedikit highlight biar ketahuan */
   border-radius: 6px;
 }
 
@@ -59,4 +59,10 @@
 .store-card {
   position: relative; /* supaya .delete-btn absolute posisinya relatif ke card */
   transition: transform 0.2s;
+}
+
+.disabled-link {
+  pointer-events: none;
+  cursor: default;
+  opacity: 0.6; /* opsional: biar kelihatan sedang nonaktif */
 }
