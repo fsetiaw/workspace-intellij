@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome CUSTOMER LOGIN PAGE</title>
+    <meta http-equiv="refresh" content="0;url='customer/home'" th:if="${#authorization.expression('isAuthenticated()')}" >
+    <style>
+        .error {color:red}
+    </style>
+    <script>
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted || window.performance.navigation.type === 2) {
+                // Halaman dimuat dari cache (back button)
+                window.location.reload();
+            }
+        });
+    </script>
+</head>
+<body>
+<h2>This is Customer Login Page 2</h2>
+<hr>
+<p>Anda login dari ClientId <b th:text="${#strings.isEmpty(customer.clientId) ? '3' : customer.clientId}"></b></p>
+<p>Anda login dari meja nomor <b th:text="${#strings.isEmpty(customer.table) ? '3' : customer.table}"></b></p>
+    <!--form th:action="@{/customer/processLoginForm}" th:object="${customer}" method="POST"-->
+<form th:action="@{/customer/processLoginForm}" th:object="${customer}" method="POST">
+        <input placeholder="Enter Phone Number" th:field="*{username}" type="text"/>
+        <span th:if="${#fields.hasErrors('username')}"
+              th:errors="*{username}" class="error"></span>
+        <br><br>
+        <input type="hidden" th:field="*{clientId}" />
+    <input type="hidden" th:field="*{table}" />
+        <input type="text" th:field="*{aliasName}" placeholder="Enter Name" />
+        <!-- Add error message if present -->
+        <span th:if="${#fields.hasErrors('aliasName')}"
+              th:errors="*{aliasName}" class="error"></span>
+        <br><br>
+        <input type="submit"/>
+    </form>
+<hr>
+<form method="POST" action="#" th:action="@{/logout}" >
+    <input type="submit" value="logout">
+</form>
+</body>
+</html>

@@ -1,0 +1,8 @@
+<div th:fragment="optional-hidden-form(clientName, activeSub)" xmlns:th="http://www.w3.org/1999/xhtml"
+     xmlns:sec="http://www.w3.org/1999/xhtml">
+    <form id="updateForm" method="GET" th:action="@{/v1/superuser/clients/upd}" style="display:none">
+        <input type="hidden" name="pid" id="pidField">
+    </form>
+    <form id="logoutForm" method="POST" th:action="@{/logout}" style="display:none"></form>
+
+</div>
