@@ -1,6 +1,12 @@
 let isShaking = false; // state global
 
 document.addEventListener("DOMContentLoaded", function() {
+
+    const clientType = document.getElementById("clientType");
+    const otherWrapper = document.getElementById("otherFieldWrapper");
+    const otherInput = document.getElementById("otherField");
+    const togglePassword = document.getElementById("togglePassword");
+    const passwordField = document.getElementById("pwd");
     // setelah page load → langsung sembunyikan semua tombol
     const cards = document.querySelectorAll(".store-card");
     cards.forEach(card => {
@@ -19,6 +25,27 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
+    togglePassword.addEventListener("click", function() {
+        const type = passwordField.getAttribute("type") === "password" ? "text" : "password";
+        passwordField.setAttribute("type", type);
+
+        // toggle icon
+        this.querySelector("i").classList.toggle("bi-eye");
+        this.querySelector("i").classList.toggle("bi-eye-slash");
+    });
+
+
+
+    clientType.addEventListener("change", function () {
+        if (this.value === "oth") {
+            otherWrapper.style.display = "block";
+            otherInput.setAttribute("required", "true");
+        } else {
+            otherWrapper.style.display = "none";
+            otherInput.removeAttribute("required");
+            otherInput.value = ""; // reset biar gak ikut submit
+        }
+    });
 });
 
 
@@ -145,3 +172,4 @@ confirmUpdate.addEventListener("click", () => {
   }
   toastUpdate.classList.remove("show");
 });
+

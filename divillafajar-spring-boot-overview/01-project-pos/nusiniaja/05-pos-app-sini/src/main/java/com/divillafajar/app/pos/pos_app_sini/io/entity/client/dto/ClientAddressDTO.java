@@ -22,4 +22,5 @@ public class ClientAddressDTO {
     private String postalCode;
     private String country;
     private Boolean deleted;
+    private String addressPhoneNumber;
 }

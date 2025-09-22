@@ -1,6 +1,7 @@
 package com.divillafajar.app.pos.pos_app_sini.io.entity.user;
 
 import com.divillafajar.app.pos.pos_app_sini.io.entity.address.AddressEntity;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.auth.NamePassEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.customer.CustomerEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.employee.EmployeeEntity;
 import jakarta.persistence.*;
@@ -8,6 +9,7 @@ import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,16 +41,19 @@ public class UserEntity implements Serializable {
         }
     }
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<NamePassEntity> logins = new ArrayList<>();
+
     @Column(name = "email_verification_token", nullable = true)
     private String emailVerificationToken;
 
-    @Column(name = "email_verification_status", nullable = false)
+    @Column(name = "email_verification_status", nullable = true)
     private boolean emailVerificationStatus = false;
 
     /*
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private NamePassEntity userAuthDetails;
-     */
+
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private CustomerEntity customer;
@@ -58,6 +63,7 @@ public class UserEntity implements Serializable {
 
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
     private List<AddressEntity> addresses;
+    */
 
     @Column(name = "first_name", length = 50, nullable = false)
     private String firstName;
@@ -65,7 +71,7 @@ public class UserEntity implements Serializable {
     @Column(name = "last_name", length = 50, nullable = true)
     private String lastName;
 
-    @Column(name = "email", length = 125, nullable = false)
+    @Column(name = "email", length = 125, nullable = false, unique = true)
     private String email;
 
     @Column(name = "phone", length = 25, nullable = false)

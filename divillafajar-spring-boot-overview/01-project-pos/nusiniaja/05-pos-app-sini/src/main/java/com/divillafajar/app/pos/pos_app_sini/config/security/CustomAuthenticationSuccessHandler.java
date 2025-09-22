@@ -1,16 +1,24 @@
 package com.divillafajar.app.pos.pos_app_sini.config.security;
 
+import com.divillafajar.app.pos.pos_app_sini.io.entity.auth.NamePassEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.session.UserSessionLog;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.session.UserSessionLogDTO;
+import com.divillafajar.app.pos.pos_app_sini.model.user.UserLogedInModel;
+import com.divillafajar.app.pos.pos_app_sini.repo.auth.AuthRepo;
+import com.divillafajar.app.pos.pos_app_sini.repo.auth.NamePasRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.session.UserSessionLogRepository;
 import com.divillafajar.app.pos.pos_app_sini.model.customer.AuthenticatedCustomerModel;
 import com.divillafajar.app.pos.pos_app_sini.model.customer.CustomerLoginRequestModel;
+import com.divillafajar.app.pos.pos_app_sini.repo.user.UserRepo;
 import com.divillafajar.app.pos.pos_app_sini.service.log.UserSessionLogService;
+import com.divillafajar.app.pos.pos_app_sini.service.user.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.DefaultRedirectStrategy;
@@ -26,6 +34,7 @@ import java.util.List;
 import java.util.Locale;
 
 @Component
+@RequiredArgsConstructor
 public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler  {
 //public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
@@ -33,14 +42,16 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     private final UserSessionLogService userSessionLogService;
     private final UserSessionLogRepository sessionLogRepo;
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
-    private LocaleResolver localeResolver;
-
+    private final LocaleResolver localeResolver;
+/*
     public CustomAuthenticationSuccessHandler(UserSessionLogRepository sessionLogRepo,
               UserSessionLogService userSessionLogService, LocaleResolver localeResolver) {
         this.userSessionLogService=userSessionLogService;
         this.sessionLogRepo=sessionLogRepo;
         this.localeResolver=localeResolver;
     }
+
+ */
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
@@ -114,7 +125,6 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         history.setUserAgent(request.getHeader("User-Agent"));
         history.setActive(true);
         userSessionHistoryRepo.save(history);
-        System.out.println("userSessionHistoryRepo SAVED");
 
          */
 
@@ -123,7 +133,6 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         //request.getSession().setAttribute("customer", customerDTO);
         String redirectUrl = "/home"; // default
 
-        System.out.println("Get Principle = "+authentication.getPrincipal());
         for (GrantedAuthority authority : authorities) {
             if (role.equals("ROLE_CUSTOMER")) {
                 session.setMaxInactiveInterval(0); // never expired -> must logout
@@ -150,6 +159,13 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             else if (role.equals("ROLE_SUPERADMIN")) {
                 session.setMaxInactiveInterval(-1); //
                 redirectUrl = "/v1/superuser/home";
+                break;
+            }
+            else if (role.equals("ROLE_ADMIN")) {
+
+
+                session.setMaxInactiveInterval(-1); //
+                redirectUrl = "/v2/admin/client/home?pid="+username;
                 break;
             }
 

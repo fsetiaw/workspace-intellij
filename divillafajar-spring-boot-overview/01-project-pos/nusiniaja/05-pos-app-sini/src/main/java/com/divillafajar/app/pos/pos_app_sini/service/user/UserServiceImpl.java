@@ -1,8 +1,10 @@
 package com.divillafajar.app.pos.pos_app_sini.service.user;
 
 import com.divillafajar.app.pos.pos_app_sini.config.properties.CustomDefaultProperties;
+import com.divillafajar.app.pos.pos_app_sini.exception.GenericCustomErrorException;
 import com.divillafajar.app.pos.pos_app_sini.exception.client.ClientAlreadyExistException;
 import com.divillafajar.app.pos.pos_app_sini.exception.user.CreateUserException;
+import com.divillafajar.app.pos.pos_app_sini.exception.user.EmailAlreadyRegisterException;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.address.dto.AddressDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.address.AddressEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.auth.AuthorityEntity;
@@ -13,6 +15,7 @@ import com.divillafajar.app.pos.pos_app_sini.io.entity.customer.CustomerEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.employee.EmployeeEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.employee.EmploymentEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.user.UserEntity;
+import com.divillafajar.app.pos.pos_app_sini.model.user.UserLogedInModel;
 import com.divillafajar.app.pos.pos_app_sini.repo.address.AddressRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.auth.AuthRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.auth.NamePasRepo;
@@ -24,12 +27,16 @@ import com.divillafajar.app.pos.pos_app_sini.repo.client.ClientRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.employee.EmployeeRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.employee.EmploymentRepo;
 import com.divillafajar.app.pos.pos_app_sini.utils.GeneratorUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepo userRepo;
     private final EmployeeRepo employeeRepo;
@@ -43,24 +50,6 @@ public class UserServiceImpl implements UserService {
     private final GeneratorUtils generatorUtils;
     private final CustomDefaultProperties customDefaultProperties;
 
-    public UserServiceImpl(UserRepo userRepo, NamePasRepo namePasRepo,
-                           AuthRepo authRepo, ClientRepo clientRepo, ClientAddressRepo clientAddressRepo,
-                           GeneratorUtils generatorUtils, AddressRepo addressRepo, EmploymentRepo employmentRepo,
-                           CustomDefaultProperties customDefaultProperties, EmployeeRepo employeeRepo,
-                           PasswordEncoder passwordEncoder
-    ) {
-        this.userRepo=userRepo;
-        this.authRepo=authRepo;
-        this.namePasRepo=namePasRepo;
-        this.addressRepo=addressRepo;
-        this.passwordEncoder=passwordEncoder;
-        this.generatorUtils=generatorUtils;
-        this.clientRepo=clientRepo;
-        this.clientAddressRepo = clientAddressRepo;
-        this.customDefaultProperties=customDefaultProperties;
-        this.employeeRepo=employeeRepo;
-        this.employmentRepo=employmentRepo;
-    }
 
 
     @Override
@@ -70,7 +59,7 @@ public class UserServiceImpl implements UserService {
 
         return null;
     }
-
+/*
     @Override
     @Transactional
     public UserDTO createSuperUser(UserDTO userDTO, AddressDTO addressDTO, String pubId) {
@@ -83,7 +72,7 @@ public class UserServiceImpl implements UserService {
             throw new ClientAlreadyExistException("Super Client doesn't exist");
         /*
          ** cek if user already exist
-         */
+
         UserEntity existingUser = userRepo.findByEmailOrPhone(userDTO.getEmail(), userDTO.getPhone());
 
         if (existingUser!=null) {
@@ -110,41 +99,41 @@ public class UserServiceImpl implements UserService {
 
                 /*
                 ** 1. Save User
-                 */
+
                 UserEntity createdUser = userRepo.save(nuuser);
 
                 /*
                 ** 2. Save Addresss
-                 */
+
                 AddressEntity nuUserAddress = new AddressEntity();
                 BeanUtils.copyProperties(addressDTO,nuUserAddress);
                 nuUserAddress.setUser(createdUser);
                 addressRepo.save(nuUserAddress);
 
+
+
                 /*
                 ** 3. Save New User Info to Employee table
-                 */
+
                 EmployeeEntity nuEmployee = new EmployeeEntity();
                 nuEmployee.setUser(nuuser);
                 EmployeeEntity savedEmployee = employeeRepo.save(nuEmployee);
 
+                 */
+
                 /*
                 ** 4. Create New Employment
-                 */
+
                 EmploymentEntity employmentEntity = new EmploymentEntity();
-                //ClientEntity masterClient = clientRepo.findClientByClientNameAndClientEmail(
-                //        customDefaultProperties.getMasterClientName(),customDefaultProperties.getMasterClientEmail());
-                //employmentEntity.setClient(masterClient);
-                //employmentEntity.setClient(storedSuperClient);
                 ClientAddressEntity clientAddress = clientAddressRepo.findByClientId(storedSuperClient.getId());
                 employmentEntity.setClientAddress(clientAddress);
-                employmentEntity.setEmployee(savedEmployee);
+                /*employmentEntity.setEmployee(savedEmployee);
                 EmploymentEntity savedEmployment = employmentRepo.save(employmentEntity);
 
 
                 NamePassEntity nape = new NamePassEntity();
                 BeanUtils.copyProperties(userDTO, nape);
-                nape.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+                nape.setPassword(passwordEncoder.encode(userDTO.getPwd()));
                 nape.setEmployment(savedEmployment);
                 nape.setEnabled(true);
                 NamePassEntity storedNape = namePasRepo.save(nape);
@@ -152,7 +141,7 @@ public class UserServiceImpl implements UserService {
                 AuthorityEntity auth = new AuthorityEntity();
                 /*
                  ** Cek jika admin super key match,
-                 */
+
                 if(userDTO.getSuperKey().equals(customDefaultProperties.getAdminSuperKey())) {
                     auth.setAuthority("ROLE_SUPERADMIN");
                 }
@@ -175,10 +164,10 @@ public class UserServiceImpl implements UserService {
         }
         return returnVal;
     }
+*/
 
 
-
-
+    /*
     @Override
     public UserDTO createUser(UserDTO userDTO) {
         UserDTO returnVal = new UserDTO();
@@ -187,7 +176,7 @@ public class UserServiceImpl implements UserService {
 
         /*
         ** cek if user already exist
-         */
+
         UserEntity existingUser = userRepo.findByEmailAndPhone(userDTO.getEmail(), userDTO.getPhone());
         if (existingUser!=null) {
             throw new UserAlreadyExistException("User already exist");
@@ -201,7 +190,7 @@ public class UserServiceImpl implements UserService {
 
             NamePassEntity nape = new NamePassEntity();
             BeanUtils.copyProperties(userDTO, nape);
-            nape.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+            nape.setPassword(passwordEncoder.encode(userDTO.getPwd()));
             //nape.setUser(storedUser);
             nape.setEnabled(true);
             NamePassEntity storedNape = namePasRepo.save(nape);
@@ -209,7 +198,7 @@ public class UserServiceImpl implements UserService {
             AuthorityEntity auth = new AuthorityEntity();
             /*
             ** Cek jika admin super key match,
-             */
+
             if(userDTO.getSuperKey().equals(customDefaultProperties.getAdminSuperKey())) {
                 auth.setAuthority("ROLE_SUPERADMIN");
             }
@@ -223,6 +212,87 @@ public class UserServiceImpl implements UserService {
             //nape.setUserAuth(auth);
 
             BeanUtils.copyProperties(storedUser,returnVal);
+        }
+        return returnVal;
+    }
+    */
+
+    @Override
+    public UserLogedInModel prepUserLogedInfo(String username) {
+        UserLogedInModel retVal = new UserLogedInModel();
+        NamePassEntity usrPass = namePasRepo.findByUsername(username);
+        Optional<AuthorityEntity> auth = authRepo.findByUsername(username);
+        retVal.setUsername(usrPass.getUsername());
+        if(auth.isEmpty())
+            throw new GenericCustomErrorException("Auth is missing");
+        Optional<UserEntity> user = userRepo.findById(usrPass.getUser().getId());
+
+        if(user.isEmpty())
+            throw new GenericCustomErrorException("User is missing");
+        BeanUtils.copyProperties(user,retVal);
+        return retVal;
+    }
+
+    @Transactional
+    @Override
+    public UserDTO createUser(String role, UserDTO userDTO) {
+        UserDTO returnVal = new UserDTO();
+
+        System.out.println("Creating superadmin--"+userDTO.getUsername().length());
+        /*
+         ** cek if username to short
+         */
+        if(userDTO.getUsername()!=null && userDTO.getUsername().trim().length()<5)
+            throw new CreateUserException("Username min terdiri dari 5 char");
+        /*
+        Jika mo buat superdamin
+         */
+        if(role.compareToIgnoreCase("ROLE_SUPERADMIN")==0) {
+            if(!userDTO.getSuperKey().equals(customDefaultProperties.getAdminSuperKey()))
+                throw new CreateUserException("Unauthorized User Privilage");
+
+            //cek apa superadmin sudah ada
+            Optional<AuthorityEntity> existedSuper = authRepo.findByAuthority(role);
+            if(existedSuper.isPresent())
+                throw new UserAlreadyExistException("Super User already exist");
+        }
+
+
+        /*
+         ** cek if username sudah digunakan
+         */
+        Optional<AuthorityEntity> existedSuper = authRepo.findByUsername(userDTO.getUsername());
+        if(existedSuper.isPresent())
+            throw new UserAlreadyExistException("Username already used");
+
+        /*
+         ** cek if user already exist
+         */
+        UserEntity existingUser = userRepo.findByEmail(userDTO.getEmail());
+        if (existingUser!=null)
+            throw new EmailAlreadyRegisterException("Email Already Registered");
+
+        try {
+            UserEntity userEntity = new UserEntity();
+            BeanUtils.copyProperties(userDTO, userEntity);
+            UserEntity storedUser = userRepo.save(userEntity);
+            NamePassEntity nape = new NamePassEntity();
+            BeanUtils.copyProperties(userDTO, nape);
+            nape.setPassword(passwordEncoder.encode(userDTO.getPwd()));
+            nape.setEnabled(true);
+            nape.setUser(storedUser);
+            NamePassEntity storedNape = namePasRepo.save(nape);
+
+
+            AuthorityEntity auth = new AuthorityEntity();
+            auth.setAuthority(role.toUpperCase().trim());
+            auth.setUsername(userDTO.getUsername());
+            auth.setNamePass(storedNape);
+            authRepo.save(auth);
+            BeanUtils.copyProperties(storedUser,returnVal);
+        }
+        catch (Exception e) {
+            throw new CreateUserException("Gagal Membuat User Baru");
         }
         return returnVal;
     }

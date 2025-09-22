@@ -45,6 +45,10 @@ public class ClientEntity implements Serializable {
     @Column(name = "client_name", length = 50, nullable = false)
     private String clientName;
 
+    @Lob
+    @Column(name = "client_list_alias_name", nullable = true)
+    private String clientListAliasName;
+
     @Column(name = "client_email", length = 99, nullable = false)
     private String clientEmail;
 
@@ -79,7 +83,7 @@ public class ClientEntity implements Serializable {
     @Column(name = "email_verification_token", length = 255, nullable = true)
     private String email_verification_token;
 
-    @Column(name = "email_verification_token", nullable = true)
+    @Column(name = "email_verified_timestamp", nullable = true)
     private LocalDateTime email_verified_timestamp;
 
     @Column(name = "registration_timestamp", nullable = true)

@@ -34,7 +34,8 @@ public class SessionValidationFilter extends OncePerRequestFilter {
         if ("/logout".equals(path)||"/customer/login".equals(path)||"/customer/processLoginForm".equals(path)
                ||"/login".equals(path)||path.contains("/session-expired")||path.contains("/something-wrong")
                 ||path.contains("swagger-ui")||"/authenticateTheUser".equals(path)
-                ||path.startsWith("/api/")
+                ||path.startsWith("/api/v1")||"/user/registrasi".equals(path)||path.startsWith("/mine/")
+                ||path.startsWith("/assets/")
         ) {
             filterChain.doFilter(request, response);
             return;

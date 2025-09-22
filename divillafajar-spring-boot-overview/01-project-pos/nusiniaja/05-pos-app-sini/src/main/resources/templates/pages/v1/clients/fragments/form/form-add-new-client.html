@@ -10,9 +10,71 @@
                     </div>
                     <div class="card-content">
                         <div class="card-body">
-                            <h5 class="card-title" style="padding:0 0 15px 0;color:#3460bb"><span th:text="#{label.infoCompany}"></span></h5>
-                            <form class="form" th:action="@{/v1/superuser/clients}" method="post" id="myform" target="_self">
+                            <h5 class="card-title" style="padding: 0 0 15px 0;color:#3460bb"><span th:text="#{label.companyContact}"></span></h5>
+                            <!--form class="form" th:action="@{/v1/superuser/clients}" method="post" id="myform" target="_self"-->
+                            <form class="form" th:action="@{/registrasi}" method="post" id="myform" target="_self">
                                 <div class="row">
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <label for="username">Username</label>
+                                            <input type="text" id="username" class="form-control"
+                                                   name="username" th:placeholder="#{label.username}" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <label for="pwd" th:text="#{label.password}">Password</label>
+                                            <div class="input-group">
+                                                <input type="password" id="pwd" class="form-control"
+                                                       name="pwd"
+                                                       th:placeholder="#{label.password}"
+                                                       required
+                                                       minlength="8"
+                                                       pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$"
+                                                       title="Password minimal 8 karakter, mengandung huruf besar, huruf kecil, angka, dan karakter spesial">
+
+                                                <button type="button" class="btn btn-outline-secondary" id="togglePassword">
+                                                    <i class="bi bi-eye"></i> <!-- pakai Bootstrap Icons -->
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <label for="contactName" th:text="#{label.fullName}"></label>
+                                            <input type="text" id="contactName" class="form-control" th:placeholder="#{label.fullName}"
+                                                   name="contactName" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <label th:text="#{label.position}"></label>
+                                            <div class="input-group mb-3">
+                                                <label class="input-group-text" for="contactPosition">Options</label>
+                                                <select class="form-select" id="contactPosition" name="contactPosition" required>
+                                                    <!--option selected><span th:text="#{label.choose}+'...'"></span></option-->
+                                                    <option value="own" th:text="#{label.owner}"></option>
+                                                    <!--option value="dir" th:text="#{label.director}"></option>
+                                                    <option value="mgr" th:text="#{label.manager}"></option-->
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <label for="contactPhone">Phone</label>
+                                            <input type="number" id="contactPhone" class="form-control"
+                                                   name="contactPhone" placeholder="Phone" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <label for="email-id-column">Email</label>
+                                            <input type="email" id="email-id-column" class="form-control"
+                                                   name="contactEmail" placeholder="Email" required>
+                                        </div>
+                                    </div-->
+                                    <h5 class="card-title" style="padding:20px 0 15px 10px;color:#3460bb"><span th:text="#{label.infoCompany}"></span></h5>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label for="clientName"><span th:text="#{label.companyName}"></span></label>
@@ -29,67 +91,45 @@
                                                     <option selected><span th:text="#{label.choose}+'...'"></span></option>
                                                     <option value="lodge" th:text="#{label.accommodation}"></option>
                                                     <option value="f&b" th:text="#{label.foodBeverages}"></option>
+                                                    <option value="oth" th:text="#{label.other}"></option>
                                                 </select>
                                             </div>
                                         </div>
                                     </div>
-                                    <h5 class="card-title" style="padding: 20px 0 15px 10px;color:#3460bb"><span th:text="#{label.companyContact}"></span></h5>
-                                    <div class="col-md-6 col-12">
+                                    <!-- input tambahan, hidden by default -->
+                                    <div class="col-md-6 col-12 offset-md-6" id="otherFieldWrapper" style="display:none;">
                                         <div class="form-group">
-                                            <label for="contactName" th:text="#{label.fullName}"></label>
-                                            <input type="text" id="contactName" class="form-control" th:placeholder="#{label.fullName}"
-                                                name="contactName" required>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-12">
-                                        <div class="form-group">
-                                            <label th:text="#{label.position}"></label>
-                                            <div class="input-group mb-3">
-                                                <label class="input-group-text" for="contactPosition">Options</label>
-                                                <select class="form-select" id="contactPosition" name="contactPosition" required>
-                                                    <option selected><span th:text="#{label.choose}+'...'"></span></option>
-                                                    <option value="own" th:text="#{label.owner}"></option>
-                                                    <option value="dir" th:text="#{label.director}"></option>
-                                                    <option value="mgr" th:text="#{label.manager}"></option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-12">
-                                        <div class="form-group">
-                                            <label for="contactPhone">Phone</label>
-                                            <input type="number" id="contactPhone" class="form-control"
-                                                name="contactPhone" placeholder="Phone" required>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-12">
-                                        <div class="form-group">
-                                            <label for="email-id-column">Email</label>
-                                            <input type="email" id="email-id-column" class="form-control"
-                                                name="contactEmail" placeholder="Email" required>
+                                            <label for="otherField"><span th:text="#{label.otherSpecify}"></span></label>
+                                            <input type="text" id="otherField" class="form-control"
+                                                   name="otherField"
+                                                   th:placeholder="#{label.otherSpecify}">
                                         </div>
                                     </div>
                                     <h5 class="card-title" style="padding: 20px 0 15px 10px;color:#3460bb"><span th:text="#{label.companyAddress}"></span></h5>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
-                                            <label for="addressName" th:text="#{label.locationName}"></label>
-                                            <input type="text" id="addressName" class="form-control"
+                                            <!--label for="addressName" th:text="#{label.locationName}"></label-->
+                                            <input type="hidden" id="addressName" class="form-control"
                                                    th:placeholder="#{label.locationName}"
                                                    name="addressName"
-                                                   th:value="${#authorization.expression('hasRole(''SUPERADMIN'')') ? 'Headquarter' : ''}"
-                                                   th:readonly="${#authorization.expression('hasRole(''SUPERADMIN'')')}"
+                                                   value="Headquarter"
                                                    required>
+                                                   <!--th:value="${#authorization.expression('hasRole(''SUPERADMIN'')') ? 'Headquarter' : ''}"
+                                                    th:readonly="${#authorization.expression('hasRole(''SUPERADMIN'')')}"-->
+
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
-                                            <label for="addressNickname" th:text="#{label.locationNickName}"></label>
-                                            <input type="text" id="addressNickname" class="form-control"
+                                            <!--label for="addressNickname" th:text="#{label.locationNickName}"></label-->
+                                            <input type="hidden" id="addressNickname" class="form-control"
                                                    th:placeholder="#{label.locationNickName}"
                                                    name="addressNickname"
-                                                   th:value="${#authorization.expression('hasRole(''SUPERADMIN'')') ? 'Kantor Pusat' : ''}"
-                                                   th:readonly="${#authorization.expression('hasRole(''SUPERADMIN'')')}"
+                                                   value="Main Branch"
                                                    required>
+                                                   <!--th:value="${#authorization.expression('hasRole(''SUPERADMIN'')') ? 'Main Branch' : ''}"
+                                                    th:readonly="${#authorization.expression('hasRole(''SUPERADMIN'')')}"-->
+
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-12">
@@ -103,7 +143,7 @@
                                         <div class="form-group">
                                             <label for="addressLine2" th:text="#{label.addressLine2}"></label>
                                             <input type="text" id="addressLine2" class="form-control"
-                                                   name="addressLine2" th:placeholder="#{label.addressLine1}+' ++'">
+                                                   name="addressLine2" th:placeholder="#{label.addressLine2}">
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-12">

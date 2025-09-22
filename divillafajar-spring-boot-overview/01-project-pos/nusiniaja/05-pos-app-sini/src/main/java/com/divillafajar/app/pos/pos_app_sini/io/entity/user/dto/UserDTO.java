@@ -36,7 +36,7 @@ public class UserDTO  {
     private String postalCode;
     private String country;
     private String username;
-    private String password;
+    private String pwd;
     private String authority;
     private String nik;
     private CustomerEntity customer;

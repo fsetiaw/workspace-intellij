@@ -111,7 +111,7 @@ public class CustomerServiceImpl implements CustomerService{
                     storedUser = userRepo.save(nuUser);
                     System.out.println("USER SAVED");
 
-                    //step 2 - Create customer
+                    /*step 2 - Create customer
                     CustomerEntity nuCust = new CustomerEntity();
                     nuCust.setUser(storedUser);
                     nuCust.setPhoneNumber(storedUser.getPhone());
@@ -119,6 +119,8 @@ public class CustomerServiceImpl implements CustomerService{
                     System.out.println("TRY SAVE Customer");
                     storedCustomer = csr.save(nuCust);
                     System.out.println("Customer Saved");
+
+                     */
                     //if (true) {
                     //    throw new Exception("Simulasi error di tengah proses");
                     //}

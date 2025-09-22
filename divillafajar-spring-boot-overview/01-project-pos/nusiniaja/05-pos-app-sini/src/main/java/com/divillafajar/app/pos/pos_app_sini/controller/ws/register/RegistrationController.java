@@ -116,9 +116,9 @@ public class RegistrationController {
             AddressDTO addressDTO = new AddressDTO();
             BeanUtils.copyProperties(createSuperUserRequestModel,addressDTO);
 
-            UserDTO createUser = userService.createSuperUser(userDTO,addressDTO,pubId);
+            //UserDTO createUser = userService.createSuperUser(userDTO,addressDTO,pubId);
 
-            BeanUtils.copyProperties(createUser,returnVal);
+            //BeanUtils.copyProperties(createUser,returnVal);
             return ResponseEntity.status(HttpStatus.CREATED).body(returnVal);
         } catch (UserAlreadyExistException ex) {
             // gagal server / unexpected error

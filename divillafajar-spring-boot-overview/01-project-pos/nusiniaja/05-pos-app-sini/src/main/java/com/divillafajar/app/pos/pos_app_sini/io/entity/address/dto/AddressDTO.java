@@ -16,7 +16,7 @@ public class AddressDTO {
     private String addressName;
     private String addressNickname;
     private String recipientName;
-    private String AddressPhoneNumber;
+    private String addressPhoneNumber;
     private String addressLine1;
     private String addressLine2;
     private String village;

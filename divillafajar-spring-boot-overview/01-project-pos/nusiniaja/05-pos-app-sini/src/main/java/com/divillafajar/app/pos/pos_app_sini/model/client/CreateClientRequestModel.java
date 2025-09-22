@@ -31,4 +31,7 @@ public class CreateClientRequestModel  {
     private String contactEmail;
     private String contactPosition;
     private String status;
+    private String username;
+    private String pwd;
+    private String otherField;
 }

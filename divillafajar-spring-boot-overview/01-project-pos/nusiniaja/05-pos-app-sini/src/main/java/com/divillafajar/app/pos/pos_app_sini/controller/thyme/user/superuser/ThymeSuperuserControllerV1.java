@@ -148,10 +148,21 @@ public class ThymeSuperuserControllerV1 {
 
             ClientDTO client = new ClientDTO();
             BeanUtils.copyProperties(createClientRequestModel,client);
+            /*
+            SET ClientType bila diluar pilihan
+             */
+            if(!createClientRequestModel.getOtherField().isEmpty() &&
+                    !createClientRequestModel.getOtherField().isBlank()) {
+                client.setClientType(createClientRequestModel.getOtherField());
+            }
             client.setStatus("ok");
 
             AddressDTO address = new AddressDTO();
             BeanUtils.copyProperties(createClientRequestModel,address);
+            address.setRecipientName(createClientRequestModel.getContactName());
+
+            ClientAddressEntity clientAddress = new ClientAddressEntity();
+            BeanUtils.copyProperties(createClientRequestModel,clientAddress);
 
             ClientContactDTO pic = new ClientContactDTO();
             BeanUtils.copyProperties(createClientRequestModel,pic);
@@ -196,7 +207,7 @@ public class ThymeSuperuserControllerV1 {
             @ModelAttribute CreateClientRequestModel updateClientRequestModel,
             Model model,
             Locale locale) {
-
+        System.out.println("updateClient is called -> "+pid +" -> "+aid);
         String labelClient = messageSource.getMessage("label.client", null, locale);
         String successMessage = messageSource.getMessage("label.updateSuccessfully", null, locale);
         String msgUpdateFailed = messageSource.getMessage("label.updateFailed", null, locale);

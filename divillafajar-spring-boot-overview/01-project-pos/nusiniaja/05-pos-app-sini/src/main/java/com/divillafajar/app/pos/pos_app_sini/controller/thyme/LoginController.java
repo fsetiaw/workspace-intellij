@@ -1,39 +1,49 @@
 package com.divillafajar.app.pos.pos_app_sini.controller.thyme;
 
 import com.divillafajar.app.pos.pos_app_sini.config.properties.CustomDefaultProperties;
+import com.divillafajar.app.pos.pos_app_sini.exception.user.CreateUserException;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.address.dto.AddressDTO;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.auth.NamePassEntity;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientContactDTO;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.session.UserSessionLog;
+import com.divillafajar.app.pos.pos_app_sini.model.client.CreateClientRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.model.customer.CustomerLoginRequestModel;
+import com.divillafajar.app.pos.pos_app_sini.repo.users.UsersRepo;
+import com.divillafajar.app.pos.pos_app_sini.service.client.ClientService;
 import com.divillafajar.app.pos.pos_app_sini.service.customer.CustomerService;
 import com.divillafajar.app.pos.pos_app_sini.service.user.UserService;
 import com.divillafajar.app.pos.pos_app_sini.utils.GeneratorUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.LocaleResolver;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.Locale;
 
 @Controller
-//@RequestMapping("welcome")
+@RequiredArgsConstructor
 public class LoginController {
     //@Autowired
     private final CustomerService cs;
     private final UserService us;
     private final CustomDefaultProperties customDefaultProperties;
-    public LoginController(CustomerService cs, UserService us,
-                           CustomDefaultProperties customDefaultProperties) {
-        this.cs=cs;
-        this.us=us;
-        this.customDefaultProperties=customDefaultProperties;
-    }
+    private final LocaleResolver localeResolver;
+    private final MessageSource messageSource;
+    private final ClientService clientService;
 
     @Value("${server.servlet.context-path}")
     private String contextPath;
@@ -128,6 +138,49 @@ public class LoginController {
         model.addAttribute("password",pwd);
 
         return "customer/customer-login";
+    }
+
+    @GetMapping("/registrasi")
+    public String showFormRegistrasi(Model model) {
+        System.out.println("showFormRegistrasi is CALLED");
+        //model.addAttribute("userForm", new UserForm());
+        //return "form/add-new-client";
+        //return "pages/v1/form-add-new-client";
+        //return  "customer/loginPage-form";
+        return  "pages/v1/user/registrasi";
+    }
+
+    @PostMapping("/registrasi")
+    public String processRegistrasi(@ModelAttribute CreateClientRequestModel createClientRequestModel, Model model, Locale locale
+    ) {
+        System.out.println("processRegistrasi is CALLED=>"+createClientRequestModel.getUsername());
+        String msg = "false";
+        String labelClient = messageSource.getMessage("label.client", null, locale);
+        String successMessage = messageSource.getMessage("label.addSuccessfully", null, locale);
+        String msgAddFailed = messageSource.getMessage("label.addFailed", null, locale);
+        String errorClientAlreadyExist = messageSource.getMessage("modal.errorClientAlreadyExist", null, locale);
+        String unexpectedError = messageSource.getMessage("modal.errorUnexpected", null, locale);
+
+
+        ClientDTO clientDTO = new ClientDTO();
+        BeanUtils.copyProperties(createClientRequestModel,clientDTO);
+
+        AddressDTO addressDTO = new AddressDTO();
+        BeanUtils.copyProperties(createClientRequestModel,addressDTO);
+
+        ClientContactDTO contactDTO = new ClientContactDTO();
+        BeanUtils.copyProperties(createClientRequestModel,contactDTO);
+        try {
+            clientService.createClientAdmin(clientDTO, addressDTO, contactDTO);
+        }
+        catch(CreateUserException e) {
+            model.addAttribute("errorMessage", labelClient+" "+msgAddFailed+"<br>"+e.getMessage());
+        }
+        catch(Exception e) {
+            model.addAttribute("errorMessage", labelClient+" "+msgAddFailed+"<br>"+unexpectedError);
+        }
+
+        return  "pages/v1/clients/registrasi";
     }
 
 }

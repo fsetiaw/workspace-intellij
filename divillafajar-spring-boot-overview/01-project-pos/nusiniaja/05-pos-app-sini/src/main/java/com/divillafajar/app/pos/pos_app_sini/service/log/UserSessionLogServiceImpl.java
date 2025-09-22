@@ -32,15 +32,20 @@ public class UserSessionLogServiceImpl implements UserSessionLogService{
          */
 
         if(stored.getGuest()!=null) {
-            //retunVal.setCustomerClientId(stored.getGuest().getClient().getId());
+            /*
             retunVal.setUserPid(stored.getGuest().getCustomer().getUser().getPubId());
             retunVal.setFullName((stored.getGuest().getCustomer().getUser().getFirstName()+" "+stored.getGuest().getCustomer().getUser().getLastName()).trim());
+
+             */
         }
         else if(stored.getEmployment()!=null) {
+            /*
             retunVal.setEmployeeClientId(stored.getEmployment().getClientAddress().getClient().getId());
             retunVal.setUserPid(stored.getEmployment().getEmployee().getUser().getPubId());
             System.out.println("fullname = "+(stored.getEmployment().getEmployee().getUser().getFirstName()+" "+stored.getEmployment().getEmployee().getUser().getLastName()).trim());
             retunVal.setFullName((stored.getEmployment().getEmployee().getUser().getFirstName()+" "+stored.getEmployment().getEmployee().getUser().getLastName()).trim());
+
+             */
         }
         return retunVal;
     }

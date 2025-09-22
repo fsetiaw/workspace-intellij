@@ -43,11 +43,14 @@ public class EmployeeEntity implements Serializable {
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<EmploymentEntity> employments = new HashSet<>();
 
+    /*
     @OneToOne(fetch = FetchType.EAGER, cascade = {
             CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH})
     @JoinColumn(name = "user_id")
     private UserEntity user;
+
+     */
 
 
 

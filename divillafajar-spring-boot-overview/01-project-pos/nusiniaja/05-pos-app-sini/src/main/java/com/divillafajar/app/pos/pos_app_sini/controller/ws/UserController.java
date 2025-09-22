@@ -36,8 +36,8 @@ public class UserController {
 
         System.out.println("userDTO firstname = "+userDTO.getFirstName());
 
-        UserDTO createUser = userService.createUser(userDTO);
-        BeanUtils.copyProperties(createUser,returnVal);
+        //UserDTO createUser = userService.createUser(userDTO);
+        //BeanUtils.copyProperties(createUser,returnVal);
 
         return returnVal;
     }

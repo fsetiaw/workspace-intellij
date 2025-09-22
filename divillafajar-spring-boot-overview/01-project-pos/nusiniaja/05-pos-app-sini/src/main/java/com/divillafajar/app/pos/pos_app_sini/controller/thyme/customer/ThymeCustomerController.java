@@ -31,7 +31,7 @@ import java.util.Optional;
 
 @Controller
 @RequestMapping("customer")
-public class CustomerController {
+public class ThymeCustomerController {
 
     private final CustomDefaultProperties customDefaultProperties;
     private final UserService userService;
@@ -40,12 +40,12 @@ public class CustomerController {
     private final AuthenticationSuccessHandler customAuthenticationSuccessHandler;
     private final UserSessionLogRepository sessionLogRepo;
     //private final AuthenticatedCustomerModel authenticatedCustomerModel;
-    public CustomerController(UserService userService, CustomerService custService,
-                              AuthenticationManager authenticationManager,
-                              CustomDefaultProperties customDefaultProperties,
-                              AuthenticationSuccessHandler customAuthenticationSuccessHandler,
-                              UserSessionLogRepository sessionLogRepo
-                              //AuthenticatedCustomerModel authenticatedCustomerModel
+    public ThymeCustomerController(UserService userService, CustomerService custService,
+                                   AuthenticationManager authenticationManager,
+                                   CustomDefaultProperties customDefaultProperties,
+                                   AuthenticationSuccessHandler customAuthenticationSuccessHandler,
+                                   UserSessionLogRepository sessionLogRepo
+                                   //AuthenticatedCustomerModel authenticatedCustomerModel
                               ) {
         this.userService=userService;
         this.custService=custService;
@@ -76,7 +76,7 @@ public class CustomerController {
             HttpServletRequest request,
             HttpServletResponse response,
             Authentication authentication) {
-        System.out.println("customer Login Controller /loginForm is called");
+        System.out.println("customer Login Controller /loginForm is  2222");
         System.out.println("table = "+table);
         if (authentication != null && authentication.isAuthenticated()) {
             /*
@@ -217,6 +217,8 @@ public class CustomerController {
         }
         return  "customer/loginPage-form";
     }
+
+
 
 
 }

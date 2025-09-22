@@ -15,4 +15,6 @@ public class ClientContactDTO {
     private String contactEmail;
     private String contactPosition;
     private Boolean deleted;
+    private String username;
+    private String pwd;
 }

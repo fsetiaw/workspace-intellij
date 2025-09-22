@@ -30,6 +30,10 @@ public class NamePassEntity implements Serializable {
     @Column(name = "id")
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserEntity user;
+
     @Column(length = 50, unique = true)
     private String username;
 

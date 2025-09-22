@@ -16,6 +16,7 @@ public class ClientDTO {
     private Long id;
     private String pubId;
     private String clientName;
+    private String clientListAliasName;
     private String clientEmail;
     private String clientPhone;
     private String clientType;

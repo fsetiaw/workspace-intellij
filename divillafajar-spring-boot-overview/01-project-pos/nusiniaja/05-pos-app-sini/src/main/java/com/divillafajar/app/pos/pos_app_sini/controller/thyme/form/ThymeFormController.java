@@ -44,5 +44,12 @@ public class ThymeFormController {
         //return "form/add-new-client";
         return "pages/v1/form-add-new-client";
     }
+    @GetMapping("/registrasi")
+    public String showFormRegistrasi(Model model) {
+        System.out.println("showFormRegistrasi is CALLED");
+        //model.addAttribute("userForm", new UserForm());
+        //return "form/add-new-client";
+        return "pages/v1/form-add-new-client";
+    }
 }
 

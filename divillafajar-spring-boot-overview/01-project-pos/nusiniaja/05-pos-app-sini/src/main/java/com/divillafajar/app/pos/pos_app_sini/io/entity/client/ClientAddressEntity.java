@@ -88,4 +88,7 @@ public class ClientAddressEntity implements Serializable {
 
     @Column(name = "deleted", nullable = true, columnDefinition = "TINYINT(1)")
     private Boolean deleted = false;
+
+    @Column(name = "address_phone_number", nullable = true, length = 20)
+    private String AddressPhoneNumber;
 }

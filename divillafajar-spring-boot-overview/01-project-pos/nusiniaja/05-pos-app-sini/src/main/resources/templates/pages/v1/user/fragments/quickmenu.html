@@ -1,0 +1,79 @@
+<div th:fragment="quickmenu" xmlns:th="http://www.w3.org/1999/xhtml"
+     xmlns:sec="http://www.w3.org/1999/xhtml">
+    <section class="row mb-4">
+        <h6 class="font-extrabold mb-3" style="text-transform: uppercase;">QuickMenu</h6>
+        <div class="col-12">
+            <div class="card shadow-sm" style="border-radius: 0.75rem;background: #8cecff;
+                                background: linear-gradient(90deg, rgba(140, 236, 255, 1) 0%, rgba(255, 255, 255, 1) 50%, rgba(0, 212, 255, 1) 100%);">
+                <div class="card-body">
+                    <div class="row text-center">
+
+                        <!-- Menu 1 -->
+                        <div class="col-3">
+                            <a th:href="@{/v1/superuser/clients/add}" th:classappend="${activeSub == 'addCLocation'} ? ' active' : ''"
+                               style="text-decoration: none;">
+                                <div class="d-flex flex-column align-items-center justify-content-center">
+                                    <div class="stats-icon purple mb-2" style="width: 40px; height: 40px;">
+                                        <!--i class="iconly-boldAdd"></i-->
+                                        <div class="stats-icon purple mb-2 d-flex justify-content-center align-items-center" style="padding:0 8px 18px 0;width: 40px; height: 40px;">
+                                            <i class="bi bi-house-add-fill" style="font-size:1.5rem;"></i>
+                                        </div>
+                                    </div>
+                                    <h6 class="font-extrabold mb-0"
+                                        style="font-size: 0.8rem; text-transform: uppercase;"
+                                        th:text="#{label.add}+' '+#{label.client}">
+                                    </h6>
+                                </div>
+                            </a>
+                        </div>
+
+                        <!-- Menu 2 -->
+                        <div class="col-3" th:if="${ourClients != null and #lists.size(ourClients) > 0}">
+                            <a href="#" style="text-decoration: none;outline: none;">
+                                <div class="d-flex flex-column align-items-center justify-content-center shake-trigger"
+                                     data-target-btn="update-btn">
+                                    <div class="stats-icon green mb-2 d-flex justify-content-center align-items-center" style="padding:0 8px 18px 0;width: 40px; height: 40px;">
+                                        <i class="bi bi-house-gear-fill" style="font-size:1.5rem;outline: none;"></i>
+                                    </div>
+                                    <h6 class="font-extrabold mb-0"
+                                        style="font-size: 0.8rem; text-transform: uppercase;"
+                                        th:text="#{label.update}+' '+#{label.client}">
+                                    </h6>
+                                </div>
+                            </a>
+                        </div>
+                        <!--div class="col-3">
+                            <a href="#" style="text-decoration: none;">
+                                <div class="d-flex flex-column align-items-center justify-content-center">
+                                    <div class="stats-icon green mb-2 d-flex justify-content-center align-items-center" style="padding:0 8px 18px 0;width: 40px; height: 40px;">
+                                        <i class="bi bi-house-gear-fill" style="font-size:1.5rem;"></i>
+                                    </div>
+                                    <h6 class="font-extrabold mb-0"
+                                        style="font-size: 0.8rem; text-transform: uppercase;"
+                                        th:text="#{label.update}+' '+#{label.client}">
+                                    </h6>
+                                </div>
+                            </a>
+                        </div-->
+
+                        <!-- Menu 3 -->
+                        <div class="col-3" th:if="${ourClients != null and #lists.size(ourClients) > 0}">
+                            <a href="#" style="text-decoration: none;outline: none;">
+                                <div class="d-flex flex-column align-items-center justify-content-center shake-trigger"
+                                     data-target-btn="delete-btn">
+                                    <div class="stats-icon red mb-2 d-flex justify-content-center align-items-center" style="padding:0 8px 18px 0;width: 40px; height: 40px;">
+                                        <i class="bi bi-house-dash-fill" style="font-size:1.5rem;outline: none;"></i>
+                                    </div>
+                                    <h6 class="font-extrabold mb-0"
+                                        style="font-size: 0.8rem; text-transform: uppercase;"
+                                        th:text="#{label.delete}+' '+#{label.client}">
+                                    </h6>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

@@ -1,0 +1,85 @@
+<div th:fragment="add-user" xmlns:th="http://www.w3.org/1999/xhtml"
+     xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <!-- // Basic multiple Column Form section start -->
+    <section id="multiple-column-form">
+        <div class="row match-height">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><span th:text="'Form '+#{label.addNuClient}" style="color:#27B7F5"></span></h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-body">
+                            <h5 class="card-title" style="padding: 0 0 15px 0;color:#3460bb"><span th:text="#{label.companyContact}"></span></h5>
+                            <!--form class="form" th:action="@{/v1/superuser/clients}" method="post" id="myform" target="_self"-->
+                            <form class="form" th:action="@{/user/registrasi}" method="post" id="myform" target="_self">
+                                <div class="row">
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <label for="username">Username</label>
+                                            <input type="text" id="username" class="form-control" minlength="5"
+                                                   name="username" th:placeholder="#{label.username}" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <label for="pwd" th:text="#{label.password}">Password</label>
+                                            <div class="input-group">
+                                                <input type="password" id="pwd" class="form-control"
+                                                       name="pwd"
+                                                       pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$"
+                                                       placeholder="Password"
+                                                       minlength="8"
+                                                       required>
+
+
+                                                <button type="button" class="btn btn-outline-secondary" id="togglePassword">
+                                                    <i class="bi bi-eye"></i> <!-- pakai Bootstrap Icons -->
+                                                </button>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <label for="firstName" th:text="#{label.firstName}"></label>
+                                            <input type="text" id="firstName" class="form-control" th:placeholder="#{label.firstName}"
+                                                   name="firstName" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <label for="lastName" th:text="#{label.lastName}"></label>
+                                            <input type="text" id="lastName" class="form-control" th:placeholder="#{label.lastName}"
+                                                   name="lastName" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <label for="phone" style="display:block;">Phone</label>
+                                            <input type="text" id="phone" class="form-control"
+                                                   name="phone" placeholder="Phone Number" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <label for="email">Email</label>
+                                            <input type="email" id="email" class="form-control"
+                                                   name="email" placeholder="Email" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 d-flex justify-content-end">
+                                        <button type="submit" class="btn btn-primary me-1 mb-1">Submit</button>
+                                        <button type="reset" class="btn btn-light-secondary me-1 mb-1">Reset</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- // Basic multiple Column Form section end -->
+</div>

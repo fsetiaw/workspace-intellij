@@ -11,6 +11,7 @@ public interface ClientService {
     ClientDTO updateBasicFitureClient(String pid, String aid, ClientDTO clientDTO, AddressDTO addressDTO, ClientContactDTO contactDTO);
     //ClientDTO addClientLocation(ClientDTO clientDTO, AddressDTO addressDTO, ClientContactDTO contactDTO);
     ClientDTO createSuperClient(ClientDTO clientDTO, AddressDTO addressDTO, ClientContactDTO contact, String pubId, String key);
+    ClientDTO createClientAdmin(ClientDTO clientDto, AddressDTO addressDTO, ClientContactDTO contact);
     List<ClientDTO> getAllClients();
     ClientDTO getClientDetails(String pid);
 }

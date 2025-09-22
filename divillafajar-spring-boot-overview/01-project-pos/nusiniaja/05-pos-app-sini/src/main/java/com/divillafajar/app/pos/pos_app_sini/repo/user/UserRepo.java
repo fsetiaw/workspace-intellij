@@ -7,8 +7,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserRepo extends CrudRepository<UserEntity, Long> {
-    UserEntity findUserByEmail(String email);
-    UserEntity findUserByCustomer(CustomerEntity customerEntity);
+    UserEntity findByEmail(String email);
+    //UserEntity findUserByCustomer(CustomerEntity customerEntity);
     UserEntity findByEmailAndPhone(String email, String phone);
     UserEntity findByEmailOrPhone(String email, String phone);
 }

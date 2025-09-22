@@ -88,7 +88,7 @@ public class SecurityConfig {
         http
                 .securityMatcher("/api/**") // hanya untuk endpoint api
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/login","/api/users/register","/api/register/**").permitAll()
+                        .requestMatchers("/api/login","/api/users/register","/api/v1/register/**").permitAll()
                         .requestMatchers("/api/superman/register","/api/superman/**").permitAll()
                         .requestMatchers("/customer/home","/api/customer","/session-expired").hasRole("CUSTOMER")
                         .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
@@ -108,9 +108,20 @@ public class SecurityConfig {
     public SecurityFilterChain formFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/shared/**","/admin/**","/user/registrasi","/registrasi",
+                                "/qrcode","/invalid-url","/session-expired","/something-wrong",
+                                "/login","/custom-logout", //user login form
+                                "/customer/login","/customer/registrasi", //customer login form
+                                "/customer-login", //redirect page->versi autosubmit login via main-login (unused)
+                                "/customer/processLoginForm",  //process login
+                                "/swagger-ui/**", "/v3/api-docs/**",//,"/superuser/**","/super/**,/user/**"
+                                "/mine/**","/assets/**"
+                        ).permitAll()
                         //.requestMatchers("/customer/session-expired","/session-expired").hasAnyRole("EMPLOYEE","MANAGER","ADMIN","CUSTOMER")
-                        .requestMatchers("/form/**","/superuser/**","/admin/**","/user/**").hasAnyRole("SUPERADMIN")
-                        .requestMatchers("/v1/form/**","/v1/superuser/**","/v1/admin/**","/v1/user/**").hasAnyRole("SUPERADMIN")
+                        .requestMatchers("/v1/form/**","/v2/admin/**","/v1/user/**").hasAnyRole("SUPERADMIN","ADMIN")
+                        .requestMatchers("/superuser/**","/admin/**","/user/**").hasAnyRole("SUPERADMIN")
+                        .requestMatchers("/v1/superuser/**").hasAnyRole("SUPERADMIN")
                         .requestMatchers("/customer/home","/api/customer").hasRole("CUSTOMER")
                         .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
                         .requestMatchers(HttpMethod.GET, "/home").hasAnyRole("EMPLOYEE","MANAGER","ADMIN","CUSTOMER")
@@ -119,15 +130,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/users").hasRole("MANAGER") //create employee
                         .requestMatchers(HttpMethod.PUT, "/api/users").hasRole("MANAGER") //update employee
                         .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasRole("ADMIN")
-                        .requestMatchers(
-                                "/form/**","/shared/**","/admin/**","/user/**",
-                                "/qrcode","/invalid-url","/session-expired","/something-wrong",
-                                "/login","/custom-logout", //user login form
-                                "/customer/login", //customer login form
-                                "/customer-login", //redirect page->versi autosubmit login via main-login (unused)
-                                "/customer/processLoginForm",  //process login
-                                "/swagger-ui/**", "/v3/api-docs/**"//,"/superuser/**","/super/**,/user/**"
-                        ).permitAll()
                         .anyRequest().authenticated()
                 )
 

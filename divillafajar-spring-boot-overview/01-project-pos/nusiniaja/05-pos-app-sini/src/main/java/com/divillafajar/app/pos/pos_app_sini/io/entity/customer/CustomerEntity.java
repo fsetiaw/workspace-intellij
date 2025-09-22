@@ -64,11 +64,13 @@ public class CustomerEntity implements Serializable {
     @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
     private CustomerDetailsEntity customerDetails;
 
+    /*
     @OneToOne(fetch = FetchType.EAGER, cascade = {
             CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH})
     @JoinColumn(name = "user_id")
     private UserEntity user;
+     */
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<GuestEntity> guests = new HashSet<>();

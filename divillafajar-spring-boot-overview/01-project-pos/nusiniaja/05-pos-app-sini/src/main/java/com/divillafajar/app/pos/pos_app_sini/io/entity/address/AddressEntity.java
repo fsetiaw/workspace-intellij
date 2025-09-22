@@ -38,11 +38,13 @@ public class AddressEntity implements Serializable {
             pubId = UUID.randomUUID().toString(); // UUID jadi string
         }
     }
-
+    /*
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE,
             CascadeType.PERSIST, CascadeType.REFRESH })
     @JoinColumn(name = "user_id")
     private UserEntity user;
+
+     */
 
     @Column(name = "address_name", nullable = false, length = 100)
     private String addressName;
@@ -51,7 +53,7 @@ public class AddressEntity implements Serializable {
     private String recipientName;
 
     @Column(name = "address_phone_number", nullable = true, length = 20)
-    private String AddresPhoneNumber;
+    private String addressPhoneNumber;
 
     @Column(name = "address_line1", nullable = false, length = 255)
     private String addressLine1;
