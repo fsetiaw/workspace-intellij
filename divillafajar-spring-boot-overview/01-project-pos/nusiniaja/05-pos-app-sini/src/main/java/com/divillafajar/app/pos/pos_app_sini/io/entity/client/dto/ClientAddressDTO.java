@@ -11,6 +11,7 @@ public class ClientAddressDTO {
     private String id;
     private String pubId;
     private String locationCategory;
+    private String guestCapacity;
     private String addressName;
     private String addressNickname;
     private String addressLine1;

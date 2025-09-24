@@ -9,6 +9,7 @@ import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -42,13 +43,22 @@ public class UserEntity implements Serializable {
     }
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<NamePassEntity> logins = new ArrayList<>();
+    private List<NamePassEntity> auths = new ArrayList<>();
 
     @Column(name = "email_verification_token", nullable = true)
     private String emailVerificationToken;
 
     @Column(name = "email_verification_status", nullable = true)
     private boolean emailVerificationStatus = false;
+
+    @Column(name = "email_verified_timestamp", nullable = true)
+    private LocalDateTime email_verified_timestamp;
+
+    @Column(name = "registration_timestamp", nullable = true)
+    private LocalDateTime registration_timestamp;
+
+    @Column(name = "registration_expiry_timestamp", nullable = true)
+    private LocalDateTime registration_expiry_timestamp;
 
     /*
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)

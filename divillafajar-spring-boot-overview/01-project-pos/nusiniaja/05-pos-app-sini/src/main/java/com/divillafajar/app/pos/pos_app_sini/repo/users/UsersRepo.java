@@ -7,4 +7,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UsersRepo extends CrudRepository<NamePassEntity,Long> {
     NamePassEntity findUsersByUsername(String username);
+    // Cek apakah ada namePass yang sudah pakai clientName tertentu
+    boolean existsByClient_ClientName(String clientName);
+
 }

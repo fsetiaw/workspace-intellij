@@ -3,6 +3,7 @@ package com.divillafajar.app.pos.pos_app_sini.controller.thyme.user;
 import com.divillafajar.app.pos.pos_app_sini.exception.client.ClientAlreadyExistException;
 import com.divillafajar.app.pos.pos_app_sini.exception.user.EmailAlreadyRegisterException;
 import com.divillafajar.app.pos.pos_app_sini.exception.user.UserAlreadyExistException;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.user.dto.UserDTO;
 import com.divillafajar.app.pos.pos_app_sini.model.user.UserRegistrationRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.service.user.UserService;
@@ -55,12 +56,17 @@ public class ThymeUserController {
         String unexpectedError = messageSource.getMessage("modal.errorUnexpected", null, locale);
         UserDTO retVal = new UserDTO();
         UserDTO newUser = new UserDTO();
+        ClientDTO newClient = new ClientDTO();
         try {
             BeanUtils.copyProperties(userRegistrationRequestModel, newUser);
+            BeanUtils.copyProperties(userRegistrationRequestModel, newClient);
+            newClient.setClientName(userRegistrationRequestModel.getBusinessName());
+            newClient.setClientType(userRegistrationRequestModel.getClientBusinessField());
             /*
             Karena ini registrasi user baru, maka rolenya ROLE_ADMIN
              */
-            retVal = userService.createUser("ROLE_ADMIN", newUser);
+            retVal = userService.createUser("ROLE_ADMIN", newUser, newClient);
+            model.addAttribute("successMessage", labelUser+" "+successMessage+"<br>");
         } catch (EmailAlreadyRegisterException ex) {
             model.addAttribute("errorMessage", labelUser+" "+failedMessage+"<br>"+ex.getMessage());
         } catch (UserAlreadyExistException ex) {

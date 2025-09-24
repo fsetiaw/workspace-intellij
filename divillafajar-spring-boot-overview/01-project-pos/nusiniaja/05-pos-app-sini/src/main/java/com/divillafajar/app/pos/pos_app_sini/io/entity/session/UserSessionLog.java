@@ -20,6 +20,7 @@ public class UserSessionLog {
     //private Long clientId;
     private String username;
     private String userPid;
+    private String clientPid;
     private String fullName;
     private String role;
     private String sessionId;

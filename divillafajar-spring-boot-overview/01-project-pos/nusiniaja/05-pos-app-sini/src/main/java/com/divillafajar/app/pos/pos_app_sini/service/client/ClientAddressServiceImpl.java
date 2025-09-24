@@ -2,11 +2,14 @@ package com.divillafajar.app.pos.pos_app_sini.service.client;
 
 import ch.qos.logback.core.net.server.Client;
 import com.divillafajar.app.pos.pos_app_sini.exception.DuplicationErrorException;
+import com.divillafajar.app.pos.pos_app_sini.exception.GenericCustomErrorException;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientAddressEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientContactEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientAddressDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientContactDTO;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientDTO;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.user.dto.UserDTO;
 import com.divillafajar.app.pos.pos_app_sini.repo.client.ClientAddressRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.client.ClientContactRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.client.ClientRepo;
@@ -42,13 +45,46 @@ public class ClientAddressServiceImpl implements ClientAddressService{
 
     @Override
     @Transactional
+    public ClientAddressDTO addNewStore(UserDTO usrDTO, ClientDTO targetClient, ClientAddressDTO nuLocation) {
+        System.out.println("ADD NEW STORE IOS CALLED");
+        ClientAddressDTO retVal = new ClientAddressDTO();
+        //cek apa nama sudah digunakan
+        ClientAddressEntity existedLocation = clientAddressRepo.findByClientIdAndAddressNameIgnoreCaseAndAddressNicknameIgnoreCase(targetClient.getId(), nuLocation.getAddressName(), nuLocation.getAddressNickname());
+        if(existedLocation!=null)
+            throw new DuplicationErrorException("location");
+        System.out.println("pit 1");
+        try {
+            ClientAddressEntity newLocation = new ClientAddressEntity();
+            System.out.println("pit 2");
+            BeanUtils.copyProperties(nuLocation,newLocation);
+            System.out.println("pit 2 newLocation="+newLocation.getLocationCategory());
+            ClientEntity storedClient = clientRepo.findClientByPubId(targetClient.getPubId());
+            System.out.println("pit 3");
+
+            newLocation.setClient(storedClient);
+            System.out.println("pit 4");
+            ClientAddressEntity newAdditionedLoc  = clientAddressRepo.save(newLocation);
+            System.out.println("pit 5");
+            BeanUtils.copyProperties(newAdditionedLoc,retVal);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            throw new GenericCustomErrorException(e.getMessage());
+        }
+        finally {
+            return retVal;
+        }
+    }
+
+    @Override
+    @Transactional
     public ClientAddressDTO addNewStoreOrBranch(long aid, ClientAddressDTO newStore, ClientContactDTO pic) {
         ClientAddressDTO retVal = new ClientAddressDTO();
         System.out.println("addNewStoreOrBranch newStore name="+newStore.getAddressName());
         System.out.println("newStore nickname="+newStore.getAddressNickname());
-        List<ClientAddressEntity> existingStore = clientAddressRepo.findByClientIdAndAddressNameIgnoreCaseAndAddressNicknameIgnoreCase(aid, newStore.getAddressName().trim(), newStore.getAddressNickname().trim());
-        if(existingStore!=null && existingStore.size()>0) {
-            System.out.println("Store Existed = "+existingStore.get(0).getAddressName());
+        ClientAddressEntity existingStore = clientAddressRepo.findByClientIdAndAddressNameIgnoreCaseAndAddressNicknameIgnoreCase(aid, newStore.getAddressName().trim(), newStore.getAddressNickname().trim());
+        if(existingStore!=null) {
+            System.out.println("Store Existed = "+existingStore.getAddressName());
             throw new DuplicationErrorException("location");
         }
         //get client id

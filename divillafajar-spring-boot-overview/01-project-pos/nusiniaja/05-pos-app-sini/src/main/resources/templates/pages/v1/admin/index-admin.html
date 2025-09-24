@@ -29,8 +29,8 @@
             <div th:replace="~{/pages/v1/admin/fragments/notification-header.html :: right-header}"></div>
         </div-->
         <!-- Index header slot -->
-        <div layout:fragment="optional-hidden-form.html">
-            <div th:replace="~{/pages/v1/admin/fragments/optional-hidden-form.html :: optional-hidden-form(${clientName}, 'ADMIN')}"></div>
+        <div layout:fragment="logout-and-other-hidden-form">
+            <div th:replace="~{/pages/v1/fragments/logout-and-other-hidden-form.html :: hidden-form(${clientName}, 'ADMIN')}"></div>
         </div>
 
         <!-- Main content slot -->

@@ -11,6 +11,7 @@ import com.divillafajar.app.pos.pos_app_sini.io.entity.auth.AuthorityEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.auth.NamePassEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientAddressEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientEntity;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.customer.CustomerEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.employee.EmployeeEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.employee.EmploymentEntity;
@@ -29,10 +30,13 @@ import com.divillafajar.app.pos.pos_app_sini.repo.employee.EmploymentRepo;
 import com.divillafajar.app.pos.pos_app_sini.utils.GeneratorUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -49,7 +53,7 @@ public class UserServiceImpl implements UserService {
     private final AuthRepo authRepo;
     private final GeneratorUtils generatorUtils;
     private final CustomDefaultProperties customDefaultProperties;
-
+    private final MessageSource messageSource;
 
 
     @Override
@@ -58,6 +62,15 @@ public class UserServiceImpl implements UserService {
         //customerEntity.set
 
         return null;
+    }
+
+    @Override
+    public UserDTO getUser(String pid) {
+        UserDTO retVal = new UserDTO();
+        UserEntity userEntity = userRepo.findByPubId(pid);
+        if(userEntity!=null)
+            BeanUtils.copyProperties(userEntity,retVal);
+        return retVal;
     }
 /*
     @Override
@@ -235,7 +248,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserDTO createUser(String role, UserDTO userDTO) {
+    public UserDTO createUser(String role, UserDTO userDTO, ClientDTO clientDTO) {
         UserDTO returnVal = new UserDTO();
 
         System.out.println("Creating superadmin--"+userDTO.getUsername().length());
@@ -272,15 +285,30 @@ public class UserServiceImpl implements UserService {
         if (existingUser!=null)
             throw new EmailAlreadyRegisterException("Email Already Registered");
 
+        /*
+        cek business name sudah digunakan sama user atau belum
+         */
+        if(namePasRepo.existsByClient_ClientName(clientDTO.getBusinessName()))
+            throw new EmailAlreadyRegisterException(messageSource.getMessage("error.biznameAlreadyUsed", null, LocaleContextHolder.getLocale()));
+
         try {
+
             UserEntity userEntity = new UserEntity();
             BeanUtils.copyProperties(userDTO, userEntity);
             UserEntity storedUser = userRepo.save(userEntity);
+
             NamePassEntity nape = new NamePassEntity();
             BeanUtils.copyProperties(userDTO, nape);
             nape.setPassword(passwordEncoder.encode(userDTO.getPwd()));
             nape.setEnabled(true);
             nape.setUser(storedUser);
+            ClientEntity newuClient = new ClientEntity();
+            BeanUtils.copyProperties(clientDTO,newuClient);
+            ClientEntity storedClient  = clientRepo.save(newuClient);
+            nape.setClient(storedClient);
+            BeanUtils.copyProperties(storedUser,returnVal);
+
+
             NamePassEntity storedNape = namePasRepo.save(nape);
 
 
@@ -289,9 +317,11 @@ public class UserServiceImpl implements UserService {
             auth.setUsername(userDTO.getUsername());
             auth.setNamePass(storedNape);
             authRepo.save(auth);
-            BeanUtils.copyProperties(storedUser,returnVal);
+
+
         }
         catch (Exception e) {
+            e.printStackTrace();
             throw new CreateUserException("Gagal Membuat User Baru");
         }
         return returnVal;

@@ -1,5 +1,6 @@
 package com.divillafajar.app.pos.pos_app_sini.io.entity.client;
 
+import com.divillafajar.app.pos.pos_app_sini.io.entity.auth.NamePassEntity;
 import jakarta.persistence.*;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Table;
@@ -29,8 +30,6 @@ public class ClientEntity implements Serializable {
     @Column(name = "id")
     private Long id;
 
-
-
     @Column(name = "pub_id", updatable = false, nullable = false)
     private String pubId;
 
@@ -41,18 +40,20 @@ public class ClientEntity implements Serializable {
         }
     }
 
-
     @Column(name = "client_name", length = 50, nullable = false)
     private String clientName;
+
+    //@Column(name = "client_name", length = 50, nullable = false)
+    //private String clientBusinessField;
 
     @Lob
     @Column(name = "client_list_alias_name", nullable = true)
     private String clientListAliasName;
 
-    @Column(name = "client_email", length = 99, nullable = false)
+    @Column(name = "client_email", length = 99, nullable = true)
     private String clientEmail;
 
-    @Column(name = "client_phone", length = 50, nullable = false)
+    @Column(name = "client_phone", length = 50, nullable = true)
     private String clientPhone;
 
     @Column(name = "client_type", length = 50, nullable = false)
@@ -60,6 +61,18 @@ public class ClientEntity implements Serializable {
 
     @Column(name = "deleted", nullable = true, columnDefinition = "TINYINT(1)")
     private Boolean deleted = false;
+
+    //@Filters({
+    //        @Filter(name = "deletedFilter", condition = "deleted = :isDeleted")
+    //})
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
+    private List<ClientAddressEntity> clientAddresses;
+
+
+    // Relasi OneToOne ke NamePassEntity (child)
+    @OneToOne(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+    private NamePassEntity namePass;
+
     /*
     @ManyToMany(fetch = FetchType.EAGER, cascade = {
             CascadeType.PERSIST, CascadeType.MERGE,
@@ -69,28 +82,24 @@ public class ClientEntity implements Serializable {
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<EmploymentEntity> clients = new HashSet<>();
      */
+    /*
+    //@Column(name = "email_verification_status", nullable = false, columnDefinition = "TINYINT(1)")
+    //private Boolean email_verification_status = false;
 
+    //@Column(name = "email_verification_token", length = 255, nullable = true)
+    //private String email_verification_token;
 
-    @Filters({
-            @Filter(name = "deletedFilter", condition = "deleted = :isDeleted")
-    })
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
-    private List<ClientAddressEntity> clientAddresses;
+    //@Column(name = "email_verified_timestamp", nullable = true)
+    //private LocalDateTime email_verified_timestamp;
 
-    @Column(name = "email_verification_status", nullable = false, columnDefinition = "TINYINT(1)")
-    private Boolean email_verification_status = false;
+    //@Column(name = "registration_timestamp", nullable = true)
+    //private LocalDateTime registration_timestamp;
 
-    @Column(name = "email_verification_token", length = 255, nullable = true)
-    private String email_verification_token;
+    //@Column(name = "registration_expiry_timestamp", nullable = true)
+    //private LocalDateTime registration_expiry_timestamp;
 
-    @Column(name = "email_verified_timestamp", nullable = true)
-    private LocalDateTime email_verified_timestamp;
+     */
 
-    @Column(name = "registration_timestamp", nullable = true)
-    private LocalDateTime registration_timestamp;
-
-    @Column(name = "registration_expiry_timestamp", nullable = true)
-    private LocalDateTime registration_expiry_timestamp;
 /*
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<EmploymentEntity> employments = new HashSet<>();

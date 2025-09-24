@@ -1,5 +1,6 @@
 package com.divillafajar.app.pos.pos_app_sini.io.entity.auth;
 
+import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.customer.CustomerEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.customer.GuestEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.employee.EmployeeEntity;
@@ -33,6 +34,12 @@ public class NamePassEntity implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
+
+
+    // FK ke parent users
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "client_id", nullable = false, unique = true)
+    private ClientEntity client;
 
     @Column(length = 50, unique = true)
     private String username;

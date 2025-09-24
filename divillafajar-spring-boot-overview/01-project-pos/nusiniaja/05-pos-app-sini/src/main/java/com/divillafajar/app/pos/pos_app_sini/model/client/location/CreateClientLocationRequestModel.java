@@ -8,9 +8,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateClientLocationRequestModel {
-    private String locationCategory;
     private String addressName;
     private String addressNickname;
+    private String locationCategory;
+    private String guestCapacity;
     private String addressLine1;
     private String addressLine2;
     private String village;
@@ -19,9 +20,6 @@ public class CreateClientLocationRequestModel {
     private String province;
     private String postalCode;
     private String country;
-    private String contactName;
-    private String contactPhone;
-    private String contactEmail;
-    private String contactPosition;
-    private String status;
+    private String phone;
+    private String email;
 }

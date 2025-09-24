@@ -15,11 +15,14 @@ import java.util.Set;
 public class ClientDTO {
     private Long id;
     private String pubId;
-    private String clientName;
+    private String businessName; //field form
+    private String clientName; //copyke sini
+    private String clientType;
+    //DIBAWAH INI BELUm KEPAKE
     private String clientListAliasName;
     private String clientEmail;
     private String clientPhone;
-    private String clientType;
+
     private String status;
     private List<ClientAddressEntity> clientAddresses;
     private Set<EmploymentEntity> employments;

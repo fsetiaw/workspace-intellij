@@ -1,24 +1,49 @@
 package com.divillafajar.app.pos.pos_app_sini.service.log;
 
+import com.divillafajar.app.pos.pos_app_sini.exception.user.UserNotFoundException;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.auth.NamePassEntity;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.session.UserSessionLogDTO;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.user.UserEntity;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.user.dto.UserDTO;
+import com.divillafajar.app.pos.pos_app_sini.repo.client.ClientRepo;
+import com.divillafajar.app.pos.pos_app_sini.repo.user.UserRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.users.UsersRepo;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
+@RequiredArgsConstructor
 public class UserSessionLogServiceImpl implements UserSessionLogService{
 
-    private final UsersRepo usersRepo;
+    private final UsersRepo authRepo;
+    private final UserRepo userRepo;
+    private final ClientRepo clientRepo;
+    private final MessageSource messageSource;
 
-    public UserSessionLogServiceImpl(UsersRepo usersRepo) {
-        this.usersRepo=usersRepo;
-    }
+    //public UserSessionLogServiceImpl(authRepo authRepo) {
+    //    this.authRepo=authRepo;
+    //}
 
     @Override
     public UserSessionLogDTO prepUserSessionLog(String username) {
         System.out.println("PrepUserSessionLog IS CALLED");
         UserSessionLogDTO retunVal = new UserSessionLogDTO();
-        NamePassEntity stored = usersRepo.findUsersByUsername(username);
+        NamePassEntity stored = authRepo.findUsersByUsername(username);
+        Optional<ClientEntity> clientUser = clientRepo.findById(stored.getClient().getId());
+        if(clientUser.isEmpty())
+            throw new UserNotFoundException(messageSource.getMessage("error.client.notFound", null, LocaleContextHolder.getLocale()));
+        retunVal.setClientPid(clientUser.get().getPubId());
+
+        Optional<UserEntity> loginUserEntity = userRepo.findById(stored.getUser().getId());
+        if(loginUserEntity.isEmpty())
+            throw new UserNotFoundException(messageSource.getMessage("error.user.notFound", null, LocaleContextHolder.getLocale()));
+        retunVal.setUserPid(loginUserEntity.get().getPubId());
+
         /*
         if(stored!=null) {
             System.out.println("stored=="+stored.getEmployment());

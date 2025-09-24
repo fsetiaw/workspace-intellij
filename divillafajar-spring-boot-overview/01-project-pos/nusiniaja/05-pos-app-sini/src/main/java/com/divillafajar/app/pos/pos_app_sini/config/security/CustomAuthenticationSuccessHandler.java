@@ -111,6 +111,7 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         log.setUserAgent(userIp);
         log.setStatus("ACTIVE");
         log.setRole(role);
+        log.setUserPid(prepDTO.getUserPid());
         //log.setClientId(clientId);
         log.setTableId(table);
 
@@ -164,8 +165,9 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             else if (role.equals("ROLE_ADMIN")) {
 
 
-                session.setMaxInactiveInterval(-1); //
-                redirectUrl = "/v2/admin/client/home?pid="+username;
+                session.setMaxInactiveInterval(-1);
+                redirectUrl = "/v2/admin/home";
+                //redirectUrl = "/v2/admin/client/home?pid="+username;
                 break;
             }
 

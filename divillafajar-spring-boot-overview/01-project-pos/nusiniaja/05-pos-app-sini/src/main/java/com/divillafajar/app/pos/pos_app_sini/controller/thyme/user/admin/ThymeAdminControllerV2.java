@@ -5,6 +5,8 @@ import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientAddressEntit
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientAddressDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientContactDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientDTO;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.session.UserSessionLog;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.user.dto.UserDTO;
 import com.divillafajar.app.pos.pos_app_sini.model.client.location.CreateClientLocationRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.model.user.UserLogedInModel;
 import com.divillafajar.app.pos.pos_app_sini.service.client.ClientAddressService;
@@ -15,6 +17,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +28,7 @@ import java.util.List;
 import java.util.Locale;
 
 @Controller
-@RequestMapping("v2/admin/client")
+@RequestMapping("v2/admin")
 public class ThymeAdminControllerV2 {
     private final ClientAddressService clientAddressService;
     private final ClientService clientService;
@@ -58,18 +61,17 @@ public class ThymeAdminControllerV2 {
     public String showAdminHome(
             HttpServletRequest request,
             HttpServletResponse response,
-            @RequestParam(name = "pid", required = false) String pid,
             @RequestParam(name = "add", required = false) Boolean add,
             //@RequestParam(name = "lang", required = false) String lang,
             Model model, HttpSession session
     ) {
-        System.out.println("showAdminHome V2 IS CALLED = " + pid);
-        UserLogedInModel loggedInUser =  userService.prepUserLogedInfo(pid);
-        session.setAttribute("loggedInUser",loggedInUser);
+        //System.out.println("showAdminHome V2 IS CALLED = " + pid);
+        UserSessionLog userLogInfo = (UserSessionLog) session.getAttribute("userLogInfo");
+        //pid = userLogInfo.getUsername();
         /*
         if (lang != null) {
             Locale locale = new Locale(lang);
-            localeResolver.setLocale(request, response, locale);
+            localeResolver.setLocale(request, response, LocaleContextHolder.getLocale()));
         }
 
          */
@@ -77,7 +79,7 @@ public class ThymeAdminControllerV2 {
         //ClientDTO client = clientService.getClientDetails(pid);
         //List<ClientAddressEntity> storesLocation = client.getClientAddresses();
         model.addAttribute("isAdd", add);
-        model.addAttribute("pid",pid);
+        model.addAttribute("pid",userLogInfo.getUsername());
         model.addAttribute("activePage", "dashboard");
         //model.addAttribute("clientType", client.getClientType());
         //model.addAttribute("clientName", client.getClientName());
@@ -87,7 +89,7 @@ public class ThymeAdminControllerV2 {
         return "pages/v1/admin/index-admin";
     }
 
-    @GetMapping("/location/add")
+    @GetMapping("/add/location")
     public String showAddLocationForm(
             @RequestParam(name = "pid", required = false) String pid,
             @RequestParam(name = "clientName", required = false) String clientName,
@@ -102,23 +104,44 @@ public class ThymeAdminControllerV2 {
         return "pages/v1/admin/add-location";
     }
 
-    @PostMapping("/location/add")
-    public String addLokasiCabang(
+    @PostMapping("/add/location")
+    public String addLokasi(
             @ModelAttribute CreateClientLocationRequestModel createClientLocationRequestModel,
             @RequestParam(name = "pid", required = false) String pid,
-            RedirectAttributes redirectAttributes,
+            RedirectAttributes redirectAttributes, HttpSession session,
             Model model, Locale locale
     ) {
         String msg = "false";
-        String labelLocation = messageSource.getMessage("label.location", null, locale);
-        String successMessage = messageSource.getMessage("label.addSuccessfully", null, locale);
-        String msgAddFailed = messageSource.getMessage("label.addFailed", null, locale);
-        String errorClientLocationAlreadyExist = messageSource.getMessage("modal.errorClientLocationAlreadyExist", null, locale);
-        String unexpectedError = messageSource.getMessage("modal.errorUnexpected", null, locale);
-        System.out.println("ADD CLIENT IS CALLED V!");
-        System.out.println("ADD CLIENT PID="+pid);
-
+        String labelLocation = messageSource.getMessage("label.location", null, LocaleContextHolder.getLocale());
+        String successMessage = messageSource.getMessage("label.addSuccessfully", null, LocaleContextHolder.getLocale());
+        String msgAddFailed = messageSource.getMessage("label.addFailed", null, LocaleContextHolder.getLocale());
+        String errorClientLocationAlreadyExist = messageSource.getMessage("modal.errorClientLocationAlreadyExist", null, LocaleContextHolder.getLocale());
+        String unexpectedError = messageSource.getMessage("modal.errorUnexpected", null, LocaleContextHolder.getLocale());
+        System.out.println("addLokasi IS CALLED -- "+createClientLocationRequestModel.getAddressName());
         try {
+            UserSessionLog userLog =  (UserSessionLog)session.getAttribute("userLogInfo");
+            UserDTO storedUser = userService.getUser(userLog.getUserPid());
+
+            ClientDTO targetClient = clientService.getClientDetails(userLog.getClientPid());
+            //cek apa nama busines sudah pernah dipalai
+            System.out.println("storedUser=="+storedUser.getFirstName());
+            ClientAddressDTO nuLocation = new ClientAddressDTO();
+            BeanUtils.copyProperties(createClientLocationRequestModel,nuLocation);
+            System.out.println("nuLocation=="+createClientLocationRequestModel.getLocationCategory());
+            System.out.println("nuLocation=="+createClientLocationRequestModel.getGuestCapacity());
+            System.out.println("nuLocation=="+nuLocation.getLocationCategory());
+            System.out.println("nuLocation=="+nuLocation.getGuestCapacity());
+            ClientAddressDTO storedAddress = clientAddressService.addNewStore(storedUser, targetClient, nuLocation);
+            model.addAttribute("successMessage", labelLocation+" "+successMessage+"<br>");
+        } catch (DuplicationErrorException ex) {
+            model.addAttribute("errorMessage", labelLocation+" "+msgAddFailed+"<br>"+ex.getMessage());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        /*
+        try {
+
             ClientDTO ownerClient = clientService.getClientDetails(pid);
             System.out.println("pit 2");
             ClientAddressDTO address = new ClientAddressDTO();
@@ -169,6 +192,9 @@ public class ThymeAdminControllerV2 {
         //return "super/clients/index-clients";
         //return "pages/v1/client-admin/index-admin";
         return "redirect:/v1/admin/client/home?pid=" + pid + "&add=false";
+
+             */
+        return "redirect:/v2/admin/home";
     }
 
 }

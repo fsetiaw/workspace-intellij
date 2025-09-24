@@ -12,6 +12,8 @@ public class UserRegistrationRequestModel {
     //private UserAddressDetailsRequestModel userAddressDetailsRequestModel;
     private String firstName;
     private String lastName;
+    private String businessName;
+    private String clientBusinessField;
     private String phone;
     private String email;
     private String pwd;

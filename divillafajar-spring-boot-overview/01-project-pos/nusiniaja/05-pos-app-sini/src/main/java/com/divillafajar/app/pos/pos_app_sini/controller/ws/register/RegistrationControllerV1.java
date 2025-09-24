@@ -118,8 +118,8 @@ public class RegistrationControllerV1 {
 
             //UserDTO createUser = userService.createSuperUser(userDTO,addressDTO,pubId);
 
-            UserDTO createUser = userService.createUser("ROLE_SUPERADMIN", newUser);
-            BeanUtils.copyProperties(createUser,returnVal);
+            //UserDTO createUser = userService.createUser("ROLE_SUPERADMIN", newUser, clientDto);
+            //BeanUtils.copyProperties(createUser,returnVal);
             return ResponseEntity.status(HttpStatus.CREATED).body(returnVal);
         } catch (UserAlreadyExistException ex) {
             // gagal server / unexpected error

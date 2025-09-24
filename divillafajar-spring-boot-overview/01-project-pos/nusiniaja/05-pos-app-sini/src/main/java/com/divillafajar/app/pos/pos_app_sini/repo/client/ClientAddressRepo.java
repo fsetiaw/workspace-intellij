@@ -11,6 +11,11 @@ public interface ClientAddressRepo extends CrudRepository<ClientAddressEntity, L
     ClientAddressEntity findByClientId(Long clientId);
     ClientAddressEntity findByPubId(String aid);
     ClientAddressEntity findById(long id);
-    List<ClientAddressEntity> findByClientIdAndAddressNameIgnoreCaseAndAddressNicknameIgnoreCase(
-            Long clientId, String addressName, String addressNickname);
+    //List<ClientAddressEntity> findByClientIdAndAddressNameIgnoreCaseAndAddressNicknameIgnoreCase(
+    //        Long clientId, String addressName, String addressNickname);
+    ClientAddressEntity findByClientIdAndAddressNameIgnoreCaseAndAddressNicknameIgnoreCase(
+            Long clientId,
+            String addressName,
+            String addressNickname
+    );
 }

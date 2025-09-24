@@ -91,4 +91,10 @@ public class ClientAddressEntity implements Serializable {
 
     @Column(name = "address_phone_number", nullable = true, length = 20)
     private String AddressPhoneNumber;
+
+    @Column(name = "location_category", length = 50, nullable = false)
+    private String locationCategory;
+
+    @Column(name = "guest_capacity", length = 20, nullable = false)
+    private String guestCapacity;
 }
