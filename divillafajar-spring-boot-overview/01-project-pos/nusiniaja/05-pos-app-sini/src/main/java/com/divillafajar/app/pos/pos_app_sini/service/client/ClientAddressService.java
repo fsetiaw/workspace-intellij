@@ -12,4 +12,5 @@ public interface ClientAddressService {
     ClientAddressDTO addNewStore(UserDTO usrDTO, ClientDTO targetClient, ClientAddressDTO nuLocation);
     ClientAddressDTO addNewStoreOrBranch(long aid, ClientAddressDTO newStore, ClientContactDTO pic);
     List<ClientAddressDTO> getActiveClientAddress(String clientPid);
+    long inactivateClientAddress(String clientAddressPubId);
 }

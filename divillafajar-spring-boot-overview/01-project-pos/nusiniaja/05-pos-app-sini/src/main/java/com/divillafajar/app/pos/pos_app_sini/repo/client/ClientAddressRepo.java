@@ -1,7 +1,10 @@
 package com.divillafajar.app.pos.pos_app_sini.repo.client;
 
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientAddressEntity;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,4 +24,9 @@ public interface ClientAddressRepo extends CrudRepository<ClientAddressEntity, L
 
     // kalau mau ambil list alamat by clientId dan active = true
     List<ClientAddressEntity> findByClient_IdAndActiveTrue(Long clientId);
+
+    @Modifying
+    @Query("UPDATE ClientAddressEntity c SET c.active = false WHERE c.pubId = :pubId")
+    int deactivateByPubId(@Param("pubId") String pubId);
+
 }

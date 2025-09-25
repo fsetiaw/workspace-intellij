@@ -112,6 +112,7 @@ public class ClientAddressServiceImpl implements ClientAddressService{
         return retVal;
     }
 
+
     @Override
     public List<ClientAddressDTO> getActiveClientAddress(String clientPid) {
         List<ClientAddressDTO> listActiveLocation = new ArrayList<>();
@@ -125,5 +126,17 @@ public class ClientAddressServiceImpl implements ClientAddressService{
         System.out.println("listLokasi Size-"+listLokasi.size());
         System.out.println("listActiveLocation size-"+listActiveLocation.size());
         return listActiveLocation;
+    }
+
+    @Transactional
+    @Override
+    public long inactivateClientAddress(String clientAddressPubId) {
+        long updated = 0;
+        try {
+            updated = clientAddressRepo.deactivateByPubId(clientAddressPubId);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return updated;
     }
 }

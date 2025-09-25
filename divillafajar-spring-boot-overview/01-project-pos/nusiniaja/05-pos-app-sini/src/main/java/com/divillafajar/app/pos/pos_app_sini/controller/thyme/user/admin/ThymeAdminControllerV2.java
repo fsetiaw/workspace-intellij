@@ -134,11 +134,26 @@ public class ThymeAdminControllerV2 {
 
     @PostMapping("/delete/location")
     public String deleteLokasi(
-            @RequestParam(name = "pubId", required = false) String id,
+            @RequestParam(name = "pubId", required = false) String pubId,
             RedirectAttributes redirectAttributes, HttpSession session,
             Model model, Locale locale
     ) {
-        System.out.println("deleteLokasi="+id);
+        System.out.println("deleteLokasi="+pubId);
+        String labelLocation = messageSource.getMessage("label.location", null, LocaleContextHolder.getLocale());
+        String successMessage = messageSource.getMessage("label.deleteSuccessfully", null, LocaleContextHolder.getLocale());
+        String msgFailed = messageSource.getMessage("label.deleteFailed", null, LocaleContextHolder.getLocale());
+        String errorClientLocationAlreadyExist = messageSource.getMessage("modal.errorClientLocationAlreadyExist", null, LocaleContextHolder.getLocale());
+        String unexpectedError = messageSource.getMessage("modal.errorUnexpected", null, LocaleContextHolder.getLocale());
+
+        try {
+            clientAddressService.inactivateClientAddress(pubId);
+            redirectAttributes.addFlashAttribute("successMessage", labelLocation+" "+successMessage+"<br>");
+        }
+        catch (Exception ex) {
+            //ex.printStackTrace();
+            redirectAttributes.addFlashAttribute("errorMessage", labelLocation+" "+msgFailed+"<br>"+ex.getMessage());
+        }
+
         return "redirect:/v2/admin/home";
     }
 
