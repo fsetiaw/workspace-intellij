@@ -63,10 +63,10 @@
                         </a>
                         <ul class="submenu ">
                             <li th:if="${activeSub != 'upd' && activeSub != 'del'}" class="submenu-item" th:classappend="${activeSub == 'add'} ? ' active'">
-                                <a th:href="@{/v1/superuser/clients/add}" class="submenu-link" th:text="#{label.add}+' '+#{label.location}"></a>
+                                <a th:href="@{/v2/admin/add/location}" class="submenu-link" th:text="#{label.add}+' '+#{label.location}"></a>
                             </li>
 
-                            <li th:if="${activeSub != 'add' && activeSub != 'del' && ourClients != null and #lists.size(ourClients) > 0}"
+                            <li th:if="${activeSub != 'add' && activeSub != 'del' && listActiveLocation != null and #lists.size(listActiveLocation) > 0}"
                                 class="submenu-item" th:classappend="${activeSub == 'upd'} ? ' active'">
                                 <a href="#"
                                    class="submenu-link shake-trigger"
@@ -74,7 +74,7 @@
                                    th:text="#{label.update}+' '+#{label.location}">
                                 </a>
                             </li>
-                            <li th:if="${activeSub != 'add' && activeSub != 'upd' && ourClients != null and #lists.size(ourClients) > 0}"
+                            <li th:if="${activeSub != 'add' && activeSub != 'upd' && listActiveLocation != null and #lists.size(listActiveLocation) > 0}"
                                 class="submenu-item" th:classappend="${activeSub == 'del'} ? ' active'">
                                 <a href="#"
                                    class="submenu-link shake-trigger"

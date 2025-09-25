@@ -28,7 +28,7 @@
                         </div>
 
                         <!-- Menu 2 -->
-                        <div class="col-3" th:if="${ourClients != null and #lists.size(ourClients) > 0}">
+                        <div class="col-3" th:if="${listActiveLocation != null and #lists.size(listActiveLocation) > 0}">
                             <a href="#" style="text-decoration: none;outline: none;">
                                 <div class="d-flex flex-column align-items-center justify-content-center shake-trigger"
                                      data-target-btn="update-btn">
@@ -57,7 +57,7 @@
                         </div-->
 
                         <!-- Menu 3 -->
-                        <div class="col-3" th:if="${ourClients != null and #lists.size(ourClients) > 0}">
+                        <div class="col-3" th:if="${listActiveLocation != null and #lists.size(listActiveLocation) > 0}">
                             <a href="#" style="text-decoration: none;outline: none;">
                                 <div class="d-flex flex-column align-items-center justify-content-center shake-trigger"
                                      data-target-btn="delete-btn">

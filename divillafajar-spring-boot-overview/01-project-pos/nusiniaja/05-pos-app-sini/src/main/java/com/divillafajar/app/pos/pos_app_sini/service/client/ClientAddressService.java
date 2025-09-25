@@ -5,8 +5,11 @@ import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientContactD
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.user.dto.UserDTO;
 
+import java.util.List;
+
 public interface ClientAddressService {
     ClientAddressDTO getStore(long aid);
     ClientAddressDTO addNewStore(UserDTO usrDTO, ClientDTO targetClient, ClientAddressDTO nuLocation);
     ClientAddressDTO addNewStoreOrBranch(long aid, ClientAddressDTO newStore, ClientContactDTO pic);
+    List<ClientAddressDTO> getActiveClientAddress(String clientPid);
 }

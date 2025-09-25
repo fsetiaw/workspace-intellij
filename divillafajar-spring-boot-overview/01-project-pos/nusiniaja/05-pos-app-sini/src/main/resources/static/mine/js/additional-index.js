@@ -92,6 +92,7 @@ document.addEventListener("click", function(e) {
 });
 
 <!-- buat handle delete-->
+
 const toast = document.getElementById("confirmDeleteToast");
 const confirmMessage = document.getElementById("confirmMessage");
 const cancelDelete = document.getElementById("cancelDelete");
@@ -113,18 +114,37 @@ document.querySelectorAll(".delete-btn").forEach(btn => {
 
 // batal
 cancelDelete.addEventListener("click", () => {
-  toast.classList.remove("show");
-  currentCard = null;
+    console.log("Cancel clicked, classList:", toast.className);
+    //console.log('confirmDeleteToast count:', document.querySelectorAll('#confirmDeleteToast').length);
+    //console.log('.toast-confirm count:', document.querySelectorAll('.toast-confirm').length);
+    toast.classList.remove("show");
+    toast.style.display = "none"; // force hide
+    currentCard = null;
 });
 
 // konfirmasi
 confirmDelete.addEventListener("click", () => {
+   /*
   if (currentCard) {
     currentCard.remove(); // hapus card dari DOM
+    toast.style.display = "none";
     currentCard = null;
   }
+  */
+  if (currentCard) {
+      const storeName = currentCard.querySelector(".delete-btn").getAttribute("data-store-name");
+      const targetKeyValue = currentCard.querySelector(".delete-btn").getAttribute("data-store-pid"); //Data dari <button terkait di main.htmlnya
+
+      const form = document.getElementById("deleteForm"); //deleteClientAddress dari nama Form @logout-and-other-hidden-form
+      const formField = document.getElementById("pubId"); //pubId dari field Form @logout-and-other-hidden-form
+
+      formField.value = targetKeyValue;
+      form.submit();
+
+    }
   toast.classList.remove("show");
 });
+
 
 <!-- buat handle update-->
 const toastUpdate = document.getElementById("confirmUpdateToast");
@@ -143,13 +163,18 @@ document.querySelectorAll(".update-btn").forEach(btn => {
 
     confirmUpdateMessage.textContent = `Anda yakin mau update ${storeName}?`;
     toastUpdate.classList.add("show");
+
   });
 });
 
 // batal
 cancelUpdate.addEventListener("click", () => {
-  toastUpdate.classList.remove("show");
-  currentCard = null;
+    toastUpdate.classList.remove("show");
+    toastUpdate.style.display = "none"; // force hide
+    currentCard = null;
+  //toastUpdate.classList.remove("show");
+  //toast.style.display = "none";
+  //currentCard = null;
 });
 
 // konfirmasi

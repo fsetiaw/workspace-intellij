@@ -65,27 +65,23 @@ public class ThymeAdminControllerV2 {
             //@RequestParam(name = "lang", required = false) String lang,
             Model model, HttpSession session
     ) {
-        //System.out.println("showAdminHome V2 IS CALLED = " + pid);
+        System.out.println("showAdminHome V2 IS CALLED = ");
         UserSessionLog userLogInfo = (UserSessionLog) session.getAttribute("userLogInfo");
-        //pid = userLogInfo.getUsername();
-        /*
-        if (lang != null) {
-            Locale locale = new Locale(lang);
-            localeResolver.setLocale(request, response, LocaleContextHolder.getLocale()));
-        }
-
-         */
-
-        //ClientDTO client = clientService.getClientDetails(pid);
-        //List<ClientAddressEntity> storesLocation = client.getClientAddresses();
+        List<ClientAddressDTO> listActiveLocation = clientAddressService.getActiveClientAddress(userLogInfo.getClientPid());
+        System.out.println("listActiveLocation size = "+listActiveLocation.size());
+        if(listActiveLocation!=null)
+            model.addAttribute("listActiveLocation", listActiveLocation);
         model.addAttribute("isAdd", add);
         model.addAttribute("pid",userLogInfo.getUsername());
         model.addAttribute("activePage", "dashboard");
-        //model.addAttribute("clientType", client.getClientType());
-        //model.addAttribute("clientName", client.getClientName());
-        //model.addAttribute("ourStores", storesLocation);
-        //System.out.println("val lang client.clientName= " + model.getAttribute("client"));
-        //return "super/clients/home/home-client";
+
+        String contextPath = request.getContextPath();
+        //Path Untuk Delete Location
+        model.addAttribute("deletePath", contextPath + "/v2/admin/delete/location");
+        //Path Untuk Update Location
+        model.addAttribute("updatePath", contextPath + "/v2/admin/update/location");
+
+
         return "pages/v1/admin/index-admin";
     }
 
@@ -121,79 +117,28 @@ public class ThymeAdminControllerV2 {
         try {
             UserSessionLog userLog =  (UserSessionLog)session.getAttribute("userLogInfo");
             UserDTO storedUser = userService.getUser(userLog.getUserPid());
-
             ClientDTO targetClient = clientService.getClientDetails(userLog.getClientPid());
             //cek apa nama busines sudah pernah dipalai
-            System.out.println("storedUser=="+storedUser.getFirstName());
             ClientAddressDTO nuLocation = new ClientAddressDTO();
             BeanUtils.copyProperties(createClientLocationRequestModel,nuLocation);
-            System.out.println("nuLocation=="+createClientLocationRequestModel.getLocationCategory());
-            System.out.println("nuLocation=="+createClientLocationRequestModel.getGuestCapacity());
-            System.out.println("nuLocation=="+nuLocation.getLocationCategory());
-            System.out.println("nuLocation=="+nuLocation.getGuestCapacity());
             ClientAddressDTO storedAddress = clientAddressService.addNewStore(storedUser, targetClient, nuLocation);
-            model.addAttribute("successMessage", labelLocation+" "+successMessage+"<br>");
+            redirectAttributes.addFlashAttribute("successMessage", labelLocation+" "+successMessage+"<br>");
         } catch (DuplicationErrorException ex) {
-            model.addAttribute("errorMessage", labelLocation+" "+msgAddFailed+"<br>"+ex.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", labelLocation+" "+msgAddFailed+"<br>"+ex.getMessage());
         }
         catch (Exception e) {
             e.printStackTrace();
         }
-        /*
-        try {
+        return "redirect:/v2/admin/home";
+    }
 
-            ClientDTO ownerClient = clientService.getClientDetails(pid);
-            System.out.println("pit 2");
-            ClientAddressDTO address = new ClientAddressDTO();
-            BeanUtils.copyProperties(createClientLocationRequestModel,address);
-            System.out.println("pit 3");
-            ClientContactDTO pic = new ClientContactDTO();
-            BeanUtils.copyProperties(createClientLocationRequestModel,pic);
-
-            System.out.println("pit 4");
-            clientAddressService.addNewStoreOrBranch(ownerClient.getClientAddresses().getFirst().getId(),address, pic);
-            System.out.println("pit 5");
-
-            redirectAttributes.addFlashAttribute("successMessage",
-                    labelLocation+" "+successMessage);
-            //model.addAttribute("successMessage", labelLocation+" "+successMessage);
-            //BeanUtils.copyProperties(createdClient,returnVal);
-            System.out.println("pit 6");
-            //return ResponseEntity.status(HttpStatus.CREATED).body(returnVal);
-        } catch (DuplicationErrorException ex) {
-            // gagal server / unexpected error
-            System.out.println("berhasilditangkap");
-
-            //model.addAttribute("msg",ex.getMessage());
-            //model.addAttribute("clientError", "true");
-            //model.addAttribute("errorMessage", labelLocation+" "+msgAddFailed+"<br>"+errorClientLocationAlreadyExist);
-            redirectAttributes.addFlashAttribute("errorMessage",
-                    labelLocation + " " + msgAddFailed + "<br>" + errorClientLocationAlreadyExist);
-        //} catch (
-        //        CreateUserException ex) {
-            // gagal server / unexpected error
-        //    model.addAttribute("errorMessage", labelLocation+" "+msgAddFailed+"<br>"+unexpectedError);
-        } catch (Exception ex) {
-            // gagal server / unexpected error
-            redirectAttributes.addFlashAttribute("errorMessage",
-                    labelLocation + " " + msgAddFailed + "<br>" + unexpectedError);
-            //model.addAttribute("errorMessage", labelLocation+" "+msgAddFailed+"<br>"+unexpectedError);
-        }
-        finally {
-            //model.addAttribute("pid", pid);
-            List<ClientDTO> clients = clientService.getAllClients();
-            //model.addAttribute("ourClients", clients);
-            redirectAttributes.addFlashAttribute("ourClients", clients);
-            redirectAttributes.addFlashAttribute("toastDelay", 1500);
-
-            //model.addAttribute("toast-delay", 1000);
-        }
-        //model.addAttribute("isAdd", false);
-        //return "super/clients/index-clients";
-        //return "pages/v1/client-admin/index-admin";
-        return "redirect:/v1/admin/client/home?pid=" + pid + "&add=false";
-
-             */
+    @PostMapping("/delete/location")
+    public String deleteLokasi(
+            @RequestParam(name = "pubId", required = false) String id,
+            RedirectAttributes redirectAttributes, HttpSession session,
+            Model model, Locale locale
+    ) {
+        System.out.println("deleteLokasi="+id);
         return "redirect:/v2/admin/home";
     }
 

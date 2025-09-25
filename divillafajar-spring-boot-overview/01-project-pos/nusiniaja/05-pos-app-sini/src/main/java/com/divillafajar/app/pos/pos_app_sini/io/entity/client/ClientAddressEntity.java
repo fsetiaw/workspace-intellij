@@ -34,6 +34,9 @@ public class ClientAddressEntity implements Serializable {
 
     @PrePersist
     public void generateId() {
+        if (active == null) {
+            active = true;
+        }
         if (pubId == null) {
             pubId = UUID.randomUUID().toString(); // UUID jadi string
         }
@@ -86,11 +89,14 @@ public class ClientAddressEntity implements Serializable {
     @Column(name = "country", length = 50, nullable = true)
     private String country;
 
-    @Column(name = "deleted", nullable = true, columnDefinition = "TINYINT(1)")
-    private Boolean deleted = false;
+    @Column(name = "active", nullable = false, columnDefinition = "TINYINT(1)")
+    private Boolean active = true;
 
-    @Column(name = "address_phone_number", nullable = true, length = 20)
-    private String AddressPhoneNumber;
+    @Column(name = "phone", nullable = true, length = 20)
+    private String phone;
+
+    @Column(name = "email", length = 50, nullable = true)
+    private String email;
 
     @Column(name = "location_category", length = 50, nullable = false)
     private String locationCategory;

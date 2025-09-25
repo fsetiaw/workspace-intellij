@@ -13,10 +13,12 @@ import com.divillafajar.app.pos.pos_app_sini.io.entity.user.dto.UserDTO;
 import com.divillafajar.app.pos.pos_app_sini.repo.client.ClientAddressRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.client.ClientContactRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.client.ClientRepo;
+import com.divillafajar.app.pos.pos_app_sini.utils.EntityMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -108,5 +110,20 @@ public class ClientAddressServiceImpl implements ClientAddressService{
         BeanUtils.copyProperties(newStoredAddress,retVal);
 
         return retVal;
+    }
+
+    @Override
+    public List<ClientAddressDTO> getActiveClientAddress(String clientPid) {
+        List<ClientAddressDTO> listActiveLocation = new ArrayList<>();
+        ClientEntity client = clientRepo.findClientByPubId(clientPid);
+        System.out.println("clientPid="+clientPid);
+        System.out.println("client="+client.getId());
+        List<ClientAddressEntity> listLokasi = clientAddressRepo.findByClient_IdAndActiveTrue(client.getId());
+        if(listLokasi!=null && listLokasi.size()>0)
+            listActiveLocation = EntityMapper.mapList(listLokasi, ClientAddressDTO.class);
+
+        System.out.println("listLokasi Size-"+listLokasi.size());
+        System.out.println("listActiveLocation size-"+listActiveLocation.size());
+        return listActiveLocation;
     }
 }
