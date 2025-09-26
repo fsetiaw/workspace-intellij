@@ -22,7 +22,7 @@
     <div id="main">
         <!-- Notification hamburg slot -->
         <div layout:fragment="left-header">
-            <div th:replace="~{/pages/v1/admin/fragments/hamburger-header.html :: left-header}"></div>
+            <div th:replace="~{/pages/v1/fragments/hamburger-header.html :: left-header}"></div>
         </div>
         <!-- Notification header slot
         <div layout:fragment="left-header">
@@ -103,7 +103,8 @@
 </div>
 <!-- Toast confirm slot -->
 <div layout:fragment="toast-confirm">
-    <div th:replace="~{/pages/v1/admin/fragments/toast-confirm.html :: toast-confirm('cancel', 'update', 'delete')}"></div>
+    <!--div th:replace="~{/pages/v1/admin/fragments/toast-confirm.html :: toast-confirm('cancel', 'update', 'delete')}"></div-->
+    <div th:replace="~{/pages/v1/fragments/toast/toast-confirm.html :: toast-confirm('cancel', 'update', 'delete')}"></div>
 </div>
 <script th:src="@{/assets/static/js/initTheme.js}"></script>
 <script th:src="@{/assets/static/js/components/dark.js}"></script>

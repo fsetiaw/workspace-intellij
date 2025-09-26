@@ -250,6 +250,14 @@ public class ClientServiceImpl implements ClientService{
         return returnVal;
     }
 
+    @Override
+    public ClientDTO getClientDetailsByClientAddressPubId(String clientAddressPubId) {
+        ClientDTO retVal = new ClientDTO();
+        ClientAddressEntity clientAddress = clientAddressRepo.findByPubId(clientAddressPubId);
+        ClientEntity client = clientAddress.getClient();
+        BeanUtils.copyProperties(client,retVal);
+        return retVal;
+    }
 
 
     @Override

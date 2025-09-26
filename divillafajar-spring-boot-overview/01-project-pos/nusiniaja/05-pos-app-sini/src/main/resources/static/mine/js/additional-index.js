@@ -1,4 +1,5 @@
 let isShaking = false; // state global
+const cards = document.querySelectorAll(".store-card");
 
 document.addEventListener("DOMContentLoaded", function() {
 
@@ -8,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const togglePassword = document.getElementById("togglePassword");
     const passwordField = document.getElementById("pwd");
     // setelah page load → langsung sembunyikan semua tombol
-    const cards = document.querySelectorAll(".store-card");
+    //const cards = document.querySelectorAll(".store-card");
     cards.forEach(card => {
         card.querySelectorAll(".delete-btn, .update-btn").forEach(btn => {
             btn.style.display = "none";
@@ -55,7 +56,7 @@ document.addEventListener("click", function(e) {
 
   e.preventDefault();
   const targetBtnClass = trigger.getAttribute("data-target-btn");
-  const cards = document.querySelectorAll(".store-card");
+  //const cards = document.querySelectorAll(".store-card");
 
   // sembunyikan semua tombol dulu
   cards.forEach(card => {
@@ -92,11 +93,11 @@ document.addEventListener("click", function(e) {
 });
 
 <!-- buat handle delete-->
-
 const toast = document.getElementById("confirmDeleteToast");
 const confirmMessage = document.getElementById("confirmMessage");
 const cancelDelete = document.getElementById("cancelDelete");
 const confirmDelete = document.getElementById("confirmDelete");
+const msgConfirmDeleteQuestion = document.getElementById("msgConfirmDeleteQuestion").textContent; //message properties
 
 let currentCard = null; // simpan card yang sedang dipilih
 
@@ -107,7 +108,7 @@ document.querySelectorAll(".delete-btn").forEach(btn => {
 
     currentCard = card;
 
-    confirmMessage.textContent = `Anda yakin mau hapus ${storeName}?`;
+    confirmMessage.textContent = `${msgConfirmDeleteQuestion} ${storeName}?`;
     toast.classList.add("show");
   });
 });
@@ -119,7 +120,20 @@ cancelDelete.addEventListener("click", () => {
     //console.log('.toast-confirm count:', document.querySelectorAll('.toast-confirm').length);
     toast.classList.remove("show");
     toast.style.display = "none"; // force hide
+    // stop goyang
+        cards.forEach(card => {
+            card.classList.remove("shake");
+            // enable lagi link
+            card.querySelectorAll("a.text-decoration-none").forEach(link => link.classList.remove("disabled-link"));
+        });
+        document.querySelectorAll(".shake-trigger.shake").forEach(t => t.classList.remove("shake"));
+        isShaking = false;
+        // sembunyikan semua tombol dulu
+          cards.forEach(card => {
+            card.querySelectorAll(".delete-btn, .update-btn").forEach(btn => btn.style.display = "none");
+          });
     currentCard = null;
+
 });
 
 // konfirmasi
@@ -151,6 +165,7 @@ const toastUpdate = document.getElementById("confirmUpdateToast");
 const confirmUpdateMessage = document.getElementById("confirmUpdateMessage");
 const cancelUpdate = document.getElementById("cancelUpdate");
 const confirmUpdate = document.getElementById("confirmUpdate");
+const msgConfirmUpdateQuestion = document.getElementById("msgConfirmUpdateQuestion").textContent;
 
 
 
@@ -161,7 +176,8 @@ document.querySelectorAll(".update-btn").forEach(btn => {
 
     currentCard = card;
 
-    confirmUpdateMessage.textContent = `Anda yakin mau update ${storeName}?`;
+    //confirmUpdateMessage.textContent = `Anda yakin mau update ${storeName}?`;
+    confirmUpdateMessage.textContent = `${msgConfirmUpdateQuestion} ${storeName}?`;
     toastUpdate.classList.add("show");
 
   });
@@ -171,7 +187,20 @@ document.querySelectorAll(".update-btn").forEach(btn => {
 cancelUpdate.addEventListener("click", () => {
     toastUpdate.classList.remove("show");
     toastUpdate.style.display = "none"; // force hide
+    // stop goyang
+            cards.forEach(card => {
+                card.classList.remove("shake");
+                // enable lagi link
+                card.querySelectorAll("a.text-decoration-none").forEach(link => link.classList.remove("disabled-link"));
+            });
+            document.querySelectorAll(".shake-trigger.shake").forEach(t => t.classList.remove("shake"));
+            isShaking = false;
+            // sembunyikan semua tombol dulu
+              cards.forEach(card => {
+                card.querySelectorAll(".delete-btn, .update-btn").forEach(btn => btn.style.display = "none");
+              });
     currentCard = null;
+
   //toastUpdate.classList.remove("show");
   //toast.style.display = "none";
   //currentCard = null;
@@ -181,17 +210,12 @@ cancelUpdate.addEventListener("click", () => {
 confirmUpdate.addEventListener("click", () => {
   if (currentCard) {
     const storeName = currentCard.querySelector(".update-btn").getAttribute("data-store-name");
-    const storePid = currentCard.querySelector(".update-btn").getAttribute("data-store-pid");
+    const targetKeyValue = currentCard.querySelector(".update-btn").getAttribute("data-store-pid");
     // set action ke path sesuai storeName
     const form = document.getElementById("updateForm");
-    //form.setAttribute("action", `/store/update/${storeName}`);
+    const formField = document.getElementById("updPubId");
 
-    //form.setAttribute("action", `/v1/superuser/clients/upd?pid=${pid}`);
-
-
-    const pidField = document.getElementById("pidField");
-
-    pidField.value = storePid;
+    formField.value = targetKeyValue;
     form.submit();
 
   }

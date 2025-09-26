@@ -1,182 +1,139 @@
-<div th:fragment="upd-client(targetClient,clientAddress,clientContact)" xmlns:th="http://www.w3.org/1999/xhtml">
+<div th:fragment="upd-form" xmlns:th="http://www.w3.org/1999/xhtml"
+     xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <!-- // Basic multiple Column Form section start -->
     <section id="multiple-column-form">
         <div class="row match-height">
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title"><span th:text="'Form '+#{label.updClient}+' '+${clientAddress.pubId}" style="color:#27B7F5"></span></h3>
+                        <h3 class="card-title"><span th:text="''+#{label.updLocation}" style="color:#27B7F5"></span></h3>
                     </div>
                     <div class="card-content">
                         <div class="card-body">
-                            <h5 class="card-title" style="padding:0 0 15px 0;color:#3460bb"><span th:text="#{label.infoCompany}"></span></h5>
-                            <form class="form"
-                                  th:action="@{/v1/superuser/clients/{pid}/{aid}(pid=${targetClient.pubId}, aid=${clientAddress.pubId})}"
-                                  method="post"
-                                  id="myform"
-                                  target="_self">
+                            <h5 class="card-title" style="padding: 0 0 15px 0;color:#3460bb"><span th:text="#{label.info}+' '+#{label.location}"></span></h5>
+                            <!--form class="form" th:action="@{/v1/superuser/clients}" method="post" id="myform" target="_self"-->
+                            <form class="form" th:object="${clientAddress}" th:action="@{/v2/admin/update/location}" method="post" id="myform" target="_self">
                                 <input type="hidden" name="_method" value="put"/>
+                                <input type="hidden" name="pubId" th:value="${pid}"/>
                                 <div class="row">
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
-                                            <label for="clientName"><span th:text="#{label.companyName}"></span></label>
-                                            <input type="text" id="clientName" class="form-control" th:value="${targetClient.clientName}"
-                                                   th:placeholder="#{label.companyName}" name="clientName" required>
+                                            <label for="addressName" th:text="#{label.placeName}"></label>
+                                            <input type="text" id="addressName" class="form-control" th:placeholder="#{label.placeInfo}"
+                                                   name="addressName" th:field="*{addressName}" required>
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
-                                            <label for="clientType"><span th:text="#{label.companyField}"></span></label>
+                                            <label for="addressNickname" th:text="#{label.alternativeName}"></label>
+                                            <input type="text" id="addressNickname" class="form-control" th:placeholder="#{label.placeInfoExtra}"
+                                                   name="addressNickname" th:field="*{addressNickname}" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <label for="locationCategory"><span th:text="#{label.FBLocationCategory}"></span></label>
                                             <div class="input-group mb-3">
-                                                <label class="input-group-text" for="clientType">Options</label>
-                                                <select class="form-select" id="clientType" name="clientType" required>
-                                                    <option selected><span th:text="#{label.choose}+'...'"></span></option>
-                                                    <option value="lodge"
-                                                            th:selected="${targetClient.clientType == 'lodge'}"
-                                                            th:text="#{label.accommodation}"></option>
-                                                    <option value="f&b"
-                                                            th:selected="${targetClient.clientType == 'f&b'}"
-                                                            th:text="#{label.foodBeverages}"></option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <h5 class="card-title" style="padding: 20px 0 15px 10px;color:#3460bb"><span th:text="#{label.companyContact}"></span></h5>
-                                    <div class="col-md-6 col-12">
-                                        <div class="form-group">
-                                            <label for="contactName" th:text="#{label.fullName}"></label>
-                                            <input type="text" id="contactName" class="form-control" th:placeholder="#{label.fullName}"
-                                                name="contactName" th:value="${clientContact.contactName}"
-                                            required>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-12">
-                                        <div class="form-group">
-                                            <label th:text="#{label.position}"></label>
-                                            <div class="input-group mb-3">
-                                                <label class="input-group-text" for="contactPosition">Options</label>
-                                                <select class="form-select" id="contactPosition" name="contactPosition" required>
-                                                    <option selected><span th:text="#{label.choose}+'...'"></span></option>
-                                                    <option value="own"
-                                                            th:selected="${clientContact.contactPosition == 'own'}"
-                                                            th:text="#{label.owner}"></option>
-                                                    <option value="dir"
-                                                            th:selected="${clientContact.contactPosition == 'dir'}"
-                                                            th:text="#{label.director}"></option>
-                                                    <option value="mgr"
-                                                            th:selected="${clientContact.contactPosition == 'mgr'}"
-                                                            th:text="#{label.manager}"></option>
+                                                <label class="input-group-text" for="locationCategory">Options</label>
+                                                <select class="form-select" id="locationCategory" name="locationCategory"
+                                                        th:field="*{locationCategory}" required>
+                                                    <option value="" disabled th:text="#{label.choose} + '...'"></option>
+                                                    <option value="pkl" th:text="#{label.FBLocationCategory.pkl}"></option>
+                                                    <option value="warteg" th:text="#{label.FBLocationCategory.warteg}"></option>
+                                                    <option value="warkop" th:text="#{label.FBLocationCategory.warkop}"></option>
+                                                    <option value="cafe" th:text="#{label.FBLocationCategory.cafe}"></option>
+                                                    <option value="restaurant" th:text="#{label.FBLocationCategory.restaurant}"></option>
+                                                    <option value="ruko" th:text="#{label.FBLocationCategory.ruko}"></option>
+                                                    <option value="canteen" th:text="#{label.FBLocationCategory.canteen}"></option>
+                                                    <option value="fastfood" th:text="#{label.FBLocationCategory.fastfood}"></option>
+                                                    <option value="foodcourt" th:text="#{label.FBLocationCategory.foodcourt}"></option>
+                                                    <option value="bar" th:text="#{label.FBLocationCategory.bar}"></option>
                                                 </select>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
-                                            <label for="contactPhone">Phone</label>
-                                            <input type="number" id="contactPhone" class="form-control"
-                                                name="contactPhone" placeholder="Phone" th:value="${clientContact.contactPhone}"
-                                               required>
+                                            <label for="guestCapacity"><span th:text="#{label.guestCapacity}"></span></label>
+                                            <div class="input-group mb-3">
+                                                <label class="input-group-text" for="guestCapacity">Options</label>
+                                                <select class="form-select" id="guestCapacity" name="guestCapacity"
+                                                        th:field="*{guestCapacity}" required>
+                                                    <option value="" disabled selected th:text="#{label.choose} + '...'"></option>
+                                                    <option value="0 - 25" th:text="'0 - 25 '+ #{label.people}"></option>
+                                                    <option value="26 - 50" th:text="'26 - 50 '+ #{label.people}"></option>
+                                                    <option value="50 - 100" th:text="'50 - 100 '+ #{label.people}"></option>
+                                                    <option value="> 100" th:text="'> 100 '+ #{label.people}"></option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-6 col-12">
-                                        <div class="form-group">
-                                            <label for="email-id-column">Email</label>
-                                            <input type="email" id="email-id-column" class="form-control"
-                                                name="contactEmail" placeholder="Email" th:value="${clientContact.contactEmail}" required>
-                                        </div>
-                                    </div>
-                                    <h5 class="card-title" style="padding: 20px 0 15px 10px;color:#3460bb"><span th:text="#{label.companyAddress}"></span></h5>
-                                    <div class="col-md-6 col-12">
-                                        <div class="form-group">
-                                            <label for="addressName" th:text="#{label.locationName}"></label>
-                                            <input type="text" id="addressName" class="form-control"
-                                                   th:placeholder="#{label.locationName}"
-                                                   name="addressName"
-                                                   th:value="${#authorization.expression('hasRole(''SUPERADMIN'')') ? clientAddress.addressName : ''}"
-                                                   th:readonly="${#authorization.expression('hasRole(''SUPERADMIN'')')}"
-                                                   th:style="${#authorization.expression('hasRole(''SUPERADMIN'')') ? 'color:#435ebe;' : ''}"
-                                                   required>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-12">
-                                        <div class="form-group">
-                                            <label for="addressNickname" th:text="#{label.locationNickName}"></label>
-                                            <input type="text" id="addressNickname" class="form-control"
-                                                   th:placeholder="#{label.locationNickName}"
-                                                   name="addressNickname"
-                                                   th:value="${#authorization.expression('hasRole(''SUPERADMIN'')') ? clientAddress.addressNickname : ''}"
-                                                   th:readonly="${#authorization.expression('hasRole(''SUPERADMIN'')')}"
-                                                   th:style="${#authorization.expression('hasRole(''SUPERADMIN'')') ? 'color:#435ebe;' : ''}"
-                                                   required>
-                                        </div>
-                                    </div>
+                                    <h5 class="card-title" style="padding: 20px 0 15px 10px;color:#3460bb"><span th:text="#{label.locationAddress}"></span></h5>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label for="addressLine1" th:text="#{label.addressLine1}"></label>
                                             <input type="text" id="addressLine1" class="form-control"
-                                                   name="addressLine1" th:placeholder="#{label.addressLine1}" th:value="${clientAddress.addressLine1}" required>
+                                                   name="addressLine1" th:placeholder="#{label.addressLine1}"
+                                                   th:field="*{addressLine1}" required>
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label for="addressLine2" th:text="#{label.addressLine2}"></label>
                                             <input type="text" id="addressLine2" class="form-control"
-                                                   name="addressLine2" th:placeholder="#{label.addressLine2}+' ++'"
-                                                   th:value="${clientAddress.addressLine2}" >
+                                                   name="addressLine2" th:placeholder="#{label.addressLine2}"
+                                                   th:field="*{addressLine2}" >
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label for="city" th:text="#{label.city}"></label>
                                             <input type="text" id="city" class="form-control"
-                                                   name="city" th:placeholder="#{label.city}" th:value="${clientAddress.city}" required>
+                                                   name="city" th:placeholder="#{label.city}"
+                                                   th:field="*{city}" required>
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label for="province" th:text="#{label.province}"></label>
                                             <input type="text" id="province" class="form-control"
-                                                   name="province" th:placeholder="#{label.province}" th:value="${clientAddress.province}" required>
+                                                   name="province" th:placeholder="#{label.province}"
+                                                   th:field="*{province}" required>
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label for="country" th:text="#{label.country}"></label>
                                             <input type="text" id="country" class="form-control"
-                                                   name="country" th:placeholder="#{label.country}" th:value="${clientAddress.country}" required>
+                                                   name="country" th:placeholder="#{label.country}"
+                                                   th:field="*{country}" required>
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label for="postalCode" th:text="#{label.postalCode}"></label>
                                             <input type="text" id="postalCode" class="form-control"
-                                                   name="postalCode" th:placeholder="#{label.postalCode}" th:value="${clientAddress.postalCode}" required>
+                                                   name="postalCode" th:placeholder="#{label.postalCode}"
+                                                   th:field="*{postalCode}" required>
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
-                                            <label for="clientEmail" th:text="#{label.companyEmail}"></label>
-                                            <input type="email" id="clientEmail" class="form-control"
-                                                   name="clientEmail" pattern="[^@]+@[^@]+.[a-zA-Z]{2,6}" th:placeholder="'Email'"
-                                                   th:value="${targetClient.clientEmail}" required>
+                                            <label for="phone" style="display:block;" th:text="#{label.phoneNumber}"></label>
+                                            <input type="tel" id="phone" class="form-control"
+                                                   name="phone" th:placeholder="#{label.phoneNumber}"
+                                                   th:field="*{phone}" required>
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
-                                            <label for="clientPhone" th:text="#{label.companyPhone}"></label>
-                                            <input type="number" id="clientPhone" class="form-control"
-                                                   name="clientPhone" th:placeholder="'Phone'"
-                                                   th:value="${targetClient.clientPhone}" required>
+                                            <label for="email" th:text="Email"></label>
+                                            <input type="email" id="email" class="form-control"
+                                                   name="email" th:placeholder="#{label.emailAddress}"
+                                                   th:field="*{email}" required>
                                         </div>
                                     </div>
-                                    <!--div class="form-group col-12">
-                                        <div class='form-check'>
-                                            <div class="checkbox">
-                                                <input type="checkbox" id="checkbox5" class='form-check-input' checked>
-                                                <label for="checkbox5">Remember Me</label>
-                                            </div>
-                                        </div>
-                                    </div-->
+
                                     <div class="col-12 d-flex justify-content-end">
                                         <button type="submit" class="btn btn-primary me-1 mb-1">Submit</button>
                                         <button type="reset" class="btn btn-light-secondary me-1 mb-1">Reset</button>

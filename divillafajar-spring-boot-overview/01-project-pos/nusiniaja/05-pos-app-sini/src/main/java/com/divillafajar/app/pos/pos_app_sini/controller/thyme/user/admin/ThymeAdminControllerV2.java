@@ -8,6 +8,7 @@ import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.session.UserSessionLog;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.user.dto.UserDTO;
 import com.divillafajar.app.pos.pos_app_sini.model.client.location.CreateClientLocationRequestModel;
+import com.divillafajar.app.pos.pos_app_sini.model.client.location.UpdateClientLocationRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.model.user.UserLogedInModel;
 import com.divillafajar.app.pos.pos_app_sini.service.client.ClientAddressService;
 import com.divillafajar.app.pos.pos_app_sini.service.client.ClientService;
@@ -157,4 +158,47 @@ public class ThymeAdminControllerV2 {
         return "redirect:/v2/admin/home";
     }
 
+    // UPDATE client
+    @PutMapping("/update/location")   // biasanya pakai PUT untuk update penuh
+    public String updateClientAddress(
+            @ModelAttribute UpdateClientLocationRequestModel updateClientLocationRequestModel,
+            RedirectAttributes redirectAttributes) {
+            //@RequestParam(name = "updPubId", required = false) String updPubId) {
+        System.out.println("UPDATE LOKASI DONG is CALLED->updPubId="+updateClientLocationRequestModel.getPubId());
+        String labelLocation = messageSource.getMessage("label.location", null, LocaleContextHolder.getLocale());
+        String successMessage = messageSource.getMessage("label.updateSuccessfully", null, LocaleContextHolder.getLocale());
+        String msgFailed = messageSource.getMessage("label.updateFailed", null, LocaleContextHolder.getLocale());
+        String errorClientLocationAlreadyExist = messageSource.getMessage("modal.errorClientLocationAlreadyExist", null, LocaleContextHolder.getLocale());
+        String unexpectedError = messageSource.getMessage("modal.errorUnexpected", null, LocaleContextHolder.getLocale());
+
+        try {
+            ClientAddressDTO updatedData = new ClientAddressDTO();
+            BeanUtils.copyProperties(updateClientLocationRequestModel,updatedData);
+            clientAddressService.updateStore(updatedData);
+            redirectAttributes.addFlashAttribute("successMessage", labelLocation+" "+successMessage+"<br>");
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+            redirectAttributes.addFlashAttribute("errorMessage", labelLocation+" "+msgFailed+"<br>"+ex.getMessage());
+        }
+        return "redirect:/v2/admin/home";
+    }
+
+    // UPDATE client
+    @GetMapping("/update/location")   // biasanya pakai PUT untuk update penuh
+    public String showClientAddressUpdateForm(
+            @RequestParam(name = "updPubId", required = false) String clientAddressPubId,
+            Model model) {
+
+        System.out.println("showAddLocationForm CALLED-clientAddressPubid="+clientAddressPubId);
+        ClientDTO client = clientService.getClientDetailsByClientAddressPubId(clientAddressPubId);
+        ClientAddressDTO clientAddress = clientAddressService.getStore(clientAddressPubId);
+        model.addAttribute("pid", clientAddressPubId);
+        model.addAttribute("clientName", client.getClientName());
+        model.addAttribute("clientAddress", clientAddress);
+        model.addAttribute("activePage", "location");
+        model.addAttribute("activeSub", "addLocation");
+        System.out.println("showAddClientForm is called");
+        return "pages/v1/admin/upd-location";
+    }
 }

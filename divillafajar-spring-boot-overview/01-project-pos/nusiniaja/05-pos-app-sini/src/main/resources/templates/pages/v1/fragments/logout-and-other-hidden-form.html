@@ -1,7 +1,8 @@
 <div th:fragment="hidden-form(clientName, updatePath, deletePath)" xmlns:th="http://www.w3.org/1999/xhtml"
      xmlns:sec="http://www.w3.org/1999/xhtml">
     <form id="updateForm" method="GET" th:action="${updatePath}" style="display:none">
-        <input type="hidden" name="pid" id="pidField">
+        <input type="hidden" name="_method" value="put"/>
+        <input type="hidden" name="updPubId" id="updPubId">
     </form>
     <!--FROM GENERIC UNTUK DELETE -->
     <form id="deleteForm" method="POST" th:action="${deletePath}" style="display:none">

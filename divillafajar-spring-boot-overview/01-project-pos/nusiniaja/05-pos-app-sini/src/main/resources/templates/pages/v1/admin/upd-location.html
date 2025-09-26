@@ -25,9 +25,7 @@
         .iti .iti__flag-container {
           flex: 0 0 auto; /* biar lebarnya hanya sebesar konten (flag+kode) */
         }
-        //.popover-body ul li {
-        //  color: #004CC9 !important;
-        //}
+
 
 
     </style>
@@ -59,7 +57,7 @@
                         <div class="row">
                             <div class="col-12 col-xl-12">
                                 <div class="card">
-                                    <div th:replace="~{pages/v1/admin/fragments/form/form-add.html :: add-form}"></div>
+                                    <div th:replace="~{pages/v1/admin/fragments/form/form-upd.html :: upd-form}"></div>
                                 </div>
                             </div>
                         </div>
@@ -90,16 +88,28 @@
 <script th:src="@{/mine/js/additional-index.js}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.2.1/js/intlTelInput.min.js"></script>
 <script>
+
+
     document.addEventListener("DOMContentLoaded", () => {
       // === phone input ===
-      const input = document.querySelector("#phone");
-      if (input) {
-        const iti = window.intlTelInput(input, {
-          initialCountry: "id",   // default Indonesia
-          separateDialCode: true, // pisah kode negara dan nomor
-          utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.2.1/js/utils.js"
-        });
-      }
+        const form = document.querySelector("#myform");
+        const input = document.querySelector("#phone");
+
+        if (input) {
+          const iti = window.intlTelInput(input, {
+            initialCountry: "id",           // default Indonesia
+            separateDialCode: true,         // tampilkan kode negara terpisah di UI
+            formatOnDisplay: true,
+            nationalMode: false,            // jangan tampilkan leading zero
+            utilsScript:
+              "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.2.1/js/utils.js"
+          });
+
+          form.addEventListener("submit", function () {
+            // simpan ke DB dalam format INTERNATIONAL (contoh: "+62 811 8118 999")
+            input.value = iti.getNumber(intlTelInputUtils.numberFormat.INTERNATIONAL);
+          });
+        }
 
       const pwd = document.getElementById("pwd");
 

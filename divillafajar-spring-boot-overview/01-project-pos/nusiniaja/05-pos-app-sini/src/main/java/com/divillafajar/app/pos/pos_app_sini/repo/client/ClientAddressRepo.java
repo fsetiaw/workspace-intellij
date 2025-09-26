@@ -22,6 +22,9 @@ public interface ClientAddressRepo extends CrudRepository<ClientAddressEntity, L
             String addressNickname
     );
 
+    ClientAddressEntity findByClientIdAndAddressNameIgnoreCaseAndAddressNicknameIgnoreCaseAndActiveTrue(
+            Long clientId, String addressName, String addressNickname);
+
     // kalau mau ambil list alamat by clientId dan active = true
     List<ClientAddressEntity> findByClient_IdAndActiveTrue(Long clientId);
 

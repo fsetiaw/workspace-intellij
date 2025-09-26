@@ -40,7 +40,6 @@ public class ClientAddressServiceImpl implements ClientAddressService{
     public ClientAddressDTO getStore(long aid) {
         ClientAddressDTO returnVal = new ClientAddressDTO();
         ClientAddressEntity store = clientAddressRepo.findById(aid);
-        System.out.println("getListStore store="+store.getAddressName());
         BeanUtils.copyProperties(store,returnVal);
         return returnVal;
     }
@@ -48,25 +47,18 @@ public class ClientAddressServiceImpl implements ClientAddressService{
     @Override
     @Transactional
     public ClientAddressDTO addNewStore(UserDTO usrDTO, ClientDTO targetClient, ClientAddressDTO nuLocation) {
-        System.out.println("ADD NEW STORE IOS CALLED");
         ClientAddressDTO retVal = new ClientAddressDTO();
         //cek apa nama sudah digunakan
-        ClientAddressEntity existedLocation = clientAddressRepo.findByClientIdAndAddressNameIgnoreCaseAndAddressNicknameIgnoreCase(targetClient.getId(), nuLocation.getAddressName(), nuLocation.getAddressNickname());
+        ClientAddressEntity existedLocation = clientAddressRepo.findByClientIdAndAddressNameIgnoreCaseAndAddressNicknameIgnoreCaseAndActiveTrue(targetClient.getId(), nuLocation.getAddressName(), nuLocation.getAddressNickname());
         if(existedLocation!=null)
-            throw new DuplicationErrorException("location");
-        System.out.println("pit 1");
+            throw new DuplicationErrorException("Nama Lokasi Sudah Digunakan");
         try {
             ClientAddressEntity newLocation = new ClientAddressEntity();
-            System.out.println("pit 2");
             BeanUtils.copyProperties(nuLocation,newLocation);
-            System.out.println("pit 2 newLocation="+newLocation.getLocationCategory());
             ClientEntity storedClient = clientRepo.findClientByPubId(targetClient.getPubId());
-            System.out.println("pit 3");
 
             newLocation.setClient(storedClient);
-            System.out.println("pit 4");
             ClientAddressEntity newAdditionedLoc  = clientAddressRepo.save(newLocation);
-            System.out.println("pit 5");
             BeanUtils.copyProperties(newAdditionedLoc,retVal);
         }
         catch (Exception e){
@@ -82,11 +74,8 @@ public class ClientAddressServiceImpl implements ClientAddressService{
     @Transactional
     public ClientAddressDTO addNewStoreOrBranch(long aid, ClientAddressDTO newStore, ClientContactDTO pic) {
         ClientAddressDTO retVal = new ClientAddressDTO();
-        System.out.println("addNewStoreOrBranch newStore name="+newStore.getAddressName());
-        System.out.println("newStore nickname="+newStore.getAddressNickname());
         ClientAddressEntity existingStore = clientAddressRepo.findByClientIdAndAddressNameIgnoreCaseAndAddressNicknameIgnoreCase(aid, newStore.getAddressName().trim(), newStore.getAddressNickname().trim());
         if(existingStore!=null) {
-            System.out.println("Store Existed = "+existingStore.getAddressName());
             throw new DuplicationErrorException("location");
         }
         //get client id
@@ -117,14 +106,10 @@ public class ClientAddressServiceImpl implements ClientAddressService{
     public List<ClientAddressDTO> getActiveClientAddress(String clientPid) {
         List<ClientAddressDTO> listActiveLocation = new ArrayList<>();
         ClientEntity client = clientRepo.findClientByPubId(clientPid);
-        System.out.println("clientPid="+clientPid);
-        System.out.println("client="+client.getId());
         List<ClientAddressEntity> listLokasi = clientAddressRepo.findByClient_IdAndActiveTrue(client.getId());
         if(listLokasi!=null && listLokasi.size()>0)
             listActiveLocation = EntityMapper.mapList(listLokasi, ClientAddressDTO.class);
 
-        System.out.println("listLokasi Size-"+listLokasi.size());
-        System.out.println("listActiveLocation size-"+listActiveLocation.size());
         return listActiveLocation;
     }
 
@@ -138,5 +123,30 @@ public class ClientAddressServiceImpl implements ClientAddressService{
             throw new RuntimeException(e);
         }
         return updated;
+    }
+
+    @Override
+    public ClientAddressDTO getStore(String storePubId) {
+        ClientAddressDTO retVal = new ClientAddressDTO();
+        ClientAddressEntity store = clientAddressRepo.findByPubId(storePubId);
+        BeanUtils.copyProperties(store,retVal);
+        return retVal;
+    }
+
+    @Override
+    @Transactional
+    public ClientAddressDTO updateStore(ClientAddressDTO storeDataUpdated) {
+        ClientAddressDTO retVal = new ClientAddressDTO();
+        try {
+            ClientAddressEntity storedData = clientAddressRepo.findByPubId(storeDataUpdated.getPubId());
+            BeanUtils.copyProperties(storeDataUpdated,storedData);
+            storedData.setActive(true);
+            clientAddressRepo.save(storedData);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Something Wrong");
+        }
+        return retVal;
     }
 }

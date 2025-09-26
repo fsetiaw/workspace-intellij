@@ -14,5 +14,6 @@ public interface ClientService {
     ClientDTO createClientAdmin(ClientDTO clientDto, AddressDTO addressDTO, ClientContactDTO contact);
     List<ClientDTO> getAllClients();
     ClientDTO getClientDetails(String pid);
+    ClientDTO getClientDetailsByClientAddressPubId(String pubId);
 }
 

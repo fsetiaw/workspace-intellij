@@ -3,6 +3,9 @@
     <div id="confirmDeleteToast" class="toast-confirm">
         <div id="confirmMessage"></div>
         <div class="toast-actions">
+            <!-- buat message.propertires-->
+            <span id="msgConfirmDeleteQuestion" th:text="#{label.confirmDeleteQuestion}" hidden></span>
+            <!------------------------------>
             <button id="cancelDelete" class="btn btn-sm btn-secondary" th:text="#{label.cancel}"></button>
             <button id="confirmDelete" class="btn btn-sm btn-danger" th:text="#{label.delete}"></button>
         </div>
@@ -10,6 +13,9 @@
     <div id="confirmUpdateToast" class="toast-confirm">
         <div id="confirmUpdateMessage"></div>
         <div class="toast-actions">
+            <!-- buat message.propertires-->
+            <span id="msgConfirmUpdateQuestion" th:text="#{label.confirmUpdateQuestion}" hidden></span>
+            <!------------------------------>
             <button id="cancelUpdate" class="btn btn-sm btn-secondary" th:text="#{label.cancel}"></button>
             <button id="confirmUpdate" class="btn btn-sm btn-danger" th:text="#{label.update}"></button>
         </div>
