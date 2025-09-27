@@ -50,32 +50,32 @@
                             <span th:text="#{label.previousPage}"></span>
                         </a>
                     </li>
-                    <li class="sidebar-item" th:classappend="${activePage == 'dashboard'} ? ' active'">
+                    <li id="dashboardMenu" class="sidebar-item" th:classappend="${activePage == 'dashboard'} ? ' active'">
                         <a th:href="@{/v2/admin/home}" class='sidebar-link'>
                             <i class="bi bi-grid-fill"></i>
-                            <span th:text="${activePage == 'clients'} ? #{label.backToDashboard} : #{label.dashboard}"></span>
+                            <span th:text="${activeSub == 'subMenu1'} ? #{label.backToDashboard} : #{label.dashboard}"></span>
                         </a>
                     </li>
-                    <li class="sidebar-item  has-sub"  th:classappend="${activePage == 'clients'} ? ' active'">
+                    <li id="sidebarMenu1" class="sidebar-item  has-sub"  th:classappend="${activePage == 'menu1'} ? ' active'">
                         <a href="#" class='sidebar-link'>
                             <i class="bi bi-people"></i>
                             <span th:text="#{label.manage}+' '+#{label.location}"></span>
                         </a>
                         <ul class="submenu ">
-                            <li th:if="${activeSub != 'upd' && activeSub != 'del'}" class="submenu-item" th:classappend="${activeSub == 'add'} ? ' active'">
+                            <li th:if="${activeSub != 'subMenu2' && activeSub != 'subMenu3'}" class="submenu-item" th:classappend="${activeSub == 'subMenu2' || activeSub == 'subMenu3'} ? ' active'">
                                 <a th:href="@{/v2/admin/add/location}" class="submenu-link" th:text="#{label.add}+' '+#{label.location}"></a>
                             </li>
 
-                            <li th:if="${activeSub != 'add' && activeSub != 'del' && listActiveLocation != null and #lists.size(listActiveLocation) > 0}"
-                                class="submenu-item" th:classappend="${activeSub == 'upd'} ? ' active'">
+                            <li th:if="${activeSub != 'subMenu1' && activeSub != 'subMenu3' && listActiveLocation != null and #lists.size(listActiveLocation) > 0}"
+                                class="submenu-item" th:classappend="${activeSub == 'subMenu2'} ? ' active'">
                                 <a href="#"
                                    class="submenu-link shake-trigger"
                                    data-target-btn="update-btn"
                                    th:text="#{label.update}+' '+#{label.location}">
                                 </a>
                             </li>
-                            <li th:if="${activeSub != 'add' && activeSub != 'upd' && listActiveLocation != null and #lists.size(listActiveLocation) > 0}"
-                                class="submenu-item" th:classappend="${activeSub == 'del'} ? ' active'">
+                            <li th:if="${activeSub != 'subMenu1' && activeSub != 'subMenu2' && listActiveLocation != null and #lists.size(listActiveLocation) > 0}"
+                                class="submenu-item" th:classappend="${activeSub == 'subMenu3'} ? ' active'">
                                 <a href="#"
                                    class="submenu-link shake-trigger"
                                    data-target-btn="delete-btn"

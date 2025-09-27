@@ -51,7 +51,8 @@
         </div-->
         <!-- Index header slot -->
         <div layout:fragment="logout-and-other-hidden-form">
-            <div th:replace="~{/pages/v1/fragments/logout-and-other-hidden-form.html :: hidden-form(${clientName}, 'ADMIN')}"></div>
+            <!--div th:replace="~{/pages/v1/fragments/logout-and-other-hidden-form.html :: hidden-form(${clientName}, 'ADMIN')}"></div-->
+            <div th:replace="~{/pages/v1/fragments/logout-and-other-hidden-form.html :: hidden-form(${clientName}, ${updatePath}, ${deletePath})}"></div>
         </div>
         <!-- Main content slot -->
         <div layout:fragment="content">
@@ -77,7 +78,7 @@
 </div>
 <!-- Toast status slot -->
 <div layout:fragment="toast-status">
-    <div th:replace="~{/pages/v1/fragments/toast/toast-status-process-result :: toast-messages(${successMessage}, ${errorMessage}, 5000)}"></div>
+    <div th:replace="~{/pages/v1/fragments/toast/toast-status-process-result :: toast-messages(${successMessage}, ${errorMessage}, 2000)}"></div>
 </div>
 <!-- Toast confirm slot -->
 <div layout:fragment="toast-confirm">

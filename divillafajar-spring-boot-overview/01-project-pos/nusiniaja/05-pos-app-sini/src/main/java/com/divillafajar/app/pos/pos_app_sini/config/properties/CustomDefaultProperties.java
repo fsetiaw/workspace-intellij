@@ -17,4 +17,5 @@ public class CustomDefaultProperties {
     private String masterClientEmail;
     private String masterClientPubid;
     private String basicFeatureName;
+    private String toastTimeout;
 }

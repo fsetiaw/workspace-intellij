@@ -4,6 +4,7 @@ import com.divillafajar.app.pos.pos_app_sini.io.entity.auth.NamePassEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.session.UserSessionLog;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.session.UserSessionLogDTO;
 import com.divillafajar.app.pos.pos_app_sini.model.user.UserLogedInModel;
+import com.divillafajar.app.pos.pos_app_sini.model.user.UserSessionDTO;
 import com.divillafajar.app.pos.pos_app_sini.repo.auth.AuthRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.auth.NamePasRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.session.UserSessionLogRepository;
@@ -116,7 +117,9 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         log.setTableId(table);
 
         UserSessionLog userLog =  sessionLogRepo.save(log);
-        session.setAttribute("userLogInfo",userLog);
+        UserSessionDTO userSession = new UserSessionDTO();
+        BeanUtils.copyProperties(userLog, userSession);
+        session.setAttribute("userLogInfo",userSession);
         /*
         UserSessionHistory history = new UserSessionHistory();
         history.setUsername(authentication.getName());

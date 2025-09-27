@@ -10,6 +10,7 @@ import com.divillafajar.app.pos.pos_app_sini.repo.client.ClientRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.user.UserRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.users.UsersRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
@@ -37,13 +38,24 @@ public class UserSessionLogServiceImpl implements UserSessionLogService{
         Optional<ClientEntity> clientUser = clientRepo.findById(stored.getClient().getId());
         if(clientUser.isEmpty())
             throw new UserNotFoundException(messageSource.getMessage("error.client.notFound", null, LocaleContextHolder.getLocale()));
+        BeanUtils.copyProperties(clientUser.get(),retunVal);
         retunVal.setClientPid(clientUser.get().getPubId());
 
         Optional<UserEntity> loginUserEntity = userRepo.findById(stored.getUser().getId());
         if(loginUserEntity.isEmpty())
             throw new UserNotFoundException(messageSource.getMessage("error.user.notFound", null, LocaleContextHolder.getLocale()));
         retunVal.setUserPid(loginUserEntity.get().getPubId());
-
+        retunVal.setFullName(loginUserEntity.get().getFirstName().trim()+" "+loginUserEntity.get().getLastName().trim());
+        System.out.println("retunVal=="+retunVal.getSessionId());
+        System.out.println("retunVal=="+retunVal.getUserPid());
+        System.out.println("retunVal=="+retunVal.getRole());
+        System.out.println("retunVal=="+retunVal.getUsername());
+        System.out.println("retunVal=="+retunVal.getClientPid());
+        System.out.println("retunVal=="+retunVal.getClientListAliasName());
+        System.out.println("retunVal=="+retunVal.getClientName());
+        System.out.println("retunVal=="+retunVal.getClientType());
+        System.out.println("retunVal=="+retunVal.getFullName());
+        System.out.println("retunVal=="+retunVal.getLoginTime());
         /*
         if(stored!=null) {
             System.out.println("stored=="+stored.getEmployment());

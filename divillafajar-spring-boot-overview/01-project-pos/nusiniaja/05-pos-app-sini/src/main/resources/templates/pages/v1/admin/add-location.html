@@ -36,12 +36,12 @@
 <div id="app">
     <!-- Sidebar slot -->
     <div layout:fragment="sidebar">
-        <div th:replace="~{/pages/v1/admin/fragments/sidebar.html :: sidebar(${activePage}, ${activeSub})}"></div>
+        <div th:replace="~{/pages/v1/fragments/sidebar.html :: sidebar(${activePage}, ${activeSub})}"></div>
     </div>
     <div id="main">
         <!-- Notification hamburg slot -->
         <div layout:fragment="left-header">
-            <div th:replace="~{/pages/v1/admin/fragments/hamburger-header.html :: left-header}"></div>
+            <div th:replace="~{/pages/v1/fragments/hamburger-header.html :: left-header}"></div>
         </div>
         <!-- Notification header slot
         <div layout:fragment="left-header">
@@ -75,11 +75,11 @@
 </div>
 <!-- Toast status slot -->
 <div layout:fragment="toast-status">
-    <div th:replace="~{/pages/v1/fragments/toast/toast-status-process-result :: toast-messages(${successMessage}, ${errorMessage}, 5000)}"></div>
+    <div th:replace="~{/pages/v1/fragments/toast/toast-status-process-result :: toast-messages(${successMessage}, ${errorMessage}, ${session.toastTimeout})}"></div>
 </div>
 <!-- Toast confirm slot -->
 <div layout:fragment="toast-confirm">
-    <div th:replace="~{/pages/v1/admin/fragments/toast-confirm.html :: toast-confirm('cancel', 'update', 'delete')}"></div>
+    <div th:replace="~{/pages/v1/fragments/toast/toast-confirm.html :: toast-confirm('cancel', 'update', 'delete')}"></div>
 </div>
 <script th:src="@{/assets/static/js/initTheme.js}"></script>
 <script th:src="@{/assets/static/js/components/dark.js}"></script>
@@ -89,7 +89,9 @@
 <script th:src="@{/mine/js/toast-handler.js}"></script>
 <script th:src="@{/mine/js/additional-index.js}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.2.1/js/intlTelInput.min.js"></script>
-<script>
+<script th:src="@{/mine/js/input-form.js}"></script>
+<!--script>
+    /*
     document.addEventListener("DOMContentLoaded", () => {
       // === phone input ===
       const input = document.querySelector("#phone");
@@ -144,7 +146,8 @@
 
 
     });
-</script>
+    */
+</script-->
 </body>
 
 </html>

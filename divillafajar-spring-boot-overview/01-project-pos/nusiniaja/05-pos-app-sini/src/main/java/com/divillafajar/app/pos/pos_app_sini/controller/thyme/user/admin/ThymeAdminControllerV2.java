@@ -1,5 +1,6 @@
 package com.divillafajar.app.pos.pos_app_sini.controller.thyme.user.admin;
 
+import com.divillafajar.app.pos.pos_app_sini.config.properties.CustomDefaultProperties;
 import com.divillafajar.app.pos.pos_app_sini.exception.DuplicationErrorException;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientAddressEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientAddressDTO;
@@ -10,12 +11,14 @@ import com.divillafajar.app.pos.pos_app_sini.io.entity.user.dto.UserDTO;
 import com.divillafajar.app.pos.pos_app_sini.model.client.location.CreateClientLocationRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.model.client.location.UpdateClientLocationRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.model.user.UserLogedInModel;
+import com.divillafajar.app.pos.pos_app_sini.model.user.UserSessionDTO;
 import com.divillafajar.app.pos.pos_app_sini.service.client.ClientAddressService;
 import com.divillafajar.app.pos.pos_app_sini.service.client.ClientService;
 import com.divillafajar.app.pos.pos_app_sini.service.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -30,13 +33,15 @@ import java.util.Locale;
 
 @Controller
 @RequestMapping("v2/admin")
+@RequiredArgsConstructor
 public class ThymeAdminControllerV2 {
     private final ClientAddressService clientAddressService;
     private final ClientService clientService;
     private final LocaleResolver localeResolver;
     private final UserService userService;
     private final MessageSource messageSource;
-
+    private final CustomDefaultProperties customDefaultProperties;
+/*
     public ThymeAdminControllerV2(ClientService clientService, LocaleResolver localeResolver,
                                   UserService userService, ClientAddressService clientAddressService, MessageSource messageSource) {
         this.clientService=clientService;
@@ -45,6 +50,8 @@ public class ThymeAdminControllerV2 {
         this.userService=userService;
         this.clientAddressService=clientAddressService;
     }
+
+ */
 /*
     @GetMapping("/home")
     public String showHome(HttpSession session, Model model) {
@@ -67,13 +74,15 @@ public class ThymeAdminControllerV2 {
             Model model, HttpSession session
     ) {
         System.out.println("showAdminHome V2 IS CALLED = ");
-        UserSessionLog userLogInfo = (UserSessionLog) session.getAttribute("userLogInfo");
+        session.setAttribute("toastTimeout", customDefaultProperties.getToastTimeout());
+        //UserSessionLog userLogInfo = (UserSessionLog) session.getAttribute("userLogInfo");
+        UserSessionDTO userLogInfo = (UserSessionDTO) session.getAttribute("userLogInfo");
         List<ClientAddressDTO> listActiveLocation = clientAddressService.getActiveClientAddress(userLogInfo.getClientPid());
         System.out.println("listActiveLocation size = "+listActiveLocation.size());
         if(listActiveLocation!=null)
             model.addAttribute("listActiveLocation", listActiveLocation);
         model.addAttribute("isAdd", add);
-        model.addAttribute("pid",userLogInfo.getUsername());
+        //model.addAttribute("pid",userLogInfo.getUsername());
         model.addAttribute("activePage", "dashboard");
 
         String contextPath = request.getContextPath();
@@ -95,8 +104,8 @@ public class ThymeAdminControllerV2 {
         model.addAttribute("pid", pid);
         model.addAttribute("clientName", clientName);
         model.addAttribute("isAdd", add);
-        model.addAttribute("activePage", "location");
-        model.addAttribute("activeSub", "addLocation");
+        model.addAttribute("activePage", "menu1");
+        model.addAttribute("activeSub", "subMenu1");
         System.out.println("showAddClientForm is called");
         return "pages/v1/admin/add-location";
     }

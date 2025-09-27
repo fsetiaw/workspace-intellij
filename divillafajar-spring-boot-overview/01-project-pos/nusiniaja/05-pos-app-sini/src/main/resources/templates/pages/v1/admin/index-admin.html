@@ -17,7 +17,7 @@
 <div id="app">
     <!-- Sidebar slot -->
     <div layout:fragment="sidebar">
-        <div th:replace="~{/pages/v1/admin/fragments/sidebar.html :: sidebar(${activePage}, ${activeSub})}"></div>
+        <div th:replace="~{/pages/v1/fragments/sidebar.html :: sidebar(${activePage}, ${activeSub})}"></div>
     </div>
     <div id="main">
         <!-- Notification hamburg slot -->
@@ -36,12 +36,15 @@
         <!-- Main content slot -->
         <div class="page-heading">
             <h3>
-                <span th:text="${#strings.toUpperCase(#messages.msg('label.dashboardAdmin'))}"></span>
+                <span th:text="|${session.userLogInfo.clientName}|"></span>
+                <span style="font-size:70%; display:block; line-height:1;"
+                      th:text="|${#strings.toUpperCase(#messages.msg('label.dashboard'))}|">
+                </span>
             </h3>
         </div>
         <div layout:fragment="content">
             <div class="page-content">
-                <div th:replace="~{/pages/v1/admin/fragments/quickmenu.html :: quickmenu}"></div>
+                <div th:replace="~{/pages/v1/fragments/quickmenu.html :: quickmenu}"></div>
                 <section class="row">
                     <h6 class="font-extrabold mb-0" th:if="${listActiveLocation != null and #lists.size(listActiveLocation) > 0}"
                         th:text="|#{label.listClients} ${deletePath}|" style="text-transform: uppercase;"></h6>
@@ -99,7 +102,7 @@
 </div>
 <!-- Toast status slot -->
 <div layout:fragment="toast-status">
-    <div th:replace="~{/pages/v1/fragments/toast/toast-status-process-result :: toast-messages(${successMessage}, ${errorMessage}, 5000)}"></div>
+    <div th:replace="~{/pages/v1/fragments/toast/toast-status-process-result :: toast-messages(${successMessage}, ${errorMessage}, ${session.toastTimeout})}"></div>
 </div>
 <!-- Toast confirm slot -->
 <div layout:fragment="toast-confirm">

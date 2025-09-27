@@ -51,6 +51,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 document.addEventListener("click", function(e) {
+    //const dashboardMenu = document.querySelector('.sidebar-item[data-page="dashboard"]');
+  const dashboardMenu = document.getElementById("dashboardMenu");
   const trigger = e.target.closest(".shake-trigger");
   if (!trigger) return; // kalau bukan click di trigger, abaikan
 
@@ -74,6 +76,16 @@ document.addEventListener("click", function(e) {
       card.querySelectorAll(`.${targetBtnClass}`).forEach(btn => btn.style.display = "inline-block");
     });
 
+    <!-- UNTUK AKTIFKAN PARENT MENU DARI SUBMENU-->
+    // cari parent .sidebar-item
+      const parentMenu = trigger.closest(".sidebar-item");
+      if (parentMenu) {
+        // hapus active di semua menu
+        document.querySelectorAll(".sidebar-item").forEach(li => li.classList.remove("active"));
+        // aktifkan menu induk
+        parentMenu.classList.add("active");
+      }
+    <!-- END UNTUK AKTIFKAN MAIN MENU NON DASHBOARD-->
     // kasih efek highlight di trigger yang diklik
     //trigger.classList.add("shake");
     document.querySelectorAll(`.shake-trigger[data-target-btn="${targetBtnClass}"]`)
@@ -87,7 +99,20 @@ document.addEventListener("click", function(e) {
         // enable lagi link
         card.querySelectorAll("a.text-decoration-none").forEach(link => link.classList.remove("disabled-link"));
     });
+    <!-- UNTUK NON-AKTIFKAN MAIN MENU NON DASHBOARD & DASHBOARD YG JADi ACTIVE-->
+    document.querySelectorAll(".sidebar-item").forEach(li => li.classList.remove("active"));
+    dashboardMenu.classList.add("active");
+    <!-- END UNTUK NON-AKTIFKAN MAIN MENU NON DASHBOARD & DASHBOARD YG JADi ACTIVE-->
     document.querySelectorAll(".shake-trigger.shake").forEach(t => t.classList.remove("shake"));
+
+
+    /* cari elemen sidebar berdasarkan attribute custom (lebih aman)
+    const dashboardMenu = document.querySelector('.sidebar-item[data-page="dashboard"]');
+    */
+    // hapus active di semua menu
+        //
+        //dashboardMenu.classList.add('active');
+
     isShaking = false;
   }
 });
@@ -133,6 +158,15 @@ cancelDelete.addEventListener("click", () => {
             card.querySelectorAll(".delete-btn, .update-btn").forEach(btn => btn.style.display = "none");
           });
     currentCard = null;
+    // reset semua active sidebar & submenu
+        document.querySelectorAll(".sidebar-item.active, .submenu-item.active")
+            .forEach(el => el.classList.remove("active"));
+
+        // khusus matikan juga sidebarMenu1 kalau ada
+        const sidebarMenu1 = document.getElementById("dashboardMenu");
+        if (sidebarMenu1) {
+            sidebarMenu1.classList.add("active");
+        }
 
 });
 
@@ -187,23 +221,29 @@ document.querySelectorAll(".update-btn").forEach(btn => {
 cancelUpdate.addEventListener("click", () => {
     toastUpdate.classList.remove("show");
     toastUpdate.style.display = "none"; // force hide
-    // stop goyang
-            cards.forEach(card => {
-                card.classList.remove("shake");
-                // enable lagi link
-                card.querySelectorAll("a.text-decoration-none").forEach(link => link.classList.remove("disabled-link"));
-            });
-            document.querySelectorAll(".shake-trigger.shake").forEach(t => t.classList.remove("shake"));
-            isShaking = false;
-            // sembunyikan semua tombol dulu
-              cards.forEach(card => {
-                card.querySelectorAll(".delete-btn, .update-btn").forEach(btn => btn.style.display = "none");
-              });
-    currentCard = null;
 
-  //toastUpdate.classList.remove("show");
-  //toast.style.display = "none";
-  //currentCard = null;
+    // stop goyang
+    cards.forEach(card => {
+        card.classList.remove("shake");
+        // enable lagi link
+        card.querySelectorAll("a.text-decoration-none").forEach(link => link.classList.remove("disabled-link"));
+    });
+    document.querySelectorAll(".shake-trigger.shake").forEach(t => t.classList.remove("shake"));
+    isShaking = false;
+    // sembunyikan semua tombol dulu
+      cards.forEach(card => {
+        card.querySelectorAll(".delete-btn, .update-btn").forEach(btn => btn.style.display = "none");
+      });
+    currentCard = null;
+   // reset semua active sidebar & submenu
+    document.querySelectorAll(".sidebar-item.active, .submenu-item.active")
+        .forEach(el => el.classList.remove("active"));
+
+    // khusus matikan juga sidebarMenu1 kalau ada
+    const sidebarMenu1 = document.getElementById("dashboardMenu");
+    if (sidebarMenu1) {
+        sidebarMenu1.classList.add("active");
+    }
 });
 
 // konfirmasi
@@ -222,3 +262,18 @@ confirmUpdate.addEventListener("click", () => {
   toastUpdate.classList.remove("show");
 });
 
+// === tambahan buat sync QuickMenu → Sidebar ===
+document.querySelectorAll('.shake-trigger[data-submenu]').forEach(trigger => {
+  trigger.addEventListener('click', function(e) {
+    e.preventDefault();
+    const submenuKey = this.getAttribute('data-submenu');
+
+    // reset semua active
+    document.querySelectorAll('.sidebar-item, .submenu-item').forEach(li => li.classList.remove('active'));
+    if (submenuKey === 'menu1SubMenu') {
+        sidebarMenu1.classList.add("active");
+    }
+
+
+  });
+});

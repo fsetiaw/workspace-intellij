@@ -1,6 +1,7 @@
 package com.divillafajar.app.pos.pos_app_sini.config.security;
 
 import com.divillafajar.app.pos.pos_app_sini.io.entity.session.UserSessionLog;
+import com.divillafajar.app.pos.pos_app_sini.model.user.UserSessionDTO;
 import com.divillafajar.app.pos.pos_app_sini.repo.session.UserSessionLogRepository;
 import com.divillafajar.app.pos.pos_app_sini.model.customer.AuthenticatedCustomerModel;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,7 +37,7 @@ public class CustomLogoutHandler implements LogoutHandler {
         if (session != null) {
             //Object role = session.getAttribute("USER_ROLE");
             //System.out.println("Role dari session = " + role);
-            UserSessionLog userLogInfo = (UserSessionLog) session.getAttribute("userLogInfo");
+            UserSessionDTO userLogInfo = (UserSessionDTO) session.getAttribute("userLogInfo");
             request.setAttribute("userLogInfo",userLogInfo);
             // contoh kalau mau hapus setelah dipakai
             // session.removeAttribute("USER_ROLE");

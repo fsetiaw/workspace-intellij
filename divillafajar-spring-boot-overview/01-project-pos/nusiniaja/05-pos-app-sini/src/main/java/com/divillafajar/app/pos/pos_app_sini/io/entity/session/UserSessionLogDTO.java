@@ -15,6 +15,9 @@ public class UserSessionLogDTO {
     private String username;
     private String userPid;
     private String clientPid;
+    private String clientName;
+    private String clientListAliasName;
+    private String clientType;
     private String fullName;
     private String role;
     private String sessionId;

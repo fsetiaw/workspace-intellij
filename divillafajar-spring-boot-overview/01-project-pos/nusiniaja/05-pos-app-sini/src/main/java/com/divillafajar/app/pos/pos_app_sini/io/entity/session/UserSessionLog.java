@@ -30,7 +30,9 @@ public class UserSessionLog {
     private Long employeeClientId;
     private Long customerClientId;
     private String tableId;
-
+    private String clientName;
+    private String clientListAliasName;
+    private String clientType;
     @Column(updatable = false)
     private LocalDateTime loginTime = LocalDateTime.now();
     private LocalDateTime lastAccessTime;
