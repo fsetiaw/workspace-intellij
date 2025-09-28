@@ -1,6 +1,5 @@
-<html xmlns:th="http://www.thymeleaf.org">
-<body>
-<div th:fragment="sidebar(activePage, activeSub)" xmlns:th="http://www.w3.org/1999/xhtml">
+<div th:fragment="sidebar(activePage, activeSub, listActiveLocation)" xmlns:th="http://www.w3.org/1999/xhtml"
+     xmlns:sec="http://www.w3.org/1999/xhtml">
     <div id="sidebar">
         <div class="sidebar-wrapper active">
             <div class="sidebar-header position-relative">
@@ -44,33 +43,50 @@
             <div class="sidebar-menu">
                 <ul class="menu">
                     <li class="sidebar-title">Menu</li>
-                    <li
-                            class="sidebar-item">
+                    <li sec:authorize="hasRole('SUPERADMIN')" class="sidebar-item"
+                        th:if="${activePage == 'dashboard'}">
                         <a th:href="@{/v1/superuser/home}" class='sidebar-link'>
                             <i class="bi bi-arrow-left-square-fill"></i>
                             <span th:text="#{label.previousPage}"></span>
                         </a>
                     </li>
-                    <li class="sidebar-item" th:classappend="${activePage == 'dashboard'} ? ' active'">
-                        <a th:href="@{/v1/superuser/clients}" class='sidebar-link'>
+                    <li id="dashboardMenu" class="sidebar-item" th:classappend="${activePage == 'dashboard'} ? ' active'">
+                        <a th:href="@{/v2/admin/home}" class='sidebar-link'>
                             <i class="bi bi-grid-fill"></i>
-                            <span th:text="#{label.dashboardClient}"></span>
+                            <span th:text="${activeSub == 'subMenu1' || activeSub == 'subMenu2'} ? #{label.backToDashboard} : #{label.dashboard}"></span>
                         </a>
                     </li>
-                    <li class="sidebar-item  has-sub"  th:classappend="${activePage == 'clients'} ? ' active'">
+                    <li id="sidebarMenu1" class="sidebar-item  has-sub"  th:classappend="${activePage == 'menu1'} ? ' active'">
                         <a href="#" class='sidebar-link'>
                             <i class="bi bi-people"></i>
-                            <span th:text="#{label.manage}+' '+#{label.clients}"></span>
+                            <span th:text="#{label.manage}+' '+#{label.location}"></span>
                         </a>
                         <ul class="submenu ">
-                            <li class="submenu-item" th:classappend="${activeSub == 'addClient'} ? ' active'">
-                                <a th:href="@{/v1/superuser/clients/add}" class="submenu-link" th:text="#{label.add}+' '+#{label.clients}"></a>
+                            <li th:if="${activeSub != 'subMenu2' && activeSub != 'subMenu3'}" class="submenu-item" th:classappend="${activeSub == 'subMenu1'} ? ' active'">
+                                <a th:href="@{/v2/admin/add/location}" class="submenu-link"
+                                   th:text="|#{label.add}  #{label.location}|"></a>
                             </li>
-                            <li class="submenu-item  ">
-                                <a href="component-accordion.html" class="submenu-link" th:text="#{label.update}+' '+#{label.clients}"></a>
+
+                            <!--li th:if="${activeSub == 'subMenu2' && listActiveLocation != null and #lists.size(listActiveLocation) > 0}" -->
+                            <li th:if="${(activeSub != 'subMenu1' && activeSub != 'subMenu3') and !#lists.isEmpty(listActiveLocation)}"
+                                class="submenu-item" th:classappend="${activeSub == 'subMenu2'} ? ' active'">
+                                <a href="#"
+                                   class="submenu-link shake-trigger"
+                                   data-target-btn="update-btn"
+                                   th:classappend="${activeSub == 'subMenu2'} ? ' disabled-link'"
+                                   th:attr="onclick=${activeSub == 'subMenu2'} ? 'return false' : null"
+                                   th:text="#{label.update}+' '+#{label.location}">
+                                </a>
                             </li>
-                            <li class="submenu-item  ">
-                                <a href="component-accordion.html" class="submenu-link" th:text="#{label.delete}+' '+#{label.clients}"></a>
+                            <li th:if="${(activeSub != 'subMenu1' && activeSub != 'subMenu2') and !#lists.isEmpty(listActiveLocation)}"
+                                class="submenu-item" th:classappend="${activeSub == 'subMenu3'} ? ' active'">
+                                <a href="#"
+                                   class="submenu-link shake-trigger"
+                                   data-target-btn="delete-btn"
+                                   th:classappend="${activeSub == 'subMenu3'} ? ' disabled-link'"
+                                   th:attr="onclick=${activeSub == 'subMenu3'} ? 'return false' : null"
+                                   th:text="#{label.delete}+' '+#{label.location}">
+                                </a>
                             </li>
                         </ul>
                     </li>
@@ -94,7 +110,8 @@
                         </ul>
                     </li>
                     <li class="sidebar-item">
-                        <a href="#" onclick="document.getElementById('logoutForm').submit(); return false;" class='sidebar-link'>
+                        <!--a href="#" onclick="document.getElementById('logoutForm').submit(); return false;" class='sidebar-link'-->
+                        <a href="#" class='sidebar-link' id="logoutLink">
                             <i class="bi bi-box-arrow-right"></i>
                             <span>Logout</span>
                         </a>
@@ -104,5 +121,3 @@
         </div>
     </div>
 </div>
-</body>
-</html>

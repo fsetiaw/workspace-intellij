@@ -7,6 +7,7 @@ import com.divillafajar.app.pos.pos_app_sini.model.guest.GuestAreaRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.service.area.ZoneAreaService;
 import com.divillafajar.app.pos.pos_app_sini.service.client.ClientAddressService;
 import com.divillafajar.app.pos.pos_app_sini.service.client.ClientService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,18 +18,20 @@ import java.util.Optional;
 
 @Controller
 @RequestMapping("/v1/manager")
+@RequiredArgsConstructor
 public class ThymeManagerControllerV1 {
 
     private final ClientService clientService;
     private final ClientAddressService clientAddressService;
     private final ZoneAreaService zoneAreaService;
-
+/*
     public ThymeManagerControllerV1(ClientService clientService,
                                     ZoneAreaService zoneAreaService, ClientAddressService clientAddressService) {
         this.clientService=clientService;
         this.clientAddressService=clientAddressService;
         this.zoneAreaService=zoneAreaService;
     }
+ */
 
     @GetMapping("/home")
     public String showMgrHome(@RequestParam(name = "aid", required = true) Long aid,

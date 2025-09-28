@@ -69,7 +69,7 @@ public class ThymeAdminControllerV2 {
     public String showAdminHome(
             HttpServletRequest request,
             HttpServletResponse response,
-            @RequestParam(name = "add", required = false) Boolean add,
+            //@RequestParam(name = "add", required = false) Boolean add,
             //@RequestParam(name = "lang", required = false) String lang,
             Model model, HttpSession session
     ) {
@@ -77,12 +77,14 @@ public class ThymeAdminControllerV2 {
         session.setAttribute("toastTimeout", customDefaultProperties.getToastTimeout());
         //UserSessionLog userLogInfo = (UserSessionLog) session.getAttribute("userLogInfo");
         UserSessionDTO userLogInfo = (UserSessionDTO) session.getAttribute("userLogInfo");
+        //dipakai untuk side menu
         List<ClientAddressDTO> listActiveLocation = clientAddressService.getActiveClientAddress(userLogInfo.getClientPid());
         System.out.println("listActiveLocation size = "+listActiveLocation.size());
-        if(listActiveLocation!=null)
+        if (listActiveLocation != null && !listActiveLocation.isEmpty()) {
             model.addAttribute("listActiveLocation", listActiveLocation);
-        model.addAttribute("isAdd", add);
-        //model.addAttribute("pid",userLogInfo.getUsername());
+        }
+        //model.addAttribute("isAdd", add);
+        model.addAttribute("listActiveLocation",listActiveLocation);
         model.addAttribute("activePage", "dashboard");
 
         String contextPath = request.getContextPath();
@@ -99,8 +101,15 @@ public class ThymeAdminControllerV2 {
     public String showAddLocationForm(
             @RequestParam(name = "pid", required = false) String pid,
             @RequestParam(name = "clientName", required = false) String clientName,
-          @RequestParam(name = "add", required = false) Boolean add, Model model) {
+          @RequestParam(name = "add", required = false) Boolean add,
+            Model model, HttpSession session) {
         System.out.println("showAddLocationForm CALLED = "+clientName+pid);
+        UserSessionDTO userLogInfo = (UserSessionDTO) session.getAttribute("userLogInfo");
+        List<ClientAddressDTO> listActiveLocation = clientAddressService.getActiveClientAddress(userLogInfo.getClientPid());
+        System.out.println("listActiveLocation size = "+listActiveLocation.size());
+        if (listActiveLocation != null && !listActiveLocation.isEmpty()) {
+            model.addAttribute("listActiveLocation", listActiveLocation);
+        }
         model.addAttribute("pid", pid);
         model.addAttribute("clientName", clientName);
         model.addAttribute("isAdd", add);
@@ -155,6 +164,7 @@ public class ThymeAdminControllerV2 {
         String errorClientLocationAlreadyExist = messageSource.getMessage("modal.errorClientLocationAlreadyExist", null, LocaleContextHolder.getLocale());
         String unexpectedError = messageSource.getMessage("modal.errorUnexpected", null, LocaleContextHolder.getLocale());
 
+
         try {
             clientAddressService.inactivateClientAddress(pubId);
             redirectAttributes.addFlashAttribute("successMessage", labelLocation+" "+successMessage+"<br>");
@@ -171,7 +181,7 @@ public class ThymeAdminControllerV2 {
     @PutMapping("/update/location")   // biasanya pakai PUT untuk update penuh
     public String updateClientAddress(
             @ModelAttribute UpdateClientLocationRequestModel updateClientLocationRequestModel,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes, Model model) {
             //@RequestParam(name = "updPubId", required = false) String updPubId) {
         System.out.println("UPDATE LOKASI DONG is CALLED->updPubId="+updateClientLocationRequestModel.getPubId());
         String labelLocation = messageSource.getMessage("label.location", null, LocaleContextHolder.getLocale());
@@ -179,7 +189,6 @@ public class ThymeAdminControllerV2 {
         String msgFailed = messageSource.getMessage("label.updateFailed", null, LocaleContextHolder.getLocale());
         String errorClientLocationAlreadyExist = messageSource.getMessage("modal.errorClientLocationAlreadyExist", null, LocaleContextHolder.getLocale());
         String unexpectedError = messageSource.getMessage("modal.errorUnexpected", null, LocaleContextHolder.getLocale());
-
         try {
             ClientAddressDTO updatedData = new ClientAddressDTO();
             BeanUtils.copyProperties(updateClientLocationRequestModel,updatedData);
@@ -197,16 +206,22 @@ public class ThymeAdminControllerV2 {
     @GetMapping("/update/location")   // biasanya pakai PUT untuk update penuh
     public String showClientAddressUpdateForm(
             @RequestParam(name = "updPubId", required = false) String clientAddressPubId,
-            Model model) {
+            Model model, HttpSession session) {
 
         System.out.println("showAddLocationForm CALLED-clientAddressPubid="+clientAddressPubId);
         ClientDTO client = clientService.getClientDetailsByClientAddressPubId(clientAddressPubId);
         ClientAddressDTO clientAddress = clientAddressService.getStore(clientAddressPubId);
+        UserSessionDTO userLogInfo = (UserSessionDTO) session.getAttribute("userLogInfo");
+        List<ClientAddressDTO> listActiveLocation = clientAddressService.getActiveClientAddress(userLogInfo.getClientPid());
+        System.out.println("listActiveLocation size = "+listActiveLocation.size());
+        if (listActiveLocation != null && !listActiveLocation.isEmpty()) {
+            model.addAttribute("listActiveLocation", listActiveLocation);
+        }
         model.addAttribute("pid", clientAddressPubId);
         model.addAttribute("clientName", client.getClientName());
         model.addAttribute("clientAddress", clientAddress);
-        model.addAttribute("activePage", "location");
-        model.addAttribute("activeSub", "addLocation");
+        model.addAttribute("activePage", "menu1");
+        model.addAttribute("activeSub", "subMenu2");
         System.out.println("showAddClientForm is called");
         return "pages/v1/admin/upd-location";
     }
