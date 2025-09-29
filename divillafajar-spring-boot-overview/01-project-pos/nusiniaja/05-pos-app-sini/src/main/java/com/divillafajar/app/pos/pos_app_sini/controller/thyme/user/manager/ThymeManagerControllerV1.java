@@ -7,6 +7,7 @@ import com.divillafajar.app.pos.pos_app_sini.model.guest.GuestAreaRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.service.area.ZoneAreaService;
 import com.divillafajar.app.pos.pos_app_sini.service.client.ClientAddressService;
 import com.divillafajar.app.pos.pos_app_sini.service.client.ClientService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
@@ -19,6 +20,7 @@ import java.util.Optional;
 @Controller
 @RequestMapping("/v1/manager")
 @RequiredArgsConstructor
+@SessionAttributes("targetAddress")
 public class ThymeManagerControllerV1 {
 
     private final ClientService clientService;
@@ -34,27 +36,29 @@ public class ThymeManagerControllerV1 {
  */
 
     @GetMapping("/home")
-    public String showMgrHome(@RequestParam(name = "aid", required = true) Long aid,
+    public String showMgrHome(
             @RequestParam(name = "pid", required = true) String pid,
-            @RequestParam(name = "add", required = false) Boolean add,
-            @RequestParam(name = "target", required = false) String target,
-            Model model) {
-        System.out.println("showMgrHome IS CALLED pid = " + pid);
-        System.out.println("showMgrHome IS CALLED aid= " + aid);
-        ClientDTO client = clientService.getClientDetails(pid);
-        ClientAddressDTO store = clientAddressService.getStore(aid);
-        System.out.println("clientName = " + client.getClientName());
-        model.addAttribute("target", target);
-        model.addAttribute("aid", aid); //address id
-        model.addAttribute("isAdd", add);
-        model.addAttribute("pid",pid);
-        model.addAttribute("client", client);
-        model.addAttribute("store", store);
-        System.out.println("val isAdd = " + model.getAttribute("isAdd"));
-        System.out.println("val pid = " + model.getAttribute("pid"));
-        System.out.println("val store name = " + store.getAddressName());
-        //return "super/clients/home/home-client";
+            //@RequestParam(name = "targetAddress", required = true) ClientAddressDTO targetAddress,
+            Model model, HttpSession session
+    ) {
+        System.out.println("MANAGER HOME = "+pid);
+        ClientAddressDTO addressInfo = clientAddressService.getStore(pid);
+        session.setAttribute("targetAddress",addressInfo);
+        //model.addAttribute("pid", pid);
         return "pages/v1/manager/index-manager";
+    }
+
+
+    @GetMapping("/manage/product/cat")
+    public String showCategoryHome(
+            @RequestParam(name = "activePage", required = true) String activePage,
+            @RequestParam(name = "activeSub", required = true) String activeSub,
+            Model model, HttpSession session
+    ) {
+        System.out.println("showCategoryHome HOME = ");
+        model.addAttribute("activePage",activePage);
+        model.addAttribute("activeSub",activeSub);
+        return "pages/v1/manager/product/cat/index-category";
     }
 
     @PostMapping("/client/area")

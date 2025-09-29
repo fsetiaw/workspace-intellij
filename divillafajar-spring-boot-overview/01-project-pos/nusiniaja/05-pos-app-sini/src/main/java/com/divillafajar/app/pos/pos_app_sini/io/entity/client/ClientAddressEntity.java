@@ -1,5 +1,6 @@
 package com.divillafajar.app.pos.pos_app_sini.io.entity.client;
 
+import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.area.ClientAreaEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.employee.EmploymentEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.scope.ScopeEntity;
@@ -8,10 +9,7 @@ import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Getter
 @Setter
@@ -58,6 +56,10 @@ public class ClientAddressEntity implements Serializable {
 
     @OneToMany(mappedBy = "clientAddress", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ScopeEntity> scopes = new HashSet<>();
+
+    @OneToMany(mappedBy = "clientAddress", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductCategoryEntity> categories = new ArrayList<>();
+
 
     @Column(name = "address_name", length = 99, nullable = true)
     private String addressName;

@@ -17,7 +17,7 @@
 <div id="app">
     <!-- Sidebar slot -->
     <div layout:fragment="sidebar">
-        <div th:replace="~{/pages/v1/fragments/menu/admin/sidebar.html :: sidebar(${activePage}, ${activeSub}, ${listActiveLocation})}"></div>
+        <div th:replace="~{/pages/v1/manager/fragments/sidebar.html :: sidebar(${activePage}, ${activeSub}, '${listActiveLocation}')}"></div>
     </div>
     <div id="main">
         <!-- Notification hamburg slot -->
@@ -26,7 +26,7 @@
         </div>
         <!-- Notification header slot
         <div layout:fragment="left-header">
-            <div th:replace="~{/pages/v1/admin/fragments/notification-header.html :: right-header}"></div>
+            <div th:replace="~{/pages/v1/manager/fragments/notification-header.html :: right-header}"></div>
         </div-->
         <!-- Index header slot -->
         <div layout:fragment="logout-and-other-hidden-form">
@@ -36,7 +36,7 @@
         <!-- Main content slot -->
         <div class="page-heading">
             <h3>
-                <span th:text="|${session.userLogInfo.clientName}|"></span>
+                <span th:text="|${session.targetAddress.addressName} : ${session.targetAddress.addressNickname}|"></span>
                 <span style="font-size:70%; display:block; line-height:1;"
                       th:text="|${#strings.toUpperCase(#messages.msg('label.dashboard'))}|">
                 </span>
@@ -44,53 +44,9 @@
         </div>
         <div layout:fragment="content">
             <div class="page-content">
-                <div th:replace="~{/pages/v1/fragments/menu/admin/quickmenu.html :: quickmenu}"></div>
+                <div th:replace="~{/pages/v1/fragments/menu/manager/quickmenu.html :: quickmenu}"></div>
                 <section class="row">
-                    <h6 class="font-extrabold mb-0" th:if="${listActiveLocation != null and #lists.size(listActiveLocation) > 0}"
-                        th:text="|#{label.listClients} ${deletePath}|" style="text-transform: uppercase;"></h6>
-                    <div class="col-12">
-                        <div class="row" th:if="${listActiveLocation != null and #lists.size(listActiveLocation) > 0}">
-                            <!--div class="col-6 col-lg-3 col-md-6" th:each="store : ${ourStores}"-->
-                            <div class="col-12 col-lg-4 col-md-6" th:each="location : ${listActiveLocation}">
-                                <div class="card store-card min-h-150">
-                                    <div class="card-body px-4 py-4-5">
-                                    <a href="#" target="_self" class="text-decoration-none">
-
-                                        <div class="row">
-                                            <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
-                                                <div class="stats-icon purple mb-2 d-flex justify-content-center align-items-center"
-                                                     style="padding:0 8px 18px 0;width: 40px; height: 40px;">
-                                                    <i class="bi bi-house-door-fill" style="font-size:1.5rem;"></i>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
-                                                <h5 class="font-extrabold mb-0" th:text="${location.addressName}+' ('+${location.addressNickname}+')'"></h5>
-                                                <!--h6 class="text-muted font-semibold" th:text="${#strings.toUpperCase(location.locationCategory)}"></h6-->
-                                                <h8 class="text-muted font-semibold" th:utext="${location.addressLine1} + (${location.addressLine2 != null ? '<br/>' + location.addressLine2 : ''})"></h8>
-                                            </div>
-                                        </div>
-                                    </a>
-                                    </div>
-                                    <!-- tombol dipindah ke luar <a> -->
-                                    <div class="card-actions" style="position:absolute; top:8px; right:8px; display:flex; gap:6px;">
-                                        <button class="btn btn-sm btn-danger delete-btn" type="button"
-                                                th:attr="data-store-name=${location.addressName}"
-                                                th:data-store-pid="${location.pubId}">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                        <!-- update delete -->
-                                        <button class="btn btn-sm btn-success update-btn" type="button"
-                                                th:data-store-name="${location.addressName}"
-                                                th:data-store-pid="${location.pubId}">
-                                            <i class="bi bi-gear-fill"></i>
-                                        </button>
-                                    </div>
-
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
+                    <!--------------->
                 </section>
             </div>
         </div>
@@ -106,7 +62,7 @@
 </div>
 <!-- Toast confirm slot -->
 <div layout:fragment="toast-confirm">
-    <!--div th:replace="~{/pages/v1/admin/fragments/toast-confirm.html :: toast-confirm('cancel', 'update', 'delete')}"></div-->
+    <!--div th:replace="~{/pages/v1/manager/fragments/toast-confirm.html :: toast-confirm('cancel', 'update', 'delete')}"></div-->
     <div th:replace="~{/pages/v1/fragments/toast/toast-confirm.html :: toast-confirm('cancel', 'update', 'delete')}"></div>
 </div>
 <script th:src="@{/assets/static/js/initTheme.js}"></script>

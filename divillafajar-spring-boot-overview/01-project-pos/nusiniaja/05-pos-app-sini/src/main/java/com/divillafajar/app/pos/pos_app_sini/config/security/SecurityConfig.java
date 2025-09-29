@@ -119,12 +119,13 @@ public class SecurityConfig {
                                 "/mine/**","/assets/**"
                         ).permitAll()
                         //.requestMatchers("/customer/session-expired","/session-expired").hasAnyRole("EMPLOYEE","MANAGER","ADMIN","CUSTOMER")
-                        .requestMatchers("/v1/form/**","/v2/admin/**","/v1/user/**").hasAnyRole("SUPERADMIN","ADMIN")
-                        .requestMatchers("/superuser/**","/admin/**","/user/**").hasAnyRole("SUPERADMIN")
-                        .requestMatchers("/v1/superuser/**").hasAnyRole("SUPERADMIN")
+                        .requestMatchers("/v1/superuser/**","/user/**").hasAnyRole("SUPERADMIN")
+                        .requestMatchers("/v1/form/**","/v2/admin/**","/v1/user/**","/v1/manager/**").hasAnyRole("SUPERADMIN","ADMIN")
+                        //.requestMatchers("/superuser/**","/admin/**").hasAnyRole("SUPERADMIN")
                         .requestMatchers("/customer/home","/api/customer").hasRole("CUSTOMER")
+                        .requestMatchers("/v1/manager/**").hasRole("MANAGER")
                         .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
-                        .requestMatchers(HttpMethod.GET, "/home").hasAnyRole("EMPLOYEE","MANAGER","ADMIN","CUSTOMER")
+                        //.requestMatchers(HttpMethod.GET, "/home").hasAnyRole("EMPLOYEE","MANAGER","ADMIN","CUSTOMER")
                         .requestMatchers(HttpMethod.GET, "/api/users").hasRole("EMPLOYEE")
                         .requestMatchers(HttpMethod.GET, "/api/users/**").hasRole("EMPLOYEE")
                         .requestMatchers(HttpMethod.POST, "/api/users").hasRole("MANAGER") //create employee
