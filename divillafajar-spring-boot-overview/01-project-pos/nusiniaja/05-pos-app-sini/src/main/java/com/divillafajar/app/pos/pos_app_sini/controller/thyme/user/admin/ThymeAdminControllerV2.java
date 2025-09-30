@@ -134,7 +134,7 @@ public class ThymeAdminControllerV2 {
         String unexpectedError = messageSource.getMessage("modal.errorUnexpected", null, LocaleContextHolder.getLocale());
         System.out.println("addLokasi IS CALLED -- "+createClientLocationRequestModel.getAddressName());
         try {
-            UserSessionLog userLog =  (UserSessionLog)session.getAttribute("userLogInfo");
+            UserSessionDTO userLog =  (UserSessionDTO)session.getAttribute("userLogInfo");
             UserDTO storedUser = userService.getUser(userLog.getUserPid());
             ClientDTO targetClient = clientService.getClientDetails(userLog.getClientPid());
             //cek apa nama busines sudah pernah dipalai

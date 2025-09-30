@@ -90,8 +90,9 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             listStillActiveLogFromUserIp.forEach(log -> {
                 log.setStatus("LOGOUT-FORCED");
                 log.setLogoutTime(LocalDateTime.now());
-                sessionLogRepo.save(log);
+                //sessionLogRepo.save(log);
             });
+            sessionLogRepo.saveAll(listStillActiveLogFromUserIp);
         }
 
 
@@ -105,7 +106,7 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         UserSessionLogDTO prepDTO = userSessionLogService.prepUserSessionLog(username);
 
         UserSessionLog log = new UserSessionLog();
-        BeanUtils.copyProperties(prepDTO,log);
+        BeanUtils.copyProperties(prepDTO,log,"id");
         log.setUsername(username);
         log.setSessionId(sessionId);
         log.setIpAddress(userIp);
@@ -116,10 +117,18 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         //log.setClientId(clientId);
         log.setTableId(table);
 
-        UserSessionLog userLog =  sessionLogRepo.save(log);
+        UserSessionLog userLog =  new UserSessionLog();
+        try {
+            userLog =  sessionLogRepo.save(log);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //UserSessionLog userLog =  sessionLogRepo.save(log);
+
         UserSessionDTO userSession = new UserSessionDTO();
         BeanUtils.copyProperties(userLog, userSession);
         session.setAttribute("userLogInfo",userSession);
+
         /*
         UserSessionHistory history = new UserSessionHistory();
         history.setUsername(authentication.getName());
