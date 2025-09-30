@@ -7,6 +7,7 @@ import com.divillafajar.app.pos.pos_app_sini.model.guest.GuestAreaRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.service.area.ZoneAreaService;
 import com.divillafajar.app.pos.pos_app_sini.service.client.ClientAddressService;
 import com.divillafajar.app.pos.pos_app_sini.service.client.ClientService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -53,9 +54,12 @@ public class ThymeManagerControllerV1 {
     public String showCategoryHome(
             @RequestParam(name = "activePage", required = true) String activePage,
             @RequestParam(name = "activeSub", required = true) String activeSub,
+            //HttpServletRequest request,
             Model model, HttpSession session
     ) {
         System.out.println("showCategoryHome HOME = ");
+        //String contextPath = request.getContextPath();
+        //model.addAttribute("contextPath",contextPath);
         model.addAttribute("activePage",activePage);
         model.addAttribute("activeSub",activeSub);
         return "pages/v1/manager/product/cat/index-category";

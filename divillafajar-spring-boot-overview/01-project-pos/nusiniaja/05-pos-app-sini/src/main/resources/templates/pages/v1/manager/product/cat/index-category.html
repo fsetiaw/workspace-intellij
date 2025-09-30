@@ -53,26 +53,35 @@
                     <div class="row match-height">
                         <div class="col-12">
                             <div class="card">
-                                <div class="card-header">
-                                    <h4 class="card-title">Badges</h4>
-                                </div>
+                                <!--div class="card-header">
+                                    <h4 class="card-title">HEADER</h4>
+                                </div-->
                                 <div class="card-content">
                                     <div class="card-body">
-                                        <p>Use Utility classes <code>.d-flex</code>
-                                            <code>.justify-content-between</code>
-                                            <code>align-items-center</code> to create space between badge and your
-                                            content
-                                        </p>
+                                        <!-- Form input add item -->
+                                        <form id="addItemForm" class="mb-3" th:action="@{/v1/manager/product/category}" method="post">
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-primary text-white"
+                                                      style="font-weight:bold;font-size:1.2rem"
+                                                    th:text="#{label.add}">
+                                                </span>
+                                                <input type="text" id="newItemInput" class="form-control" th:placeholder="|${#strings.toLowerCase(#messages.msg('label.newCategory'))} . . .|" required>
+                                                <button class="btn btn-success" type="submit"><i class="bi bi-plus"></i></button>
+                                            </div>
+                                        </form>
+
+                                        <!-- List items -->
+                                        <h5 class="card-title" th:text="#{label.listCategory}">Daftar Item</h5>
                                         <ul class="list-group" id="itemList">
                                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                <span class="item-text">Biscuit jelly beans macaroon danish pudding.</span>
+                                                <span class="item-text">Biscuit</span>
                                                 <div class="buttons">
                                                     <a href="#" class="btn btn-sm btn-primary edit-btn"><i class="bi bi-pencil"></i></a>
                                                     <a href="#" class="btn btn-sm btn-danger delete-btn"><i class="bi bi-trash"></i></a>
                                                 </div>
                                             </li>
                                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                <span class="item-text">Chocolate cheesecake candy</span>
+                                                <span class="item-text">Chocolate</span>
                                                 <div class="buttons">
                                                     <a href="#" class="btn btn-sm btn-primary edit-btn"><i class="bi bi-pencil"></i></a>
                                                     <a href="#" class="btn btn-sm btn-danger delete-btn"><i class="bi bi-trash"></i></a>
@@ -111,30 +120,65 @@
 <script th:src="@{/assets/static/js/pages/dashboard.js}"></script>
 <script th:src="@{/mine/js/toast-handler.js}"></script>
 <!--script th:src="@{/mine/js/additional-index.js}"></script-->
-<!-- Modal konfirmasi -->
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+
+<div layout:fragment="modal-confirm-delete">
+    <!--div th:replace="~{/pages/v1/manager/fragments/toast-confirm.html :: toast-confirm('cancel', 'update', 'delete')}"></div-->
+    <div th:replace="~{/pages/v1/fragments/modal/modal-confirm-delete.html :: modal-confirm-delete(${#strings.toUpperCase(#messages.msg('modal.confirm.delete.title'))},
+    #{modal.confirm.delete.body},'itemNameReplaceByJs',#{label.cancel}, #{label.delete})}"></div>
+</div>
+<script th:src="@{/mine/js/modal/modal-confirm-edit-delete.js}"></script>
+<script th:inline="javascript">
+    const contextPath = /*[[@{/}]]*/ "";
+
+    function updateCategory(id) {
+        fetch(`${contextPath}/v1/manager/product/category/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: "New Category" })
+        }).then(res => console.log("Updated!"));
+    }
+</script>
+<!--Danger theme Modal
+<div class="modal fade text-left" id="danger" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel120" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
+         role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Konfirmasi Hapus</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <div class="modal-header bg-danger">
+                <h5 class="modal-title white" id="myModalLabel120">Danger Modal
+                </h5>
+                <button type="button" class="close" data-bs-dismiss="modal"
+                        aria-label="Close">
+                    <i data-feather="x"></i>
+                </button>
             </div>
             <div class="modal-body">
-                Apakah kamu yakin ingin menghapus item ini?
+                Tart lemon drops macaroon oat cake chocolate toffee chocolate
+                bar icing. Pudding jelly beans
+                carrot cake pastry gummies cheesecake lollipop. I love cookie
+                lollipop cake I love sweet
+                gummi bears cupcake dessert.
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Ya, Hapus</button>
+                <button type="button" class="btn btn-light-secondary"
+                        data-bs-dismiss="modal">
+                    <i class="bx bx-x d-block d-sm-none"></i>
+                    <span class="d-none d-sm-block">Close</span>
+                </button>
+                <button type="button" class="btn btn-danger ms-1"
+                        data-bs-dismiss="modal">
+                    <i class="bx bx-check d-block d-sm-none"></i>
+                    <span class="d-none d-sm-block">Accept</span>
+                </button>
             </div>
         </div>
     </div>
-</div>
+</div-->
 
-
-<script>
+<!--script>
     const itemList = document.getElementById("itemList");
     let itemToDelete = null;
-    const deleteModal = new bootstrap.Modal(document.getElementById("deleteModal"));
+    const deleteModal = new bootstrap.Modal(document.getElementById("danger"));
     const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
 
     // Event delegation
@@ -184,6 +228,10 @@
       // Tombol delete
       if (e.target.closest(".delete-btn")) {
         itemToDelete = e.target.closest("li");
+        const itemName = itemToDelete.querySelector(".item-text").textContent;
+
+        // Set nama item ke modal
+        document.getElementById("deletedItemName").textContent = itemName;
         deleteModal.show();
       }
     });
@@ -196,7 +244,7 @@
       }
       deleteModal.hide();
     });
-</script>
+</script-->
 
 </body>
 
