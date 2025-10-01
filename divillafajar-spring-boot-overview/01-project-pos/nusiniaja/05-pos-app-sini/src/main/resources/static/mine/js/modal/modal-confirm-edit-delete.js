@@ -2,7 +2,7 @@ const itemList = document.getElementById("itemList");
 let itemToDelete = null;
 const deleteModal = new bootstrap.Modal(document.getElementById("danger"));
 const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
-
+const contextPath = document.querySelector("meta[name='contextPath']").content;
 // Event delegation
 itemList.addEventListener("click", function(e) {
   // jangan preventDefault di sini (biar Enter/submit bisa berjalan normal di input handler)
@@ -63,41 +63,46 @@ itemList.addEventListener("click", function(e) {
         if (li.contains(input)) li.replaceChild(newSpan, input);
         buttons.style.display = "block";
 
-        /* 4) buat form tersembunyi lalu submit (form-urlencoded)
+        //4) buat form tersembunyi lalu submit (form-urlencoded)
         const itemId = li.getAttribute("data-id") || "";
+        const originalText = oldText; // simpan teks asli sebelum "saving..."
+        //const savingText = newSpan.textContent;
 
-        const form = document.createElement("form");
-        form.method = "post";
-        form.action = "/manage/product/cat";
+        // indikator loading
+        newSpan.textContent = `${newValue} (saving...)`;
 
-        // hidden id
-        const hidId = document.createElement("input");
-        hidId.type = "hidden";
-        hidId.name = "id";
-        hidId.value = itemId;
-        form.appendChild(hidId);
+        // disable tombol sementara
+        buttons.querySelectorAll("a").forEach(btn => btn.disabled = true);
 
-        // hidden name
-        const hidName = document.createElement("input");
-        hidName.type = "hidden";
-        hidName.name = "name";
-        hidName.value = newValue;
-        form.appendChild(hidName);
+        fetch(`${contextPath}api/v1/manager/product/category/${itemId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: itemId, name: newValue })
+        })
+        .then(res => {
+          if (res.status === 204) return { id: itemId, name: newValue }; // no content
+          if (!res.ok) throw new Error("Update failed");
+          return res.json();
+        })
+        .then(data => {
+          // simulasi delay 1 detik
+          setTimeout(() => {
+              newSpan.textContent = data.name || newValue; // update sukses
+              buttons.style.display = "block";
+              buttons.querySelectorAll("a").forEach(btn => btn.disabled = false);
+            }, 1000);
+        })
+        .catch(err => {
+          setTimeout(() => {
+            console.error(err);
+            newSpan.textContent = originalText; // rollback
+            buttons.style.display = "block";
+            buttons.querySelectorAll("a").forEach(btn => btn.disabled = false);
+            alert("Gagal update kategori, coba lagi.");
+          }, 1000);
+        });
 
-        // jika Spring Security CSRF token tersedia di <meta>, tambahkan juga
-        const csrfMeta = document.querySelector('meta[name="_csrf"]');
-        if (csrfMeta) {
-          const csrfInput = document.createElement("input");
-          csrfInput.type = "hidden";
-          csrfInput.name = "_csrf";
-          csrfInput.value = csrfMeta.getAttribute("content");
-          form.appendChild(csrfInput);
-        }
 
-        document.body.appendChild(form);
-        form.submit();
-        // (opsional) form.remove(); // halaman kemungkinan redirect jadi tidak perlu cleanup
-        */
       }
     });
   }

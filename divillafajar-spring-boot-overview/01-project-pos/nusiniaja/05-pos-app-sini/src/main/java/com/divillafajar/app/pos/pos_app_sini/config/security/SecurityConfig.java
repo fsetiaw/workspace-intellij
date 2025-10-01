@@ -83,21 +83,35 @@ public class SecurityConfig {
     @Bean
     @Order(1) // harus lebih tinggi dari yang formLogin
     public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
+        /* HAPUS DULU KARENA MASIH SESSION-BASED
         JwtAuthFilter jwtFilter = new JwtAuthFilter(jwtUtil, userDetailsService);
+         */
+
         System.out.println("apiFilterChain");
         http
                 .securityMatcher("/api/**") // hanya untuk endpoint api
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/v1/manager/**").hasAnyRole("SUPERADMIN", "MANAGER", "ADMIN")
+                        .anyRequest().permitAll()
+                        /*
                         .requestMatchers("/api/login","/api/users/register","/api/v1/register/**").permitAll()
                         .requestMatchers("/api/superman/register","/api/superman/**").permitAll()
+                        .requestMatchers("/api/v1/manager/**").hasAnyRole("SUPERADMIN", "MANAGER", "ADMIN")
                         .requestMatchers("/customer/home","/api/customer","/session-expired").hasRole("CUSTOMER")
                         .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
                         .requestMatchers("/api/users/**").hasAnyRole("EMPLOYEE", "MANAGER", "ADMIN")
                         .anyRequest().authenticated()
+                         */
                 )
+                // pakai session biasa
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                /* HAPUS DULU KARENA MASIH SESSION-BASED
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                 */
                 .csrf(csrf -> csrf.disable())
+                /* HAPUS DULU KARENA MASIH SESSION-BASED
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                 */
                 .httpBasic(Customizer.withDefaults());
 
         return http.build();
