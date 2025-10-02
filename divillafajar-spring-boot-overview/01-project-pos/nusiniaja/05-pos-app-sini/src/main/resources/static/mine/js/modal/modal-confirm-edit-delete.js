@@ -1,4 +1,6 @@
 const itemList = document.getElementById("itemList");
+const msgFailedUpdate = document.getElementById("toast-msg-update-failed").dataset.msg;
+const msgSuccessUpdate = document.getElementById("toast-msg-update-success").dataset.msg;
 let itemToDelete = null;
 const deleteModal = new bootstrap.Modal(document.getElementById("danger"));
 const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
@@ -63,6 +65,12 @@ itemList.addEventListener("click", function(e) {
         if (li.contains(input)) li.replaceChild(newSpan, input);
         buttons.style.display = "block";
 
+        // 👉 Tambahkan pengecekan ini
+        if (newValue === oldText) {
+          // tidak ada perubahan → cukup stop di sini
+          return;
+        }
+
         //4) buat form tersembunyi lalu submit (form-urlencoded)
         const itemId = li.getAttribute("data-id") || "";
         const originalText = oldText; // simpan teks asli sebelum "saving..."
@@ -85,12 +93,24 @@ itemList.addEventListener("click", function(e) {
           return res.json();
         })
         .then(data => {
-          // simulasi delay 1 detik
+        newSpan.textContent = data.name || newValue; // update sukses
+        buttons.style.display = "block";
+        buttons.querySelectorAll("a").forEach(btn => btn.disabled = false);
+        Toastify({
+              text: oldText+' '+msgSuccessUpdate,
+              duration: 2000,
+              close: true,
+              gravity: "bottom",
+              position: "center",
+              backgroundColor: "#4fbe87" // hijau success
+          }).showToast();
+          /* simulasi delay 1 detik
           setTimeout(() => {
               newSpan.textContent = data.name || newValue; // update sukses
               buttons.style.display = "block";
               buttons.querySelectorAll("a").forEach(btn => btn.disabled = false);
             }, 1000);
+          */
         })
         .catch(err => {
           setTimeout(() => {
@@ -98,8 +118,16 @@ itemList.addEventListener("click", function(e) {
             newSpan.textContent = originalText; // rollback
             buttons.style.display = "block";
             buttons.querySelectorAll("a").forEach(btn => btn.disabled = false);
-            alert("Gagal update kategori, coba lagi.");
-          }, 1000);
+            //alert("Gagal update kategori, coba lagi.");
+            Toastify({
+                    text: oldText+' '+msgFailedUpdate,
+                    duration: 2000,
+                    close:true,
+                    gravity:"bottom",
+                    position: "center",
+                    backgroundColor: "#dc3545",
+                }).showToast();
+            }, 1000);
         });
 
 
