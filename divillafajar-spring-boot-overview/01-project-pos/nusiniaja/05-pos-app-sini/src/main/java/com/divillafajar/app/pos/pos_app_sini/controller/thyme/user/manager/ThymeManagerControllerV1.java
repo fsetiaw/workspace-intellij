@@ -50,20 +50,7 @@ public class ThymeManagerControllerV1 {
     }
 
 
-    @GetMapping("/manage/product/cat")
-    public String showCategoryHome(
-            @RequestParam(name = "activePage", required = true) String activePage,
-            @RequestParam(name = "activeSub", required = true) String activeSub,
-            //HttpServletRequest request,
-            Model model, HttpSession session
-    ) {
-        System.out.println("showCategoryHome HOME = ");
-        //String contextPath = request.getContextPath();
-        //model.addAttribute("contextPath",contextPath);
-        model.addAttribute("activePage",activePage);
-        model.addAttribute("activeSub",activeSub);
-        return "pages/v1/manager/product/cat/index-category";
-    }
+
 
     @PostMapping("/client/area")
     public String addGuestArea(@RequestParam(name = "addressId", required = true) Long addressId,

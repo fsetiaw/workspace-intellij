@@ -119,7 +119,8 @@
                                 <a href="#" class="submenu-link" th:text="#{label.manager.setting.product}"></a>
                                 <ul class="submenu submenu-level-2">
                                     <li id="subMenu1-3-1" class="submenu-item" th:classappend="${activeSub == 'subMenu1-3-1'} ? ' active'">
-                                        <a th:href="@{/v1/manager/manage/product/cat(pid=${session.targetAddress.pubId},activePage='menu1',activeSub='subMenu1-3-1')}"
+                                        <!--a th:href="@{/v1/manager/manage/product/cat(pAid=${session.targetAddress.pubId},activePage='menu1',activeSub='subMenu1-3-1')}"-->
+                                        <a th:href="@{/v1/manager/manage/product/cat(activePage='menu1',activeSub='subMenu1-3-1')}"
                                            class="submenu-link"
                                            th:style="${activeSub == 'subMenu1-3-1'} ? 'pointer-events:none;' : ''"
                                            th:text="#{label.manager.setting.product.category}">
