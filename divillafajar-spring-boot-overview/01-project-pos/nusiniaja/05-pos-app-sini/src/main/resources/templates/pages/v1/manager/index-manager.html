@@ -17,7 +17,7 @@
 <div id="app">
     <!-- Sidebar slot -->
     <div layout:fragment="sidebar">
-        <div th:replace="~{/pages/v1/manager/fragments/sidebar.html :: sidebar(${activePage}, ${activeSub}, '${listActiveLocation}')}"></div>
+        <div th:replace="~{/pages/v1/manager/sidebar.html :: sidebar(${activePage}, ${activeSub}, '${listActiveLocation}')}"></div>
     </div>
     <div id="main">
         <!-- Notification hamburg slot -->
@@ -41,14 +41,190 @@
                       th:text="|${#strings.toUpperCase(#messages.msg('label.dashboard'))}|">
                 </span>
             </h3>
+            <div class="btn-group dropdown me-1 mb-1">
+                <button type="button" class="btn btn-warning" th:text="#{label.setting}"></button>
+                <button type="button"
+                        class="btn btn-warning dropdown-toggle dropdown-toggle-split"
+                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                        data-reference="parent">
+                    <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="#">Option 1</a>
+                    <a class="dropdown-item" href="#">Option 2</a>
+                    <a class="dropdown-item" href="#">Option 3</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#">Separated link</a>
+                </div>
+            </div>
         </div>
         <div layout:fragment="content">
-            <div class="page-content">
-                <div th:replace="~{/pages/v1/fragments/menu/manager/quickmenu.html :: quickmenu}"></div>
-                <section class="row">
-                    <!--------------->
-                </section>
-            </div>
+            <section class="row">
+                <div class="col-12 col-lg-9">
+                    <div class="row">
+                        <div class="col-6 col-lg-3 col-md-6">
+                            <div class="card">
+                                <a th:href="@{/v1/superuser/clients}">
+                                    <div class="card-body px-4 py-4-5">
+                                        <div class="row">
+                                            <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
+                                                <div class="stats-icon blue mb-2">
+                                                    <i class="iconly-boldProfile"></i>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                                                <h6 class="text-muted font-semibold" th:text="#{label.manager.setting.employee}"></h6>
+                                                <h6 class="font-extrabold mb-0">183.000</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-6 col-lg-3 col-md-6">
+                            <a th:href="@{/v1/manager/manage/product/cat(activePage='menu1',activeSub='subMenu1-3-1')}">
+                                <div class="card">
+                                    <div class="card-body px-4 py-4-5">
+                                        <div class="row">
+                                            <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
+                                                <div class="stats-icon purple mb-2">
+                                                    <i class="iconly-boldBuy"></i>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                                                <h6 class="text-muted font-semibold" th:text="#{label.manager.setting.product}"></h6>
+                                                <h6 class="font-extrabold mb-0" th:text="#{label.manager.setting.product.category}"></h6>112.000</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-6 col-lg-3 col-md-6">
+                            <div class="card">
+                                <div class="card-body px-4 py-4-5">
+                                    <div class="row">
+                                        <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
+                                            <div class="stats-icon green mb-2">
+                                                <i class="iconly-boldAdd-User"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                                            <h6 class="text-muted font-semibold">Following</h6>
+                                            <h6 class="font-extrabold mb-0">80.000</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-lg-3 col-md-6">
+                            <div class="card">
+                                <div class="card-body px-4 py-4-5">
+                                    <div class="row">
+                                        <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
+                                            <div class="stats-icon red mb-2">
+                                                <i class="iconly-boldBookmark"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                                            <h6 class="text-muted font-semibold">Saved Post</h6>
+                                            <h6 class="font-extrabold mb-0">112</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-xl-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4>Profile Visit</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-7">
+                                            <div class="d-flex align-items-center">
+                                                <svg class="bi text-primary" width="32" height="32" fill="blue"
+                                                     style="width:10px">
+                                                    <use
+                                                            xlink:href="assets/static/images/bootstrap-icons.svg#circle-fill" />
+                                                </svg>
+                                                <h5 class="mb-0 ms-3">Europe</h5>
+                                            </div>
+                                        </div>
+                                        <div class="col-5">
+                                            <h5 class="mb-0 text-end">862</h5>
+                                        </div>
+                                        <div class="col-12">
+                                            <div id="chart-europe"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-7">
+                                            <div class="d-flex align-items-center">
+                                                <svg class="bi text-success" width="32" height="32" fill="blue"
+                                                     style="width:10px">
+                                                    <use
+                                                            xlink:href="assets/static/images/bootstrap-icons.svg#circle-fill" />
+                                                </svg>
+                                                <h5 class="mb-0 ms-3">America</h5>
+                                            </div>
+                                        </div>
+                                        <div class="col-5">
+                                            <h5 class="mb-0 text-end">375</h5>
+                                        </div>
+                                        <div class="col-12">
+                                            <div id="chart-america"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-7">
+                                            <div class="d-flex align-items-center">
+                                                <svg class="bi text-danger" width="32" height="32" fill="blue"
+                                                     style="width:10px">
+                                                    <use
+                                                            xlink:href="assets/static/images/bootstrap-icons.svg#circle-fill" />
+                                                </svg>
+                                                <h5 class="mb-0 ms-3">Indonesia</h5>
+                                            </div>
+                                        </div>
+                                        <div class="col-5">
+                                            <h5 class="mb-0 text-end">1025</h5>
+                                        </div>
+                                        <div class="col-12">
+                                            <div id="chart-indonesia"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-3">
+                    <div class="card">
+                        <div class="card-body py-4 px-4">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar avatar-xl">
+                                    <img src="./assets/compiled/jpg/1.jpg" alt="Face 1">
+                                </div>
+                                <div class="ms-3 name">
+                                    <h5 class="font-bold">Profile Visitor</h5>
+                                    <h6 class="text-muted mb-0">1212</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>Visitors Profile</h4>
+                        </div>
+                        <div class="card-body">
+                            <div id="chart-visitors-profile"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
         <!-- Footer slot -->
         <div layout:fragment="footer">

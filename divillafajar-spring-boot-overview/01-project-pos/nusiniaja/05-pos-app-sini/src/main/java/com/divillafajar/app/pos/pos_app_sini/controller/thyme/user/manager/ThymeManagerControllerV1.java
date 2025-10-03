@@ -45,7 +45,7 @@ public class ThymeManagerControllerV1 {
         System.out.println("MANAGER HOME = "+pid);
         ClientAddressDTO addressInfo = clientAddressService.getStore(pid);
         session.setAttribute("targetAddress",addressInfo);
-        //model.addAttribute("pid", pid);
+        model.addAttribute("activePage", "dashboard");
         return "pages/v1/manager/index-manager";
     }
 
