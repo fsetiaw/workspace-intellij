@@ -5,7 +5,9 @@ let itemToDelete = null;
 const deleteModal = new bootstrap.Modal(document.getElementById("danger"));
 const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
 const contextPath = document.querySelector("meta[name='contextPath']").content;
-
+const pAid = document.querySelector("meta[name='pAid']").content;
+const addItemBtn = document.getElementById("addItemBtn");
+const newItemInput = document.getElementById("newItemInput");
 // Event delegation
 itemList.addEventListener("click", function(e) {
   const editBtn = e.target.closest(".edit-btn");
@@ -148,11 +150,194 @@ itemList.addEventListener("click", function(e) {
   }
 });
 
-// Konfirmasi delete
+/* Konfirmasi delete
 confirmDeleteBtn.addEventListener("click", function() {
   if (itemToDelete) {
     itemToDelete.remove();
     itemToDelete = null;
   }
   deleteModal.hide();
+});
+*/
+addItemBtn.addEventListener("click", function() {
+      const newValue = newItemInput.value.trim();
+      if (!newValue) return;
+
+      addItemBtn.disabled = true;
+
+      fetch(`${contextPath}api/v1/manager/product/category`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            name: newValue,
+            id: 0
+        })
+      })
+      .then(res => {
+        if (res.status === 201 || res.status === 200) return res.json();
+        throw new Error("Add failed");
+      })
+      .then(data => {
+        newItemInput.value = "";
+
+        const li = document.createElement("li");
+        li.className = "list-group-item d-flex justify-content-between align-items-center";
+        li.setAttribute("data-id", data.id);
+
+        const span = document.createElement("span");
+        span.className = "item-text";
+        span.textContent = data.name || newValue;
+
+        const buttons = document.createElement("div");
+        buttons.className = "buttons";
+        buttons.innerHTML = `
+          <a href="#" class="btn btn-sm btn-primary edit-btn"><i class="bi bi-pencil"></i></a>
+          <a href="#" class="btn btn-sm btn-danger delete-btn"><i class="bi bi-trash"></i></a>
+        `;
+
+        li.appendChild(span);
+        li.appendChild(buttons);
+        itemList.appendChild(li);
+
+        Toastify({
+          text: `${data.name || newValue} ${msgSuccessUpdate}`,
+          duration: 2000,
+          close: true,
+          gravity: "bottom",
+          position: "center",
+          backgroundColor: "#198754"
+        }).showToast();
+      })
+      .catch(err => {
+        console.error(err);
+        Toastify({
+          text: `${newValue} ${msgFailedUpdate}`,
+          duration: 2000,
+          close: true,
+          gravity: "bottom",
+          position: "center",
+          backgroundColor: "#dc3545"
+        }).showToast();
+      })
+      .finally(() => {
+        addItemBtn.disabled = false;
+      });
+    });
+
+   document.addEventListener("click", function(e) {
+  const addSubBtn = e.target.closest(".add-sub-btn");
+  if (addSubBtn) {
+    e.preventDefault();
+
+    const parentLi = addSubBtn.closest("li");
+    const parentId = parentLi.getAttribute("data-id");
+
+    // Cegah input ganda
+    if (parentLi.querySelector(".sub-input-container")) return;
+
+    // Sembunyikan tombol add-sub sementara
+    addSubBtn.style.display = "none";
+
+    // Buat elemen input subcategory
+    const subInputContainer = document.createElement("div");
+    subInputContainer.className = "input-group mt-2 sub-input-container";
+
+    subInputContainer.innerHTML = `
+  <div class="d-flex align-items-center ms-4" style="width:90%;">
+    <input type="text" class="form-control form-control-sm sub-input" placeholder="Subkategori..." style="flex:1;"/>
+    <button class="btn btn-success btn-sm save-sub-btn ms-2" type="button" style="padding:2px 4px; font-size:0.75rem;">
+      <i class="bi bi-check"></i>
+    </button>
+    <button class="btn btn-secondary btn-sm cancel-sub-btn ms-1" type="button" style="padding:2px 4px; font-size:0.75rem;">
+      <i class="bi bi-x"></i>
+    </button>
+  </div>
+`;
+
+    parentLi.insertAdjacentElement("afterend", subInputContainer);
+    subInputContainer.querySelector(".sub-input").focus();
+  }
+
+  // Simpan subcategory
+  if (e.target.closest(".save-sub-btn")) {
+    const container = e.target.closest(".sub-input-container");
+    const parentLi = container.previousElementSibling;
+    const parentId = parentLi.getAttribute("data-id");
+    const input = container.querySelector(".sub-input");
+    const newValue = input.value.trim();
+    if (!newValue) return;
+
+    e.target.disabled = true;
+
+    fetch(`${contextPath}api/v1/manager/product/category/sub`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: newValue,
+        parentId: parentId,
+        clientAddressPubId: pAid
+      })
+    })
+    .then(res => {
+      if (res.status === 201 || res.status === 200) return res.json();
+      throw new Error("Add failed");
+    })
+    .then(data => {
+      // Tambahkan subcategory di bawah parent
+      const subLi = document.createElement("li");
+      subLi.className = "list-group-item ps-5 d-flex justify-content-between align-items-center";
+      subLi.setAttribute("data-id", data.id);
+
+      subLi.innerHTML = `
+        <span class="item-text">${data.name}</span>
+        <div class="buttons">
+          <a href="#" class="btn btn-sm btn-primary edit-btn"><i class="bi bi-pencil"></i></a>
+          <a href="#" class="btn btn-sm btn-danger delete-btn"><i class="bi bi-trash"></i></a>
+        </div>
+      `;
+
+      parentLi.insertAdjacentElement("afterend", subLi);
+      container.remove();
+
+      Toastify({
+        text: `${data.name} berhasil ditambahkan`,
+        duration: 2000,
+        close: true,
+        gravity: "bottom",
+        position: "center",
+        backgroundColor: "#198754"
+      }).showToast();
+    })
+    .catch(err => {
+      console.error(err);
+      Toastify({
+        text: `Gagal menambah subkategori`,
+        duration: 2000,
+        close: true,
+        gravity: "bottom",
+        position: "center",
+        backgroundColor: "#dc3545"
+      }).showToast();
+    });
+  }
+
+  // Batalkan input
+if (e.target.closest(".cancel-sub-btn")) {
+  const container = e.target.closest(".sub-input-container");
+
+  // Cari parent <li> terdekat sebelum input container
+  let parentLi = container.previousElementSibling;
+  while (parentLi && parentLi.tagName !== "LI") {
+    parentLi = parentLi.previousElementSibling;
+  }
+
+  // Tampilkan lagi tombol add-sub jika ada
+  if (parentLi) {
+    const hiddenBtn = parentLi.querySelector(".add-sub-btn");
+    if (hiddenBtn) hiddenBtn.style.display = "";
+  }
+
+  // Hapus input subcategory dari DOM
+  container.remove();
+}
 });

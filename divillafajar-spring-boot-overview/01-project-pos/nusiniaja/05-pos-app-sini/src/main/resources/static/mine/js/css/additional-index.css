@@ -66,3 +66,20 @@
   cursor: default;
   opacity: 0.6; /* opsional: biar kelihatan sedang nonaktif */
 }
+
+.card.card-circle {
+  aspect-ratio: 1 / 1;   /* biar selalu persegi */
+  border-radius: 50% !important;  /* pakai !important kalau ada override */
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.my-sub-text {
+  font-size: 0.55rem;    /* lebih kecil dari small bawaan */
+  letter-spacing: -0.3px; /* rapetin spasi antar huruf */
+  color: #6c757d;        /* muted */
+  display: block;        /* biar turun ke bawah */
+  margin-top: 2px;       /* jarak tipis dari judul */
+}

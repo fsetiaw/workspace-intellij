@@ -14,6 +14,9 @@ import java.util.List;
 public class ProductCategoryDTO {
     private Long id;
     private String name;
+    private Long parentId;
+    private List<Long> childrenIds;
+    private String clientAddressPubId;
     private ProductCategoryEntity parent;
     private List<ProductCategoryEntity> children;
     private ClientAddressEntity clientAddress;

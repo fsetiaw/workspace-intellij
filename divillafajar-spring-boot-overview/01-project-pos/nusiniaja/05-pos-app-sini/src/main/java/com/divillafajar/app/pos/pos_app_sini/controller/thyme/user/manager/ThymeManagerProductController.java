@@ -1,11 +1,16 @@
 package com.divillafajar.app.pos.pos_app_sini.controller.thyme.user.manager;
 
+import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientAddressDTO;
+import com.divillafajar.app.pos.pos_app_sini.service.product.category.ProductCategoryService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @RequestMapping("/v1/manager/manage/product")
@@ -13,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @SessionAttributes("targetAddress")
 public class ThymeManagerProductController {
 
+    private final ProductCategoryService categoryService;
 
     @GetMapping
     public String showProdHome(
@@ -26,11 +32,10 @@ public class ThymeManagerProductController {
 
         ClientAddressDTO dto = (ClientAddressDTO) session.getAttribute("targetAddress");
         System.out.println("showCategoryHome dto = "+dto.getPubId());
-        //String contextPath = request.getContextPath();
-        //model.addAttribute("contextPath",contextPath);
+
         model.addAttribute("activePage",activePage);
         model.addAttribute("activeSub",activeSub);
-        return "pages/v1/manager/product/index-product.html";
+        return "pages/v1/manager/product/index-product";
     }
 
     @GetMapping("/cat")
@@ -42,11 +47,22 @@ public class ThymeManagerProductController {
             Model model, HttpSession session
     ) {
         System.out.println("showCategoryHome HOME");
-
+        List<ProductCategoryDTO> orderList = new ArrayList<>();
         ClientAddressDTO dto = (ClientAddressDTO) session.getAttribute("targetAddress");
         System.out.println("showCategoryHome dto = "+dto.getPubId());
-        //String contextPath = request.getContextPath();
-        //model.addAttribute("contextPath",contextPath);
+        List<ProductCategoryDTO> orderListCategoryAnsSub = categoryService.getCategoryAndSubCategoryByClientAddressPubId(dto.getPubId());
+        if(orderListCategoryAnsSub==null)
+            System.out.println("is >NUll");
+
+
+        for (ProductCategoryDTO category : orderListCategoryAnsSub) {
+            //System.out.println("Category: " + category.getParent().getName()+" - "+category.getParentId());
+            //System.out.println("Category: " + category.getName()+" - "+category.getId());
+        }
+
+        System.out.println("orderListCategoryAnsSub size = "+orderListCategoryAnsSub.size());
+
+        model.addAttribute("orderListCategoryAnsSub",orderListCategoryAnsSub);
         model.addAttribute("activePage",activePage);
         model.addAttribute("activeSub",activeSub);
         return "pages/v1/manager/product/cat/index-category";

@@ -15,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 public class RequestItemSubItemModel {
     private Long id;
+    private Long parentId;
     private String name;
     private ProductCategoryEntity parent;
     private String pubAid;

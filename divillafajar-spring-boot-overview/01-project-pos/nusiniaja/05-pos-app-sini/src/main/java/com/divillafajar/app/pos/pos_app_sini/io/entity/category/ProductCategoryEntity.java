@@ -2,7 +2,9 @@ package com.divillafajar.app.pos.pos_app_sini.io.entity.category;
 
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientAddressEntity;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
@@ -12,6 +14,8 @@ import java.util.List;
 @Table(name = "product_category")
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProductCategoryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

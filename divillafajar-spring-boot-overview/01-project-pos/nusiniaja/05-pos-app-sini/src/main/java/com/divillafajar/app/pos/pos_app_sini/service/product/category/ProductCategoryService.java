@@ -1,7 +1,12 @@
 package com.divillafajar.app.pos.pos_app_sini.service.product.category;
 
-import org.springframework.stereotype.Service;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryDTO;
 
-@Service
-public class ProductCategoryService {
+import java.util.List;
+
+
+public interface ProductCategoryService {
+    ProductCategoryDTO addNewProductCategory(String categoryName, String pAid);
+    ProductCategoryDTO addSubProductCategory(Long parentId, String categoryName, String pAid);
+    List<ProductCategoryDTO> getCategoryAndSubCategoryByClientAddressPubId(String pAid);
 }
