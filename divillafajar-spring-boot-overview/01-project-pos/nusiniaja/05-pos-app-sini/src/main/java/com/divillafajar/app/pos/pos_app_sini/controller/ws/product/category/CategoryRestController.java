@@ -4,6 +4,7 @@ import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryD
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientAddressDTO;
 import com.divillafajar.app.pos.pos_app_sini.model.product.CreateSubCategoryProductRespModel;
 import com.divillafajar.app.pos.pos_app_sini.model.product.RequestItemSubItemModel;
+import com.divillafajar.app.pos.pos_app_sini.model.product.UpdateCategoryProductRespModel;
 import com.divillafajar.app.pos.pos_app_sini.service.product.category.ProductCategoryService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -74,16 +75,16 @@ public class CategoryRestController {
 
     // Update category pakai session-based auth
     @PutMapping("/category/{id}")
-    public ResponseEntity<ProductCategoryDTO> updateCategory(
+    public ResponseEntity<UpdateCategoryProductRespModel> updateCategory(
             @PathVariable Long id,
             @RequestBody RequestItemSubItemModel dto) {
         System.out.println("Rest Controller updateCategory");
         System.out.println("dto="+dto.getId());
         System.out.println("dto="+dto.getName());
         System.out.println("dto="+dto.getIndentLevel());
-        ProductCategoryDTO retVal = new ProductCategoryDTO();
-        retVal = categoryService.updateProductCategory(dto.getId(), dto.getName(), dto.getPubAid());
-
+        ProductCategoryDTO productCategoryDTO = new ProductCategoryDTO();
+        productCategoryDTO = categoryService.updateProductCategory(dto.getId(), dto.getName(), dto.getPubAid());
+        UpdateCategoryProductRespModel retVal = new UpdateCategoryProductRespModel();
         retVal.setIndentLevel(dto.getIndentLevel());
         System.out.println("name = "+retVal.getId());
         System.out.println("name = "+retVal.getIndentLevel());

@@ -174,10 +174,25 @@ document.addEventListener("DOMContentLoaded", function() {
         wrapper.appendChild(input);
         wrapper.appendChild(enterBtn);
 
-        // replace & hide tombol
+        // simpan posisi scroll dulu
+        const scrollY = window.scrollY;
+
+        // lock posisi scroll sementara
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${scrollY}px`;
+        document.body.style.width = '100%';
+
+        // replace elemen & hide tombol
         li.replaceChild(wrapper, span);
         buttons.style.display = "none";
-        input.focus();
+
+        // fokus tanpa scroll
+        input.focus({ preventScroll: true });
+
+        // buka lock scroll
+        document.body.style.position = '';
+        document.body.style.top = '';
+        window.scrollTo(0, scrollY);
 
         let saved = false;
 
@@ -187,10 +202,9 @@ document.addEventListener("DOMContentLoaded", function() {
           restoreSpan.className = "item-text";
           restoreSpan.textContent = oldText;
 
-          // 👉 cek apakah parent adalah subcategory (indent)
-          if (li.classList.contains("ps-5") || li.closest("ul")?.closest("li")) {
-            restoreSpan.style.paddingLeft = "25px";
-          }
+          const indentLevel = li.getAttribute("data-indent") || "";
+          console.log("Indent level untuk item:", oldText, "=", indentLevel);
+          restoreSpan.style.paddingLeft = `${parseInt(indentLevel) * 25}px`;
 
           if (li.contains(wrapper)) li.replaceChild(restoreSpan, wrapper);
           buttons.style.display = "block";
@@ -211,13 +225,14 @@ document.addEventListener("DOMContentLoaded", function() {
           input.removeEventListener("blur", onBlur);
 
           // ganti wrapper -> span
+          const indentLevel = li.getAttribute("data-indent") || "";
+          console.log("Indent level2 untuk item:", oldText, "=", indentLevel);
           const newSpan = document.createElement("span");
           newSpan.className = "item-text";
           newSpan.textContent = newValue;
-          // 👉 tambahkan padding-left jika sebelumnya subkategori
-          if (li.classList.contains("ps-5") || li.closest("ul")?.closest("li")) {
-            newSpan.style.paddingLeft = "25px";
-          }
+          /* ini bila edit lalu check tapi ngga ada perubahan */
+          newSpan.style.paddingLeft = `${parseInt(indentLevel) * 25}px`;
+
           if (li.contains(wrapper)) li.replaceChild(newSpan, wrapper);
           buttons.style.display = "block";
 
@@ -226,7 +241,7 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
           }
 
-            const indentLevel = li.getAttribute("data-indent") || "";
+          ////const indentLevel = li.getAttribute("data-indent") || "";
           const itemId = li.getAttribute("data-id") || "";
           const originalText = oldText;
 
@@ -250,6 +265,10 @@ document.addEventListener("DOMContentLoaded", function() {
           })
           .then(data => {
             newSpan.textContent = data.name || newValue;
+
+            // ✅ Tambahkan padding-left sesuai indent level
+            newSpan.style.paddingLeft = `${parseInt(data.indentLevel) * 25}px`;
+
             buttons.style.display = "block";
             buttons.querySelectorAll("a").forEach(btn => btn.disabled = false);
             Toastify({
