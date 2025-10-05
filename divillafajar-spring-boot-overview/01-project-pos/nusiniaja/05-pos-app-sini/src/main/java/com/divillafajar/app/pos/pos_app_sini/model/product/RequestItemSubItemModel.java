@@ -16,6 +16,7 @@ import java.util.List;
 public class RequestItemSubItemModel {
     private Long id;
     private Long parentId;
+    private Long indentLevel;
     private String name;
     private ProductCategoryEntity parent;
     private String pubAid;

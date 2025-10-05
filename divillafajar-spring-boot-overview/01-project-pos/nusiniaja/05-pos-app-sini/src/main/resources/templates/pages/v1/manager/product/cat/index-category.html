@@ -77,6 +77,7 @@
                                         <!--/form-->
 
                                         <div th:replace="~{/pages/v1/manager/product/cat/category-item.html :: categoryList(${orderListCategoryAnsSub})}"></div>
+                                        <!--th:block th:replace="~{/pages/v1/manager/product/cat/category-item.html :: categoryList(${orderListCategoryAnsSub})}"></th:block-->
 
                                     </div>
                                 </div>
@@ -144,7 +145,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
     // Event delegation
-    itemList.addEventListener("click", function(e) {
+    //itemList.addEventListener("click", function(e) {
+    document.addEventListener("click", function(e) {
       const editBtn = e.target.closest(".edit-btn");
       const deleteBtn = e.target.closest(".delete-btn");
 
@@ -184,6 +186,12 @@ document.addEventListener("DOMContentLoaded", function() {
           const restoreSpan = document.createElement("span");
           restoreSpan.className = "item-text";
           restoreSpan.textContent = oldText;
+
+          // 👉 cek apakah parent adalah subcategory (indent)
+          if (li.classList.contains("ps-5") || li.closest("ul")?.closest("li")) {
+            restoreSpan.style.paddingLeft = "25px";
+          }
+
           if (li.contains(wrapper)) li.replaceChild(restoreSpan, wrapper);
           buttons.style.display = "block";
         };
@@ -206,6 +214,10 @@ document.addEventListener("DOMContentLoaded", function() {
           const newSpan = document.createElement("span");
           newSpan.className = "item-text";
           newSpan.textContent = newValue;
+          // 👉 tambahkan padding-left jika sebelumnya subkategori
+          if (li.classList.contains("ps-5") || li.closest("ul")?.closest("li")) {
+            newSpan.style.paddingLeft = "25px";
+          }
           if (li.contains(wrapper)) li.replaceChild(newSpan, wrapper);
           buttons.style.display = "block";
 
@@ -214,6 +226,7 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
           }
 
+            const indentLevel = li.getAttribute("data-indent") || "";
           const itemId = li.getAttribute("data-id") || "";
           const originalText = oldText;
 
@@ -224,7 +237,11 @@ document.addEventListener("DOMContentLoaded", function() {
           fetch(`${contextPath}api/v1/manager/product/category/${itemId}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id: itemId, name: newValue })
+            body: JSON.stringify({
+                id: itemId,
+                indentLevel: indentLevel,
+                name: newValue
+            })
           })
           .then(res => {
             if (res.status === 204) return { id: itemId, name: newValue };
@@ -309,8 +326,9 @@ document.addEventListener("DOMContentLoaded", function() {
             })
           })
           .then(res => {
-            if (res.status === 201 || res.status === 200) return res.json();
-            throw new Error("Add failed");
+            if (res.status !== 200 && res.status !== 201)
+                throw new Error("Add failed");
+              return res.text(); // baca sebagai teks dulu
           })
           .then(data => {
             newItemInput.value = "";
@@ -328,6 +346,7 @@ document.addEventListener("DOMContentLoaded", function() {
             buttons.innerHTML = `
               <a href="#" class="btn btn-sm btn-primary edit-btn"><i class="bi bi-pencil"></i></a>
               <a href="#" class="btn btn-sm btn-danger delete-btn"><i class="bi bi-trash"></i></a>
+              <a href="#" class="btn btn-sm btn-success add-sub-btn"><i class="bi bi-plus"></i></a>
             `;
 
             li.appendChild(span);

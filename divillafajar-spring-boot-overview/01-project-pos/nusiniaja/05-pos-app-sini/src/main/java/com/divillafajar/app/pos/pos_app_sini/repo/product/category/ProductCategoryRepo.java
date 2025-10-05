@@ -18,17 +18,47 @@ public interface ProductCategoryRepo extends CrudRepository<ProductCategoryEntit
     """)
     List<ProductCategoryEntity> findAllByClientAddressSorted(@Param("clientAddressId") Long clientAddressId);
 
-    @Query("""
-        SELECT c
-        FROM ProductCategoryEntity c
-        WHERE c.clientAddress.id = :clientAddressId
+    @Query(
+            value = """
+        WITH RECURSIVE category_hierarchy AS (
+            SELECT 
+                id,
+                name,
+                client_address_id,
+                parent_id,
+                LOWER(name) AS sort_key,
+                0 AS level,
+                CAST(LOWER(name) AS CHAR(255)) AS path
+            FROM product_category
+            WHERE client_address_id = :clientAddressId AND parent_id IS NULL
+
+            UNION ALL
+
+            SELECT 
+                c.id,
+                c.name,
+                c.client_address_id,
+                c.parent_id,
+                LOWER(c.name) AS sort_key,
+                ch.level + 1 AS level,
+                CONCAT(ch.path, '>', LOWER(c.name)) AS path
+            FROM product_category c
+            INNER JOIN category_hierarchy ch ON c.parent_id = ch.id
+        )
+        SELECT 
+            id,
+            name,
+            client_address_id,
+            parent_id
+        FROM category_hierarchy
         ORDER BY 
-            CASE WHEN c.parent IS NULL THEN 0 ELSE 1 END,          
-            LOWER(COALESCE(c.parent.name, c.name)),                
-            CASE WHEN c.parent IS NULL THEN LOWER(c.name) ELSE LOWER(c.parent.name) END,
-            LOWER(c.name)
-        """)
-    List<ProductCategoryEntity> findAllByClientAddressHierarchical(@Param("clientAddressId") Long clientAddressId);
+            SUBSTRING_INDEX(path, '>', 1),
+            path
+        """,
+            nativeQuery = true
+    )
+    List<ProductCategoryEntity> findAllByClientAddressHierarchical(
+            @Param("clientAddressId") Long clientAddressId);
 
     @Query("""
     SELECT DISTINCT c

@@ -15,6 +15,7 @@ public class ProductCategoryDTO {
     private Long id;
     private String name;
     private Long parentId;
+    private Long indentLevel;
     private List<Long> childrenIds;
     private String clientAddressPubId;
     private ProductCategoryEntity parent;

@@ -78,9 +78,16 @@ public class CategoryRestController {
             @PathVariable Long id,
             @RequestBody RequestItemSubItemModel dto) {
         System.out.println("Rest Controller updateCategory");
+        System.out.println("dto="+dto.getId());
+        System.out.println("dto="+dto.getName());
+        System.out.println("dto="+dto.getIndentLevel());
         ProductCategoryDTO retVal = new ProductCategoryDTO();
-        retVal.setId(id);
-        retVal.setName(dto.getName());
+        retVal = categoryService.updateProductCategory(dto.getId(), dto.getName(), dto.getPubAid());
+
+        retVal.setIndentLevel(dto.getIndentLevel());
+        System.out.println("name = "+retVal.getId());
+        System.out.println("name = "+retVal.getIndentLevel());
+        System.out.println("name = "+retVal.getName());
         //ProductCategoryDTO updated = categoryService.update(id, dto);
 
         return ResponseEntity.ok(retVal);

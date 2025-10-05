@@ -12,6 +12,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.rmi.NoSuchObjectException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -45,6 +46,19 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
         catch (Exception e) {
             throw new GenericCustomErrorException("Unexpected Error");
         }
+        return retVal;
+    }
+
+    @Override
+    public ProductCategoryDTO updateProductCategory(Long categoryId, String categoryName, String pAid) {
+        ProductCategoryDTO retVal = new ProductCategoryDTO();
+        Optional<ProductCategoryEntity> targetCategory = catRepo.findById(categoryId);
+        if(targetCategory.isEmpty())
+            throw new NullPointerException("Category not found");
+        ProductCategoryEntity savedCategory=targetCategory.get();
+        savedCategory.setName(categoryName);
+        ProductCategoryEntity updatedCategory = catRepo.save(savedCategory);
+        retVal = modelMapper.map(updatedCategory,ProductCategoryDTO.class);
         return retVal;
     }
 
@@ -85,37 +99,58 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
         List<ProductCategoryDTO> retVal = new ArrayList<>();
         ClientAddressEntity location = addressRepo.findByPubId(pAid);
         System.out.println("client adddress id == "+location.getId());
-        List<ProductCategoryEntity> daftar = catRepo.findAllByClientAddressSorted(location.getId());
-        List<ProductCategoryEntity> allCategories =
-                catRepo.findAllWithParentAndChildrenByClientAddress(location.getId());
+        //List<ProductCategoryEntity> daftar = catRepo.findAllByClientAddressSorted(location.getId());
+        List<ProductCategoryEntity> daftar = catRepo.findAllByClientAddressHierarchical(location.getId());
+        ModelMapper modelMapper = new ModelMapper();
+        long indentLevel=0;
+        ProductCategoryEntity prevEntity = null;
+        for(int i=0;i<daftar.size();i++) {
+        //for (ProductCategoryEntity entity : daftar) {
+            // mapping otomatis dari entity ke DTO
+            ProductCategoryEntity currEntity = new ProductCategoryEntity();
 
-        // Map untuk grouping berdasarkan parent
-        Map<Long, List<ProductCategoryEntity>> childrenMap = allCategories.stream()
-                .filter(c -> c.getParent() != null)
-                .collect(Collectors.groupingBy(c -> c.getParent().getId()));
-
-        // Ambil semua top-level category (tanpa parent), urut alfabetis
-        List<ProductCategoryEntity> topCategories = allCategories.stream()
-                .filter(c -> c.getParent() == null)
-                .sorted(Comparator.comparing(c -> c.getName().toLowerCase()))
-                .toList();
-
-        // Final list berurutan (parent → anak → parent berikutnya)
-        List<ProductCategoryEntity> sortedHierarchy = new ArrayList<>();
-
-        for (ProductCategoryEntity parent : topCategories) {
-            sortedHierarchy.add(parent);
-
-            // Ambil semua anak dari parent, urut alfabet
-            List<ProductCategoryEntity> children = childrenMap.get(parent.getId());
-            if (children != null) {
-                children.sort(Comparator.comparing(c -> c.getName().toLowerCase()));
-                sortedHierarchy.addAll(children);
+            ProductCategoryDTO dto = new ProductCategoryDTO();
+            currEntity = daftar.get(i);
+            dto = modelMapper.map(currEntity, ProductCategoryDTO.class);
+            if(i==0) {
+                //first
+                dto.setIndentLevel(indentLevel);
+                prevEntity = daftar.get(i);
             }
+            else {
+
+                if(currEntity.getParent()!=null) {
+                    //cek apakah previous parentnya
+                    if(currEntity.getParent().getId()==prevEntity.getId()) {
+                        //prev == parent
+                        dto.setIndentLevel(++indentLevel);
+                    }
+                    else {
+                        //bukan parent,
+                        //cek apa prev punya parrent && parennta apa sama
+                        if(prevEntity.getParent()!=null
+                            && currEntity.getParent().getId()==prevEntity.getParent().getId()) {
+                            //cek apa parennya sama
+                            dto.setIndentLevel(indentLevel);
+                        }
+                        else {
+                            //prev ngga punya parent
+                            dto.setIndentLevel(++indentLevel);
+                        }
+
+                    }
+                }
+                else {
+                    //current = top category
+                    indentLevel=0;
+                    dto.setIndentLevel(indentLevel);
+                }
+                prevEntity = daftar.get(i-1);
+            }
+            retVal.add(dto);
         }
-        //ModelMapper modelMapper = new ModelMapper();
-        return sortedHierarchy.stream()
-                .map(entity -> modelMapper.map(entity, ProductCategoryDTO.class))
-                .collect(Collectors.toList());
+        return retVal;
     }
+
+
 }

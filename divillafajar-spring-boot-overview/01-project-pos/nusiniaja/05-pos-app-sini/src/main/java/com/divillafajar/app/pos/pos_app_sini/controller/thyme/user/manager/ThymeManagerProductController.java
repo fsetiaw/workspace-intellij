@@ -49,18 +49,23 @@ public class ThymeManagerProductController {
         System.out.println("showCategoryHome HOME");
         List<ProductCategoryDTO> orderList = new ArrayList<>();
         ClientAddressDTO dto = (ClientAddressDTO) session.getAttribute("targetAddress");
-        System.out.println("showCategoryHome dto = "+dto.getPubId());
         List<ProductCategoryDTO> orderListCategoryAnsSub = categoryService.getCategoryAndSubCategoryByClientAddressPubId(dto.getPubId());
         if(orderListCategoryAnsSub==null)
             System.out.println("is >NUll");
-
-
+        /*
         for (ProductCategoryDTO category : orderListCategoryAnsSub) {
-            //System.out.println("Category: " + category.getParent().getName()+" - "+category.getParentId());
-            //System.out.println("Category: " + category.getName()+" - "+category.getId());
+            if(category.getParent()==null) {
+                System.out.println("TOP Category: " + category.getName()+" level = "+category.getIndentLevel());
+
+            }
+            else {
+                System.out.println("SUB Category: " + category.getName()+" level = "+category.getIndentLevel());
+                System.out.println("PARENT Category: " + category.getParentId());
+            }
         }
 
-        System.out.println("orderListCategoryAnsSub size = "+orderListCategoryAnsSub.size());
+         */
+
 
         model.addAttribute("orderListCategoryAnsSub",orderListCategoryAnsSub);
         model.addAttribute("activePage",activePage);
