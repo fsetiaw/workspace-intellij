@@ -31,8 +31,6 @@ public class CategoryRestController {
             @RequestBody RequestItemSubItemModel dto) {
         System.out.println("Rest Controller AddNewCategory");
         ClientAddressDTO address = (ClientAddressDTO) session.getAttribute("targetAddress");
-        System.out.println("showCategoryHome address = "+address.getPubId());
-        System.out.println("showCategoryHome dto = "+dto.getName());
         CreateSubCategoryProductRespModel retVal = new CreateSubCategoryProductRespModel();
         try {
             ProductCategoryDTO added =  categoryService.addNewProductCategory(dto.getName(), address.getPubId());
@@ -41,13 +39,6 @@ public class CategoryRestController {
             retVal.setParentId(null);
             retVal.setClientAddressPubId(address.getPubId());
         } catch(DuplicationErrorException e) {
-            System.out.println("Cought agai = "+HttpStatus.CONFLICT);
-            /*
-            retVal.setMsg(e.getMessage());
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(retVal);
-
-             */
             Map<String, Object> body = new HashMap<>();
             body.put("message", e.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT)
@@ -57,8 +48,6 @@ public class CategoryRestController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(null);
         }
-        //ProductCategoryDTO updated = categoryService.update(id, dto);
-        System.out.println("returning");
         return ResponseEntity.ok(retVal);
 
     }
@@ -99,38 +88,37 @@ public class CategoryRestController {
 
     // Update category pakai session-based auth
     @PutMapping("/category/{id}")
-    public ResponseEntity<UpdateCategoryProductRespModel> updateCategory(
+    public ResponseEntity<?> updateCategory( //originalnya <UpdateCategoryProductRespModel>
             @PathVariable Long id,
-            @RequestBody RequestItemSubItemModel dto) {
+            @RequestBody RequestItemSubItemModel dto,
+            HttpSession session
+        ) {
         System.out.println("Rest Controller updateCategory");
         System.out.println("dto="+dto.getId());
         System.out.println("dto="+dto.getName());
         System.out.println("dto="+dto.getIndentLevel());
         UpdateCategoryProductRespModel retVal = new UpdateCategoryProductRespModel();
         ProductCategoryDTO productCategoryDTO = new ProductCategoryDTO();
+        ClientAddressDTO address = (ClientAddressDTO) session.getAttribute("targetAddress");
         try {
-            productCategoryDTO = categoryService.updateProductCategory(dto.getId(), dto.getName(), dto.getPubAid());
-        }
-        catch(DuplicationErrorException e) {
-            System.out.println("Cought agai = "+HttpStatus.CONFLICT);
-            retVal.setMsg(e.getMessage());
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(retVal);
-        }
-        catch(NullPointerException e) {
-            e.printStackTrace();
-        }
-        catch(Exception e) {
-            e.printStackTrace();
-        }
+            productCategoryDTO = categoryService.updateProductCategory(dto.getId(), dto.getName(), address.getPubId());
 
+        } catch(DuplicationErrorException e) {
+            Map<String, Object> body = new HashMap<>();
+            body.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(body);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
 
         retVal.setIndentLevel(dto.getIndentLevel());
         System.out.println("name = "+retVal.getId());
         System.out.println("name = "+retVal.getIndentLevel());
         System.out.println("name = "+retVal.getName());
         //ProductCategoryDTO updated = categoryService.update(id, dto);
-
         return ResponseEntity.ok(retVal);
     }
     /*

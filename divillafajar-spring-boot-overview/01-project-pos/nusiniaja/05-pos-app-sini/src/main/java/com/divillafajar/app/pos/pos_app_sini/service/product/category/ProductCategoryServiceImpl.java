@@ -31,55 +31,24 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
     public ProductCategoryDTO addNewProductCategory(String categoryName, String pAid) throws Exception {
         ProductCategoryDTO retVal = new ProductCategoryDTO();
         System.out.println("addNewProductCategory="+categoryName+"~"+pAid);
-        System.out.println("pit1");
         ClientAddressEntity targetLocation = addressRepo.findByPubId(pAid);
-        System.out.println("pit2");
         if(targetLocation==null) {
-            System.out.println("Location not found");
             throw new NullPointerException("Location not found");
         }
-        System.out.println("pit3 "+targetLocation.getId());
         Optional<ProductCategoryEntity> existed = catRepo.findByNameIgnoreCaseAndClientAddress_Id(categoryName, targetLocation.getId());
         if(existed.isPresent()) {
-            System.out.println("Cought: ategory Sudah Ada");
             throw new DuplicationErrorException(messageSource.getMessage("label.manager.setting.product.category", null, Locale.getDefault())+": "+categoryName+", "+messageSource.getMessage("msg.isUsed", null, Locale.getDefault()));
         }
-        System.out.println("pit4");
         ProductCategoryEntity newCat = new ProductCategoryEntity();
         newCat.setName(categoryName);
         newCat.setClientAddress(targetLocation);
-        System.out.println("pit5");
         try {
             ProductCategoryEntity saved = catRepo.save(newCat);
-            System.out.println("pit6");
             BeanUtils.copyProperties(saved,retVal);
-            System.out.println("pit7");
         }
         catch (Exception e) {
-            System.out.println("Unexpected Error");
             throw new GenericCustomErrorException("Unexpected Error");
         }
-        System.out.println("addNewProductCategory sukses");
-        return retVal;
-    }
-
-    @Override
-    public ProductCategoryDTO updateProductCategory(Long categoryId, String categoryName, String pAid) {
-        ProductCategoryDTO retVal = new ProductCategoryDTO();
-        //cek target categorynya ada
-        Optional<ProductCategoryEntity> targetCategory = catRepo.findById(categoryId);
-        if(targetCategory.isEmpty())
-            throw new NullPointerException("Category not found");
-        //cek target categorynya ada
-        System.out.println("pAids = "+pAid);
-        ClientAddressEntity location = addressRepo.findByPubId(pAid);
-        Optional<ProductCategoryEntity> existedCategory = catRepo.findByNameIgnoreCaseAndClientAddress_Id(categoryName, location.getId());
-        if(existedCategory.isPresent())
-            throw new DuplicationErrorException("Categ");
-        ProductCategoryEntity savedCategory=targetCategory.get();
-        savedCategory.setName(categoryName);
-        ProductCategoryEntity updatedCategory = catRepo.save(savedCategory);
-        retVal = modelMapper.map(updatedCategory,ProductCategoryDTO.class);
         return retVal;
     }
 
@@ -93,7 +62,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
 
         Optional<ProductCategoryEntity> existed = catRepo.findByNameIgnoreCaseAndClientAddress_Id(categoryName, targetLocation.getId());
         if(existed.isPresent())
-            throw new DuplicationErrorException(categoryName+" "+messageSource.getMessage("msg.isUsed", null, Locale.getDefault()));
+            throw new DuplicationErrorException(messageSource.getMessage("label.manager.setting.product.category", null, Locale.getDefault())+": "+categoryName+", "+messageSource.getMessage("msg.isUsed", null, Locale.getDefault()));
 
         Optional<ProductCategoryEntity> parentEntity = catRepo.findById(parentId);
         if(parentEntity.isEmpty())
@@ -115,6 +84,30 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
         return retVal;
     }
 
+
+    @Override
+    public ProductCategoryDTO updateProductCategory(Long categoryId, String categoryName, String pAid) {
+        ProductCategoryDTO retVal = new ProductCategoryDTO();
+        //cek target categorynya ada
+        Optional<ProductCategoryEntity> targetCategory = catRepo.findById(categoryId);
+        if(targetCategory.isEmpty())
+            throw new NullPointerException("Category not found");
+        //cek target categorynya ada
+        System.out.println("pAids = "+pAid);
+        ClientAddressEntity targetLocation = addressRepo.findByPubId(pAid);
+        if(targetLocation==null)
+            throw new NullPointerException("Location not found");
+        ClientAddressEntity location = addressRepo.findByPubId(pAid);
+        Optional<ProductCategoryEntity> existedCategory = catRepo.findByNameIgnoreCaseAndClientAddress_Id(categoryName, location.getId());
+        if(existedCategory.isPresent())
+            throw new DuplicationErrorException(messageSource.getMessage("label.manager.setting.product.category", null, Locale.getDefault())+": "+categoryName+", "+messageSource.getMessage("msg.isUsed", null, Locale.getDefault()));
+        ProductCategoryEntity savedCategory=targetCategory.get();
+        savedCategory.setName(categoryName);
+        ProductCategoryEntity updatedCategory = catRepo.save(savedCategory);
+        retVal = modelMapper.map(updatedCategory,ProductCategoryDTO.class);
+        return retVal;
+    }
+
     @Override
     public List<ProductCategoryDTO> getCategoryAndSubCategoryByClientAddressPubId(String pAid) {
         List<ProductCategoryDTO> retVal = new ArrayList<>();
@@ -125,6 +118,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
         ModelMapper modelMapper = new ModelMapper();
         long indentLevel=0;
         ProductCategoryEntity prevEntity = null;
+        List<Long> listCategory = new ArrayList<>();
         for(int i=0;i<daftar.size();i++) {
         //for (ProductCategoryEntity entity : daftar) {
             // mapping otomatis dari entity ke DTO
@@ -133,41 +127,81 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
             ProductCategoryDTO dto = new ProductCategoryDTO();
             currEntity = daftar.get(i);
             dto = modelMapper.map(currEntity, ProductCategoryDTO.class);
+            System.out.println("PROCESS="+dto.getId()+"-> list size = "+listCategory.size());
+
             if(i==0) {
                 //first
-                dto.setIndentLevel(indentLevel);
+                //add this top category
+                listCategory.add(daftar.get(i).getId());
+                dto.setIndentLevel((long) listCategory.size());
+                System.out.println(dto.getId()+" indent "+listCategory.size());
                 prevEntity = daftar.get(i);
             }
             else {
 
                 if(currEntity.getParent()!=null) {
-                    //cek apakah previous parentnya
+                    //current entity punya parent,
+                    //then cek apakah previous parentnya
                     if(currEntity.getParent().getId()==prevEntity.getId()) {
                         //prev == parent
-                        dto.setIndentLevel(++indentLevel);
+                        //add this sub category
+                        listCategory.add(daftar.get(i).getId());
+                        System.out.println(dto.getId()+" indent "+listCategory.size());
+                        dto.setIndentLevel((long) listCategory.size());
                     }
                     else {
-                        //bukan parent,
-                        //cek apa prev punya parrent && parennta apa sama
-                        if(prevEntity.getParent()!=null
-                            && currEntity.getParent().getId()==prevEntity.getParent().getId()) {
-                            //cek apa parennya sama
-                            dto.setIndentLevel(indentLevel);
-                        }
-                        else {
-                            //prev ngga punya parent
-                            dto.setIndentLevel(++indentLevel);
+                        //bukan parentnya,
+                        //cari dimana parentya di listCategory
+                        boolean match = false;
+                        for(int j=1;j<= listCategory.size();j++) {
+                            System.out.println("listCategory.get(j-1)="+listCategory.get(j-1)+" vs "+currEntity.getParent().getId());
+                            if(listCategory.get(j-1)== currEntity.getParent().getId()) {
+                                match=true;
+                                //ketemu posisi parent, then
+                                //masukan current ke list
+                                if(j== listCategory.size()) {
+                                    //last record, tinggal tambah aja
+                                    listCategory.add(daftar.get(i).getId());
+                                    dto.setIndentLevel((long) listCategory.size());
+                                }
+                                else {
+                                    //replace current value
+                                    listCategory.set(j,daftar.get(i).getId());
+                                    dto.setIndentLevel((long) j);
+                                }
+
+                                System.out.println(dto.getId()+" indent "+dto.getIndentLevel());
+
+                            }
+                            if(match) {
+                                //hapus dari belakang yg bukan daftar.get(i).getId()
+
+                                for(int k=listCategory.size()-1;k>0;k--) {
+                                    if(listCategory.get(k)==daftar.get(i).getId()) {
+                                        break;
+                                    }
+                                    else {
+                                        listCategory.remove(k);
+                                    }
+
+                                }
+                            }
                         }
 
                     }
                 }
                 else {
                     //current = top category
-                    indentLevel=0;
-                    dto.setIndentLevel(indentLevel);
+                    listCategory = new ArrayList<>();
+                    listCategory.add(daftar.get(i).getId());
+                    System.out.println(dto.getId()+" indent "+listCategory.size());
+                    dto.setIndentLevel((long) listCategory.size());
                 }
                 prevEntity = daftar.get(i-1);
             }
+            System.out.println("========");
+            System.out.println(dto.getName()+"="+dto.getIndentLevel());
+            System.out.println("========");
             retVal.add(dto);
         }
         return retVal;
