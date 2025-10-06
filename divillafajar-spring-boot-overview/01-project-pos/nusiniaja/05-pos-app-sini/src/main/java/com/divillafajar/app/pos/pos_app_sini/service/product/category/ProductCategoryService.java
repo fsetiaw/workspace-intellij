@@ -6,7 +6,7 @@ import java.util.List;
 
 
 public interface ProductCategoryService {
-    ProductCategoryDTO addNewProductCategory(String categoryName, String pAid);
+    ProductCategoryDTO addNewProductCategory(String categoryName, String pAid) throws Exception;
     ProductCategoryDTO updateProductCategory(Long categoryId, String categoryName, String pAid);
     ProductCategoryDTO addSubProductCategory(Long parentId, String categoryName, String pAid);
     List<ProductCategoryDTO> getCategoryAndSubCategoryByClientAddressPubId(String pAid);

@@ -11,11 +11,14 @@ import java.util.List;
 
 
 @Entity
-@Table(name = "product_category")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "product_category",
+    uniqueConstraints = {
+            @UniqueConstraint(columnNames = {"name"})
+    })
 public class ProductCategoryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

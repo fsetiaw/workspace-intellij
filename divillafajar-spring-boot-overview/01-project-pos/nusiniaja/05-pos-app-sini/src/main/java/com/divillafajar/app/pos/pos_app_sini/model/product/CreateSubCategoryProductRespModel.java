@@ -13,5 +13,7 @@ public class CreateSubCategoryProductRespModel {
     private Long id;
     private String name;
     private Long parentId;
+    private Long indentLevel;
     private String clientAddressPubId;
+    private String message;
 }

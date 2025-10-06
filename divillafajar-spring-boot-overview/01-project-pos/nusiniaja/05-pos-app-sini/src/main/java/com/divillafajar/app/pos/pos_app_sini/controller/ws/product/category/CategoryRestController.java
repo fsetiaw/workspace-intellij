@@ -1,5 +1,6 @@
 package com.divillafajar.app.pos.pos_app_sini.controller.ws.product.category;
 
+import com.divillafajar.app.pos.pos_app_sini.exception.DuplicationErrorException;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientAddressDTO;
 import com.divillafajar.app.pos.pos_app_sini.model.product.CreateSubCategoryProductRespModel;
@@ -8,9 +9,13 @@ import com.divillafajar.app.pos.pos_app_sini.model.product.UpdateCategoryProduct
 import com.divillafajar.app.pos.pos_app_sini.service.product.category.ProductCategoryService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/v1/manager/product")
@@ -18,9 +23,10 @@ import org.springframework.web.bind.annotation.*;
 public class CategoryRestController {
 
     private final ProductCategoryService categoryService;
+    private MessageSource messageSource;
 
     @PostMapping("/category")
-    public ResponseEntity<CreateSubCategoryProductRespModel> addNewCategory(
+    public ResponseEntity<?> addNewCategory( //defaultnya <CreateSubCategoryProductRespModel>
             HttpSession session,
             @RequestBody RequestItemSubItemModel dto) {
         System.out.println("Rest Controller AddNewCategory");
@@ -34,8 +40,20 @@ public class CategoryRestController {
             retVal.setName(added.getName());
             retVal.setParentId(null);
             retVal.setClientAddressPubId(address.getPubId());
+        } catch(DuplicationErrorException e) {
+            System.out.println("Cought agai = "+HttpStatus.CONFLICT);
+            /*
+            retVal.setMsg(e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(retVal);
+
+             */
+            Map<String, Object> body = new HashMap<>();
+            body.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(body);
         } catch (Exception e) {
-            //e.printStackTrace();
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(null);
         }
@@ -61,6 +79,12 @@ public class CategoryRestController {
             retVal.setName(added.getName());
             retVal.setParentId(added.getParent().getId());
             retVal.setClientAddressPubId(address.getPubId());
+
+        } catch(DuplicationErrorException e) {
+            System.out.println("Cought agai = "+HttpStatus.CONFLICT);
+            retVal.setMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(retVal);
         } catch (Exception e) {
             System.out.println("controller error ok");
             e.printStackTrace();
@@ -82,9 +106,25 @@ public class CategoryRestController {
         System.out.println("dto="+dto.getId());
         System.out.println("dto="+dto.getName());
         System.out.println("dto="+dto.getIndentLevel());
-        ProductCategoryDTO productCategoryDTO = new ProductCategoryDTO();
-        productCategoryDTO = categoryService.updateProductCategory(dto.getId(), dto.getName(), dto.getPubAid());
         UpdateCategoryProductRespModel retVal = new UpdateCategoryProductRespModel();
+        ProductCategoryDTO productCategoryDTO = new ProductCategoryDTO();
+        try {
+            productCategoryDTO = categoryService.updateProductCategory(dto.getId(), dto.getName(), dto.getPubAid());
+        }
+        catch(DuplicationErrorException e) {
+            System.out.println("Cought agai = "+HttpStatus.CONFLICT);
+            retVal.setMsg(e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(retVal);
+        }
+        catch(NullPointerException e) {
+            e.printStackTrace();
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
+
+
         retVal.setIndentLevel(dto.getIndentLevel());
         System.out.println("name = "+retVal.getId());
         System.out.println("name = "+retVal.getIndentLevel());

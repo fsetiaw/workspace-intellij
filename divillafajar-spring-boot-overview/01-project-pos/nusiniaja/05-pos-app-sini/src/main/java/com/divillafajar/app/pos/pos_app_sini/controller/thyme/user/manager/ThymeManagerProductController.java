@@ -1,5 +1,6 @@
 package com.divillafajar.app.pos.pos_app_sini.controller.thyme.user.manager;
 
+import com.divillafajar.app.pos.pos_app_sini.config.properties.CustomDefaultProperties;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientAddressDTO;
 import com.divillafajar.app.pos.pos_app_sini.service.product.category.ProductCategoryService;
@@ -15,10 +16,11 @@ import java.util.List;
 @Controller
 @RequestMapping("/v1/manager/manage/product")
 @RequiredArgsConstructor
-@SessionAttributes("targetAddress")
+@SessionAttributes({"targetAddress","toastShortTimeout","toastMediumTimeout","toastLongTimeout"})
 public class ThymeManagerProductController {
 
     private final ProductCategoryService categoryService;
+    private final CustomDefaultProperties props;
 
     @GetMapping
     public String showProdHome(
@@ -47,6 +49,12 @@ public class ThymeManagerProductController {
             Model model, HttpSession session
     ) {
         System.out.println("showCategoryHome HOME");
+        Integer toastDuration = (Integer) session.getAttribute("toastShortTimeout");
+        model.addAttribute("toastShortTimeout", toastDuration);
+        toastDuration = (Integer) session.getAttribute("toastMediumTimeout");
+        model.addAttribute("toastMediumTimeout", toastDuration);
+        toastDuration = (Integer) session.getAttribute("toastLongTimeout");
+        model.addAttribute("toastLongTimeout", toastDuration);
         List<ProductCategoryDTO> orderList = new ArrayList<>();
         ClientAddressDTO dto = (ClientAddressDTO) session.getAttribute("targetAddress");
         List<ProductCategoryDTO> orderListCategoryAnsSub = categoryService.getCategoryAndSubCategoryByClientAddressPubId(dto.getPubId());

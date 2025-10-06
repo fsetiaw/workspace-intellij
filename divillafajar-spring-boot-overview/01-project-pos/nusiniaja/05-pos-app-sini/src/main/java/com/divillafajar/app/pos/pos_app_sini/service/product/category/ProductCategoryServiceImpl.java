@@ -1,5 +1,6 @@
 package com.divillafajar.app.pos.pos_app_sini.service.product.category;
 
+import com.divillafajar.app.pos.pos_app_sini.config.properties.CustomDefaultProperties;
 import com.divillafajar.app.pos.pos_app_sini.exception.DuplicationErrorException;
 import com.divillafajar.app.pos.pos_app_sini.exception.GenericCustomErrorException;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryDTO;
@@ -10,6 +11,7 @@ import com.divillafajar.app.pos.pos_app_sini.repo.product.category.ProductCatego
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import java.rmi.NoSuchObjectException;
@@ -23,38 +25,57 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
     private final ProductCategoryRepo catRepo;
     private final ClientAddressRepo addressRepo;
     private final ModelMapper modelMapper;
+    private final MessageSource messageSource;
 
     @Override
-    public ProductCategoryDTO addNewProductCategory(String categoryName, String pAid) {
+    public ProductCategoryDTO addNewProductCategory(String categoryName, String pAid) throws Exception {
         ProductCategoryDTO retVal = new ProductCategoryDTO();
-
+        System.out.println("addNewProductCategory="+categoryName+"~"+pAid);
+        System.out.println("pit1");
         ClientAddressEntity targetLocation = addressRepo.findByPubId(pAid);
-        if(targetLocation==null)
+        System.out.println("pit2");
+        if(targetLocation==null) {
+            System.out.println("Location not found");
             throw new NullPointerException("Location not found");
-
+        }
+        System.out.println("pit3 "+targetLocation.getId());
         Optional<ProductCategoryEntity> existed = catRepo.findByNameIgnoreCaseAndClientAddress_Id(categoryName, targetLocation.getId());
-        if(existed.isPresent())
-            throw new DuplicationErrorException("Category Sudah Ada");
-
+        if(existed.isPresent()) {
+            System.out.println("Cought: ategory Sudah Ada");
+            throw new DuplicationErrorException(messageSource.getMessage("label.manager.setting.product.category", null, Locale.getDefault())+": "+categoryName+", "+messageSource.getMessage("msg.isUsed", null, Locale.getDefault()));
+        }
+        System.out.println("pit4");
         ProductCategoryEntity newCat = new ProductCategoryEntity();
         newCat.setName(categoryName);
         newCat.setClientAddress(targetLocation);
+        System.out.println("pit5");
         try {
             ProductCategoryEntity saved = catRepo.save(newCat);
+            System.out.println("pit6");
             BeanUtils.copyProperties(saved,retVal);
+            System.out.println("pit7");
         }
         catch (Exception e) {
+            System.out.println("Unexpected Error");
             throw new GenericCustomErrorException("Unexpected Error");
         }
+        System.out.println("addNewProductCategory sukses");
         return retVal;
     }
 
     @Override
     public ProductCategoryDTO updateProductCategory(Long categoryId, String categoryName, String pAid) {
         ProductCategoryDTO retVal = new ProductCategoryDTO();
+        //cek target categorynya ada
         Optional<ProductCategoryEntity> targetCategory = catRepo.findById(categoryId);
         if(targetCategory.isEmpty())
             throw new NullPointerException("Category not found");
+        //cek target categorynya ada
+        System.out.println("pAids = "+pAid);
+        ClientAddressEntity location = addressRepo.findByPubId(pAid);
+        Optional<ProductCategoryEntity> existedCategory = catRepo.findByNameIgnoreCaseAndClientAddress_Id(categoryName, location.getId());
+        if(existedCategory.isPresent())
+            throw new DuplicationErrorException("Categ");
         ProductCategoryEntity savedCategory=targetCategory.get();
         savedCategory.setName(categoryName);
         ProductCategoryEntity updatedCategory = catRepo.save(savedCategory);
@@ -72,11 +93,11 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
 
         Optional<ProductCategoryEntity> existed = catRepo.findByNameIgnoreCaseAndClientAddress_Id(categoryName, targetLocation.getId());
         if(existed.isPresent())
-            throw new DuplicationErrorException("Category Sudah Ada");
+            throw new DuplicationErrorException(categoryName+" "+messageSource.getMessage("msg.isUsed", null, Locale.getDefault()));
 
         Optional<ProductCategoryEntity> parentEntity = catRepo.findById(parentId);
         if(parentEntity.isEmpty())
-            throw new NullPointerException("Parent entity not found");
+            throw new NullPointerException("Parent Category Not Found");
 
         ProductCategoryEntity newCat = new ProductCategoryEntity();
         newCat.setName(categoryName);

@@ -1,5 +1,6 @@
 package com.divillafajar.app.pos.pos_app_sini.controller.thyme.user.manager;
 
+import com.divillafajar.app.pos.pos_app_sini.config.properties.CustomDefaultProperties;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.area.dto.ClientAreaDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientAddressDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientDTO;
@@ -21,12 +22,13 @@ import java.util.Optional;
 @Controller
 @RequestMapping("/v1/manager")
 @RequiredArgsConstructor
-@SessionAttributes("targetAddress")
+@SessionAttributes({"targetAddress","toastShortTimeout","toastMediumTimeout","toastLongTimeout"})
 public class ThymeManagerControllerV1 {
 
     private final ClientService clientService;
     private final ClientAddressService clientAddressService;
     private final ZoneAreaService zoneAreaService;
+    private final CustomDefaultProperties props;
 /*
     public ThymeManagerControllerV1(ClientService clientService,
                                     ZoneAreaService zoneAreaService, ClientAddressService clientAddressService) {
@@ -45,6 +47,9 @@ public class ThymeManagerControllerV1 {
         System.out.println("MANAGER HOME = "+pid);
         ClientAddressDTO addressInfo = clientAddressService.getStore(pid);
         session.setAttribute("targetAddress",addressInfo);
+        session.setAttribute("toastShortTimeout", props.getToastShortTimeout());
+        session.setAttribute("toastMediumTimeout", props.getToastMediumTimeout());
+        session.setAttribute("toastLongTimeout", props.getToastLongTimeout());
         model.addAttribute("activePage", "dashboard");
         return "pages/v1/manager/index-manager";
     }

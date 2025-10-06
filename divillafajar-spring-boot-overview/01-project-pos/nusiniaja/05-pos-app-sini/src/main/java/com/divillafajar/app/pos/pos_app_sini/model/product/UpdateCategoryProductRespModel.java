@@ -15,4 +15,5 @@ public class UpdateCategoryProductRespModel {
     private Long parentId;
     private Long indentLevel;
     private String clientAddressPubId;
+    private String msg;
 }
