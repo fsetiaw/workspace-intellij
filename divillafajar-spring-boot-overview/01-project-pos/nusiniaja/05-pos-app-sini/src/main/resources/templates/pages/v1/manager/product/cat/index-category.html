@@ -149,6 +149,19 @@
       const msgSuccessInsert = [[#{title.insertProcessSuccess}]];
       const msgSuccessUpdate = [[#{title.updateProcessSuccess}]];
       const msgSuccessDelete = [[#{title.deleteProcessSuccess}]];
+      const lblSubCategory = [[#{label.subCategory}]];
+
+      // ✅ Fungsi bantu baru: disable/enable semua tombol aksi global
+        function setGlobalActionButtonsDisabled(disabled) {
+          document.querySelectorAll(".add-sub-btn, .edit-btn, .delete-btn").forEach(btn => {
+            btn.disabled = disabled;
+            if (disabled) {
+              btn.classList.add("disabled"); // optional, bisa untuk style visual
+            } else {
+              btn.classList.remove("disabled");
+            }
+          });
+        }
 
       // ---------- Utility helpers ----------
       function showToastHtml(html, duration = toastShortTimeout, bg = "#198754") {
@@ -193,11 +206,16 @@
           const span = li.querySelector(".item-text");
           const buttons = li.querySelector(".buttons");
           const oldText = span.textContent.trim();
-
+          const parentIndent = parseInt(li.getAttribute("data-indent") || 0);
+           console.log('edit btn parentIndent'+parentIndent);
           const input = document.createElement("input");
           input.type = "text";
           input.className = "form-control form-control-sm flex-grow-1";
           input.value = oldText;
+
+          // ✅ Tambahkan padding kiri berdasarkan indent
+          const leftPad = (parentIndent) * 25;
+          input.style.paddingLeft = `${leftPad}px`;
 
           const enterBtn = document.createElement("button");
           enterBtn.className = "btn btn-sm btn-success ms-2 flex-shrink-0";
@@ -283,6 +301,7 @@
                   if (res.status === 409 && errData.message) throw new Error(errData.message);
                   throw new Error(errData.message);
                 }
+                setGlobalActionButtonsDisabled(false); // ✅ aktifkan kembali semua tombol
                 return res.json();
               })
               .then(data => {
@@ -294,6 +313,7 @@
               })
               .catch(err => {
                 console.error(err);
+                setGlobalActionButtonsDisabled(false); // ✅ aktifkan kembali semua tombol
                 newSpan.textContent = originalText;
                 buttons.style.display = "block";
                 buttons.querySelectorAll("a").forEach(btn => btn.disabled = false);
@@ -354,6 +374,7 @@
               }
               throw new Error(errData.message);
             }
+            setGlobalActionButtonsDisabled(false); // ✅ aktifkan kembali semua tombol
             return res.json();
           })
           .then(data => {
@@ -384,6 +405,7 @@
             showToastText(msgSuccessInsert, toastShortTimeout, "#198754");
           })
           .catch(err => {
+          setGlobalActionButtonsDisabled(false); // ✅ aktifkan kembali semua tombol
             // CHANGED: remove spinner on error
             tempLi.remove();
             const errorText = `
@@ -405,6 +427,7 @@
       document.addEventListener("click", function(e) {
         const addSubBtn = e.target.closest(".add-sub-btn");
         if (addSubBtn) {
+            setGlobalActionButtonsDisabled(true); // ✅ nonaktifkan tombol lain
           e.preventDefault();
 
           const parentLi = addSubBtn.closest("li");
@@ -420,19 +443,21 @@
           // create input container as LI so it visually aligns (kept original look)
           const subInputContainer = document.createElement("li");
           subInputContainer.className = "list-group-item d-flex align-items-center justify-content-between sub-input-container";
-          subInputContainer.style.paddingLeft = `${(parentIndent + 1) * 25}px`;
 
-          subInputContainer.innerHTML = `
-            <div class="d-flex align-items-center ms-4" style="width:90%;">
-              <input type="text" class="form-control form-control-sm sub-input" placeholder="Subkategori..." style="flex:1;"/>
-              <button class="btn btn-success btn-sm save-sub-btn ms-2" type="button" style="padding:2px 4px; font-size:0.75rem;">
-                <i class="bi bi-check"></i>
-              </button>
-              <button class="btn btn-secondary btn-sm cancel-sub-btn ms-1" type="button" style="padding:2px 4px; font-size:0.75rem;">
-                <i class="bi bi-x"></i>
-              </button>
-            </div>
-          `;
+          const leftPad = (parentIndent + 1) * 25;
+            subInputContainer.innerHTML = `
+              <div class="d-flex align-items-center" style="width:90%;">
+                <input type="text" class="form-control form-control-sm sub-input"
+                       placeholder="${lblSubCategory} . . ."
+                       style="flex:1; padding-left:${leftPad}px;"/>
+                <button class="btn btn-success btn-sm save-sub-btn ms-2" type="button" style="padding:2px 4px; font-size:0.75rem;">
+                  <i class="bi bi-check"></i>
+                </button>
+                <button class="btn btn-secondary btn-sm cancel-sub-btn ms-1" type="button" style="padding:2px 4px; font-size:0.75rem;">
+                  <i class="bi bi-x"></i>
+                </button>
+              </div>
+            `;
 
           parentLi.insertAdjacentElement("afterend", subInputContainer);
           subInputContainer.querySelector(".sub-input").focus();
@@ -484,9 +509,11 @@
 
               // create final sub li (kept original class)
               const subLi = document.createElement("li");
-              subLi.className = "list-group-item ps-5 d-flex justify-content-between align-items-center";
+              subLi.className = "list-group-item d-flex justify-content-between align-items-center";
               subLi.setAttribute("data-id", data.id);
-              subLi.setAttribute("data-indent", (parseInt(parentLi.getAttribute("data-indent") || 0) + 1).toString());
+              //subLi.setAttribute("data-indent", (parseInt(parentLi.getAttribute("data-indent") || 0) + 1).toString());
+              subLi.setAttribute("data-indent", data.indentLevel);
+              console.log('data.indentLevel='+data.indentLevel)
 
               subLi.innerHTML = `
                 <span class="item-text">${data.name}</span>
@@ -494,10 +521,14 @@
                   <a href="#" class="btn btn-sm btn-primary edit-btn"><i class="bi bi-pencil"></i></a>
                   <a href="#" class="btn btn-sm btn-danger delete-btn"><i class="bi bi-trash"></i></a>
                   <a href="#" class="btn btn-sm btn-success add-sub-btn"><i class="bi bi-plus"></i></a>
-
                 </div>
               `;
 
+               // ✅ Tambahkan padding sesuai indent level
+                const itemText = subLi.querySelector(".item-text");
+                if (itemText) {
+                  itemText.style.paddingLeft = `${((data.indentLevel) * 25)}px`;
+                }
               parentLi.insertAdjacentElement("afterend", subLi);
 
               // show add-sub on parent again (if exists)
@@ -508,6 +539,7 @@
             })
             .catch(err => {
               console.error(err);
+              setGlobalActionButtonsDisabled(false); // ✅ aktifkan kembali semua tombol
               // remove spinner if present
               if (tempSubLi && tempSubLi.parentNode) tempSubLi.remove();
 
@@ -535,6 +567,7 @@
             if (hiddenBtn) hiddenBtn.style.display = "";
           }
           container.remove();
+          setGlobalActionButtonsDisabled(false); // ✅ aktifkan kembali semua tombol
         }
       });
 

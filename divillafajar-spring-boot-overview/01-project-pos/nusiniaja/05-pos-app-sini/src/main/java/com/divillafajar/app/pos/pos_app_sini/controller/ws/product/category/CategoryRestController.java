@@ -61,7 +61,7 @@ public class CategoryRestController {
         System.out.println("addSubCategory address = "+address.getPubId());
         System.out.println("addSubCategory dto = "+dto.getName());
         System.out.println("addSubCategory dto = "+dto.getParentId());
-        System.out.println("addSubCategory indent = "+dto.getIndentLevel());
+        //System.out.println("addSubCategory indent = "+dto.getIndentLevel());
 
         CreateSubCategoryProductRespModel retVal = new CreateSubCategoryProductRespModel();
         try {
@@ -70,6 +70,7 @@ public class CategoryRestController {
             retVal.setName(added.getName());
             retVal.setParentId(added.getParent().getId());
             retVal.setIndentLevel(added.getIndentLevel());
+            System.out.println("added indent = "+added.getIndentLevel());
             retVal.setClientAddressPubId(address.getPubId());
 
         } catch(DuplicationErrorException e) {

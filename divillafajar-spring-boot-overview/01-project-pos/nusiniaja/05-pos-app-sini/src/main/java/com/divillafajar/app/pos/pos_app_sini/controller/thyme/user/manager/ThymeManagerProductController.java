@@ -64,7 +64,6 @@ public class ThymeManagerProductController {
         for (ProductCategoryDTO category : orderListCategoryAnsSub) {
             if(category.getParent()==null) {
                 System.out.println("TOP Category: " + category.getName()+" level = "+category.getIndentLevel());
-
             }
             else {
                 System.out.println("SUB Category: " + category.getName()+" level = "+category.getIndentLevel());
