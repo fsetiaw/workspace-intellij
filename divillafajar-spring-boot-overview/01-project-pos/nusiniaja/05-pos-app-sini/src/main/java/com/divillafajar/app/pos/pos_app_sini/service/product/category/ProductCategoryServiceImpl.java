@@ -3,6 +3,7 @@ package com.divillafajar.app.pos.pos_app_sini.service.product.category;
 import com.divillafajar.app.pos.pos_app_sini.config.properties.CustomDefaultProperties;
 import com.divillafajar.app.pos.pos_app_sini.exception.DuplicationErrorException;
 import com.divillafajar.app.pos.pos_app_sini.exception.GenericCustomErrorException;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.category.CategoryHierarchyProjectionDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientAddressEntity;
@@ -10,6 +11,7 @@ import com.divillafajar.app.pos.pos_app_sini.repo.client.ClientAddressRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.product.category.ProductCategoryRepo;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
@@ -75,6 +77,8 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
         try {
             ProductCategoryEntity saved = catRepo.save(newCat);
             BeanUtils.copyProperties(saved,retVal);
+            CategoryHierarchyProjectionDTO dto =catRepo.findCategoryHierarchyLevelById(saved.getId());
+            retVal.setIndentLevel(dto.getLevel());
         }
         catch (Exception e) {
             System.out.println("service error ok");
@@ -116,9 +120,15 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
         //List<ProductCategoryEntity> daftar = catRepo.findAllByClientAddressSorted(location.getId());
         List<ProductCategoryEntity> daftar = catRepo.findAllByClientAddressHierarchical(location.getId());
         ModelMapper modelMapper = new ModelMapper();
+        retVal = modelMapper.map(
+                daftar,
+                new TypeToken<List<ProductCategoryDTO>>() {}.getType()
+        );
+        /*
         long indentLevel=0;
         ProductCategoryEntity prevEntity = null;
         List<Long> listCategory = new ArrayList<>();
+
         for(int i=0;i<daftar.size();i++) {
         //for (ProductCategoryEntity entity : daftar) {
             // mapping otomatis dari entity ke DTO
@@ -141,53 +151,30 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
 
                 if(currEntity.getParent()!=null) {
                     //current entity punya parent,
-                    //then cek apakah previous parentnya
-                    if(currEntity.getParent().getId()==prevEntity.getId()) {
-                        //prev == parent
-                        //add this sub category
-                        listCategory.add(daftar.get(i).getId());
-                        System.out.println(dto.getId()+" indent "+listCategory.size());
-                        dto.setIndentLevel((long) listCategory.size());
-                    }
-                    else {
-                        //bukan parentnya,
-                        //cari dimana parentya di listCategory
-                        boolean match = false;
-                        for(int j=1;j<= listCategory.size();j++) {
-                            System.out.println("listCategory.get(j-1)="+listCategory.get(j-1)+" vs "+currEntity.getParent().getId());
-                            if(listCategory.get(j-1)== currEntity.getParent().getId()) {
-                                match=true;
-                                //ketemu posisi parent, then
-                                //masukan current ke list
-                                if(j== listCategory.size()) {
-                                    //last record, tinggal tambah aja
-                                    listCategory.add(daftar.get(i).getId());
-                                    dto.setIndentLevel((long) listCategory.size());
+                    //cari dimana parentya di listCategory
+                    boolean match = false;
+                    for(int j=1;j<= listCategory.size() && !match;j++) {
+                        System.out.println("listCategory.get(j-1)="+listCategory.get(j-1)+" vs "+currEntity.getParent().getId());
+                        if(listCategory.get(j-1)== currEntity.getParent().getId()) {
+                            //parent found
+                            match=true;
+                            dto.setIndentLevel((long) j);
+                            System.out.println(dto.getId()+" indent "+dto.getIndentLevel());
+                        }
+                        if(match) {
+                            //hapus dari belakang yg bukan daftar.get(i).getId()
+                            for(int k=listCategory.size()-1;k>0;k--) {
+                                if(listCategory.get(k)==daftar.get(i).getId()) {
+                                    break;
                                 }
                                 else {
-                                    //replace current value
-                                    listCategory.set(j,daftar.get(i).getId());
-                                    dto.setIndentLevel((long) j);
+                                    listCategory.remove(k);
                                 }
 
-                                System.out.println(dto.getId()+" indent "+dto.getIndentLevel());
-
-                            }
-                            if(match) {
-                                //hapus dari belakang yg bukan daftar.get(i).getId()
-
-                                for(int k=listCategory.size()-1;k>0;k--) {
-                                    if(listCategory.get(k)==daftar.get(i).getId()) {
-                                        break;
-                                    }
-                                    else {
-                                        listCategory.remove(k);
-                                    }
-
-                                }
                             }
                         }
-
+                        //add current obj, kali aj nextnya ini jadi parent
+                        listCategory.add(daftar.get(i).getId());
                     }
                 }
                 else {
@@ -204,6 +191,8 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
             System.out.println("========");
             retVal.add(dto);
         }
+
+         */
         return retVal;
     }
 

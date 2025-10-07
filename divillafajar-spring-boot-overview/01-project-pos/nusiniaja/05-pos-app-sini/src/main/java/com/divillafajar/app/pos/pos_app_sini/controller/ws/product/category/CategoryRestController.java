@@ -58,15 +58,18 @@ public class CategoryRestController {
             @RequestBody RequestItemSubItemModel dto) {
         System.out.println("Rest Controller addSubCategory");
         ClientAddressDTO address = (ClientAddressDTO) session.getAttribute("targetAddress");
-        System.out.println("showCategoryHome address = "+address.getPubId());
-        System.out.println("showCategoryHome dto = "+dto.getName());
-        System.out.println("showCategoryHome dto = "+dto.getParentId());
+        System.out.println("addSubCategory address = "+address.getPubId());
+        System.out.println("addSubCategory dto = "+dto.getName());
+        System.out.println("addSubCategory dto = "+dto.getParentId());
+        System.out.println("addSubCategory indent = "+dto.getIndentLevel());
+
         CreateSubCategoryProductRespModel retVal = new CreateSubCategoryProductRespModel();
         try {
             ProductCategoryDTO added =  categoryService.addSubProductCategory(dto.getParentId(), dto.getName(), address.getPubId());
             retVal.setId(added.getId());
             retVal.setName(added.getName());
             retVal.setParentId(added.getParent().getId());
+            retVal.setIndentLevel(added.getIndentLevel());
             retVal.setClientAddressPubId(address.getPubId());
 
         } catch(DuplicationErrorException e) {

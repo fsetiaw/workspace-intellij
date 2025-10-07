@@ -60,7 +60,7 @@ public class ThymeManagerProductController {
         List<ProductCategoryDTO> orderListCategoryAnsSub = categoryService.getCategoryAndSubCategoryByClientAddressPubId(dto.getPubId());
         if(orderListCategoryAnsSub==null)
             System.out.println("is >NUll");
-        /*
+
         for (ProductCategoryDTO category : orderListCategoryAnsSub) {
             if(category.getParent()==null) {
                 System.out.println("TOP Category: " + category.getName()+" level = "+category.getIndentLevel());
@@ -72,7 +72,7 @@ public class ThymeManagerProductController {
             }
         }
 
-         */
+
 
 
         model.addAttribute("orderListCategoryAnsSub",orderListCategoryAnsSub);

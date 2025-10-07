@@ -129,216 +129,417 @@
 </div>
 <!--script th:src="@{/mine/js/modal/modal-confirm-edit-delete.js}"></script-->
 <script th:inline="javascript">
-
     const toastMediumTimeout = [[${toastMediumTimeout}]];
     const toastShortTimeout = [[${toastShortTimeout}]];
     const toastLongTimeout = [[${toastLongTimeout}]];
+
     document.addEventListener("DOMContentLoaded", function() {
-        const itemList = document.getElementById("itemList");
-        //const msgFailedUpdate = document.getElementById("toast-msg-update-failed").dataset.msg;
-        //const msgSuccessUpdate = document.getElementById("toast-msg-update-success").dataset.msg;
-        let itemToDelete = null;
-        const deleteModal = new bootstrap.Modal(document.getElementById("danger"));
-        const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
-        const contextPath = document.querySelector("meta[name='contextPath']").content;
-        const pAid = document.querySelector("meta[name='pAid']").content;
-        const addItemBtn = document.getElementById("addItemBtn");
-        const newItemInput = document.getElementById("newItemInput");
+      const itemList = document.getElementById("itemList");
+      let itemToDelete = null;
+      const deleteModal = new bootstrap.Modal(document.getElementById("danger"));
+      const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+      const contextPath = document.querySelector("meta[name='contextPath']").content;
+      const pAid = document.querySelector("meta[name='pAid']").content;
+      const addItemBtn = document.getElementById("addItemBtn");
+      const newItemInput = document.getElementById("newItemInput");
 
-        const msgFailedInsert = [[#{title.insertProcessFailed}]];
-        const msgFailedUpdate = [[#{title.updateProcessFailed}]];
-        const msgFailedDelete = [[#{title.deleteProcessFailed}]];
-        const msgSuccessInsert = [[#{title.insertProcessSuccess}]];
-        const msgSuccessUpdate = [[#{title.updateProcessSuccess}]];
-        const msgSuccessDelete = [[#{title.deleteProcessSuccess}]];
+      const msgFailedInsert = [[#{title.insertProcessFailed}]];
+      const msgFailedUpdate = [[#{title.updateProcessFailed}]];
+      const msgFailedDelete = [[#{title.deleteProcessFailed}]];
+      const msgSuccessInsert = [[#{title.insertProcessSuccess}]];
+      const msgSuccessUpdate = [[#{title.updateProcessSuccess}]];
+      const msgSuccessDelete = [[#{title.deleteProcessSuccess}]];
 
+      // ---------- Utility helpers ----------
+      function showToastHtml(html, duration = toastShortTimeout, bg = "#198754") {
+        Toastify({
+          text: html,
+          duration: duration,
+          close: true,
+          gravity: "bottom",
+          position: "center",
+          backgroundColor: bg
+        }).showToast();
+      }
 
+      function showToastText(text, duration = toastShortTimeout, bg = "#198754") {
+        showToastHtml(`<strong style="color:#fff; text-transform:uppercase;">${text}</strong>`, duration, bg);
+      }
 
-        // Event delegation
-        //itemList.addEventListener("click", function(e) {
-        document.addEventListener("click", function(e) {
-          const editBtn = e.target.closest(".edit-btn");
-          const deleteBtn = e.target.closest(".delete-btn");
+      function delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
 
-          // EDIT
-          if (editBtn) {
-            const li = editBtn.closest("li");
-            const span = li.querySelector(".item-text");
-            const buttons = li.querySelector(".buttons");
-            const oldText = span.textContent.trim();
+      function createTempLiWithSpinner(name, indent = 0) {
+        const tempLi = document.createElement("li");
+        tempLi.className = "list-group-item d-flex justify-content-between align-items-center opacity-75";
+        tempLi.style.paddingLeft = `${indent * 25}px`;
+        tempLi.innerHTML = `
+          <div class="d-flex align-items-center gap-2">
+            <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+            <span class="item-text fw-semibold">${name}</span>
+          </div>
+        `;
+        return tempLi;
+      }
 
-            // buat input
-            const input = document.createElement("input");
-            input.type = "text";
-            input.className = "form-control form-control-sm flex-grow-1"; // biar isi sisa ruang
-            input.value = oldText;
+      // ---------- EDIT handler (kept mostly original, cleaned) ----------
+      document.addEventListener("click", function(e) {
+        const editBtn = e.target.closest(".edit-btn");
+        const deleteBtn = e.target.closest(".delete-btn");
 
-            // buat tombol enter
-            const enterBtn = document.createElement("button");
-            enterBtn.className = "btn btn-sm btn-success ms-2 flex-shrink-0";
-            enterBtn.innerHTML = '<i class="bi bi-check"></i>';
+        if (editBtn) {
+          const li = editBtn.closest("li");
+          const span = li.querySelector(".item-text");
+          const buttons = li.querySelector(".buttons");
+          const oldText = span.textContent.trim();
 
-            // bungkus input + tombol
-            const wrapper = document.createElement("div");
-            wrapper.className = "d-flex align-items-center w-100";
-            wrapper.appendChild(input);
-            wrapper.appendChild(enterBtn);
+          const input = document.createElement("input");
+          input.type = "text";
+          input.className = "form-control form-control-sm flex-grow-1";
+          input.value = oldText;
 
-            // simpan posisi scroll dulu
-            const scrollY = window.scrollY;
+          const enterBtn = document.createElement("button");
+          enterBtn.className = "btn btn-sm btn-success ms-2 flex-shrink-0";
+          enterBtn.innerHTML = '<i class="bi bi-check"></i>';
 
-            // lock posisi scroll sementara
-            document.body.style.position = 'fixed';
-            document.body.style.top = `-${scrollY}px`;
-            document.body.style.width = '100%';
+          const wrapper = document.createElement("div");
+          wrapper.className = "d-flex align-items-center w-100";
+          wrapper.appendChild(input);
+          wrapper.appendChild(enterBtn);
 
-            // replace elemen & hide tombol
-            li.replaceChild(wrapper, span);
-            buttons.style.display = "none";
+          const scrollY = window.scrollY;
+          document.body.style.position = 'fixed';
+          document.body.style.top = `-${scrollY}px`;
+          document.body.style.width = '100%';
 
-            // fokus tanpa scroll
-            input.focus({ preventScroll: true });
+          li.replaceChild(wrapper, span);
+          buttons.style.display = "none";
 
-            // buka lock scroll
-            document.body.style.position = '';
-            document.body.style.top = '';
-            window.scrollTo(0, scrollY);
+          input.focus({ preventScroll: true });
 
-            let saved = false;
+          document.body.style.position = '';
+          document.body.style.top = '';
+          window.scrollTo(0, scrollY);
 
-            // fungsi restore bila batal
-            const restore = () => {
-              const restoreSpan = document.createElement("span");
-              restoreSpan.className = "item-text";
-              restoreSpan.textContent = oldText;
+          let saved = false;
 
-              const indentLevel = li.getAttribute("data-indent") || "";
-              console.log("Indent level untuk item:", oldText, "=", indentLevel);
-              restoreSpan.style.paddingLeft = `${parseInt(indentLevel) * 25}px`;
+          const restore = () => {
+            const restoreSpan = document.createElement("span");
+            restoreSpan.className = "item-text";
+            restoreSpan.textContent = oldText;
+            const indentLevel = li.getAttribute("data-indent") || "";
+            restoreSpan.style.paddingLeft = `${parseInt(indentLevel) * 25}px`;
+            if (li.contains(wrapper)) li.replaceChild(restoreSpan, wrapper);
+            buttons.style.display = "block";
+          };
 
-              if (li.contains(wrapper)) li.replaceChild(restoreSpan, wrapper);
-              buttons.style.display = "block";
-            };
+          const onBlur = function() {
+            if (!saved) restore();
+          };
+          input.addEventListener("blur", onBlur);
 
-            // blur handler
-            const onBlur = function() {
-              if (!saved) restore();
-            };
-            input.addEventListener("blur", onBlur);
+          const saveChange = () => {
+            const newValue = input.value.trim() || oldText;
 
-            // 👉 refactor ke satu fungsi
-            const saveChange = () => {
-              const newValue = input.value.trim() || oldText;
+            saved = true;
+            input.removeEventListener("blur", onBlur);
 
-              // tandai saved biar blur ga revert
-              saved = true;
-              input.removeEventListener("blur", onBlur);
+            const indentLevel = li.getAttribute("data-indent") || "";
+            const newSpan = document.createElement("span");
+            newSpan.className = "item-text";
+            newSpan.textContent = newValue;
+            newSpan.style.paddingLeft = `${parseInt(indentLevel) * 25}px`;
 
-              // ganti wrapper -> span
-              const indentLevel = li.getAttribute("data-indent") || "";
-              console.log("Indent level2 untuk item:", oldText, "=", indentLevel);
-              const newSpan = document.createElement("span");
-              newSpan.className = "item-text";
-              newSpan.textContent = newValue;
-              /* ini bila edit lalu check tapi ngga ada perubahan */
-              newSpan.style.paddingLeft = `${parseInt(indentLevel) * 25}px`;
+            if (li.contains(wrapper)) li.replaceChild(newSpan, wrapper);
+            buttons.style.display = "block";
 
-              if (li.contains(wrapper)) li.replaceChild(newSpan, wrapper);
-              buttons.style.display = "block";
+            if (newValue === oldText) return;
 
-              // kalau sama persis (case sensitive) → stop
-              if (newValue === oldText) {
-                return;
-              }
+            const itemId = li.getAttribute("data-id") || "";
+            const originalText = oldText;
 
-              ////const indentLevel = li.getAttribute("data-indent") || "";
-              const itemId = li.getAttribute("data-id") || "";
-              const originalText = oldText;
+            // CHANGED: keep loading text (lightweight)
+            newSpan.textContent = `${newValue} (saving...)`;
+            buttons.querySelectorAll("a").forEach(btn => btn.disabled = true);
 
-              // indikator loading
-              newSpan.textContent = `${newValue} (saving...)`;
-              buttons.querySelectorAll("a").forEach(btn => btn.disabled = true);
-
-              fetch(`${contextPath}api/v1/manager/product/category/${itemId}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
+            // CHANGED: simulate delay then keep fetch chain format
+            delay(1500)
+              .then(() =>
+                fetch(`${contextPath}api/v1/manager/product/category/${itemId}`, {
+                  method: "PUT",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
                     id: itemId,
                     indentLevel: indentLevel,
                     name: newValue
+                  })
                 })
-              })
+              )
               .then(async res => {
-                if (res.status === 204) return { id: itemId, name: newValue };
+                if (res.status === 204) return { id: itemId, name: newValue, indentLevel };
                 if (!res.ok) {
-                    const errData = await res.json().catch(() => ({}));
-                    // kalau duplikat
-                    if (res.status === 409 && errData.message) {
-                      throw new Error(errData.message);
-                    }
-                    throw new Error(errData.message);
+                  const errData = await res.json().catch(() => ({}));
+                  if (res.status === 409 && errData.message) throw new Error(errData.message);
+                  throw new Error(errData.message);
                 }
                 return res.json();
               })
               .then(data => {
                 newSpan.textContent = data.name || newValue;
-
-                // ✅ Tambahkan padding-left sesuai indent level
                 newSpan.style.paddingLeft = `${parseInt(data.indentLevel) * 25}px`;
-
                 buttons.style.display = "block";
                 buttons.querySelectorAll("a").forEach(btn => btn.disabled = false);
-                Toastify({
-                  text: oldText + " " + msgSuccessUpdate,
-                  duration: toastShortTimeout,
-                  close: true,
-                  gravity: "bottom",
-                  position: "center",
-                  backgroundColor: "#4fbe87" // hijau success
-                }).showToast();
+                showToastText(oldText + " " + msgSuccessUpdate, toastShortTimeout, "#4fbe87");
               })
               .catch(err => {
                 console.error(err);
-                newSpan.textContent = originalText; // rollback
+                newSpan.textContent = originalText;
                 buttons.style.display = "block";
                 buttons.querySelectorAll("a").forEach(btn => btn.disabled = false);
-                Toastify({
-                  text: oldText + " " + msgFailedUpdate+"<br>"+err.message,
-                  duration: toastMediumTimeout,
-                  close: true,
-                  gravity: "bottom",
-                  position: "center",
-                  backgroundColor: "#dc3545"
-                }).showToast();
+                showToastHtml(`${oldText} ${msgFailedUpdate}<br>${err.message}`, toastMediumTimeout, "#dc3545");
               });
-            };
+          };
 
-            // Enter keyboard
-            input.addEventListener("keydown", function(evt) {
-              if (evt.key === "Enter") {
-                evt.preventDefault();
-                saveChange();
-              }
-            });
-
-            // Klik tombol ✔
-            //enterBtn.addEventListener("click", function(evt) {
-            enterBtn.addEventListener("mousedown", function(evt) {
+          input.addEventListener("keydown", function(evt) {
+            if (evt.key === "Enter") {
               evt.preventDefault();
               saveChange();
+            }
+          });
+
+          enterBtn.addEventListener("mousedown", function(evt) {
+            evt.preventDefault();
+            saveChange();
+          });
+        }
+
+        // DELETE (kept original)
+        if (deleteBtn) {
+          itemToDelete = deleteBtn.closest("li");
+          const itemName = itemToDelete.querySelector(".item-text").textContent;
+          document.getElementById("deletedItemName").textContent = itemName;
+          deleteModal.show();
+        }
+      });
+
+      // ---------- ADD ITEM ----------
+      addItemBtn.addEventListener("click", function() {
+        const newValue = newItemInput.value.trim();
+        if (!newValue) return;
+
+        addItemBtn.disabled = true;
+
+        // CHANGED: create temp li with spinner
+        const tempLi = createTempLiWithSpinner(newValue, 0);
+        itemList.prepend(tempLi);
+
+        // CHANGED: delay then keep fetch chain unchanged
+        delay(1500)
+          .then(() =>
+            fetch(`${contextPath}api/v1/manager/product/category`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                name: newValue,
+                id: 0
+              })
+            })
+          )
+          .then(async res => {
+            if (!res.ok) {
+              const errData = await res.json().catch(() => ({}));
+              if (res.status === 409 && errData.message) {
+                throw new Error(errData.message);
+              }
+              throw new Error(errData.message);
+            }
+            return res.json();
+          })
+          .then(data => {
+            // CHANGED: remove spinner temp element
+            tempLi.remove();
+            newItemInput.value = "";
+
+            const li = document.createElement("li");
+            li.className = "list-group-item d-flex justify-content-between align-items-center";
+            li.setAttribute("data-id", data.id);
+
+            const span = document.createElement("span");
+            span.className = "item-text";
+            span.textContent = data.name || newValue;
+
+            const buttons = document.createElement("div");
+            buttons.className = "buttons";
+            buttons.innerHTML = `
+              <a href="#" class="btn btn-sm btn-primary edit-btn"><i class="bi bi-pencil"></i></a>
+              <a href="#" class="btn btn-sm btn-danger delete-btn"><i class="bi bi-trash"></i></a>
+              <a href="#" class="btn btn-sm btn-success add-sub-btn"><i class="bi bi-plus"></i></a>
+            `;
+
+            li.appendChild(span);
+            li.appendChild(buttons);
+            itemList.prepend(li);
+
+            showToastText(msgSuccessInsert, toastShortTimeout, "#198754");
+          })
+          .catch(err => {
+            // CHANGED: remove spinner on error
+            tempLi.remove();
+            const errorText = `
+              <strong style="color:#fff; text-transform:uppercase;">
+                ${msgFailedInsert}
+              </strong><br>
+              <span style="color:#ffb3b3; font-size:0.9em;">
+                ${err.message || ''}
+              </span>
+            `;
+            showToastHtml(errorText, toastMediumTimeout, "#dc3545");
+          })
+          .finally(() => {
+            addItemBtn.disabled = false;
+          });
+      });
+
+      // ---------- ADD-SUB (refactor: keep original placement & markup but add spinner/disable) ----------
+      document.addEventListener("click", function(e) {
+        const addSubBtn = e.target.closest(".add-sub-btn");
+        if (addSubBtn) {
+          e.preventDefault();
+
+          const parentLi = addSubBtn.closest("li");
+          const parentId = parentLi.getAttribute("data-id");
+          const parentIndent = parseInt(parentLi.getAttribute("data-indent") || 0);
+
+          // Prevent duplicate input (CHANGED: check next sibling class)
+          if (parentLi.nextElementSibling?.classList.contains("sub-input-container")) return;
+
+          // hide add-sub btn while editing
+          addSubBtn.style.display = "none";
+
+          // create input container as LI so it visually aligns (kept original look)
+          const subInputContainer = document.createElement("li");
+          subInputContainer.className = "list-group-item d-flex align-items-center justify-content-between sub-input-container";
+          subInputContainer.style.paddingLeft = `${(parentIndent + 1) * 25}px`;
+
+          subInputContainer.innerHTML = `
+            <div class="d-flex align-items-center ms-4" style="width:90%;">
+              <input type="text" class="form-control form-control-sm sub-input" placeholder="Subkategori..." style="flex:1;"/>
+              <button class="btn btn-success btn-sm save-sub-btn ms-2" type="button" style="padding:2px 4px; font-size:0.75rem;">
+                <i class="bi bi-check"></i>
+              </button>
+              <button class="btn btn-secondary btn-sm cancel-sub-btn ms-1" type="button" style="padding:2px 4px; font-size:0.75rem;">
+                <i class="bi bi-x"></i>
+              </button>
+            </div>
+          `;
+
+          parentLi.insertAdjacentElement("afterend", subInputContainer);
+          subInputContainer.querySelector(".sub-input").focus();
+        }
+
+        // Save subcategory
+        if (e.target.closest(".save-sub-btn")) {
+          const container = e.target.closest(".sub-input-container");
+          const parentLi = container.previousElementSibling;
+          const parentId = parentLi.getAttribute("data-id");
+          const input = container.querySelector(".sub-input");
+          const newValue = input.value.trim();
+          if (!newValue) return;
+
+          const saveBtn = e.target.closest(".save-sub-btn");
+          saveBtn.disabled = true;
+
+          // CHANGED: show spinner temp below parent while saving
+          const tempSubLi = createTempLiWithSpinner(newValue, parseInt(parentLi.getAttribute("data-indent") || 0) + 1);
+          parentLi.insertAdjacentElement("afterend", tempSubLi);
+
+          // hide the input container UI
+          container.remove();
+
+          // CHANGED: also disable the original add-sub button to prevent repeats
+          const hiddenAddSubBtn = parentLi.querySelector(".add-sub-btn");
+          if (hiddenAddSubBtn) hiddenAddSubBtn.style.display = "none";
+
+          // simulate delay then fetch (keeping fetch chain format)
+          delay(1500)
+            .then(() =>
+              fetch(`${contextPath}api/v1/manager/product/category/sub`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  name: newValue,
+                  parentId: parentId,
+                  clientAddressPubId: pAid
+                })
+              })
+            )
+            .then(res => {
+              if (res.status === 201 || res.status === 200) return res.json();
+              throw new Error("Add failed");
+            })
+            .then(data => {
+              // remove spinner temp
+              tempSubLi.remove();
+
+              // create final sub li (kept original class)
+              const subLi = document.createElement("li");
+              subLi.className = "list-group-item ps-5 d-flex justify-content-between align-items-center";
+              subLi.setAttribute("data-id", data.id);
+              subLi.setAttribute("data-indent", (parseInt(parentLi.getAttribute("data-indent") || 0) + 1).toString());
+
+              subLi.innerHTML = `
+                <span class="item-text">${data.name}</span>
+                <div class="buttons">
+                  <a href="#" class="btn btn-sm btn-primary edit-btn"><i class="bi bi-pencil"></i></a>
+                  <a href="#" class="btn btn-sm btn-danger delete-btn"><i class="bi bi-trash"></i></a>
+                  <a href="#" class="btn btn-sm btn-success add-sub-btn"><i class="bi bi-plus"></i></a>
+
+                </div>
+              `;
+
+              parentLi.insertAdjacentElement("afterend", subLi);
+
+              // show add-sub on parent again (if exists)
+              const parentAddSubBtn = parentLi.querySelector(".add-sub-btn");
+              if (parentAddSubBtn) parentAddSubBtn.style.display = "";
+
+              showToastText(`${data.name} berhasil ditambahkan`, toastShortTimeout, "#198754");
+            })
+            .catch(err => {
+              console.error(err);
+              // remove spinner if present
+              if (tempSubLi && tempSubLi.parentNode) tempSubLi.remove();
+
+              // re-enable add-sub button on parent
+              const parentAddSubBtn = parentLi.querySelector(".add-sub-btn");
+              if (parentAddSubBtn) parentAddSubBtn.style.display = "";
+
+              showToastText(msgFailedInsert, toastMediumTimeout, "#dc3545");
+            })
+            .finally(() => {
+              saveBtn.disabled = false;
             });
-          }
+        }
 
-          // DELETE
-          if (deleteBtn) {
-            itemToDelete = deleteBtn.closest("li");
-            const itemName = itemToDelete.querySelector(".item-text").textContent;
-            document.getElementById("deletedItemName").textContent = itemName;
-            deleteModal.show();
+        // Cancel subcategory input
+        if (e.target.closest(".cancel-sub-btn")) {
+          const container = e.target.closest(".sub-input-container");
+          // find parent li just before container
+          let parentLi = container.previousElementSibling;
+          while (parentLi && parentLi.tagName !== "LI") {
+            parentLi = parentLi.previousElementSibling;
           }
-        });
+          if (parentLi) {
+            const hiddenBtn = parentLi.querySelector(".add-sub-btn");
+            if (hiddenBtn) hiddenBtn.style.display = "";
+          }
+          container.remove();
+        }
+      });
 
-        /* Konfirmasi delete
+      // ---------- Optional: Confirm delete button (kept placeholder) ----------
+      if (confirmDeleteBtn) {
         confirmDeleteBtn.addEventListener("click", function() {
           if (itemToDelete) {
             itemToDelete.remove();
@@ -346,214 +547,10 @@
           }
           deleteModal.hide();
         });
-        */
-        addItemBtn.addEventListener("click", function() {
-              const newValue = newItemInput.value.trim();
-              if (!newValue) return;
-
-              addItemBtn.disabled = true;
-
-              fetch(`${contextPath}api/v1/manager/product/category`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    name: newValue,
-                    id: 0
-                })
-              })
-              .then(async res => {
-                //if (res.status !== 200 && res.status !== 201)
-                if (!res.ok) {
-                    const errData = await res.json().catch(() => ({}));
-                    // kalau duplikat
-                    if (res.status === 409 && errData.message) {
-                      throw new Error(errData.message);
-                    }
-                    throw new Error(errData.message);
-                }
-                return res.json();
-              })
-              .then(data => {
-                newItemInput.value = "";
-
-                const li = document.createElement("li");
-                li.className = "list-group-item d-flex justify-content-between align-items-center";
-                li.setAttribute("data-id", data.id);
-
-                const span = document.createElement("span");
-                span.className = "item-text";
-                span.textContent = data.name || newValue;
-
-                const buttons = document.createElement("div");
-                buttons.className = "buttons";
-                buttons.innerHTML = `
-                  <a href="#" class="btn btn-sm btn-primary edit-btn"><i class="bi bi-pencil"></i></a>
-                  <a href="#" class="btn btn-sm btn-danger delete-btn"><i class="bi bi-trash"></i></a>
-                  <a href="#" class="btn btn-sm btn-success add-sub-btn"><i class="bi bi-plus"></i></a>
-                `;
-
-                li.appendChild(span);
-                li.appendChild(buttons);
-                //itemList.appendChild(li);
-                itemList.prepend(li);
-
-                const msgText = `
-                  <strong style="color:#fff; text-transform:uppercase;">
-                    ${msgSuccessInsert}
-                  </strong>
-                `;
-                Toastify({
-                  text: msgText,
-                  duration: toastShortTimeout,
-                  close: true,
-                  gravity: "bottom",
-                  position: "center",
-                  backgroundColor: "#198754"
-                }).showToast();
-              })
-              .catch(err => {
-                //const errorText = `${newValue} ${msgFailedUpdate}<br>${err.message || ''}`;
-                const errorText = `
-                  <strong style="color:#fff; text-transform:uppercase;">
-                    ${msgFailedInsert}
-                  </strong><br>
-                  <span style="color:#ffb3b3; font-size:0.9em;">
-                    ${err.message || ''}
-                  </span>
-                `;
-                Toastify({
-                  text: errorText,
-                  duration: toastMediumTimeout,
-                  close: true,
-                  gravity: "bottom",
-                  position: "center",
-                  backgroundColor: "#dc3545"
-                }).showToast();
-              })
-              .finally(() => {
-                addItemBtn.disabled = false;
-              });
-            });
-
-           document.addEventListener("click", function(e) {
-          const addSubBtn = e.target.closest(".add-sub-btn");
-          if (addSubBtn) {
-            e.preventDefault();
-
-            const parentLi = addSubBtn.closest("li");
-            const parentId = parentLi.getAttribute("data-id");
-
-            // Cegah input ganda
-            if (parentLi.querySelector(".sub-input-container")) return;
-
-            // Sembunyikan tombol add-sub sementara
-            addSubBtn.style.display = "none";
-
-            // Buat elemen input subcategory
-            const subInputContainer = document.createElement("div");
-            subInputContainer.className = "input-group mt-2 sub-input-container";
-
-            subInputContainer.innerHTML = `
-          <div class="d-flex align-items-center ms-4" style="width:90%;">
-            <input type="text" class="form-control form-control-sm sub-input" placeholder="Subkategori..." style="flex:1;"/>
-            <button class="btn btn-success btn-sm save-sub-btn ms-2" type="button" style="padding:2px 4px; font-size:0.75rem;">
-              <i class="bi bi-check"></i>
-            </button>
-            <button class="btn btn-secondary btn-sm cancel-sub-btn ms-1" type="button" style="padding:2px 4px; font-size:0.75rem;">
-              <i class="bi bi-x"></i>
-            </button>
-          </div>
-        `;
-
-            parentLi.insertAdjacentElement("afterend", subInputContainer);
-            subInputContainer.querySelector(".sub-input").focus();
-          }
-
-          // Simpan subcategory
-          if (e.target.closest(".save-sub-btn")) {
-            const container = e.target.closest(".sub-input-container");
-            const parentLi = container.previousElementSibling;
-            const parentId = parentLi.getAttribute("data-id");
-            const input = container.querySelector(".sub-input");
-            const newValue = input.value.trim();
-            if (!newValue) return;
-
-            e.target.disabled = true;
-
-            fetch(`${contextPath}api/v1/manager/product/category/sub`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                name: newValue,
-                parentId: parentId,
-                clientAddressPubId: pAid
-              })
-            })
-            .then(res => {
-              if (res.status === 201 || res.status === 200) return res.json();
-              throw new Error("Add failed");
-            })
-            .then(data => {
-              // Tambahkan subcategory di bawah parent
-              const subLi = document.createElement("li");
-              subLi.className = "list-group-item ps-5 d-flex justify-content-between align-items-center";
-              subLi.setAttribute("data-id", data.id);
-
-              subLi.innerHTML = `
-                <span class="item-text">${data.name}</span>
-                <div class="buttons">
-                  <a href="#" class="btn btn-sm btn-primary edit-btn"><i class="bi bi-pencil"></i></a>
-                  <a href="#" class="btn btn-sm btn-danger delete-btn"><i class="bi bi-trash"></i></a>
-                </div>
-              `;
-
-              parentLi.insertAdjacentElement("afterend", subLi);
-              container.remove();
-
-              Toastify({
-                text: `${data.name} berhasil ditambahkan`,
-                duration: toastShortTimeout,
-                close: true,
-                gravity: "bottom",
-                position: "center",
-                backgroundColor: "#198754"
-              }).showToast();
-            })
-            .catch(err => {
-              console.error(err);
-              Toastify({
-                text: `Gagal menambah subkategori`,
-                duration: toastMediumTimeout,
-                close: true,
-                gravity: "bottom",
-                position: "center",
-                backgroundColor: "#dc3545"
-              }).showToast();
-            });
-          }
-
-          // Batalkan input
-        if (e.target.closest(".cancel-sub-btn")) {
-          const container = e.target.closest(".sub-input-container");
-
-          // Cari parent <li> terdekat sebelum input container
-          let parentLi = container.previousElementSibling;
-          while (parentLi && parentLi.tagName !== "LI") {
-            parentLi = parentLi.previousElementSibling;
-          }
-
-          // Tampilkan lagi tombol add-sub jika ada
-          if (parentLi) {
-            const hiddenBtn = parentLi.querySelector(".add-sub-btn");
-            if (hiddenBtn) hiddenBtn.style.display = "";
-          }
-
-          // Hapus input subcategory dari DOM
-          container.remove();
-        }
-        });
+      }
     });
 </script>
+
 
 </body>
 

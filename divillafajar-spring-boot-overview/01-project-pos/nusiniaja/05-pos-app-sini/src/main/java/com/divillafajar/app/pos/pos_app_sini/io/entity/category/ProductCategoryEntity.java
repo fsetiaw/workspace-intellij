@@ -27,6 +27,9 @@ public class ProductCategoryEntity {
     @Column(nullable = false, length = 255)
     private String name;
 
+    @Column(name = "indent_level")
+    private Long indentLevel;
+
     // Parent category (nullable untuk root)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
