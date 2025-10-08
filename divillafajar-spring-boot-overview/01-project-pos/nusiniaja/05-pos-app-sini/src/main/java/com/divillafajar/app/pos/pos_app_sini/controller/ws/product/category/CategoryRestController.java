@@ -1,6 +1,8 @@
 package com.divillafajar.app.pos.pos_app_sini.controller.ws.product.category;
 
 import com.divillafajar.app.pos.pos_app_sini.exception.DuplicationErrorException;
+import com.divillafajar.app.pos.pos_app_sini.exception.GenericCustomErrorException;
+import com.divillafajar.app.pos.pos_app_sini.exception.category.CategoryHasSubCategoryException;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientAddressDTO;
 import com.divillafajar.app.pos.pos_app_sini.model.product.CreateSubCategoryProductRespModel;
@@ -15,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 @RestController
@@ -59,6 +62,21 @@ public class CategoryRestController {
         System.out.println("Rest Controller deleteCategory id="+id);
         ClientAddressDTO address = (ClientAddressDTO) session.getAttribute("targetAddress");
         CreateSubCategoryProductRespModel retVal = new CreateSubCategoryProductRespModel();
+		try {
+			categoryService.deleteCategory(id);
+		} catch (CategoryHasSubCategoryException e) {
+			System.out.println("Rest Controller deleteCategory msg = "+e.getMessage());
+			Map<String, Object> body = new HashMap<>();
+			body.put("message", e.getMessage());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(body);
+		}
+		catch (Exception e) {
+			Map<String, Object> body = new HashMap<>();
+			body.put("message", messageSource.getMessage("modal.errorUnexpected", null, Locale.getDefault()));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(body);
+		}
         return ResponseEntity.ok(retVal);
 
     }

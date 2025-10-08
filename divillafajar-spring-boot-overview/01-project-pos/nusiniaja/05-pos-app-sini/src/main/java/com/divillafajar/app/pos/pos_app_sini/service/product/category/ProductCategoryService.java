@@ -10,4 +10,5 @@ public interface ProductCategoryService {
     ProductCategoryDTO updateProductCategory(Long categoryId, String categoryName, String pAid);
     ProductCategoryDTO addSubProductCategory(Long parentId, String categoryName, String pAid);
     List<ProductCategoryDTO> getCategoryAndSubCategoryByClientAddressPubId(String pAid);
+	void deleteCategory(Long catId);
 }

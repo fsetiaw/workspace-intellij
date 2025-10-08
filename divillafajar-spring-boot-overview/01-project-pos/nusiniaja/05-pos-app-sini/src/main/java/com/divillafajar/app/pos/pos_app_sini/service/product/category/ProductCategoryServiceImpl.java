@@ -3,6 +3,7 @@ package com.divillafajar.app.pos.pos_app_sini.service.product.category;
 import com.divillafajar.app.pos.pos_app_sini.config.properties.CustomDefaultProperties;
 import com.divillafajar.app.pos.pos_app_sini.exception.DuplicationErrorException;
 import com.divillafajar.app.pos.pos_app_sini.exception.GenericCustomErrorException;
+import com.divillafajar.app.pos.pos_app_sini.exception.category.CategoryHasSubCategoryException;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.CategoryHierarchyProjectionDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryEntity;
@@ -14,6 +15,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.rmi.NoSuchObjectException;
@@ -39,7 +41,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
         }
         Optional<ProductCategoryEntity> existed = catRepo.findByNameIgnoreCaseAndClientAddress_Id(categoryName, targetLocation.getId());
         if(existed.isPresent()) {
-            throw new DuplicationErrorException(messageSource.getMessage("label.manager.setting.product.category", null, Locale.getDefault())+": "+categoryName+", "+messageSource.getMessage("msg.isUsed", null, Locale.getDefault()));
+            throw new DuplicationErrorException(messageSource.getMessage("label.manager.setting.product.category", null, LocaleContextHolder.getLocale())+": "+categoryName+", "+messageSource.getMessage("msg.isUsed", null, LocaleContextHolder.getLocale()));
         }
         ProductCategoryEntity newCat = new ProductCategoryEntity();
         newCat.setName(categoryName);
@@ -64,7 +66,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
 
         Optional<ProductCategoryEntity> existed = catRepo.findByNameIgnoreCaseAndClientAddress_Id(categoryName, targetLocation.getId());
         if(existed.isPresent())
-            throw new DuplicationErrorException(messageSource.getMessage("label.manager.setting.product.category", null, Locale.getDefault())+": "+categoryName+", "+messageSource.getMessage("msg.isUsed", null, Locale.getDefault()));
+            throw new DuplicationErrorException(messageSource.getMessage("label.manager.setting.product.category", null, LocaleContextHolder.getLocale())+": "+categoryName+", "+messageSource.getMessage("msg.isUsed", null, LocaleContextHolder.getLocale()));
 
         Optional<ProductCategoryEntity> parentEntity = catRepo.findById(parentId);
         if(parentEntity.isEmpty())
@@ -104,13 +106,24 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
         ClientAddressEntity location = addressRepo.findByPubId(pAid);
         Optional<ProductCategoryEntity> existedCategory = catRepo.findByNameIgnoreCaseAndClientAddress_Id(categoryName, location.getId());
         if(existedCategory.isPresent())
-            throw new DuplicationErrorException(messageSource.getMessage("label.manager.setting.product.category", null, Locale.getDefault())+": "+categoryName+", "+messageSource.getMessage("msg.isUsed", null, Locale.getDefault()));
+            throw new DuplicationErrorException(messageSource.getMessage("label.manager.setting.product.category", null, LocaleContextHolder.getLocale())+": "+categoryName+", "+messageSource.getMessage("msg.isUsed", null, LocaleContextHolder.getLocale()));
         ProductCategoryEntity savedCategory=targetCategory.get();
         savedCategory.setName(categoryName);
         ProductCategoryEntity updatedCategory = catRepo.save(savedCategory);
         retVal = modelMapper.map(updatedCategory,ProductCategoryDTO.class);
         return retVal;
     }
+
+	@Override
+	public void deleteCategory(Long catId) {
+		//cek apakah catId ini memiliki sub category
+		List<ProductCategoryEntity> listSubCat = catRepo.findByParentId(catId);
+		System.out.println("deleteCategory==>"+messageSource.getMessage("err.categoryHasSubCategoryException", null, LocaleContextHolder.getLocale()));
+		if(listSubCat!=null && listSubCat.size()>0)
+			throw new CategoryHasSubCategoryException(messageSource.getMessage("err.categoryHasSubCategoryException", null, LocaleContextHolder.getLocale()));
+		//lanjut hapus
+		catRepo.deleteById(catId);
+	}
 
     @Override
     public List<ProductCategoryDTO> getCategoryAndSubCategoryByClientAddressPubId(String pAid) {
@@ -195,6 +208,8 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
          */
         return retVal;
     }
+
+
 
 
 }

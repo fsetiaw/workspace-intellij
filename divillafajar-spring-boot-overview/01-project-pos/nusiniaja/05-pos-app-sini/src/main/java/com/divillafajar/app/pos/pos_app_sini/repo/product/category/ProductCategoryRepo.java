@@ -12,6 +12,8 @@ import java.util.Optional;
 public interface ProductCategoryRepo extends CrudRepository<ProductCategoryEntity,Long> {
     Optional<ProductCategoryEntity> findByNameIgnoreCaseAndClientAddress_Id(String name, Long clientAddressId);
 
+	List<ProductCategoryEntity> findByParentId(Long id);
+
     @Query("""
         SELECT c FROM ProductCategoryEntity c
         WHERE c.clientAddress.id = :clientAddressId

@@ -79,7 +79,8 @@
                                             </button>
                                         </div>
                                         <!--/form-->
-
+                                        <div id="lblUrutan" th:text="#{label.listCategoryAtoZ}"></div>
+                                        <div id="lblNonUrutan" th:text="#{label.listCategoryNonAtoZ}"></div>
                                         <div th:replace="~{/pages/v1/manager/product/cat/category-item.html :: categoryList(${orderListCategoryAnsSub})}"></div>
                                         <!--th:block th:replace="~{/pages/v1/manager/product/cat/category-item.html :: categoryList(${orderListCategoryAnsSub})}"></th:block-->
 
@@ -136,6 +137,11 @@
     const toastLongTimeout = [[${toastLongTimeout}]];
 
     document.addEventListener("DOMContentLoaded", function() {
+      // tampilkan lblUrutan
+      document.getElementById("lblUrutan").style.display = "block";
+      // sembunyikan lblNonUrutan
+      document.getElementById("lblNonUrutan").style.display = "none";
+
       const modalBody = document.getElementById('modalBody');
       const itemList = document.getElementById("itemList");
       let itemToDelete = null;
@@ -205,7 +211,9 @@
       // ---------- EDIT handler (kept mostly original, cleaned) ----------
       document.addEventListener("click", function(e) {
         const editBtn = e.target.closest(".edit-btn");
+        e.preventDefault();
         const deleteBtn = e.target.closest(".delete-btn");
+        e.preventDefault();
 
         if (editBtn) {
           const li = editBtn.closest("li");
@@ -232,19 +240,19 @@
           wrapper.appendChild(input);
           wrapper.appendChild(enterBtn);
 
-          const scrollY = window.scrollY;
-          document.body.style.position = 'fixed';
-          document.body.style.top = `-${scrollY}px`;
-          document.body.style.width = '100%';
+          //const scrollY = window.scrollY;
+          //document.body.style.position = 'fixed';
+          //document.body.style.top = `-${scrollY}px`;
+          //document.body.style.width = '100%';
 
           li.replaceChild(wrapper, span);
           buttons.style.display = "none";
 
           input.focus({ preventScroll: true });
 
-          document.body.style.position = '';
-          document.body.style.top = '';
-          window.scrollTo(0, scrollY);
+          //document.body.style.position = '';
+          //document.body.style.top = '';
+          //window.scrollTo(0, scrollY);
 
           let saved = false;
 
@@ -284,7 +292,13 @@
             const originalText = oldText;
 
             // CHANGED: keep loading text (lightweight)
-            newSpan.textContent = `${newValue} (saving...)`;
+            //newSpan.textContent = `${newValue} (saving...)`;
+            newSpan.innerHTML = `
+              ${newValue}
+              <div class="spinner-border spinner-border-sm text-secondary ms-2" role="status">
+                <span class="visually-hidden">Saving...</span>
+              </div>
+            `;
             buttons.querySelectorAll("a").forEach(btn => btn.disabled = true);
 
             // CHANGED: simulate delay then keep fetch chain format
@@ -317,6 +331,8 @@
                 buttons.querySelectorAll("a").forEach(btn => btn.disabled = false);
                 showToastText(msgSuccessUpdate, toastShortTimeout, greenSuccess);
                 //showToastText(oldText + " " + msgSuccessUpdate, toastShortTimeout, greenSuccess);
+                //hide Daftar Urutan
+                //document.getElementById("lblUrutan").style.display = "none";
               })
               .catch(err => {
                 console.error(err);
@@ -342,13 +358,14 @@
           });
         }
 
-        // DELETE (kept original)
+        // DELETE ICON BUTTON (BUKAN YG CONFIRM DELETE @MODAL)
         if (deleteBtn) {
           itemToDelete = deleteBtn.closest("li");
           const itemName = itemToDelete.querySelector(".item-text").textContent;
           document.getElementById("deletedItemName").textContent = itemName;
           deleteModal.show();
         }
+
       });
 
       // ---------- ADD ITEM ----------
@@ -409,6 +426,11 @@
             li.appendChild(span);
             li.appendChild(buttons);
             itemList.prepend(li);
+
+            // hide lblUrutan
+            document.getElementById("lblUrutan").style.display = "none";
+            // show lblNonUrutan
+            document.getElementById("lblNonUrutan").style.display = "block";
 
             showToastText(newValue + " " + msgSuccessInsert, toastShortTimeout, greenSuccess);
           })
@@ -508,7 +530,7 @@
                 })
               })
             )
-            .then(res => {
+            .then(async res => {
               if (res.status === 201 || res.status === 200) return res.json();
               throw new Error("Add failed");
             })
@@ -545,6 +567,10 @@
               if (parentAddSubBtn) parentAddSubBtn.style.display = "";
                 showToastText(`msgSuccessUpdate`, toastShortTimeout, greenSuccess);
               //showToastText(`${data.name} berhasil ditambahkan`, toastShortTimeout, "#198754");
+                // hide lblUrutan
+                document.getElementById("lblUrutan").style.display = "none";
+                // show lblNonUrutan
+                document.getElementById("lblNonUrutan").style.display = "block";
             })
             .catch(err => {
               console.error(err);
@@ -607,21 +633,24 @@
         const itemName = itemToDelete.querySelector(".item-text").textContent;
         confirmDeleteBtn.disabled = true;
 
-        delay(3500).then(() =>
+        delay(500).then(() =>
           fetch(`${contextPath}api/v1/manager/product/category/${itemId}`, {
             method: "DELETE",
             headers: { "Content-Type": "application/json" }
           })
           )
-          .then(res => {
-            console.error('res.status='+res.status+'~'+itemId);
-            if (res.status === 204) {
-              itemToDelete.remove();
-              deleteModal.hide();
-              throw new Error();
-              //showToastText(msgFailedDelete, toastShortTimeout, redError);
+          .then(async res => {
+            if (!res.ok) {
+              const errData = await res.json().catch(() => ({}));
+              /******* kalo ada multiple type error *****************
+              if (res.status === 409 && errData.message) {
+                throw new Error(errData.message);
+              }
+              ******************************************************/
+              throw new Error(errData.message);
             }
-            //throw new Error();
+            setGlobalActionButtonsDisabled(false); // ✅ aktifkan kembali semua tombol
+            return res.json();
           })
           .then(() => {
               // hapus dari list category di UI
@@ -637,7 +666,7 @@
           .catch(err => {
             console.error(err);
             //showToastHtml(`${itemName} ${msgFailedDelete}`, toastMediumTimeout, redError);
-            showToastHtml(`${msgFailedDelete}`, toastMediumTimeout, redError);
+            showToastHtml(`${msgFailedDelete}<br>${err.message}`, toastMediumTimeout, redError);
           })
           .finally(() => {
           [...modalBody.children].forEach(el => {
