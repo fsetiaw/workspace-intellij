@@ -52,6 +52,17 @@ public class CategoryRestController {
 
     }
 
+    @DeleteMapping("/category/{id}")
+    public ResponseEntity<?> deleteCategory( //defaultnya <CreateSubCategoryProductRespModel>
+                                             HttpSession session,
+                                             @PathVariable Long id) {
+        System.out.println("Rest Controller deleteCategory id="+id);
+        ClientAddressDTO address = (ClientAddressDTO) session.getAttribute("targetAddress");
+        CreateSubCategoryProductRespModel retVal = new CreateSubCategoryProductRespModel();
+        return ResponseEntity.ok(retVal);
+
+    }
+
     @PostMapping("/category/sub")
     public ResponseEntity<CreateSubCategoryProductRespModel> addSubCategory(
             HttpSession session,

@@ -13,9 +13,10 @@
                         <i data-feather="x"></i>
                     </button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" id="modalBody">
                     <span th:text="${textBody}"></span>
-                    <strong id="deletedItemName" th:text="${deletedItemName}"></strong>?
+                    <strong id="deletedItemName" th:utext="|${deletedItemName}"></strong>
+                    <span>?</span>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light-secondary"
@@ -23,8 +24,7 @@
                         <i class="bx bx-x d-block d-sm-none"></i>
                         <span class="d-none d-sm-block" th:text="${labelCancel}"></span>
                     </button>
-                    <button type="button" class="btn btn-danger ms-1"
-                            data-bs-dismiss="modal">
+                    <button type="button" class="btn btn-danger ms-1" id="btnConfirmDelete">
                         <i class="bx bx-check d-block d-sm-none"></i>
                         <span class="d-none d-sm-block" th:text="${labelDelete}"></span>
                     </button>
