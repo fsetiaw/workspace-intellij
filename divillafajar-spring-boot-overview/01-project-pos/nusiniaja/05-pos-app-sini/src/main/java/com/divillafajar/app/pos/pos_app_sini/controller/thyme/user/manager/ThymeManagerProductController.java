@@ -4,11 +4,13 @@ import com.divillafajar.app.pos.pos_app_sini.config.properties.CustomDefaultProp
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientAddressDTO;
 import com.divillafajar.app.pos.pos_app_sini.service.product.category.ProductCategoryService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +41,9 @@ public class ThymeManagerProductController {
         model.addAttribute("activeSub",activeSub);
         return "pages/v1/manager/product/index-product";
     }
+
+
+
 
     @GetMapping("/cat")
     public String showCategoryHome(

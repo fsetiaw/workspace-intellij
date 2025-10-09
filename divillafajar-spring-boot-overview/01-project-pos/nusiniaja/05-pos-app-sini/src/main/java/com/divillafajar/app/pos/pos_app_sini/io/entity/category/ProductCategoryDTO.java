@@ -14,6 +14,7 @@ import java.util.List;
 public class ProductCategoryDTO {
     private Long id;
     private String name;
+	private String path;
     private Long parentId;
     private Long indentLevel;
     private List<Long> childrenIds;

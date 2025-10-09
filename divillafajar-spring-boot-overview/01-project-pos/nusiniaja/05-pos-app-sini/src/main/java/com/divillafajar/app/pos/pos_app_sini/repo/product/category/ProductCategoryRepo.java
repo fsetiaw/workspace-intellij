@@ -2,6 +2,7 @@ package com.divillafajar.app.pos.pos_app_sini.repo.product.category;
 
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.CategoryHierarchyProjectionDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryEntity;
+import com.divillafajar.app.pos.pos_app_sini.model.product.CategorySearchResultModel;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -147,4 +148,39 @@ public interface ProductCategoryRepo extends CrudRepository<ProductCategoryEntit
         WHERE id = :id
         """, nativeQuery = true)
     CategoryHierarchyProjectionDTO findCategoryHierarchyLevelById(@Param("id") Long id);
+
+	@Query(value = """
+        WITH RECURSIVE category_path AS (
+            SELECT 
+                id,
+                name,
+                client_address_id,
+                parent_id,
+                name AS path
+            FROM product_category
+            WHERE parent_id IS NULL
+
+            UNION ALL
+
+            SELECT 
+                c.id,
+                c.name,
+                c.client_address_id,
+                c.parent_id,
+                CONCAT(cp.path, '>', c.name) AS path
+            FROM product_category c
+            INNER JOIN category_path cp ON c.parent_id = cp.id
+        )
+        SELECT 
+            id,
+            name,
+            path
+        FROM category_path
+        WHERE client_address_id = :clientAddressId
+          AND name LIKE CONCAT('%', :keyword, '%')
+        """, nativeQuery = true)
+	List<CategorySearchResultModel> searchCategoryWithPath(
+			@Param("clientAddressId") Long clientAddressId,
+			@Param("keyword") String keyword
+	);
 }

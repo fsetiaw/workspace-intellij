@@ -85,3 +85,25 @@
 }
 
 /*.sub-item .item-text { padding-left: 25px; }*/
+
+
+/* refresh urutan category */
+.refresh-icon {
+    display: inline-block;
+    font-size: 110%; /* lebih besar 10% */
+    cursor: pointer;
+    transition: transform 0.25s ease, color 0.25s ease;
+    transform-origin: center center;
+    color: #ffc107; /* warna awal */
+}
+
+.refresh-icon:hover {
+    transform: rotate(20deg);
+    color: var(--bs-danger); /* biru Bootstrap */
+}
+
+/* opsional: animasi halus balik ke posisi semula */
+.refresh-icon:active {
+    transform: rotate(360deg);
+    transition: transform 0.4s ease;
+}

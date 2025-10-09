@@ -8,6 +8,7 @@ import com.divillafajar.app.pos.pos_app_sini.io.entity.category.CategoryHierarch
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientAddressEntity;
+import com.divillafajar.app.pos.pos_app_sini.model.product.CategorySearchResultModel;
 import com.divillafajar.app.pos.pos_app_sini.repo.client.ClientAddressRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.product.category.ProductCategoryRepo;
 import lombok.RequiredArgsConstructor;
@@ -125,7 +126,15 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
 		catRepo.deleteById(catId);
 	}
 
-    @Override
+	@Override
+	public List<CategorySearchResultModel> searchCategory(String pAid, String kword) {
+		List<CategorySearchResultModel> retVal = new ArrayList<>();
+		ClientAddressEntity targetLoc = addressRepo.findByPubId(pAid);
+		retVal = catRepo.searchCategoryWithPath(targetLoc.getId(),kword);
+		return retVal;
+	}
+
+	@Override
     public List<ProductCategoryDTO> getCategoryAndSubCategoryByClientAddressPubId(String pAid) {
         List<ProductCategoryDTO> retVal = new ArrayList<>();
         ClientAddressEntity location = addressRepo.findByPubId(pAid);

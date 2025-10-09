@@ -5,20 +5,22 @@ import com.divillafajar.app.pos.pos_app_sini.exception.GenericCustomErrorExcepti
 import com.divillafajar.app.pos.pos_app_sini.exception.category.CategoryHasSubCategoryException;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientAddressDTO;
+import com.divillafajar.app.pos.pos_app_sini.model.product.CategorySearchResultModel;
 import com.divillafajar.app.pos.pos_app_sini.model.product.CreateSubCategoryProductRespModel;
 import com.divillafajar.app.pos.pos_app_sini.model.product.RequestItemSubItemModel;
 import com.divillafajar.app.pos.pos_app_sini.model.product.UpdateCategoryProductRespModel;
 import com.divillafajar.app.pos.pos_app_sini.service.product.category.ProductCategoryService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("api/v1/manager/product")
@@ -27,6 +29,8 @@ public class CategoryRestController {
 
     private final ProductCategoryService categoryService;
     private MessageSource messageSource;
+
+
 
     @PostMapping("/category")
     public ResponseEntity<?> addNewCategory( //defaultnya <CreateSubCategoryProductRespModel>
@@ -80,6 +84,40 @@ public class CategoryRestController {
         return ResponseEntity.ok(retVal);
 
     }
+
+	@GetMapping("/category/search/{kword}")
+	public ResponseEntity<?> showSearchCategoryResult(
+			@RequestParam(name = "activePage", required = false) String activePage,
+			@RequestParam(name = "activeSub", required = false) String activeSub,
+			@PathVariable("kword") String kword,
+			RedirectAttributes redirectAttributes,
+			HttpServletRequest request,
+			Model model, HttpSession session
+	) {
+		System.out.println("showSearchCategoryResult is called = "+kword);
+		ClientAddressDTO address = (ClientAddressDTO) session.getAttribute("targetAddress");
+		List<ProductCategoryDTO> retVal = new ArrayList<>();
+		List<CategorySearchResultModel> searchResult = new ArrayList<>();
+		searchResult = categoryService.searchCategory(address.getPubId(),kword);
+		if(searchResult!=null && searchResult.size()>0) {
+			for(CategorySearchResultModel cat : searchResult) {
+				System.out.println(cat.getPath());
+				ProductCategoryDTO dto = new ProductCategoryDTO();
+				dto.setIndentLevel(0L);
+				String kategori = cat.getPath();
+				String lastPart = kategori.substring(kategori.lastIndexOf(">") + 1);
+				System.out.println("lastPart="+lastPart);
+				dto.setName(lastPart);
+				int idx = kategori.lastIndexOf('>');
+				String beforeLastPart = (idx != -1) ? kategori.substring(0, idx) : kategori;
+				System.out.println("beforeLastPart="+beforeLastPart);
+				dto.setPath(beforeLastPart+">");
+				dto.setId(cat.getId());
+				retVal.add(dto);
+			}
+		}
+		return ResponseEntity.ok(retVal);
+	}
 
     @PostMapping("/category/sub")
     public ResponseEntity<CreateSubCategoryProductRespModel> addSubCategory(
