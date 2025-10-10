@@ -1,0 +1,17 @@
+<th:block th:fragment="categoryList(categories)"
+          xmlns:th="http://www.w3.org/1999/xhtml">
+    <!--ul class="list-group" id="itemList"-->
+    <ul class="list-group" id="itemList">
+        <li th:each="cat, stat : ${categories}"
+            class="list-group-item d-flex justify-content-between align-items-center"
+            th:attr="data-id=${cat.id}, data-indent=${cat.indentLevel}">
+            <span class="item-text" th:style="${cat.parent != null} ? 'padding-left:' + (${cat.indentLevel} * 25) + 'px;'"
+                  th:text="${cat.name}"></span>
+            <div class="buttons">
+                <a href="#" class="btn btn-sm btn-primary edit-btn"><i class="bi bi-pencil"></i></a>
+                <a href="#" class="btn btn-sm btn-danger delete-btn"><i class="bi bi-trash"></i></a>
+                <a href="#" class="btn btn-sm btn-success add-sub-btn"><i class="bi bi-plus"></i></a>
+            </div>
+        </li>
+    </ul>
+</th:block>

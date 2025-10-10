@@ -164,6 +164,7 @@
       const searchItemBtn = document.getElementById("searchItemBtn");
       const redError = "#dc3545";
       const greenSuccess = "#198754";
+      const biruButton = "#0d6efd";
 
       const msgFailedInsert = [[#{title.insertProcessFailed}]];
       const msgFailedUpdate = [[#{title.updateProcessFailed}]];
@@ -172,7 +173,7 @@
       const msgSuccessUpdate = [[#{title.updateProcessSuccess}]];
       const msgSuccessDelete = [[#{title.deleteProcessSuccess}]];
       const msgEnterKword = [[#{msg.enterKword}]];
-      const msgNewCategory = [[#{msg.newCategory}]];
+      const newCategory = [[#{msg.newCategory}]];
       const lblSearch = [[#{label.search}]];
       const lblSubCategory = [[#{label.subCategory}]];
 
@@ -200,8 +201,8 @@
         }).showToast();
       }
 
-      function showToastText(text, duration = toastShortTimeout, bg = "#198754", warna = "#6c757d") {
-        showToastHtml(`<strong style="color:${warna}; text-transform:uppercase;">${text}</strong>`, duration, bg);
+      function showToastText(text, duration = toastShortTimeout, bg = "#198754") {
+        showToastHtml(`<strong style="color:#0d6efd; text-transform:uppercase;">${text}</strong>`, duration, bg);
       }
 
       function delay(ms) {
@@ -228,7 +229,7 @@
         const deleteBtn = e.target.closest(".delete-btn");
 
 
-        if (editBtn) {
+if (editBtn) {
   e.preventDefault();
   const li = editBtn.closest("li");
   const span = li.querySelector(".item-text");
@@ -241,10 +242,11 @@
   const input = document.createElement("input");
   input.type = "text";
   input.className = "form-control form-control-sm flex-grow-1";
+//input.className = "form-control w-100";
+
   input.value = oldName;
   input.style.width = "100%";
-  input.style.flex = "1";       // ✅ biar isi flex container penuh
-  input.style.minWidth = "0";   // ✅ cegah shrink bug di Bootstrap
+  input.style.boxSizing = "border-box";  // ✅ cegah shrink bug di Bootstrap
 
   const enterBtn = document.createElement("button");
   enterBtn.className = "btn btn-sm btn-success ms-2 flex-shrink-0";
@@ -286,12 +288,6 @@
     saved = true;
     input.removeEventListener("blur", onBlur);
 
-    // 🟡 Jika tidak ada perubahan, langsung restore tanpa fetch
-    //if (newName === "" || newName.toLowerCase() === oldName.toLowerCase()) {
-    if (newName === "" || newName === oldName) {
-      restore();
-      return;
-    }
     // show spinner di tempat input (opsional)
     const savingSpan = document.createElement("span");
     savingSpan.className = "item-name";
@@ -358,7 +354,7 @@
     }
   });
 
-  enterBtn.addEventListener("mousedown", function(evt) {
+  enterBtn.addEventListener("click", function(evt) {
     evt.preventDefault();
     saveChange();
   });
@@ -385,9 +381,9 @@
           }
         const newValue = newItemInput.value.trim();
         if (!newValue) {
-            showToastText(`${msgNewCategory}`, toastShortTimeout, "#ffc107");
+            showToastText(`${newCategory}`, toastShortTimeout, "#ffc107"); // warna warning
             return;
-        }
+          }
 
         addItemBtn.disabled = true;
 
@@ -786,8 +782,10 @@ function renderCategorySearchResult(data) {
         li.setAttribute("data-indent", cat.indentLevel ?? 0);
 
         const span = document.createElement("span");
-span.className = "item-text d-flex flex-column";
+//span.className = "item-text d-flex flex-column";
 span.style.paddingLeft = `${(parseInt(cat.indentLevel ?? 0) * 25)}px`;
+//span.style.flex = "1";
+//span.style.minWidth = "0";
 
 const pathSpan = document.createElement("small");
 pathSpan.className = "text-muted";

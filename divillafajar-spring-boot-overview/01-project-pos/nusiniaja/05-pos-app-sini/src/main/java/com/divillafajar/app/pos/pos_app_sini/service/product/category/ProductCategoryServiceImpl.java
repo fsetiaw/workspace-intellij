@@ -106,8 +106,13 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
             throw new NullPointerException("Location not found");
         ClientAddressEntity location = addressRepo.findByPubId(pAid);
         Optional<ProductCategoryEntity> existedCategory = catRepo.findByNameIgnoreCaseAndClientAddress_Id(categoryName, location.getId());
-        if(existedCategory.isPresent())
-            throw new DuplicationErrorException(messageSource.getMessage("label.manager.setting.product.category", null, LocaleContextHolder.getLocale())+": "+categoryName+", "+messageSource.getMessage("msg.isUsed", null, LocaleContextHolder.getLocale()));
+        if(existedCategory.isPresent()) {
+			//jika existed categoryid  ==  categoryId dibolehkan karena mungkin mo betulin huruf besar
+	        //jika bukan item itu sendiri throw error sudah ada
+	        if (!existedCategory.get().getId().equals(categoryId))
+		        throw new DuplicationErrorException(messageSource.getMessage("label.manager.setting.product.category", null, LocaleContextHolder.getLocale())+": "+categoryName+", "+messageSource.getMessage("msg.isUsed", null, LocaleContextHolder.getLocale()));
+        }
+
         ProductCategoryEntity savedCategory=targetCategory.get();
         savedCategory.setName(categoryName);
         ProductCategoryEntity updatedCategory = catRepo.save(savedCategory);
