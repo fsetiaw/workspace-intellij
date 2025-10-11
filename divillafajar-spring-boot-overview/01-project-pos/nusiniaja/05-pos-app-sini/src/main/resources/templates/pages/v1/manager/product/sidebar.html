@@ -66,6 +66,10 @@
                             <li id="subMenu1-1" class="submenu-item" th:classappend="${activeSub != null and activeSub=='subMenu1-1'} ? ' active'">
                                 <a th:href="@{/v1/manager/manage/product/cat(pid=${session.targetAddress.pubId},activePage='menu1',activeSub='subMenu1-1')}" class="submenu-link" th:text="#{label.manager.setting.product.category}"></a>
                             </li>
+                            <!-- item -->
+                            <li id="subMenu1-2" class="submenu-item" th:classappend="${activeSub != null and activeSub=='subMenu1-2'} ? ' active'">
+                                <a th:href="@{/v1/manager/manage/product/item(pid=${session.targetAddress.pubId},activePage='menu1',activeSub='subMenu1-2')}" class="submenu-link" th:utext="|#{label.manager.setting.product.item} / #{label.manager.setting.product.barang}|"></a>
+                            </li>
 
                             <!-- Product -->
                             <li id="subMenu1-3" class="submenu-item has-sub" th:classappend="${activeSub != null and activeSub.startsWith('subMenu1-3')} ? ' active'">

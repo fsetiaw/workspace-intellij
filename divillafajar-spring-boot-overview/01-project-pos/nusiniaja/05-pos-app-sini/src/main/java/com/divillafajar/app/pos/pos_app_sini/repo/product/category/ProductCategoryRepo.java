@@ -77,7 +77,7 @@ public interface ProductCategoryRepo extends CrudRepository<ProductCategoryEntit
                     0 AS indent_level,
                     CAST(LOWER(name) AS CHAR(255)) AS path
                 FROM product_category
-                WHERE client_address_id = 1 AND parent_id IS NULL
+                WHERE client_address_id = :clientAddressId AND parent_id IS NULL
     
                 UNION ALL
     

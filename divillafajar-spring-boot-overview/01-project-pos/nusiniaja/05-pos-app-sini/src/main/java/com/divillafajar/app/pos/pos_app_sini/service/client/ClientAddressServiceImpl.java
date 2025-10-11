@@ -130,6 +130,7 @@ public class ClientAddressServiceImpl implements ClientAddressService{
         ClientAddressDTO retVal = new ClientAddressDTO();
         ClientAddressEntity store = clientAddressRepo.findByPubId(storePubId);
         BeanUtils.copyProperties(store,retVal);
+
         return retVal;
     }
 

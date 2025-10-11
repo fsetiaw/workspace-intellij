@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- inject contextPath -->
     <meta name="contextPath" th:content="@{/}">
-    <meta name="pAid" th:content="${targetAddress.pubId}">
+    <meta name="pAid" th:content="${session.targetAddress.pubId}">
     <title>Admin Dashboard</title>
     <link rel="shortcut icon" th:href="@{/assets/compiled/svg/favicon.svg}" type="image/x-icon}">
     <link rel="shortcut icon"
@@ -46,9 +46,9 @@
         <div class="page-heading">
             <h3>
                 <span style="font-size:70%; display:block; line-height:1;"
-                      th:utext="|${#strings.toUpperCase(#messages.msg('label.setting'))}|">
+                      th:text="|${#strings.toUpperCase(#messages.msg('label.setting'))}|">
                 </span>
-                <span th:text="|${#strings.toUpperCase(#messages.msg('label.manager.setting.product.category'))}|"></span>
+                <span th:text="|${#strings.toUpperCase(#messages.msg('label.manager.setting.product.item'))} / ${#strings.toUpperCase(#messages.msg('label.manager.setting.product.barang'))}|"></span>
 
             </h3>
         </div>
@@ -89,9 +89,7 @@
                                                   style="font-size:60%;padding-top:20px; display:none">
                                             </span>
                                         </h3>
-                                        <div th:replace="~{/pages/v1/manager/product/cat/category-item.html :: categoryList(${orderListCategoryAnsSub})}"></div>
-                                        <!--th:block th:replace="~{/pages/v1/manager/product/cat/category-item.html :: categoryList(${orderListCategoryAnsSub})}"></th:block-->
-
+                                        <!--div th:replace="~{/pages/v1/manager/product/item/category-item.html :: categoryList(${orderListCategoryAnsSub})}"></div-->
                                     </div>
                                 </div>
                             </div>
@@ -114,7 +112,7 @@
 
 <!-- Toast status slot -->
 <div layout:fragment="toast-status">
-    <div th:replace="~{/pages/v1/fragments/toast/toast-status-process-result :: toast-messages(${successMessage}, ${errorMessage}, ${toastTimeout})}"></div>
+    <div th:replace="~{/pages/v1/fragments/toast/toast-status-process-result :: toast-messages(${successMessage}, ${errorMessage}, ${session.toastTimeout})}"></div>
 </div>
 <!-- Toast confirm slot -->
 <div layout:fragment="toast-confirm">
@@ -236,7 +234,7 @@
   const pathEl = span.querySelector(".item-path");              // optional, buat referensi
   const oldName = nameEl.textContent.trim();
   const parentIndent = parseInt(li.getAttribute("data-indent") || 0);
-    console.log("editBtn indent="+parentIndent);
+
   // buat input + tombol save
   const input = document.createElement("input");
   input.type = "text";
@@ -245,7 +243,6 @@
   input.style.width = "100%";
   input.style.flex = "1";       // ✅ biar isi flex container penuh
   input.style.minWidth = "0";   // ✅ cegah shrink bug di Bootstrap
-  input.style.paddingLeft = `${parentIndent * 25}px`;
 
   const enterBtn = document.createElement("button");
   enterBtn.className = "btn btn-sm btn-success ms-2 flex-shrink-0";
@@ -331,8 +328,7 @@
         const finalName = document.createElement("span");
         finalName.className = "item-name";
         finalName.textContent = data.name || newName;
-        //finalName.style.paddingLeft = `${(parseInt(data.indentLevel || parentIndent) * 25)}px`;
-        finalName.style.paddingLeft = `${(parentIndent) * 25}px`;
+        finalName.style.paddingLeft = `${(parseInt(data.indentLevel || parentIndent) * 25)}px`;
         if (span.contains(savingSpan)) span.replaceChild(finalName, savingSpan);
         buttons.style.display = "block";
         buttons.querySelectorAll("a").forEach(btn => btn.disabled = false);
@@ -400,7 +396,7 @@
         // CHANGED: delay then keep fetch chain unchanged
         delay(1500)
           .then(() =>
-            fetch(`${contextPath}api/v1/manager/product/category/${pAid}`, {
+            fetch(`${contextPath}api/v1/manager/product/category`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
@@ -428,19 +424,10 @@
             const li = document.createElement("li");
             li.className = "list-group-item d-flex justify-content-between align-items-center";
             li.setAttribute("data-id", data.id);
-            /*
+
             const span = document.createElement("span");
             span.className = "item-text";
             span.textContent = data.name || newValue;
-            */
-            const span = document.createElement("span");
-span.className = "item-text d-flex flex-column";
-
-const nameSpan = document.createElement("span");
-nameSpan.className = "item-name";
-nameSpan.textContent = data.name || newValue;
-
-span.appendChild(nameSpan);
 
             const buttons = document.createElement("div");
             buttons.className = "buttons";
@@ -563,7 +550,7 @@ searchItemBtn.addEventListener("click", function() {
           // create input container as LI so it visually aligns (kept original look)
           const subInputContainer = document.createElement("li");
           subInputContainer.className = "list-group-item d-flex align-items-center justify-content-between sub-input-container";
-            console.log("pit1 parentIndent="+parentIndent);
+
           const leftPad = (parentIndent + 1) * 25;
             subInputContainer.innerHTML = `
               <div class="d-flex align-items-center" style="width:90%;">
@@ -632,13 +619,11 @@ searchItemBtn.addEventListener("click", function() {
               subLi.className = "list-group-item d-flex justify-content-between align-items-center";
               subLi.setAttribute("data-id", data.id);
               //subLi.setAttribute("data-indent", (parseInt(parentLi.getAttribute("data-indent") || 0) + 1).toString());
-              subLi.setAttribute("data-indent", data.indentLevel-1);
+              subLi.setAttribute("data-indent", data.indentLevel);
               console.log('data.indentLevel='+data.indentLevel)
 
               subLi.innerHTML = `
-                <span class="item-text d-flex flex-column">
-  <span class="item-name">${data.name}</span>
-</span>
+                <span class="item-text">${data.name}</span>
                 <div class="buttons">
                   <a href="#" class="btn btn-sm btn-primary edit-btn"><i class="bi bi-pencil"></i></a>
                   <a href="#" class="btn btn-sm btn-danger delete-btn"><i class="bi bi-trash"></i></a>
@@ -649,8 +634,7 @@ searchItemBtn.addEventListener("click", function() {
                // ✅ Tambahkan padding sesuai indent level
                 const itemText = subLi.querySelector(".item-text");
                 if (itemText) {
-                  //itemText.style.paddingLeft = `${((data.indentLevel) * 25)}px`;
-                  itemText.style.paddingLeft = `${((data.indentLevel-1) * 25)}px`;
+                  itemText.style.paddingLeft = `${((data.indentLevel) * 25)}px`;
                 }
               parentLi.insertAdjacentElement("afterend", subLi);
 
@@ -772,7 +756,6 @@ searchItemBtn.addEventListener("click", function() {
         });
     });
 });
-
 
 
 function renderCategorySearchResult(data) {

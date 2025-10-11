@@ -34,8 +34,8 @@ public class ThymeManagerProductController {
     ) {
         System.out.println("showCategoryHome HOME");
 
-        ClientAddressDTO dto = (ClientAddressDTO) session.getAttribute("targetAddress");
-        System.out.println("showCategoryHome dto = "+dto.getPubId());
+        //ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
+        //System.out.println("showCategoryHome dto = "+dto.getPubId()+"~"+dto.getAddressName());
 
         model.addAttribute("activePage",activePage);
         model.addAttribute("activeSub",activeSub);
@@ -54,15 +54,17 @@ public class ThymeManagerProductController {
             Model model, HttpSession session
     ) {
         System.out.println("showCategoryHome HOME");
-        Integer toastDuration = (Integer) session.getAttribute("toastShortTimeout");
-        model.addAttribute("toastShortTimeout", toastDuration);
-        toastDuration = (Integer) session.getAttribute("toastMediumTimeout");
-        model.addAttribute("toastMediumTimeout", toastDuration);
-        toastDuration = (Integer) session.getAttribute("toastLongTimeout");
-        model.addAttribute("toastLongTimeout", toastDuration);
+        //Integer toastDuration = (Integer) session.getAttribute("toastShortTimeout");
+        //model.addAttribute("toastShortTimeout", toastDuration);
+        //toastDuration = (Integer) session.getAttribute("toastMediumTimeout");
+        //model.addAttribute("toastMediumTimeout", toastDuration);
+        //toastDuration = (Integer) session.getAttribute("toastLongTimeout");
+        //model.addAttribute("toastLongTimeout", toastDuration);
         List<ProductCategoryDTO> orderList = new ArrayList<>();
-        ClientAddressDTO dto = (ClientAddressDTO) session.getAttribute("targetAddress");
+        ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
+        //System.out.println("dto name = "+dto.getAddressName());
         List<ProductCategoryDTO> orderListCategoryAnsSub = categoryService.getCategoryAndSubCategoryByClientAddressPubId(dto.getPubId());
+        /*
         if(orderListCategoryAnsSub==null)
             System.out.println("is >NUll");
 
@@ -75,14 +77,35 @@ public class ThymeManagerProductController {
                 System.out.println("PARENT Category: " + category.getParentId());
             }
         }
-
-
-
-
+         */
         model.addAttribute("orderListCategoryAnsSub",orderListCategoryAnsSub);
         model.addAttribute("activePage",activePage);
         model.addAttribute("activeSub",activeSub);
         return "pages/v1/manager/product/cat/index-category";
+    }
+
+    @GetMapping("/item")
+    public String showProductItemHome(
+            @RequestParam(name = "activePage", required = true) String activePage,
+            @RequestParam(name = "activeSub", required = true) String activeSub,
+            //@RequestParam(name = "pAid", required = true) String pAid,
+            //HttpServletRequest request,
+            Model model, HttpSession session
+    ) {
+        System.out.println("showProductItemHome HOME");
+        Integer toastDuration = (Integer) session.getAttribute("toastShortTimeout");
+        model.addAttribute("toastShortTimeout", toastDuration);
+        toastDuration = (Integer) session.getAttribute("toastMediumTimeout");
+        model.addAttribute("toastMediumTimeout", toastDuration);
+        toastDuration = (Integer) session.getAttribute("toastLongTimeout");
+        model.addAttribute("toastLongTimeout", toastDuration);
+        List<ProductCategoryDTO> orderList = new ArrayList<>();
+        ClientAddressDTO dto = (ClientAddressDTO) session.getAttribute("targetAddress");
+        List<ProductCategoryDTO> orderListCategoryAnsSub = categoryService.getCategoryAndSubCategoryByClientAddressPubId(dto.getPubId());
+        model.addAttribute("orderListCategoryAnsSub",orderListCategoryAnsSub);
+        model.addAttribute("activePage",activePage);
+        model.addAttribute("activeSub",activeSub);
+        return "pages/v1/manager/product/item/index-item.html";
     }
 
     /*

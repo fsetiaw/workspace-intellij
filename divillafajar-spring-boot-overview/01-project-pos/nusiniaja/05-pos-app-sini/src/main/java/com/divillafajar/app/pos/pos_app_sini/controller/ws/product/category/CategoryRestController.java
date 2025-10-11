@@ -9,6 +9,7 @@ import com.divillafajar.app.pos.pos_app_sini.model.product.CategorySearchResultM
 import com.divillafajar.app.pos.pos_app_sini.model.product.CreateSubCategoryProductRespModel;
 import com.divillafajar.app.pos.pos_app_sini.model.product.RequestItemSubItemModel;
 import com.divillafajar.app.pos.pos_app_sini.model.product.UpdateCategoryProductRespModel;
+import com.divillafajar.app.pos.pos_app_sini.service.client.ClientAddressService;
 import com.divillafajar.app.pos.pos_app_sini.service.product.category.ProductCategoryService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -29,22 +30,23 @@ public class CategoryRestController {
 
     private final ProductCategoryService categoryService;
     private MessageSource messageSource;
+    private final ClientAddressService clientAddressService;
 
 
-
-    @PostMapping("/category")
+    @PostMapping("/category/{pubAid}")
     public ResponseEntity<?> addNewCategory( //defaultnya <CreateSubCategoryProductRespModel>
-            HttpSession session,
+             @PathVariable String pubAid,
             @RequestBody RequestItemSubItemModel dto) {
-        System.out.println("Rest Controller AddNewCategory");
-        ClientAddressDTO address = (ClientAddressDTO) session.getAttribute("targetAddress");
+        System.out.println("Rest Controller AddNewCategory="+pubAid);
+        //ClientAddressDTO address = (ClientAddressDTO) session.getAttribute("targetAddress");
+        //ClientAddressDTO address = clientAddressService.getStore(pubAid);
         CreateSubCategoryProductRespModel retVal = new CreateSubCategoryProductRespModel();
         try {
-            ProductCategoryDTO added =  categoryService.addNewProductCategory(dto.getName(), address.getPubId());
+            ProductCategoryDTO added =  categoryService.addNewProductCategory(dto.getName(), pubAid);
             retVal.setId(added.getId());
             retVal.setName(added.getName());
             retVal.setParentId(null);
-            retVal.setClientAddressPubId(address.getPubId());
+            retVal.setClientAddressPubId(pubAid);
         } catch(DuplicationErrorException e) {
             Map<String, Object> body = new HashMap<>();
             body.put("message", e.getMessage());

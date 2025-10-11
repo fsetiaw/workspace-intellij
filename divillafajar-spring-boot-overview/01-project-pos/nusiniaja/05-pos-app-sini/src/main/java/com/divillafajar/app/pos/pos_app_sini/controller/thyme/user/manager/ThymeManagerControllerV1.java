@@ -44,12 +44,16 @@ public class ThymeManagerControllerV1 {
             //@RequestParam(name = "targetAddress", required = true) ClientAddressDTO targetAddress,
             Model model, HttpSession session
     ) {
-        System.out.println("MANAGER HOME = "+pid);
+        //session.removeAttribute("targetAddress");
         ClientAddressDTO addressInfo = clientAddressService.getStore(pid);
-        session.setAttribute("targetAddress",addressInfo);
-        session.setAttribute("toastShortTimeout", props.getToastShortTimeout());
-        session.setAttribute("toastMediumTimeout", props.getToastMediumTimeout());
-        session.setAttribute("toastLongTimeout", props.getToastLongTimeout());
+        System.out.println("STARTING MANAGER HOME = "+addressInfo.getAddressName());
+        //session.setAttribute("targetAddress",addressInfo);
+        //ClientAddressDTO targetAddress = (ClientAddressDTO)session.getAttribute("targetAddress");
+        //System.out.println("MANAGER targetAddress = "+targetAddress.getAddressName());
+        model.addAttribute("targetAddress", addressInfo);
+        model.addAttribute("toastShortTimeout", props.getToastShortTimeout());
+        model.addAttribute("toastMediumTimeout", props.getToastMediumTimeout());
+        model.addAttribute("toastLongTimeout", props.getToastLongTimeout());
         model.addAttribute("activePage", "dashboard");
         return "pages/v1/manager/index-manager";
     }
