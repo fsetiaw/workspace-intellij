@@ -223,7 +223,12 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
         return retVal;
     }
 
-
-
+    @Override
+    public List<String> getPathToEachEndChildCategoryByClientAddressPubId(String pAid) {
+        List<String> retVal = new ArrayList<>();
+        ClientAddressEntity location = addressRepo.findByPubId(pAid);
+        retVal = catRepo.findAllPathEndCategoryChildHierarchical(location.getId());
+        return retVal;
+    }
 
 }

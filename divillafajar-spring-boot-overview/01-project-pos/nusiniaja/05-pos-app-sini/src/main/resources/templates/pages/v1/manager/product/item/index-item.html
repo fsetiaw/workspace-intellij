@@ -20,6 +20,27 @@
     <link rel="stylesheet" th:href="@{/mine/js/css/additional-index.css}">
     <!--link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"-->
+    <style>
+        /* Style untuk tiap breadcrumb row */
+        nav.breadcrumb-row {
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            border-radius: 8px;
+            padding: 4px 8px;
+        }
+
+        /* Efek saat mouse hover */
+        nav.breadcrumb-row:hover {
+            background-color: #f8f9fa; /* abu muda */
+            transform: translateY(-2px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+
+        /* Optional: efek hover untuk link terakhir */
+        nav.breadcrumb-row a:hover {
+            text-decoration: underline;
+        }
+    </style>
 
 </head>
 <body>
@@ -69,26 +90,46 @@
                                         <div class="input-group">
                                             <span class="input-group-text bg-primary text-white"
                                                     style="font-weight:bold;font-size:1.2rem"
-                                                    th:text="#{label.add}">
+                                                    th:text="#{label.search}">
                                             </span>
                                             <input type="text" id="newItemInput" class="form-control"
                                                    th:placeholder="|${#strings.toLowerCase(#messages.msg('msg.enterCategoryNameToAddOrKword'))} . . .|"
                                                    required>
-                                            <button id="searchItemBtn" class="btn btn-outline-primary" type="button" title="Search">
+                                            <button id="addItemBtn" class="btn btn-success" type="button" title="Add">
                                                 <i class="bi bi-search"></i>
                                             </button>
-                                            <button id="addItemBtn" class="btn btn-success" type="button" title="Add">
-                                                <i class="bi bi-plus"></i>
+                                            <!-- Tombol Reset -->
+                                            <button id="resetBtn" class="btn bg-primary text-white" type="button" title="Reset Filter"
+                                                    style="font-weight:bold;">
+                                                <i class="bi bi-arrow-counterclockwise"></i>
                                             </button>
                                         </div>
                                         <!--/form-->
                                         <h3>
                                             <span id="lblUrutan" th:text="#{label.listCategoryAtoZ}" style="font-size:60%;padding-top:20px"></span>
                                             <span id="lblNonUrutan"
-                                                  th:utext="#{label.listCategoryNonAtoZ} + ' <i class=&quot;bi bi-sort-alpha-down refresh-icon&quot; id=&quot;refresh-order&quot; onclick=&quot;location.reload();&quot;></i>'"
+                                                  th:utext="#{label.chooseCategory} + ' <i class=&quot;bi bi-sort-alpha-down refresh-icon&quot; id=&quot;refresh-order&quot; onclick=&quot;location.reload();&quot;></i>'"
                                                   style="font-size:60%;padding-top:20px; display:none">
                                             </span>
                                         </h3>
+                                        <div th:each="path : ${listEndCategory}">
+                                            <nav aria-label="breadcrumb" class="breadcrumb-row mb-2">
+                                                <ol class="breadcrumb mb-0">
+                                                    <th:block th:each="segment, iterStat : ${#strings.arraySplit(path, '/')}">
+                                                        <th:block th:with="part=${#strings.trim(segment)}, pair=${#strings.arraySplit(part, '~')}, name=${pair[0]}, id=${pair[1]}">
+                                                            <li class="breadcrumb-item" th:classappend="${iterStat.last} ? 'active'">
+                                                                <a th:if="${iterStat.last}"
+                                                                   th:href="'#?lastSubCategoryId=' + ${id}"
+                                                                   th:text="${name}"></a>
+                                                                <span th:if="${!iterStat.last}"
+                                                                      th:text="${name}"></span>
+                                                            </li>
+                                                        </th:block>
+                                                    </th:block>
+                                                </ol>
+                                            </nav>
+                                        </div>
+
                                         <!--div th:replace="~{/pages/v1/manager/product/item/category-item.html :: categoryList(${orderListCategoryAnsSub})}"></div-->
                                     </div>
                                 </div>
@@ -139,702 +180,47 @@
 <!--script th:src="@{/mine/js/modal/modal-confirm-edit-delete.js}"></script-->
 
 <script th:inline="javascript">
-    const toastMediumTimeout = [[${toastMediumTimeout}]];
-    const toastShortTimeout = [[${toastShortTimeout}]];
-    const toastLongTimeout = [[${toastLongTimeout}]];
+const toastMediumTimeout = [[${toastMediumTimeout}]];
+const toastShortTimeout = [[${toastShortTimeout}]];
+const toastLongTimeout = [[${toastLongTimeout}]];
 
-    document.addEventListener("DOMContentLoaded", function() {
-      // tampilkan lblUrutan
-      document.getElementById("lblUrutan").style.display = "block";
-      // sembunyikan lblNonUrutan
-      document.getElementById("lblNonUrutan").style.display = "none";
+document.addEventListener("DOMContentLoaded", function() {
+  const searchInput = document.getElementById("newItemInput");
+  const searchBtn = document.getElementById("addItemBtn");
+  const resetBtn = document.getElementById("resetBtn");
+  const breadcrumbRows = document.querySelectorAll(".breadcrumb-row");
 
-      const modalBody = document.getElementById('modalBody');
-      const itemList = document.getElementById("itemList");
-      let itemToDelete = null;
-      const deleteModal = new bootstrap.Modal(document.getElementById("danger"));
-      //const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
-      const confirmDeleteBtn = document.getElementById("btnConfirmDelete");
-      const contextPath = document.querySelector("meta[name='contextPath']").content;
-      const pAid = document.querySelector("meta[name='pAid']").content;
-      const addItemBtn = document.getElementById("addItemBtn");
-      const newItemInput = document.getElementById("newItemInput");
-      const searchItemBtn = document.getElementById("searchItemBtn");
-      const redError = "#dc3545";
-      const greenSuccess = "#198754";
+  function filterBreadcrumbs() {
+    const keyword = searchInput.value.trim().toLowerCase();
 
-      const msgFailedInsert = [[#{title.insertProcessFailed}]];
-      const msgFailedUpdate = [[#{title.updateProcessFailed}]];
-      const msgFailedDelete = [[#{title.deleteProcessFailed}]];
-      const msgSuccessInsert = [[#{title.insertProcessSuccess}]];
-      const msgSuccessUpdate = [[#{title.updateProcessSuccess}]];
-      const msgSuccessDelete = [[#{title.deleteProcessSuccess}]];
-      const msgEnterKword = [[#{msg.enterKword}]];
-      const msgNewCategory = [[#{msg.newCategory}]];
-      const lblSearch = [[#{label.search}]];
-      const lblSubCategory = [[#{label.subCategory}]];
-
-      // ✅ Fungsi bantu baru: disable/enable semua tombol aksi global
-      function setGlobalActionButtonsDisabled(disabled) {
-          document.querySelectorAll(".add-sub-btn, .edit-btn, .delete-btn").forEach(btn => {
-            btn.disabled = disabled;
-            if (disabled) {
-              btn.classList.add("disabled"); // optional, bisa untuk style visual
-            } else {
-              btn.classList.remove("disabled");
-            }
-          });
+    breadcrumbRows.forEach(nav => {
+      const text = nav.innerText.toLowerCase();
+      if (keyword === "" || text.includes(keyword)) {
+        nav.style.display = "";
+      } else {
+        nav.style.display = "none";
       }
-
-      // ---------- Utility helpers ----------
-      function showToastHtml(html, duration = toastShortTimeout, bg = "#198754") {
-        Toastify({
-          text: html,
-          duration: duration,
-          close: true,
-          gravity: "bottom",
-          position: "center",
-          backgroundColor: bg
-        }).showToast();
-      }
-
-      function showToastText(text, duration = toastShortTimeout, bg = "#198754", warna = "#6c757d") {
-        showToastHtml(`<strong style="color:${warna}; text-transform:uppercase;">${text}</strong>`, duration, bg);
-      }
-
-      function delay(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-      }
-
-      function createTempLiWithSpinner(name, indent = 0) {
-        const tempLi = document.createElement("li");
-        tempLi.className = "list-group-item d-flex justify-content-between align-items-center opacity-75";
-        tempLi.style.paddingLeft = `${indent * 25}px`;
-        tempLi.innerHTML = `
-          <div class="d-flex align-items-center gap-2">
-            <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
-            <span class="item-text fw-semibold">${name}</span>
-          </div>
-        `;
-        return tempLi;
-      }
-
-      // ---------- EDIT handler (kept mostly original, cleaned) ----------
-      document.addEventListener("click", function(e) {
-        const editBtn = e.target.closest(".edit-btn");
-
-        const deleteBtn = e.target.closest(".delete-btn");
-
-
-        if (editBtn) {
-  e.preventDefault();
-  const li = editBtn.closest("li");
-  const span = li.querySelector(".item-text");
-  const nameEl = span.querySelector(".item-name") || span;       // target yang boleh di-edit
-  const pathEl = span.querySelector(".item-path");              // optional, buat referensi
-  const oldName = nameEl.textContent.trim();
-  const parentIndent = parseInt(li.getAttribute("data-indent") || 0);
-
-  // buat input + tombol save
-  const input = document.createElement("input");
-  input.type = "text";
-  input.className = "form-control form-control-sm flex-grow-1";
-  input.value = oldName;
-  input.style.width = "100%";
-  input.style.flex = "1";       // ✅ biar isi flex container penuh
-  input.style.minWidth = "0";   // ✅ cegah shrink bug di Bootstrap
-
-  const enterBtn = document.createElement("button");
-  enterBtn.className = "btn btn-sm btn-success ms-2 flex-shrink-0";
-  enterBtn.innerHTML = '<i class="bi bi-check"></i>';
-
-  const wrapper = document.createElement("div");
-  wrapper.className = "d-flex align-items-center w-100";
-  wrapper.appendChild(input);
-  wrapper.appendChild(enterBtn);
-
-  // sembunyikan tombol aksi yang berada di kanan li sementara
-  const buttons = li.querySelector(".buttons");
-  buttons.style.display = "none";
-
-  // Ganti hanya elemen name (bukan seluruh span)
-  nameEl.parentNode.replaceChild(wrapper, nameEl);
-
-  input.focus({ preventScroll: true });
-
-  let saved = false;
-
-  const restore = () => {
-    const restoreName = document.createElement("span");
-    restoreName.className = "item-name";
-    restoreName.textContent = oldName;
-    // kembalikan padding sesuai indent
-    restoreName.style.paddingLeft = `${parentIndent * 25}px`;
-    if (span.contains(wrapper)) span.replaceChild(restoreName, wrapper);
-    buttons.style.display = "block";
-  };
-
-  const onBlur = function() {
-    if (!saved) restore();
-  };
-  input.addEventListener("blur", onBlur);
-
-  const saveChange = () => {
-    const newName = input.value.trim() || oldName;
-    saved = true;
-    input.removeEventListener("blur", onBlur);
-
-    // 🟡 Jika tidak ada perubahan, langsung restore tanpa fetch
-    //if (newName === "" || newName.toLowerCase() === oldName.toLowerCase()) {
-    if (newName === "" || newName === oldName) {
-      restore();
-      return;
-    }
-    // show spinner di tempat input (opsional)
-    const savingSpan = document.createElement("span");
-    savingSpan.className = "item-name";
-    savingSpan.innerHTML = `${newName} <div class="spinner-border spinner-border-sm text-secondary ms-2" role="status"></div>`;
-    if (span.contains(wrapper)) span.replaceChild(savingSpan, wrapper);
-
-    // disable tombol global
-    buttons.querySelectorAll("a").forEach(btn => btn.disabled = true);
-
-    // panggil API PUT (sama seperti sebelumnya, sesuaikan itemId)
-    const itemId = li.getAttribute("data-id") || "";
-    delay(1500)
-      .then(() =>
-        fetch(`${contextPath}api/v1/manager/product/category/${itemId}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            id: itemId,
-            indentLevel: parentIndent,
-            name: newName
-          })
-        })
-      )
-      .then(async res => {
-        if (res.status === 204) return { id: itemId, name: newName, indentLevel: parentIndent };
-        if (!res.ok) {
-          const errData = await res.json().catch(() => ({}));
-          if (res.status === 409 && errData.message) throw new Error(errData.message);
-          throw new Error(errData.message);
-        }
-        setGlobalActionButtonsDisabled(false);
-        return res.json();
-      })
-      .then(data => {
-        // replace spinner dengan name final (hanya name)
-        const finalName = document.createElement("span");
-        finalName.className = "item-name";
-        finalName.textContent = data.name || newName;
-        finalName.style.paddingLeft = `${(parseInt(data.indentLevel || parentIndent) * 25)}px`;
-        if (span.contains(savingSpan)) span.replaceChild(finalName, savingSpan);
-        buttons.style.display = "block";
-        buttons.querySelectorAll("a").forEach(btn => btn.disabled = false);
-        showToastText(msgSuccessUpdate, toastShortTimeout, greenSuccess);
-      })
-      .catch(err => {
-        console.error(err);
-        setGlobalActionButtonsDisabled(false);
-        // rollback ke nilai lama
-        const restoreName = document.createElement("span");
-        restoreName.className = "item-name";
-        restoreName.textContent = oldName;
-        restoreName.style.paddingLeft = `${parentIndent * 25}px`;
-        if (span.contains(savingSpan)) span.replaceChild(restoreName, savingSpan);
-        buttons.style.display = "block";
-        buttons.querySelectorAll("a").forEach(btn => btn.disabled = false);
-        showToastHtml(`${msgFailedUpdate}<br>${err.message}`, toastMediumTimeout, redError);
-      });
-  };
-
-  input.addEventListener("keydown", function(evt) {
-    if (evt.key === "Enter") {
-      evt.preventDefault();
-      saveChange();
-    }
-  });
-
-  enterBtn.addEventListener("mousedown", function(evt) {
-    evt.preventDefault();
-    saveChange();
-  });
-}
-
-
-        // DELETE ICON BUTTON (BUKAN YG CONFIRM DELETE @MODAL)
-        if (deleteBtn) {
-          e.preventDefault();
-          itemToDelete = deleteBtn.closest("li");
-          const itemName = itemToDelete.querySelector(".item-text").textContent;
-          document.getElementById("deletedItemName").textContent = itemName;
-          deleteModal.show();
-        }
-
-      });
-
-      // ---------- ADD ITEM ----------
-      addItemBtn.addEventListener("click", function() {
-      // ⬅️ ADD THIS - jika sedang mode reload
-          if (addItemBtn.dataset.mode === "reload") {
-            location.reload();
-            return;
-          }
-        const newValue = newItemInput.value.trim();
-        if (!newValue) {
-            showToastText(`${msgNewCategory}`, toastShortTimeout, "#ffc107");
-            return;
-        }
-
-        addItemBtn.disabled = true;
-
-        // CHANGED: create temp li with spinner
-        const tempLi = createTempLiWithSpinner(newValue, 0);
-        itemList.prepend(tempLi);
-
-        // CHANGED: delay then keep fetch chain unchanged
-        delay(1500)
-          .then(() =>
-            fetch(`${contextPath}api/v1/manager/product/category`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                name: newValue,
-                id: 0
-              })
-            })
-          )
-          .then(async res => {
-            if (!res.ok) {
-              const errData = await res.json().catch(() => ({}));
-              if (res.status === 409 && errData.message) {
-                throw new Error(errData.message);
-              }
-              throw new Error(errData.message);
-            }
-            setGlobalActionButtonsDisabled(false); // ✅ aktifkan kembali semua tombol
-            return res.json();
-          })
-          .then(data => {
-            // CHANGED: remove spinner temp element
-            tempLi.remove();
-            newItemInput.value = "";
-
-            const li = document.createElement("li");
-            li.className = "list-group-item d-flex justify-content-between align-items-center";
-            li.setAttribute("data-id", data.id);
-
-            const span = document.createElement("span");
-            span.className = "item-text";
-            span.textContent = data.name || newValue;
-
-            const buttons = document.createElement("div");
-            buttons.className = "buttons";
-            buttons.innerHTML = `
-              <a href="#" class="btn btn-sm btn-primary edit-btn"><i class="bi bi-pencil"></i></a>
-              <a href="#" class="btn btn-sm btn-danger delete-btn"><i class="bi bi-trash"></i></a>
-              <a href="#" class="btn btn-sm btn-success add-sub-btn"><i class="bi bi-plus"></i></a>
-            `;
-
-            li.appendChild(span);
-            li.appendChild(buttons);
-            itemList.prepend(li);
-
-            // hide lblUrutan
-            document.getElementById("lblUrutan").style.display = "none";
-            // show lblNonUrutan
-            document.getElementById("lblNonUrutan").style.display = "block";
-
-            showToastText(newValue + " " + msgSuccessInsert, toastShortTimeout, greenSuccess);
-          })
-          .catch(err => {
-          setGlobalActionButtonsDisabled(false); // ✅ aktifkan kembali semua tombol
-            // CHANGED: remove spinner on error
-            tempLi.remove();
-            const errorText = `
-              <strong style="color:#fff; text-transform:uppercase;">
-                ${msgFailedInsert}
-              </strong><br>
-              <span style="color:#ffb3b3; font-size:0.9em;">
-                ${err.message || ''}
-              </span>
-            `;
-            showToastHtml(`${newValue} ${msgFailedInsert}<br>${err.message}`, toastMediumTimeout, redError);
-            //showToastHtml(errorText, toastMediumTimeout, redError);
-          })
-          .finally(() => {
-            addItemBtn.disabled = false;
-          });
-      });
-
-      // ---------- SEARCH ITEM ----------
-searchItemBtn.addEventListener("click", function() {
-  const query = newItemInput.value.trim();
-  if (!query) {
-    showToastText(`${msgEnterKword}`, toastShortTimeout, "#ffc107");
-    return;
+    });
   }
 
-  searchItemBtn.disabled = true;
-  const originalHTML = searchItemBtn.innerHTML;
-  searchItemBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+  // Klik tombol Search
+  searchBtn.addEventListener("click", filterBreadcrumbs);
 
-  const url = `${contextPath}api/v1/manager/product/category/search/${encodeURIComponent(query)}`;
-
-  // timeout with AbortController (10s)
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 10000);
-
-  fetch(url, { method: "GET", signal: controller.signal })
-    .then(res => {
-      if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-      return res.json();
-    })
-    .then(data => {
-      console.log("Search result:", data);
-
-      // Ambil elemen label kiri
-      const inputGroupLabel = document.querySelector(".input-group-text.bg-primary.text-white");
-
-      if (!data || data.length === 0) {
-        showToastText(`Category "${query}" not found`, toastShortTimeout, "#ffc107");
-
-        // 🔁 Balikkan label ke "Add" kalau hasil kosong
-        if (inputGroupLabel) inputGroupLabel.textContent = lblSearch; //ngga jadi balikin deh
-      } else {
-        showToastText(`${data.length} result${data.length > 1 ? 's' : ''} found`, toastShortTimeout, greenSuccess);
-        renderCategorySearchResult(data);
-
-        // 🟢 Ubah label kiri jadi "Search"
-        if (inputGroupLabel) inputGroupLabel.textContent = "Search";
-      }
-
-      // Ubah addItemBtn jadi mode reload
-      addItemBtn.classList.remove("btn-success");
-      addItemBtn.classList.add("btn-outline-secondary");
-      addItemBtn.dataset.mode = "reload";
-      addItemBtn.title = "Reload Page";
-    })
-    .catch(err => {
-      if (err.name === "AbortError") {
-        showToastText("Request timeout, please try again.", toastMediumTimeout, redError);
-      } else {
-        showToastText(`Error: ${err.message}`, toastMediumTimeout, redError);
-      }
-    })
-    .finally(() => {
-      clearTimeout(timeoutId);
-      searchItemBtn.innerHTML = originalHTML;
-      searchItemBtn.disabled = false;
-    });
-});
-
-      // ---------- ADD-SUB (refactor: keep original placement & markup but add spinner/disable) ----------
-      document.addEventListener("click", function(e) {
-        const addSubBtn = e.target.closest(".add-sub-btn");
-        if (addSubBtn) {
-            setGlobalActionButtonsDisabled(true); // ✅ nonaktifkan tombol lain
-          e.preventDefault();
-
-          const parentLi = addSubBtn.closest("li");
-          const parentId = parentLi.getAttribute("data-id");
-          const parentIndent = parseInt(parentLi.getAttribute("data-indent") || 0);
-
-          // Prevent duplicate input (CHANGED: check next sibling class)
-          if (parentLi.nextElementSibling?.classList.contains("sub-input-container")) return;
-
-          // hide add-sub btn while editing
-          addSubBtn.style.display = "none";
-
-          // create input container as LI so it visually aligns (kept original look)
-          const subInputContainer = document.createElement("li");
-          subInputContainer.className = "list-group-item d-flex align-items-center justify-content-between sub-input-container";
-
-          const leftPad = (parentIndent + 1) * 25;
-            subInputContainer.innerHTML = `
-              <div class="d-flex align-items-center" style="width:90%;">
-                <input type="text" class="form-control form-control-sm sub-input"
-                       placeholder="${lblSubCategory} . . ."
-                       style="flex:1; padding-left:${leftPad}px;"/>
-                <button class="btn btn-success btn-sm save-sub-btn ms-2" type="button" style="padding:2px 4px; font-size:0.75rem;">
-                  <i class="bi bi-check"></i>
-                </button>
-                <button class="btn btn-secondary btn-sm cancel-sub-btn ms-1" type="button" style="padding:2px 4px; font-size:0.75rem;">
-                  <i class="bi bi-x"></i>
-                </button>
-              </div>
-            `;
-
-          parentLi.insertAdjacentElement("afterend", subInputContainer);
-          subInputContainer.querySelector(".sub-input").focus();
-        }
-
-        // Save subcategory
-        if (e.target.closest(".save-sub-btn")) {
-          const container = e.target.closest(".sub-input-container");
-          const parentLi = container.previousElementSibling;
-          const parentId = parentLi.getAttribute("data-id");
-          const input = container.querySelector(".sub-input");
-          const newValue = input.value.trim();
-          if (!newValue) return;
-
-          const saveBtn = e.target.closest(".save-sub-btn");
-          saveBtn.disabled = true;
-
-          // CHANGED: show spinner temp below parent while saving
-          const tempSubLi = createTempLiWithSpinner(newValue, parseInt(parentLi.getAttribute("data-indent") || 0) + 1);
-          parentLi.insertAdjacentElement("afterend", tempSubLi);
-
-          // hide the input container UI
-          container.remove();
-
-          // CHANGED: also disable the original add-sub button to prevent repeats
-          const hiddenAddSubBtn = parentLi.querySelector(".add-sub-btn");
-          if (hiddenAddSubBtn) hiddenAddSubBtn.style.display = "none";
-
-          // simulate delay then fetch (keeping fetch chain format)
-          delay(1500)
-            .then(() =>
-              fetch(`${contextPath}api/v1/manager/product/category/sub`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  name: newValue,
-                  parentId: parentId,
-                  clientAddressPubId: pAid
-                })
-              })
-            )
-            .then(async res => {
-              if (res.status === 201 || res.status === 200) return res.json();
-              throw new Error("Add failed");
-            })
-            .then(data => {
-              // remove spinner temp
-              tempSubLi.remove();
-
-              // create final sub li (kept original class)
-              const subLi = document.createElement("li");
-              subLi.className = "list-group-item d-flex justify-content-between align-items-center";
-              subLi.setAttribute("data-id", data.id);
-              //subLi.setAttribute("data-indent", (parseInt(parentLi.getAttribute("data-indent") || 0) + 1).toString());
-              subLi.setAttribute("data-indent", data.indentLevel);
-              console.log('data.indentLevel='+data.indentLevel)
-
-              subLi.innerHTML = `
-                <span class="item-text">${data.name}</span>
-                <div class="buttons">
-                  <a href="#" class="btn btn-sm btn-primary edit-btn"><i class="bi bi-pencil"></i></a>
-                  <a href="#" class="btn btn-sm btn-danger delete-btn"><i class="bi bi-trash"></i></a>
-                  <a href="#" class="btn btn-sm btn-success add-sub-btn"><i class="bi bi-plus"></i></a>
-                </div>
-              `;
-
-               // ✅ Tambahkan padding sesuai indent level
-                const itemText = subLi.querySelector(".item-text");
-                if (itemText) {
-                  itemText.style.paddingLeft = `${((data.indentLevel) * 25)}px`;
-                }
-              parentLi.insertAdjacentElement("afterend", subLi);
-
-              // show add-sub on parent again (if exists)
-              const parentAddSubBtn = parentLi.querySelector(".add-sub-btn");
-              if (parentAddSubBtn) parentAddSubBtn.style.display = "";
-                showToastText(`msgSuccessUpdate`, toastShortTimeout, greenSuccess);
-              //showToastText(`${data.name} berhasil ditambahkan`, toastShortTimeout, "#198754");
-                // hide lblUrutan
-                document.getElementById("lblUrutan").style.display = "none";
-                // show lblNonUrutan
-                document.getElementById("lblNonUrutan").style.display = "block";
-            })
-            .catch(err => {
-              console.error(err);
-              setGlobalActionButtonsDisabled(false); // ✅ aktifkan kembali semua tombol
-              // remove spinner if present
-              if (tempSubLi && tempSubLi.parentNode) tempSubLi.remove();
-
-              // re-enable add-sub button on parent
-              const parentAddSubBtn = parentLi.querySelector(".add-sub-btn");
-              if (parentAddSubBtn) parentAddSubBtn.style.display = "";
-                //showToastText(`${data.name} msgFailedInsert`, toastMediumTimeout, redError);
-              showToastText(`msgFailedInsert`, toastMediumTimeout, redError);
-            })
-            .finally(() => {
-              saveBtn.disabled = false;
-              setGlobalActionButtonsDisabled(false);
-            });
-        }
-
-        // Cancel subcategory input
-        if (e.target.closest(".cancel-sub-btn")) {
-          const container = e.target.closest(".sub-input-container");
-          // find parent li just before container
-          let parentLi = container.previousElementSibling;
-          while (parentLi && parentLi.tagName !== "LI") {
-            parentLi = parentLi.previousElementSibling;
-          }
-          if (parentLi) {
-            const hiddenBtn = parentLi.querySelector(".add-sub-btn");
-            if (hiddenBtn) hiddenBtn.style.display = "";
-          }
-          container.remove();
-          setGlobalActionButtonsDisabled(false); // ✅ aktifkan kembali semua tombol
-        }
-      });
-
-      /*********************************************************************************/
-      /***** Saat tombol "Delete" di modal ditekan → eksekusi hapus ******/
-      confirmDeleteBtn.addEventListener("click", function() {
-        if (!itemToDelete) return;
-
-        // Simpan referensi elemen body dan bagian yang ingin disembunyikan
-        const modalContent = modalBody.innerHTML;
-
-        // Buat elemen spinner overlay
-        const spinnerOverlay = document.createElement("div");
-        spinnerOverlay.className = "d-flex flex-column align-items-center justify-content-center";
-        spinnerOverlay.style.minHeight = "100px";
-        spinnerOverlay.innerHTML = `
-          <div class="spinner-border text-primary mb-2" role="status" aria-hidden="true"></div>
-          <span>Processing...</span>
-        `;
-
-        // Ganti sementara isi body
-        modalBody.appendChild(spinnerOverlay);
-        [...modalBody.children].forEach(el => {
-          if (el !== spinnerOverlay) el.style.display = "none";
-        });
-
-        const itemId = itemToDelete.getAttribute("data-id");
-        const itemName = itemToDelete.querySelector(".item-text").textContent;
-        confirmDeleteBtn.disabled = true;
-
-        delay(500).then(() =>
-          fetch(`${contextPath}api/v1/manager/product/category/${itemId}`, {
-            method: "DELETE",
-            headers: { "Content-Type": "application/json" }
-          })
-          )
-          .then(async res => {
-            if (!res.ok) {
-              const errData = await res.json().catch(() => ({}));
-              /******* kalo ada multiple type error *****************
-              if (res.status === 409 && errData.message) {
-                throw new Error(errData.message);
-              }
-              ******************************************************/
-              throw new Error(errData.message);
-            }
-            setGlobalActionButtonsDisabled(false); // ✅ aktifkan kembali semua tombol
-            return res.json();
-          })
-          .then(() => {
-              // hapus dari list category di UI
-              const li = document.querySelector(`#itemList li[data-id='${itemId}']`);
-              if (li) {
-                li.remove();
-                console.log(`Kategori dengan ID ${itemId} dihapus dari UI`);
-              } else {
-                console.warn(`Tidak ditemukan elemen li dengan data-id=${itemId}`);
-              }
-              showToastText(msgSuccessDelete, toastShortTimeout, greenSuccess);
-          })
-          .catch(err => {
-            console.error(err);
-            //showToastHtml(`${itemName} ${msgFailedDelete}`, toastMediumTimeout, redError);
-            showToastHtml(`${msgFailedDelete}<br>${err.message}`, toastMediumTimeout, redError);
-          })
-          .finally(() => {
-          [...modalBody.children].forEach(el => {
-            if (el !== spinnerOverlay) el.style.display = "";
-          });
-          spinnerOverlay.remove();
-          confirmDeleteBtn.disabled = false;
-          setGlobalActionButtonsDisabled(false); // ✅ aktifkan kembali semua tombol
-          deleteModal.hide();
-        });
-    });
-});
-
-
-function renderCategorySearchResult(data) {
-  const itemList = document.getElementById("itemList");
-  if (!itemList) return;
-
-  // 🔹 Mulai efek fade-out
-  itemList.style.transition = "opacity 0.2s ease";
-  itemList.style.opacity = "0";
-
-  setTimeout(() => {
-    // 🔹 Kosongkan list lama
-    itemList.innerHTML = "";
-
-    // 🔹 Jika tidak ada hasil
-    if (!data || data.length === 0) {
-      const li = document.createElement("li");
-      li.className = "list-group-item text-muted text-center";
-      li.textContent = "Tidak ditemukan hasil.";
-      itemList.appendChild(li);
-    } else {
-      // 🔹 Render hasil baru
-      data.forEach(cat => {
-        const li = document.createElement("li");
-        li.className = "list-group-item d-flex justify-content-between align-items-center";
-        li.setAttribute("data-id", cat.id);
-        li.setAttribute("data-indent", cat.indentLevel ?? 0);
-
-        const span = document.createElement("span");
-span.className = "item-text d-flex flex-column";
-span.style.paddingLeft = `${(parseInt(cat.indentLevel ?? 0) * 25)}px`;
-
-const pathSpan = document.createElement("small");
-pathSpan.className = "text-muted";
-pathSpan.textContent = cat.path || "";
-
-const nameSpan = document.createElement("span");
-nameSpan.className = "item-name";
-nameSpan.textContent = cat.name || "";
-
-span.appendChild(pathSpan);
-span.appendChild(nameSpan);
-
-        // padding sesuai indent
-        const pad = parseInt(cat.indentLevel ?? 0) * 25;
-        span.style.paddingLeft = `${pad}px`;
-
-        const buttons = document.createElement("div");
-        buttons.className = "buttons";
-        buttons.innerHTML = `
-          <a href="#" class="btn btn-sm btn-primary edit-btn"><i class="bi bi-pencil"></i></a>
-          <a href="#" class="btn btn-sm btn-danger delete-btn"><i class="bi bi-trash"></i></a>
-          <a href="#" class="btn btn-sm btn-success add-sub-btn"><i class="bi bi-plus"></i></a>
-        `;
-
-        li.appendChild(span);
-        li.appendChild(buttons);
-        itemList.appendChild(li);
-      });
+  // Tekan Enter
+  searchInput.addEventListener("keypress", function(e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      filterBreadcrumbs();
     }
+  });
 
-    // 🔹 Kembalikan fade-in
-    itemList.style.opacity = "1";
-
-    // 🔁 🔹 Ganti ikon tombol "Add" menjadi "Refresh"
-    const addItemBtn = document.getElementById("addItemBtn");
-    if (addItemBtn) {
-      addItemBtn.classList.add("btn-success");
-      addItemBtn.classList.remove("btn-outline-secondary");
-      addItemBtn.dataset.mode = "reload";
-      addItemBtn.title = "Reload Page";
-      const icon = addItemBtn.querySelector("i");
-      if (icon) icon.className = "bi bi-arrow-clockwise"; // ⬅️ ganti ikon jadi refresh
-    }
-
-  }, 200); // tunggu sedikit sebelum render ulang
-}
-
-
+  // Klik tombol Reset → tampilkan semua lagi
+  resetBtn.addEventListener("click", function() {
+    searchInput.value = ""; // kosongkan input
+    breadcrumbRows.forEach(nav => nav.style.display = ""); // tampilkan semua
+    searchInput.focus(); // fokus kembali ke input
+  });
+});
 </script>
 
 </body>

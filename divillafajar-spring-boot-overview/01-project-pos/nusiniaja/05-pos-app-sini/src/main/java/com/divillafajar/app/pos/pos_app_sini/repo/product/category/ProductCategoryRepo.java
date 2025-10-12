@@ -3,14 +3,14 @@ package com.divillafajar.app.pos.pos_app_sini.repo.product.category;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.CategoryHierarchyProjectionDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryEntity;
 import com.divillafajar.app.pos.pos_app_sini.model.product.CategorySearchResultModel;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface ProductCategoryRepo extends CrudRepository<ProductCategoryEntity,Long> {
+public interface ProductCategoryRepo extends JpaRepository<ProductCategoryEntity,Long> {
     Optional<ProductCategoryEntity> findByNameIgnoreCaseAndClientAddress_Id(String name, Long clientAddressId);
 
 	List<ProductCategoryEntity> findByParentId(Long id);
@@ -183,4 +183,45 @@ public interface ProductCategoryRepo extends CrudRepository<ProductCategoryEntit
 			@Param("clientAddressId") Long clientAddressId,
 			@Param("keyword") String keyword
 	);
+
+
+    @Query(
+            value = """
+        WITH RECURSIVE category_path AS (
+          SELECT
+            id,
+            name,
+            parent_id,
+            client_address_id,
+            CAST(CONCAT(name, '~', id) AS CHAR(1000)) AS full_path
+          FROM product_category
+          WHERE parent_id IS NULL
+            AND client_address_id = :clientAddressId
+
+          UNION ALL
+
+          SELECT
+            c.id,
+            c.name,
+            c.parent_id,
+            c.client_address_id,
+            CONCAT(cp.full_path, ' / ', c.name, '~', c.id) AS full_path
+          FROM product_category c
+          INNER JOIN category_path cp ON cp.id = c.parent_id
+        )
+
+        SELECT
+          cp.full_path
+        FROM category_path cp
+        WHERE NOT EXISTS (
+          SELECT 1 FROM product_category child WHERE child.parent_id = cp.id
+        )
+        ORDER BY cp.full_path
+        ;
+    """,
+            nativeQuery = true
+    )
+    List<String> findAllPathEndCategoryChildHierarchical(@Param("clientAddressId") Long clientAddressId);
+
+
 }

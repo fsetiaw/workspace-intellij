@@ -29,14 +29,7 @@ public class ThymeManagerControllerV1 {
     private final ClientAddressService clientAddressService;
     private final ZoneAreaService zoneAreaService;
     private final CustomDefaultProperties props;
-/*
-    public ThymeManagerControllerV1(ClientService clientService,
-                                    ZoneAreaService zoneAreaService, ClientAddressService clientAddressService) {
-        this.clientService=clientService;
-        this.clientAddressService=clientAddressService;
-        this.zoneAreaService=zoneAreaService;
-    }
- */
+
 
     @GetMapping("/home")
     public String showMgrHome(
@@ -44,12 +37,8 @@ public class ThymeManagerControllerV1 {
             //@RequestParam(name = "targetAddress", required = true) ClientAddressDTO targetAddress,
             Model model, HttpSession session
     ) {
-        //session.removeAttribute("targetAddress");
         ClientAddressDTO addressInfo = clientAddressService.getStore(pid);
         System.out.println("STARTING MANAGER HOME = "+addressInfo.getAddressName());
-        //session.setAttribute("targetAddress",addressInfo);
-        //ClientAddressDTO targetAddress = (ClientAddressDTO)session.getAttribute("targetAddress");
-        //System.out.println("MANAGER targetAddress = "+targetAddress.getAddressName());
         model.addAttribute("targetAddress", addressInfo);
         model.addAttribute("toastShortTimeout", props.getToastShortTimeout());
         model.addAttribute("toastMediumTimeout", props.getToastMediumTimeout());
@@ -85,38 +74,17 @@ public class ThymeManagerControllerV1 {
             model.addAttribute("clientError", "true");
         }
         else {
+            ClientAreaDTO nuArea = new ClientAreaDTO();
+            BeanUtils.copyProperties(guestAreaRequestModel,nuArea);
+            zoneAreaService.addClientNewZoneArea(nuArea,addressId);
 
-
-            //if (listOfArea.isEmpty() || listOfArea.get().isEmpty()) {
-                // list kosong atau Optional memang tidak ada data, lanjut add
-                ClientAreaDTO nuArea = new ClientAreaDTO();
-                BeanUtils.copyProperties(guestAreaRequestModel,nuArea);
-                zoneAreaService.addClientNewZoneArea(nuArea,addressId);
-
-                //setelah selai diinput
-                listOfArea= zoneAreaService.getAllAreaByAddressId(addressId);
-            /*
-            } else {
-                // listOfArea ada isinya
-                List<ClientAreaDTO> areas = listOfArea.get();
-                areas.forEach(area -> System.out.println(area.getAreaName()));
-            }
-
-             */
+            //setelah selai diinput
+            listOfArea= zoneAreaService.getAllAreaByAddressId(addressId);
         }
 
         model.addAttribute("addressId",addressId);
         model.addAttribute("clientPubId",clientPubId);
         model.addAttribute("listOfAreaOptional",listOfArea);
-        System.out.println("Add Guest Area CALLED");
-        System.out.println(guestAreaRequestModel.getAreaName());
-        System.out.println(guestAreaRequestModel.getAlias());
-        System.out.println(guestAreaRequestModel.getLocation());
-        System.out.println(guestAreaRequestModel.getReservationType());
-        System.out.println(guestAreaRequestModel.getCoolingSystem());
-        System.out.println(guestAreaRequestModel.getRoomType());
-
-
         return returnVal;
     }
 

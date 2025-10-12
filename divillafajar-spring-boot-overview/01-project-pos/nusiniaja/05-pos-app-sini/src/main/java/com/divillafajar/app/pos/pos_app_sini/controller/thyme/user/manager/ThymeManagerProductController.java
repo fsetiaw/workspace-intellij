@@ -28,15 +28,9 @@ public class ThymeManagerProductController {
     public String showProdHome(
             @RequestParam(name = "activePage", required = true) String activePage,
             @RequestParam(name = "activeSub", required = false) String activeSub,
-            //@RequestParam(name = "pAid", required = true) String pAid,
-            //HttpServletRequest request,
             Model model, HttpSession session
     ) {
         System.out.println("showCategoryHome HOME");
-
-        //ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
-        //System.out.println("showCategoryHome dto = "+dto.getPubId()+"~"+dto.getAddressName());
-
         model.addAttribute("activePage",activePage);
         model.addAttribute("activeSub",activeSub);
         return "pages/v1/manager/product/index-product";
@@ -49,35 +43,12 @@ public class ThymeManagerProductController {
     public String showCategoryHome(
             @RequestParam(name = "activePage", required = true) String activePage,
             @RequestParam(name = "activeSub", required = true) String activeSub,
-            //@RequestParam(name = "pAid", required = true) String pAid,
-            //HttpServletRequest request,
             Model model, HttpSession session
     ) {
         System.out.println("showCategoryHome HOME");
-        //Integer toastDuration = (Integer) session.getAttribute("toastShortTimeout");
-        //model.addAttribute("toastShortTimeout", toastDuration);
-        //toastDuration = (Integer) session.getAttribute("toastMediumTimeout");
-        //model.addAttribute("toastMediumTimeout", toastDuration);
-        //toastDuration = (Integer) session.getAttribute("toastLongTimeout");
-        //model.addAttribute("toastLongTimeout", toastDuration);
         List<ProductCategoryDTO> orderList = new ArrayList<>();
         ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
-        //System.out.println("dto name = "+dto.getAddressName());
         List<ProductCategoryDTO> orderListCategoryAnsSub = categoryService.getCategoryAndSubCategoryByClientAddressPubId(dto.getPubId());
-        /*
-        if(orderListCategoryAnsSub==null)
-            System.out.println("is >NUll");
-
-        for (ProductCategoryDTO category : orderListCategoryAnsSub) {
-            if(category.getParent()==null) {
-                System.out.println("TOP Category: " + category.getName()+" level = "+category.getIndentLevel());
-            }
-            else {
-                System.out.println("SUB Category: " + category.getName()+" level = "+category.getIndentLevel());
-                System.out.println("PARENT Category: " + category.getParentId());
-            }
-        }
-         */
         model.addAttribute("orderListCategoryAnsSub",orderListCategoryAnsSub);
         model.addAttribute("activePage",activePage);
         model.addAttribute("activeSub",activeSub);
@@ -88,21 +59,17 @@ public class ThymeManagerProductController {
     public String showProductItemHome(
             @RequestParam(name = "activePage", required = true) String activePage,
             @RequestParam(name = "activeSub", required = true) String activeSub,
-            //@RequestParam(name = "pAid", required = true) String pAid,
             //HttpServletRequest request,
             Model model, HttpSession session
     ) {
-        System.out.println("showProductItemHome HOME");
-        Integer toastDuration = (Integer) session.getAttribute("toastShortTimeout");
-        model.addAttribute("toastShortTimeout", toastDuration);
-        toastDuration = (Integer) session.getAttribute("toastMediumTimeout");
-        model.addAttribute("toastMediumTimeout", toastDuration);
-        toastDuration = (Integer) session.getAttribute("toastLongTimeout");
-        model.addAttribute("toastLongTimeout", toastDuration);
-        List<ProductCategoryDTO> orderList = new ArrayList<>();
-        ClientAddressDTO dto = (ClientAddressDTO) session.getAttribute("targetAddress");
-        List<ProductCategoryDTO> orderListCategoryAnsSub = categoryService.getCategoryAndSubCategoryByClientAddressPubId(dto.getPubId());
-        model.addAttribute("orderListCategoryAnsSub",orderListCategoryAnsSub);
+        System.out.println("showProductItemHome HOME!!!");
+        ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
+        System.out.println("showProductItemHome dto = "+dto.getPubId());
+        List<String> listEndCategory = categoryService.getPathToEachEndChildCategoryByClientAddressPubId(dto.getPubId());
+        listEndCategory.forEach(cat -> {
+            System.out.println(cat);
+        });
+        model.addAttribute("listEndCategory",listEndCategory);
         model.addAttribute("activePage",activePage);
         model.addAttribute("activeSub",activeSub);
         return "pages/v1/manager/product/item/index-item.html";
