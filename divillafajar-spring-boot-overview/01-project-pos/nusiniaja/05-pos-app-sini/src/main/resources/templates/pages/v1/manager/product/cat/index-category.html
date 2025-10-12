@@ -211,7 +211,7 @@
       function createTempLiWithSpinner(name, indent = 0) {
         const tempLi = document.createElement("li");
         tempLi.className = "list-group-item d-flex justify-content-between align-items-center opacity-75";
-        tempLi.style.paddingLeft = `${indent * 25}px`;
+        tempLi.style.paddingLeft = `${(indent+1) * 25}px`;
         tempLi.innerHTML = `
           <div class="d-flex align-items-center gap-2">
             <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
@@ -434,13 +434,13 @@
             span.textContent = data.name || newValue;
             */
             const span = document.createElement("span");
-span.className = "item-text d-flex flex-column";
+            span.className = "item-text d-flex flex-column";
 
-const nameSpan = document.createElement("span");
-nameSpan.className = "item-name";
-nameSpan.textContent = data.name || newValue;
+            const nameSpan = document.createElement("span");
+            nameSpan.className = "item-name";
+            nameSpan.textContent = data.name || newValue;
 
-span.appendChild(nameSpan);
+            span.appendChild(nameSpan);
 
             const buttons = document.createElement("div");
             buttons.className = "buttons";
@@ -541,10 +541,10 @@ searchItemBtn.addEventListener("click", function() {
       searchItemBtn.innerHTML = originalHTML;
       searchItemBtn.disabled = false;
     });
-});
+    });
 
-      // ---------- ADD-SUB (refactor: keep original placement & markup but add spinner/disable) ----------
-      document.addEventListener("click", function(e) {
+    // ---------- ADD-SUB (refactor: keep original placement & markup but add spinner/disable) ----------
+    document.addEventListener("click", function(e) {
         const addSubBtn = e.target.closest(".add-sub-btn");
         if (addSubBtn) {
             setGlobalActionButtonsDisabled(true); // ✅ nonaktifkan tombol lain
@@ -553,7 +553,8 @@ searchItemBtn.addEventListener("click", function() {
           const parentLi = addSubBtn.closest("li");
           const parentId = parentLi.getAttribute("data-id");
           const parentIndent = parseInt(parentLi.getAttribute("data-indent") || 0);
-
+            console.log("parentIndent=="+parentIndent);
+            console.log("parentId=="+parentId);
           // Prevent duplicate input (CHANGED: check next sibling class)
           if (parentLi.nextElementSibling?.classList.contains("sub-input-container")) return;
 
@@ -564,7 +565,8 @@ searchItemBtn.addEventListener("click", function() {
           const subInputContainer = document.createElement("li");
           subInputContainer.className = "list-group-item d-flex align-items-center justify-content-between sub-input-container";
             console.log("pit1 parentIndent="+parentIndent);
-          const leftPad = (parentIndent + 1) * 25;
+          let leftPad = (parentIndent + 1) * 25;
+          leftPad=0; //bikin noll aja biar seragam ngga pake padding
             subInputContainer.innerHTML = `
               <div class="d-flex align-items-center" style="width:90%;">
                 <input type="text" class="form-control form-control-sm sub-input"
@@ -588,6 +590,10 @@ searchItemBtn.addEventListener("click", function() {
           const container = e.target.closest(".sub-input-container");
           const parentLi = container.previousElementSibling;
           const parentId = parentLi.getAttribute("data-id");
+          //const parentId = parentLi.getAttribute("data-id");
+          const parentIndent = parseInt(parentLi.getAttribute("data-indent") || 0);
+            console.log("parentIndent1=="+parentIndent);
+            console.log("parentId1=="+parentId);
           const input = container.querySelector(".sub-input");
           const newValue = input.value.trim();
           if (!newValue) return;
@@ -631,14 +637,16 @@ searchItemBtn.addEventListener("click", function() {
               const subLi = document.createElement("li");
               subLi.className = "list-group-item d-flex justify-content-between align-items-center";
               subLi.setAttribute("data-id", data.id);
-              //subLi.setAttribute("data-indent", (parseInt(parentLi.getAttribute("data-indent") || 0) + 1).toString());
-              subLi.setAttribute("data-indent", data.indentLevel-1);
-              console.log('data.indentLevel='+data.indentLevel)
+              subLi.setAttribute("prev-data-indent", (parseInt(parentLi.getAttribute("data-indent") || 0)).toString());
+              subLi.setAttribute("newlyAddCategory-data-indent", data.indentLevel);
+              console.log('PreviousIndentLevel='+parentLi.getAttribute("data-indent"));
+              console.log('newlyAddCategory-data-indent='+subLi.getAttribute("newlyAddCategory-data-indent"));
+              console.log('subLi.getAttribute(data-id)='+subLi.getAttribute("data-id"));
 
               subLi.innerHTML = `
                 <span class="item-text d-flex flex-column">
-  <span class="item-name">${data.name}</span>
-</span>
+                  <span class="item-name">${data.name}</span>
+                </span>
                 <div class="buttons">
                   <a href="#" class="btn btn-sm btn-primary edit-btn"><i class="bi bi-pencil"></i></a>
                   <a href="#" class="btn btn-sm btn-danger delete-btn"><i class="bi bi-trash"></i></a>
@@ -650,7 +658,8 @@ searchItemBtn.addEventListener("click", function() {
                 const itemText = subLi.querySelector(".item-text");
                 if (itemText) {
                   //itemText.style.paddingLeft = `${((data.indentLevel) * 25)}px`;
-                  itemText.style.paddingLeft = `${((data.indentLevel-1) * 25)}px`;
+                  //itemText.style.paddingLeft = `${((parseInt(subLi.getAttribute("prev-data-indent") || 0) + 1) * 25)}px`;
+                  itemText.style.paddingLeft = `${((subLi.getAttribute("newlyAddCategory-data-indent") || 0) * 25)}px`;
                 }
               parentLi.insertAdjacentElement("afterend", subLi);
 
@@ -802,19 +811,30 @@ function renderCategorySearchResult(data) {
         li.setAttribute("data-indent", cat.indentLevel ?? 0);
 
         const span = document.createElement("span");
-span.className = "item-text d-flex flex-column";
-span.style.paddingLeft = `${(parseInt(cat.indentLevel ?? 0) * 25)}px`;
+        span.className = "item-text d-flex flex-column";
+        span.style.paddingLeft = `${(parseInt(cat.indentLevel ?? 0) * 25)}px`;
 
-const pathSpan = document.createElement("small");
-pathSpan.className = "text-muted";
-pathSpan.textContent = cat.path || "";
+        const pathSpan = document.createElement("small");
+        pathSpan.className = "text-muted";
+        pathSpan.textContent = cat.path || "";
 
-const nameSpan = document.createElement("span");
-nameSpan.className = "item-name";
-nameSpan.textContent = cat.name || "";
+        const nameSpan = document.createElement("span");
+        nameSpan.className = "item-name";
+        nameSpan.textContent = cat.name || "";
 
-span.appendChild(pathSpan);
-span.appendChild(nameSpan);
+        const pathText = (pathSpan.textContent || "").trim();
+        const nameText = (nameSpan.textContent || "").trim();
+
+        // hilangkan bagian setelah '>' terakhir
+        const trimmedPath = pathText.includes(">")
+          ? pathText.substring(0, pathText.lastIndexOf(">")).trim()
+          : pathText;
+
+        // hanya append kalau sisa path (tanpa last child) masih beda dari nama
+        if (trimmedPath && trimmedPath !== nameText) {
+          span.appendChild(pathSpan);
+        }
+        span.appendChild(nameSpan);
 
         // padding sesuai indent
         const pad = parseInt(cat.indentLevel ?? 0) * 25;

@@ -103,7 +103,7 @@ public class CategoryRestController {
 		searchResult = categoryService.searchCategory(address.getPubId(),kword);
 		if(searchResult!=null && searchResult.size()>0) {
 			for(CategorySearchResultModel cat : searchResult) {
-				System.out.println(cat.getPath());
+				System.out.println("cat.getPath(="+cat.getPath());
 				ProductCategoryDTO dto = new ProductCategoryDTO();
 				dto.setIndentLevel(0L);
 				String kategori = cat.getPath();
