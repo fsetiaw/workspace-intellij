@@ -8,6 +8,7 @@ import com.divillafajar.app.pos.pos_app_sini.io.entity.category.CategoryHierarch
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientAddressEntity;
+import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductCategoryHierarchyProjection;
 import com.divillafajar.app.pos.pos_app_sini.model.product.CategorySearchResultModel;
 import com.divillafajar.app.pos.pos_app_sini.repo.client.ClientAddressRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.product.category.ProductCategoryRepo;
@@ -145,12 +146,20 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
         ClientAddressEntity location = addressRepo.findByPubId(pAid);
         System.out.println("client adddress id == "+location.getId());
         //List<ProductCategoryEntity> daftar = catRepo.findAllByClientAddressSorted(location.getId());
-        List<ProductCategoryEntity> daftar = catRepo.findAllByClientAddressHierarchical(location.getId());
-        ModelMapper modelMapper = new ModelMapper();
-        retVal = modelMapper.map(
-                daftar,
-                new TypeToken<List<ProductCategoryDTO>>() {}.getType()
-        );
+		try {
+			List<ProductCategoryHierarchyProjection> daftar = catRepo.findAllByClientAddressHierarchical(location.getId());
+			ModelMapper modelMapper = new ModelMapper();
+			retVal = modelMapper.map(
+					daftar,
+					new TypeToken<List<ProductCategoryDTO>>() {}.getType()
+			);
+		}
+		catch(Exception e) {
+			System.out.println("ADA ERROR");
+			e.printStackTrace();
+		}
+
+
         /*
         long indentLevel=0;
         ProductCategoryEntity prevEntity = null;

@@ -8,6 +8,7 @@ import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Getter
@@ -51,6 +52,21 @@ public class EmployeeEntity implements Serializable {
     private UserEntity user;
 
      */
+// === 🔹 Metadata ===
+    @Column(name = "created_at", insertable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+	@Column(name = "updated_at", insertable = false, updatable = false)
+	private LocalDateTime updatedAt;
+
+	@Column(name = "created_by", length = 100)
+	private String createdBy;
+
+	@Column(name = "updated_by", length = 100)
+	private String updatedBy;
+
+	@Column(name = "deleted")
+	private Boolean deleted = false;
 
 
 

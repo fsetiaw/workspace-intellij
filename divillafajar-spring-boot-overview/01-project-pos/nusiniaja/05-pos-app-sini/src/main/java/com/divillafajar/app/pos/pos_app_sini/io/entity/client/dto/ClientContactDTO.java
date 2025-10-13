@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,7 +16,12 @@ public class ClientContactDTO {
     private String contactPhone;
     private String contactEmail;
     private String contactPosition;
-    private Boolean deleted;
     private String username;
     private String pwd;
+	//=======meta data ==============
+	private LocalDateTime createdAt;
+	private LocalDateTime updatedAt;
+	private String createdBy;
+	private String updatedBy;
+	private Boolean deleted;
 }

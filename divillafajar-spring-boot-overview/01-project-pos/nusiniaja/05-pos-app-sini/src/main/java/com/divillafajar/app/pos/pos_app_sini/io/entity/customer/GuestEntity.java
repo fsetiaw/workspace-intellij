@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -52,5 +53,22 @@ public class GuestEntity implements Serializable {
 
     @OneToMany(mappedBy = "guest", cascade = CascadeType.ALL)
     private List<OrderEntity> orders;
+
+	// === 🔹 Metadata ===
+	@Column(name = "created_at", insertable = false, updatable = false)
+	private LocalDateTime createdAt;
+
+	@Column(name = "updated_at", insertable = false, updatable = false)
+	private LocalDateTime updatedAt;
+
+	@Column(name = "created_by", length = 100)
+	private String createdBy;
+
+	@Column(name = "updated_by", length = 100)
+	private String updatedBy;
+
+	@Column(name = "deleted")
+	private Boolean deleted = false;
+
 
 }

@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -20,4 +21,10 @@ public class EmployeeDTO {
     private Set<EmploymentEntity> employments;
     private UserEntity user;;
     private NamePassEntity userAuthDetails;
+	//=======meta data ==============
+	private LocalDateTime createdAt;
+	private LocalDateTime updatedAt;
+	private String createdBy;
+	private String updatedBy;
+	private Boolean deleted;
 }

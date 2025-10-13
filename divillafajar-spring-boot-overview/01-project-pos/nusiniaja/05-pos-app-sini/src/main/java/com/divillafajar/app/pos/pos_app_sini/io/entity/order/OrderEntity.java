@@ -52,4 +52,21 @@ public class OrderEntity implements Serializable {
 
     @Column(name = "status", length = 50, nullable = false)
     private String status = "ACTIVE"; // contoh: ACTIVE, COMPLETED, CANCELLED
+
+	// === 🔹 Metadata ===
+	@Column(name = "created_at", insertable = false, updatable = false)
+	private LocalDateTime createdAt;
+
+	@Column(name = "updated_at", insertable = false, updatable = false)
+	private LocalDateTime updatedAt;
+
+	@Column(name = "created_by", length = 100)
+	private String createdBy;
+
+	@Column(name = "updated_by", length = 100)
+	private String updatedBy;
+
+	@Column(name = "deleted")
+	private Boolean deleted = false;
+
 }

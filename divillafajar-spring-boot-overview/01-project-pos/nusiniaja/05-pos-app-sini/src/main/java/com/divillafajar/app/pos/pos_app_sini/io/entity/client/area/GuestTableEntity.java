@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -46,5 +47,21 @@ public class GuestTableEntity {
 
     @OneToMany(mappedBy = "table", cascade = CascadeType.ALL)
     private List<OrderEntity> orders;
+
+	// === 🔹 Metadata ===
+	@Column(name = "created_at", insertable = false, updatable = false)
+	private LocalDateTime createdAt;
+
+	@Column(name = "updated_at", insertable = false, updatable = false)
+	private LocalDateTime updatedAt;
+
+	@Column(name = "created_by", length = 100)
+	private String createdBy;
+
+	@Column(name = "updated_by", length = 100)
+	private String updatedBy;
+
+	@Column(name = "deleted")
+	private Boolean deleted = false;
 
 }

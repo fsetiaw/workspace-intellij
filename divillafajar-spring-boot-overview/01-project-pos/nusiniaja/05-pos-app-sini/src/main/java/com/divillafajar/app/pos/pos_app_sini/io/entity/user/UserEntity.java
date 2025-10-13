@@ -91,4 +91,21 @@ public class UserEntity implements Serializable {
     @Column(name = "nik", length = 55, nullable = true)
     private String nik;
 
+	// === 🔹 Metadata ===
+	@Column(name = "created_at", insertable = false, updatable = false)
+	private LocalDateTime createdAt;
+
+	@Column(name = "updated_at", insertable = false, updatable = false)
+	private LocalDateTime updatedAt;
+
+	@Column(name = "created_by", length = 100)
+	private String createdBy;
+
+	@Column(name = "updated_by", length = 100)
+	private String updatedBy;
+
+	@Column(name = "deleted")
+	private Boolean deleted = false;
+
+
 }

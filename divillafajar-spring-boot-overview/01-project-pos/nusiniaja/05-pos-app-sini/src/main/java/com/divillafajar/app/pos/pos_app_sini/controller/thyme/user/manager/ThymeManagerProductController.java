@@ -75,6 +75,20 @@ public class ThymeManagerProductController {
         return "pages/v1/manager/product/item/index-item.html";
     }
 
+	@GetMapping("/item/{categoryId}")
+	public String showCategoryItemHome(
+			@RequestParam(name = "activePage", required = false) String activePage,
+			@RequestParam(name = "activeSub", required = false) String activeSub,
+			@PathVariable Long categoryId,
+			Model model, HttpSession session
+	) {
+		System.out.println("showCategoryItemHome HOME - Catid ="+categoryId);
+
+		model.addAttribute("activePage",activePage);
+		model.addAttribute("activeSub",activeSub);
+		return "pages/v1/manager/product/item/home-category-item.html";
+	}
+
     /*
     ** NGGA JADi DIPAKE, PAKI YG RestControl untuk CRUD
     **

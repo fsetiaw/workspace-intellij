@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -39,9 +40,23 @@ public class CustomerDetailsEntity implements Serializable {
     @JoinColumn(name = "customer_id")
     private CustomerEntity customer;
 
-
-
-
     @Column(name = "full_name", length = 99)
     private String fullName;
+
+	// === 🔹 Metadata ===
+	@Column(name = "created_at", insertable = false, updatable = false)
+	private LocalDateTime createdAt;
+
+	@Column(name = "updated_at", insertable = false, updatable = false)
+	private LocalDateTime updatedAt;
+
+	@Column(name = "created_by", length = 100)
+	private String createdBy;
+
+	@Column(name = "updated_by", length = 100)
+	private String updatedBy;
+
+	@Column(name = "deleted")
+	private Boolean deleted = false;
+
 }

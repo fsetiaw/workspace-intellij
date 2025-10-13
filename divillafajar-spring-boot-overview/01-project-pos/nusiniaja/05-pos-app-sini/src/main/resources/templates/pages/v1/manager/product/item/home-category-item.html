@@ -76,75 +76,7 @@
         <div layout:fragment="content">
             <div class="page-content">
                 <!-- list group button & badge start-->
-                <section class="list-group-button-badge">
-                    <div class="row match-height">
-                        <div class="col-12">
-                            <div class="card">
-                                <!--div class="card-header">
-                                    <h4 class="card-title">HEADER</h4>
-                                </div-->
-                                <div class="card-content">
-                                    <div class="card-body">
-                                        <!-- Form input add item -->
-                                        <!--form id="addItemForm" class="mb-3" th:action="@{/v1/manager/product/category}" method="post"-->
-                                        <div class="input-group">
-                                            <span class="input-group-text bg-primary text-white"
-                                                    style="font-weight:bold;font-size:1.2rem"
-                                                    th:text="#{label.search}">
-                                            </span>
-                                            <input type="text" id="newItemInput" class="form-control"
-                                                   th:placeholder="|${#strings.toLowerCase(#messages.msg('msg.enterCategoryNameToAddOrKword'))} . . .|"
-                                                   required>
-                                            <button id="addItemBtn" class="btn btn-success" type="button" title="Add">
-                                                <i class="bi bi-search"></i>
-                                            </button>
-                                            <!-- Tombol Reset -->
-                                            <button id="resetBtn" class="btn bg-primary text-white" type="button" title="Reset Filter"
-                                                    style="font-weight:bold;">
-                                                <i class="bi bi-arrow-counterclockwise"></i>
-                                            </button>
-                                        </div>
-                                        <!--/form-->
-                                        <h3>
-                                            <span id="lblUrutan" th:text="#{label.listCategoryAtoZ}" style="font-size:60%;padding-top:20px"></span>
-                                            <span id="lblSearchResult"
-                                                  th:utext="#{label.searchResult} + ' :'"
-                                                  style="font-size:60%;padding-top:20px; display:none">
-                                            </span>
-                                        </h3>
-                                        <div th:if="${listEndCategory != null and !listEndCategory.isEmpty()}">
-                                            <div th:each="path : ${listEndCategory}">
-                                                <nav aria-label="breadcrumb" class="breadcrumb-row mb-2">
-                                                    <ol class="breadcrumb mb-0">
-                                                        <th:block th:each="segment, iterStat : ${#strings.arraySplit(path, '/')}">
-                                                            <th:block th:with="part=${#strings.trim(segment)}, pair=${#strings.arraySplit(part, '~')}, name=${pair[0]}, id=${pair[1]}">
-                                                                <li class="breadcrumb-item" th:classappend="${iterStat.last} ? 'active'">
-                                                                    <a th:if="${iterStat.last}"
-                                                                       th:href="@{/v1/manager/manage/product/item/{id}(id=${id})}"
-                                                                       th:text="${name}"></a>
-                                                                    <span th:if="${!iterStat.last}"
-                                                                          th:text="${name}"></span>
-                                                                </li>
-                                                            </th:block>
-                                                        </th:block>
-                                                    </ol>
-                                                </nav>
-                                            </div>
-                                        </div>
-
-                                        <!-- 🟡 Kalau kosong -->
-                                        <div id="noResultMsg"
-                                             class="text-center text-muted mt-3">
-                                            <strong>0 Found</strong>
-                                        </div>
-
-                                        <!--div th:replace="~{/pages/v1/manager/product/item/category-item.html :: categoryList(${orderListCategoryAnsSub})}"></div-->
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+                Home Category Item
                 <!-- list group button & badge ends -->
             </div>
         </div>

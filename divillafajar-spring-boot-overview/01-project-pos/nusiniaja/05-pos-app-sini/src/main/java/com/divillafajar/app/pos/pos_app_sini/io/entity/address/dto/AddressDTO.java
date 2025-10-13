@@ -1,6 +1,7 @@
 package com.divillafajar.app.pos.pos_app_sini.io.entity.address.dto;
 
 import com.divillafajar.app.pos.pos_app_sini.io.entity.user.UserEntity;
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,6 +26,10 @@ public class AddressDTO {
     private String province;
     private String postalCode;
     private String country;
+	//=======meta data ==============
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+	private String createdBy;
+	private String updatedBy;
+	private Boolean deleted;
 }

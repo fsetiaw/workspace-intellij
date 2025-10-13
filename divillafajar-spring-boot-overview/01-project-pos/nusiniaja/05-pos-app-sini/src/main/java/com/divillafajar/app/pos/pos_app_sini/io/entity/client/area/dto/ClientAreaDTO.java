@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Time;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -31,4 +32,10 @@ public class ClientAreaDTO {
     private Long durationOperationHour;
     private List<GuestTableEntity> tables;
     private ClientAddressEntity clientAddress;
+	//=======meta data ==============
+	private LocalDateTime createdAt;
+	private LocalDateTime updatedAt;
+	private String createdBy;
+	private String updatedBy;
+	private Boolean deleted;
 }

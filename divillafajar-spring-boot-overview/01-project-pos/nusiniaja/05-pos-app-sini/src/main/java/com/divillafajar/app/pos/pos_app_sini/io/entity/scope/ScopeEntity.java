@@ -10,6 +10,7 @@ import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -48,5 +49,22 @@ public class ScopeEntity implements Serializable {
     // Bisa tambah kolom lain sesuai kebutuhan
     @Column(name = "active", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 1")
     private Boolean active = true;
+
+	// === 🔹 Metadata ===
+	@Column(name = "created_at", insertable = false, updatable = false)
+	private LocalDateTime createdAt;
+
+	@Column(name = "updated_at", insertable = false, updatable = false)
+	private LocalDateTime updatedAt;
+
+	@Column(name = "created_by", length = 100)
+	private String createdBy;
+
+	@Column(name = "updated_by", length = 100)
+	private String updatedBy;
+
+	@Column(name = "deleted")
+	private Boolean deleted = false;
+
 
 }

@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -27,4 +28,10 @@ public class ClientDTO {
     private List<ClientAddressEntity> clientAddresses;
     private Set<EmploymentEntity> employments;
     private Boolean deleted;
+
+	//=======meta data ==============
+	private LocalDateTime createdAt;
+	private LocalDateTime updatedAt;
+	private String createdBy;
+	private String updatedBy;
 }

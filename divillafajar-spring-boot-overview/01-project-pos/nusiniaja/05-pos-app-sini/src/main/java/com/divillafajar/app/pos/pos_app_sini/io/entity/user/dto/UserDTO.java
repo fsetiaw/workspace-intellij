@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -43,4 +44,11 @@ public class UserDTO  {
     private EmployeeEntity employee;
     private List<AddressEntity> addresses;
     private String superKey;
+
+	//=======meta data ==============
+	private LocalDateTime createdAt;
+	private LocalDateTime updatedAt;
+	private String createdBy;
+	private String updatedBy;
+	private Boolean deleted;
 }

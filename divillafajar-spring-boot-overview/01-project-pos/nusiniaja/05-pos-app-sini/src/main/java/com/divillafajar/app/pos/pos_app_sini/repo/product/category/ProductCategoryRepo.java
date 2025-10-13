@@ -2,6 +2,7 @@ package com.divillafajar.app.pos.pos_app_sini.repo.product.category;
 
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.CategoryHierarchyProjectionDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryEntity;
+import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductCategoryHierarchyProjection;
 import com.divillafajar.app.pos.pos_app_sini.model.product.CategorySearchResultModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -105,7 +106,7 @@ public interface ProductCategoryRepo extends JpaRepository<ProductCategoryEntity
             """,
             nativeQuery = true
     )
-    List<ProductCategoryEntity> findAllByClientAddressHierarchical(
+    List<ProductCategoryHierarchyProjection> findAllByClientAddressHierarchical(
             @Param("clientAddressId") Long clientAddressId);
 
     @Query("""
