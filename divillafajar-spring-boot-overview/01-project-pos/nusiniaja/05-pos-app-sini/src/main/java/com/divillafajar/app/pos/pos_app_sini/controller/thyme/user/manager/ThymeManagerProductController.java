@@ -14,6 +14,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 @Controller
 @RequestMapping("/v1/manager/manage/product")
@@ -77,13 +78,24 @@ public class ThymeManagerProductController {
 
 	@GetMapping("/item/{categoryId}")
 	public String showCategoryItemHome(
-			@RequestParam(name = "activePage", required = false) String activePage,
-			@RequestParam(name = "activeSub", required = false) String activeSub,
+			@RequestParam(name = "activePage", required = true) String activePage,
+			@RequestParam(name = "activeSub", required = true) String activeSub,
+			@RequestParam(name = "path", required = true) String path,
 			@PathVariable Long categoryId,
 			Model model, HttpSession session
 	) {
-		System.out.println("showCategoryItemHome HOME - Catid ="+categoryId);
-
+		System.out.println("showCategoryItemHome HOME - Catid ="+categoryId+"-"+path);
+		String trimPath = "";
+		StringTokenizer st = new StringTokenizer(path,"/");
+		while(st.hasMoreTokens()) {
+			String tkn = st.nextToken();
+			StringTokenizer st1 = new StringTokenizer(tkn,"~");
+			trimPath = trimPath+st1.nextToken();
+			if(st.hasMoreTokens()) {
+				trimPath=trimPath+" / ";
+			}
+		}
+		model.addAttribute("trimPath",trimPath);
 		model.addAttribute("activePage",activePage);
 		model.addAttribute("activeSub",activeSub);
 		return "pages/v1/manager/product/item/home-category-item.html";
