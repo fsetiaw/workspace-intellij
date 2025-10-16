@@ -1,12 +1,16 @@
 package com.divillafajar.app.pos.pos_app_sini.controller.thyme.user.manager;
 
+import com.divillafajar.app.pos.pos_app_sini.common.enums.BootstrapColorEnum;
 import com.divillafajar.app.pos.pos_app_sini.config.properties.CustomDefaultProperties;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientAddressDTO;
+import com.divillafajar.app.pos.pos_app_sini.model.item.CreateItemRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.service.product.category.ProductCategoryService;
+import com.divillafajar.app.pos.pos_app_sini.service.product.item.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +28,7 @@ public class ThymeManagerProductController {
 
     private final ProductCategoryService categoryService;
     private final CustomDefaultProperties props;
+	private final ProductService productService;
 
     @GetMapping
     public String showProdHome(
@@ -60,6 +65,7 @@ public class ThymeManagerProductController {
     public String showProductItemHome(
             @RequestParam(name = "activePage", required = true) String activePage,
             @RequestParam(name = "activeSub", required = true) String activeSub,
+            //RedirectAttributes redirectAttributes,
             //HttpServletRequest request,
             Model model, HttpSession session
     ) {
@@ -73,6 +79,7 @@ public class ThymeManagerProductController {
         model.addAttribute("listEndCategory",listEndCategory);
         model.addAttribute("activePage",activePage);
         model.addAttribute("activeSub",activeSub);
+
         return "pages/v1/manager/product/item/index-item.html";
     }
 
@@ -95,10 +102,53 @@ public class ThymeManagerProductController {
 				trimPath=trimPath+" / ";
 			}
 		}
+		String pathCategory = "";
+		String targetCategoryName = "";
+		if(!StringUtils.isBlank(trimPath)) {
+			st = new StringTokenizer(trimPath,"/");
+			while(st.hasMoreTokens()) {
+				String tkn = st.nextToken().trim();
+				pathCategory = pathCategory + tkn;
+				if(st.hasMoreTokens()) {
+					pathCategory=pathCategory+"/";
+				}
+				else {
+					//last token
+					targetCategoryName=tkn.trim();
+				}
+			}
+		}
+		model.addAttribute("pathCategory",pathCategory);
+		model.addAttribute("path",path);
+		model.addAttribute("targetCategoryName",targetCategoryName);
 		model.addAttribute("trimPath",trimPath);
 		model.addAttribute("activePage",activePage);
 		model.addAttribute("activeSub",activeSub);
-		return "pages/v1/manager/product/item/home-category-item.html";
+		return "pages/v1/manager/product/item/home-category-item";
+	}
+
+	@PostMapping("/item/{categoryId}")
+	public String addNewItemCategory(
+			@RequestParam(name = "activePage", required = true) String activePage,
+			@RequestParam(name = "activeSub", required = true) String activeSub,
+			//@RequestParam(name = "path", required = true) String path,
+			@ModelAttribute CreateItemRequestModel createItemRequestModel,
+			@PathVariable Long categoryId,
+			RedirectAttributes redirectAttributes,
+			Model model, HttpSession session
+	) {
+		System.out.println("addNewItemCategory HOME - Catid ="+categoryId);
+		System.out.println("item name = "+createItemRequestModel.getName());
+		System.out.println("item desc = "+createItemRequestModel.getDesc());
+		productService.addNewProduct(createItemRequestModel);
+		redirectAttributes.addAttribute("activePage",activePage);
+		redirectAttributes.addAttribute("activeSub",activeSub);
+		redirectAttributes.addAttribute("path",createItemRequestModel.getPath());
+		System.out.println("activePage ="+activePage);
+		System.out.println("activeSub="+activeSub);
+		System.out.println("path ="+createItemRequestModel.getPath());
+		return "redirect:/v1/manager/manage/product/item/"+categoryId;
+
 	}
 
     /*

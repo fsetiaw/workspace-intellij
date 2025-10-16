@@ -161,7 +161,7 @@ nav.breadcrumb-row:hover .breadcrumb-item.active a::after {
                                                             <th:block th:with="part=${#strings.trim(segment)}, pair=${#strings.arraySplit(part, '~')}, name=${pair[0]}, id=${pair[1]}">
                                                                 <li class="breadcrumb-item" th:classappend="${iterStat.last} ? 'active'">
                                                                     <a th:if="${iterStat.last}"
-                                                                       th:href="@{/v1/manager/manage/product/item/{id}(id=${id},path=${path},activePage='menu1',activeSub='subMenu1-2')}"
+                                                                       th:href="@{/v1/manager/manage/product/item/{id}(id=${id},path=${path},activePage=${activePage},activeSub=${activeSub})}"
                                                                        th:text="${name}"></a>
                                                                     <span th:if="${!iterStat.last}"
                                                                           th:text="${name}"></span>

@@ -18,9 +18,24 @@
     <link rel="stylesheet" th:href="@{/mine/js/css/toast.css}">
     <link rel="stylesheet" th:href="@{/assets/vendors/toastify/toastify.css}">
     <link rel="stylesheet" th:href="@{/mine/js/css/additional-index.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
     <!--link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"-->
     <style>
+        .accordion-button .category-label {
+  color: [[${@appGlobals.get('colorPrimaryBlue')}]];
+  font-weight: 600;
+  font-size: 120%;
+  margin-left: 4px;
+  transition: color 0.2s ease;
+}
+
+/* Saat tombol TIDAK collapsed (berarti terbuka) */
+.accordion-button:not(.collapsed) .category-label {
+  color: [[${@appGlobals.get('colorPrimaryBlue')}]];
+}
+
         /* Style untuk tiap breadcrumb row */
         nav.breadcrumb-row {
             transition: background-color 0.3s ease, transform 0.2s ease;
@@ -91,6 +106,63 @@
             <div class="page-content">
                 <!-- list group button & badge start-->
                 Home Category Item
+                <div class="card collapse-icon accordion-icon-rotate">
+                    <!--div class="card-header">
+                        <h4 class="card-title pl-1">Accordion</h4>
+                    </div-->
+                    <div class="card-body">
+                        <div class="accordion" id="cardAccordion">
+                            <div class="accordion" id="accordionExample">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="headingOne">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#collapseOne" aria-expanded="false"
+                                                aria-controls="collapseOne">
+                                            <!-- Ikon plus -->
+                                                <i class="bi bi-plus d-inline-flex align-items-center justify-content-center me-2"
+                                                   th:style="|background-color:${@appGlobals.get('colorPrimaryBlue')};
+                                                       color:white;
+                                                       width:22px;
+                                                       height:22px;
+                                                       border-radius:50%;
+                                                       font-size:150%;|">
+                                                </i>
+                                                <span th:utext="|#{label.item}|"
+                                                      style="color: gray;font-size:95%"></span>
+                                                <span th:text="${targetCategoryName}"
+                                                      style="font-weight: 600;font-size:120%; margin-left:4px" class="category-label"></span>
+
+                                        </button>
+                                    </h2>
+                                    <div id="collapseOne" class="accordion-collapse collapse "
+                                         aria-labe  lledby="headingOne" data-bs-parent="#accordionExample">
+                                        <div class="accordion-body">
+                                            <form class="form" method="post" th:action="@{/v1/manager/manage/product/item/{categoryId}(categoryId=${categoryId},activePage=${activePage},activeSub=${activeSub})}">
+                                                <div class="form-body">
+                                                    <div class="form-group">
+                                                        <!--label for="feedback1" class="sr-only" th:text="#{label.itemName}"></label-->
+                                                        <input type="hidden" name="path" th:value="${path}">
+                                                        <input type="text" id="feedback1" class="form-control" th:placeholder="#{label.itemName}"
+                                                               name="name">
+                                                    </div>
+                                                    <div class="form-group form-label-group">
+                                                        <textarea class="form-control" name="desc" id="label-textarea" rows="3"
+                                                            th:placeholder="#{label.description}"></textarea>
+                                                        <label for="label-textarea"></label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-actions d-flex justify-content-end">
+                                                    <button type="submit" class="btn btn-primary me-1" th:text="#{label.add}"></button>
+                                                    <button type="reset" class="btn btn-light-primary" th:text="#{label.cancel}"></button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <!-- list group button & badge ends -->
             </div>
         </div>
@@ -115,16 +187,15 @@
     <div th:replace="~{/pages/v1/fragments/toast/toast-confirm.html :: toast-confirm('cancel', 'update', 'delete')}"></div>
 </div>
 <!--script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script-->
-<script th:src="@{/assets/static/js/bootstrap/V5.3.8/bootstrap.bundle.min.js}"></script>
+<!--script th:src="@{/assets/static/js/bootstrap/V5.3.8/bootstrap.bundle.min.js}"></script-->
 
 <script th:src="@{/assets/static/js/initTheme.js}"></script>
 <script th:src="@{/assets/static/js/components/dark.js}"></script>
 <script th:src="@{/assets/extensions/perfect-scrollbar/perfect-scrollbar.min.js}"></script>
-<script th:src="@{/assets/vendors/toastify/toastify.js}"></script>
+<!--script th:src="@{/assets/vendors/toastify/toastify.js}"></script-->
 <script th:src="@{/assets/compiled/js/app.js}"></script>
-<script th:src="@{/assets/static/js/pages/dashboard.js}"></script>
+<!--script th:src="@{/assets/static/js/pages/dashboard.js}"></script-->
 <script th:src="@{/mine/js/toast-handler.js}"></script>
-<!--script th:src="@{/mine/js/additional-index.js}"></script-->
 
 <div layout:fragment="modal-confirm-delete">
     <!--div th:replace="~{/pages/v1/manager/fragments/toast-confirm.html :: toast-confirm('cancel', 'update', 'delete')}"></div-->
@@ -134,91 +205,8 @@
 <!--script th:src="@{/mine/js/modal/modal-confirm-edit-delete.js}"></script-->
 
 <script th:inline="javascript">
-
-    const toastMediumTimeout = [[${toastMediumTimeout}]];
-    const toastShortTimeout = [[${toastShortTimeout}]];
-    const toastLongTimeout = [[${toastLongTimeout}]];
-
-    document.addEventListener("DOMContentLoaded", function() {
-      const searchInput = document.getElementById("newItemInput");
-      const searchBtn = document.getElementById("addItemBtn");
-      const resetBtn = document.getElementById("resetBtn");
-      const breadcrumbRows = document.querySelectorAll(".breadcrumb-row");
-
-      // ✅ elemen label
-      const lblUrutan = document.getElementById("lblUrutan");
-      const lblSearchResult = document.getElementById("lblSearchResult");
-      const noResultMsg = document.getElementById("noResultMsg");
-
-      // 🟢 Saat load pertama kali, sembunyikan "0 Found" jika listEndCategory tidak kosong
-      if (breadcrumbRows.length > 0) {
-        noResultMsg.style.display = "none";
-      }
-
-      function filterBreadcrumbs() {
-          const keyword = searchInput.value.trim().toLowerCase();
-          const noResultMsg = document.getElementById("noResultMsg");
-          const breadcrumbRows = document.querySelectorAll(".breadcrumb-row");
-
-          let visibleCount = 0;
-
-          breadcrumbRows.forEach(nav => {
-            const text = nav.innerText.toLowerCase();
-            if (keyword === "" || text.includes(keyword)) {
-              nav.style.display = "";
-              visibleCount++;
-            } else {
-              nav.style.display = "none";
-            }
-          });
-
-          // 🔄 Toggle label
-          if (keyword !== "") {
-            lblUrutan.style.display = "none";
-            lblSearchResult.style.display = "inline";
-          } else {
-            lblUrutan.style.display = "inline";
-            lblSearchResult.style.display = "none";
-          }
-
-          // 🟡 Tampilkan “0 Found” hanya saat keyword ada & tidak ada hasil
-          console.error("visibleCount="+visibleCount);
-          if (keyword !== "" && visibleCount === 0) {
-            noResultMsg.style.display = "block";
-          } else {
-            noResultMsg.style.display = "none";
-          }
-      }
-
-
-
-      // Klik tombol Search
-      searchBtn.addEventListener("click", filterBreadcrumbs);
-
-      // Tekan Enter
-      searchInput.addEventListener("keypress", function(e) {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          filterBreadcrumbs();
-        }
-      });
-
-      // Klik tombol Reset → tampilkan semua lagi
-      resetBtn.addEventListener("click", function() {
-        searchInput.value = ""; // kosongkan input
-        breadcrumbRows.forEach(nav => nav.style.display = ""); // tampilkan semua
-        searchInput.focus(); // fokus kembali ke input
-
-        // ✅ balikkan label
-        lblUrutan.style.display = "inline";
-        lblSearchResult.style.display = "none";
-
-        // 🔁 sembunyikan pesan "0 Found"
-        document.getElementById("noResultMsg").style.display = "none";
-      });
-    });
+    console.log("anu=", [[${@appGlobals.get('colorPrimaryBlue')}]]);
 </script>
-
 
 
 </body>
