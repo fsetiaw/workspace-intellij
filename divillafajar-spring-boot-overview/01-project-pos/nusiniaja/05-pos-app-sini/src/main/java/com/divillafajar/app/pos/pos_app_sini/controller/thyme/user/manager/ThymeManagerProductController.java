@@ -4,6 +4,7 @@ import com.divillafajar.app.pos.pos_app_sini.common.enums.BootstrapColorEnum;
 import com.divillafajar.app.pos.pos_app_sini.config.properties.CustomDefaultProperties;
 import com.divillafajar.app.pos.pos_app_sini.exception.DuplicationErrorException;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryDTO;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductWithCategoryPathDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientAddressDTO;
 import com.divillafajar.app.pos.pos_app_sini.model.item.CreateItemRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.service.product.category.ProductCategoryService;
@@ -122,12 +123,20 @@ public class ThymeManagerProductController {
 				}
 			}
 		}
+		ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
+		List<ProductWithCategoryPathDTO> listItem = productService.getListProduct(dto.getPubId(),categoryId);
 		model.addAttribute("pathCategory",pathCategory);
 		model.addAttribute("path",path);
 		model.addAttribute("targetCategoryName",targetCategoryName);
 		model.addAttribute("trimPath",trimPath);
 		model.addAttribute("activePage",activePage);
 		model.addAttribute("activeSub",activeSub);
+		if(listItem!=null) {
+			model.addAttribute("listItem",listItem);
+		}
+		else {
+			model.addAttribute("listItem",new ArrayList<>());
+		}
 		return "pages/v1/manager/product/item/home-category-item";
 	}
 

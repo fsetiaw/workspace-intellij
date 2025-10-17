@@ -17,6 +17,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -72,7 +73,15 @@ public class ProductServiceImpl implements ProductService{
 
 	@Override
 	public List<ProductWithCategoryPathDTO> getListProduct(String clietnAddressPubId, Long categoryId) {
+		System.out.println("==============getListProduct==================");
+		System.out.println("clietnAddressPubId="+clietnAddressPubId);
+		System.out.println("categoryId="+categoryId);
+		List<ProductWithCategoryPathDTO> retVal = new ArrayList<>();
 		List<ProductWithCategoryPathDTO> listItem = productRepo.findProductsWithCategoryPathByClientAndCategory(clietnAddressPubId, categoryId);
-		return List.of();
+		if(listItem!=null) {
+			System.out.println("listItem="+listItem.size());
+			retVal = listItem;
+		}
+		return retVal;
 	}
 }
