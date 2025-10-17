@@ -2,6 +2,7 @@ package com.divillafajar.app.pos.pos_app_sini.controller.thyme.user.manager;
 
 import com.divillafajar.app.pos.pos_app_sini.common.enums.BootstrapColorEnum;
 import com.divillafajar.app.pos.pos_app_sini.config.properties.CustomDefaultProperties;
+import com.divillafajar.app.pos.pos_app_sini.exception.DuplicationErrorException;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientAddressDTO;
 import com.divillafajar.app.pos.pos_app_sini.model.item.CreateItemRequestModel;
@@ -11,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.StringTokenizer;
 
 @Controller
@@ -29,6 +32,7 @@ public class ThymeManagerProductController {
     private final ProductCategoryService categoryService;
     private final CustomDefaultProperties props;
 	private final ProductService productService;
+	private final MessageSource messageSource;
 
     @GetMapping
     public String showProdHome(
@@ -37,7 +41,8 @@ public class ThymeManagerProductController {
             Model model, HttpSession session
     ) {
         System.out.println("showCategoryHome HOME");
-        model.addAttribute("activePage",activePage);
+	    ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
+	    model.addAttribute("activePage",activePage);
         model.addAttribute("activeSub",activeSub);
         return "pages/v1/manager/product/index-product";
     }
@@ -71,7 +76,6 @@ public class ThymeManagerProductController {
     ) {
         System.out.println("showProductItemHome HOME!!!");
         ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
-        System.out.println("showProductItemHome dto = "+dto.getPubId());
         List<String> listEndCategory = categoryService.getPathToEachEndChildCategoryByClientAddressPubId(dto.getPubId());
         listEndCategory.forEach(cat -> {
             System.out.println(cat);
@@ -134,19 +138,28 @@ public class ThymeManagerProductController {
 			//@RequestParam(name = "path", required = true) String path,
 			@ModelAttribute CreateItemRequestModel createItemRequestModel,
 			@PathVariable Long categoryId,
+			Locale locale,
 			RedirectAttributes redirectAttributes,
 			Model model, HttpSession session
 	) {
 		System.out.println("addNewItemCategory HOME - Catid ="+categoryId);
-		System.out.println("item name = "+createItemRequestModel.getName());
-		System.out.println("item desc = "+createItemRequestModel.getDesc());
-		productService.addNewProduct(createItemRequestModel);
+		try {
+			ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
+			productService.addNewProduct(categoryId, dto, createItemRequestModel);
+			String successMessage = messageSource.getMessage("label.item", null, locale)+" "+messageSource.getMessage("label.addSuccessfully", null, locale);
+			redirectAttributes.addFlashAttribute("successMessage", successMessage);
+
+		} catch (DuplicationErrorException e) {
+			String errorMessage = messageSource.getMessage("err.itemAlreadyExistUnderCategory", null, locale)+" "+e.getMessage();
+			redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
+		}
+		catch (Exception e) {
+			String errorMessage = messageSource.getMessage("modal.errorUnexpected", null, locale);
+			redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
+		}
 		redirectAttributes.addAttribute("activePage",activePage);
 		redirectAttributes.addAttribute("activeSub",activeSub);
 		redirectAttributes.addAttribute("path",createItemRequestModel.getPath());
-		System.out.println("activePage ="+activePage);
-		System.out.println("activeSub="+activeSub);
-		System.out.println("path ="+createItemRequestModel.getPath());
 		return "redirect:/v1/manager/manage/product/item/"+categoryId;
 
 	}

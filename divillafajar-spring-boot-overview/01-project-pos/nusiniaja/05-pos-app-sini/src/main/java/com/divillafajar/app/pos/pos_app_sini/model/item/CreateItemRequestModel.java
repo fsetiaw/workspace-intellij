@@ -11,7 +11,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class CreateItemRequestModel {
 	String name;
-	String desc;
+	String description;
 	String path;
+	String clientAddressPubId;
 
 }
