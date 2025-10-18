@@ -1,4 +1,4 @@
-package com.divillafajar.app.pos.pos_app_sini.io.entity.category;
+package com.divillafajar.app.pos.pos_app_sini.io.projection;
 
 public interface CategoryHierarchyProjectionDTO {
     Long getId();

@@ -48,6 +48,8 @@ public class ProductDTO {
 
 	private Long clientAddressId;
 	private String clientAddressName;
+    private byte[] imageBackup;
+    private String imageType;
 
 	// === 🔹 Metadata ===
 	private LocalDateTime createdAt;

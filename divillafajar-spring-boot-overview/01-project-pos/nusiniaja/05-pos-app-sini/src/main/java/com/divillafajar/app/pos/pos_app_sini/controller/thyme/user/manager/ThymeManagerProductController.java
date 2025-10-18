@@ -1,24 +1,29 @@
 package com.divillafajar.app.pos.pos_app_sini.controller.thyme.user.manager;
 
-import com.divillafajar.app.pos.pos_app_sini.common.enums.BootstrapColorEnum;
 import com.divillafajar.app.pos.pos_app_sini.config.properties.CustomDefaultProperties;
 import com.divillafajar.app.pos.pos_app_sini.exception.DuplicationErrorException;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryDTO;
-import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductWithCategoryPathDTO;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.product.ProductEntity;
+import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductWithCategoryPathDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientAddressDTO;
 import com.divillafajar.app.pos.pos_app_sini.model.item.CreateItemRequestModel;
+import com.divillafajar.app.pos.pos_app_sini.service.image.ImageStorageService;
 import com.divillafajar.app.pos.pos_app_sini.service.product.category.ProductCategoryService;
 import com.divillafajar.app.pos.pos_app_sini.service.product.item.ProductService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.MessageSource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -34,6 +39,7 @@ public class ThymeManagerProductController {
     private final CustomDefaultProperties props;
 	private final ProductService productService;
 	private final MessageSource messageSource;
+    private final ImageStorageService imageService;
 
     @GetMapping
     public String showProdHome(
@@ -86,6 +92,57 @@ public class ThymeManagerProductController {
         model.addAttribute("activeSub",activeSub);
 
         return "pages/v1/manager/product/item/index-item.html";
+    }
+
+    @PostMapping("/item/upload-image/{id}")
+    @Transactional
+    public ResponseEntity<?> uploadProductImage(
+            @PathVariable("id") Long productId,
+            @RequestParam("file") MultipartFile file
+    ) {
+        try {
+            System.out.println("======uploadProductImage=======");
+            System.out.println("======id="+productId+"=======");
+            // 🔹 Validasi file kosong
+            if (file.isEmpty()) {
+                return ResponseEntity.badRequest().body("File kosong");
+            }
+            imageService.saveProductImage(productId,file);
+            /*
+            // 🔹 Ambil entity produk
+            ProductEntity product = productRepository.findById(productId)
+                    .orElseThrow(() -> new RuntimeException("Produk tidak ditemukan"));
+
+            // 🔹 Buat folder upload kalau belum ada
+            Path uploadPath = Paths.get(UPLOAD_DIR);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            // 🔹 Simpan file ke folder lokal
+            String originalFilename = StringUtils.cleanPath(file.getOriginalFilename());
+            String fileName = "product_" + productId + "_" + System.currentTimeMillis() + "_" + originalFilename;
+            Path filePath = uploadPath.resolve(fileName);
+            Files.copy(file.getInputStream(), filePath);
+
+            // 🔹 Simpan URL ke database (sesuai struktur entity kamu)
+            String imageUrl = "/uploads/product/" + fileName;
+            product.setImageUrl(imageUrl);
+            product.setThumbnailUrl(imageUrl); // nanti bisa diganti thumbnail berbeda
+            productRepository.save(product);
+
+            // 🔹 Kembalikan respons sesuai format FilePond
+
+             */
+            return ResponseEntity.ok().body("fileName");
+
+        //} catch (IOException e) {
+        //    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        //            .body("Gagal upload gambar: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Error: " + e.getMessage());
+        }
     }
 
 	@GetMapping("/item/{categoryId}")

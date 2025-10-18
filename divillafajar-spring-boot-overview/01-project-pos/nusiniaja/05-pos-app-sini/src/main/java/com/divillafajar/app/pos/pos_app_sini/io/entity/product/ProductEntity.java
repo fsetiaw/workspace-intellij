@@ -51,6 +51,12 @@ public class ProductEntity {
 	@Column(name = "min_stock_alert")
 	private Integer minStockAlert;
 
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
+    private byte[] imageBackup; //
+
+    private String imageType;
+
 	// === 🔹 Atribut umum ===
 	@Column(length = 50)
 	private String unit; // pcs, box, kg, liter, dll

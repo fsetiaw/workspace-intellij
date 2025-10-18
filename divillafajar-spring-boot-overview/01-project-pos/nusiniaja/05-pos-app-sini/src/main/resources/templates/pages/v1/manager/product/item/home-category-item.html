@@ -16,6 +16,10 @@
     <link rel="stylesheet" th:href="@{/assets/compiled/css/app-dark.css}">
     <link rel="stylesheet" th:href="@{/assets/compiled/css/iconly.css}">
     <link rel="stylesheet" th:href="@{/mine/js/css/toast.css}">
+
+    <link href="https://unpkg.com/filepond/dist/filepond.css" rel="stylesheet">
+    <link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css" rel="stylesheet">
+
     <link rel="stylesheet" th:href="@{/assets/vendors/toastify/toastify.css}">
     <link rel="stylesheet" th:href="@{/mine/js/css/additional-index.css}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
@@ -175,8 +179,8 @@
                                     <h4 class="card-title" th:text="${item.name}">Nama Produk</h4>
 
                                     <!-- 🔹 Deskripsi -->
-                                    <p class="card-text" th:text="${item.description != null ? item.description : 'No description available'}">
-                                        Deskripsi produk
+                                    <p class="card-text"
+                                       th:text="${item.description != null ? item.description : #messages.msg('msg.noDescAvail')}">
                                     </p>
                                 </div>
 
@@ -189,21 +193,20 @@
                                 <!-- 🔹 Jika gambar TIDAK ADA -->
                                 <div class="p-4 text-center bg-light"
                                      th:unless="${item.thumbnailUrl != null and !#strings.isEmpty(item.thumbnailUrl)}">
-                                    <form th:action="@{/v1/manager/product/upload-image/{id}(id=${item.id})}"
-                                          method="post" enctype="multipart/form-data">
-                                        <label class="form-label fw-bold mb-2">Upload Image</label>
-                                        <input class="form-control mb-2" type="file" name="image" accept="image/*" required>
-                                        <button class="btn btn-primary btn-sm" type="submit">
-                                            <i class="bi bi-upload"></i> Upload
-                                        </button>
-                                    </form>
+
+                                    <label class="form-label fw-bold mb-2">Upload Image</label>
+                                    <input type="file"
+                                           class="filepond"
+                                           th:attr="data-product-id=${item.id}"
+                                           name="file"
+                                           accept="image/*" />
                                 </div>
                             </div>
 
                             <!-- 🔹 Footer -->
                             <div class="card-footer d-flex justify-content-between align-items-center">
                 <span class="text-muted small"
-                      th:text="${item.categoryPath}">Category Path</span>
+                      th:text="${item.status != null ? #strings.capitalize(#strings.toLowerCase(item.status)) : ''}"></span>
                                 <button class="btn btn-light-primary btn-sm">
                                     <i class="bi bi-eye"></i> View
                                 </button>
@@ -243,6 +246,11 @@
 <script th:src="@{/assets/compiled/js/app.js}"></script>
 <!--script th:src="@{/assets/static/js/pages/dashboard.js}"></script-->
 <script th:src="@{/mine/js/toast-handler.js}"></script>
+<!-- ✅filepond Tambahkan di bawah, sebelum </body> -->
+<script src="https://unpkg.com/filepond/dist/filepond.min.js"></script>
+<script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.js"></script>
+<link href="https://unpkg.com/filepond/dist/filepond.min.css" rel="stylesheet" />
+<link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css" rel="stylesheet" />
 
 <div layout:fragment="modal-confirm-delete">
     <!--div th:replace="~{/pages/v1/manager/fragments/toast-confirm.html :: toast-confirm('cancel', 'update', 'delete')}"></div-->
@@ -252,7 +260,45 @@
 <!--script th:src="@{/mine/js/modal/modal-confirm-edit-delete.js}"></script-->
 
 <script th:inline="javascript">
+    const contextPath = document.querySelector("meta[name='contextPath']").content;
     console.log("anu=", [[${@appGlobals.get('colorPrimaryBlue')}]]);
+       // 🔹 Register plugin image preview
+    FilePond.registerPlugin(FilePondPluginImagePreview);
+
+    // 🔹 Inisialisasi semua input dengan class "filepond"
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.filepond').forEach(input => {
+            const productId = input.dataset.productId;
+
+            FilePond.create(input, {
+                labelIdle: 'Tarik & jatuhkan gambar<br>atau <span class="filepond--label-action">Pilih</span>',
+                imagePreviewHeight: 160,
+                stylePanelAspectRatio: '1:1',
+                styleLoadIndicatorPosition: 'center bottom',
+                styleProgressIndicatorPosition: 'right bottom',
+                styleButtonRemoveItemPosition: 'left bottom',
+                styleButtonProcessItemPosition: 'right bottom',
+
+                // 🧩 optional: auto upload ke endpoint per product
+                    server: {
+                        process: {
+                        url: `${contextPath}v1/manager/manage/product/item/upload-image/${productId}`,
+                        method: 'POST',
+                        withCredentials: false,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        timeout: 7000,
+                        ondata: (formData) => {
+                            console.log("🟢 Uploading to:", `${contextPath}v1/manager/manage/product/item/upload-image/${productId}`);
+                            return formData;
+                        }
+                    },
+                    revert: null
+                }
+            });
+        });
+    });
 </script>
 
 

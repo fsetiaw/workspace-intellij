@@ -1,6 +1,6 @@
 package com.divillafajar.app.pos.pos_app_sini.repo.product;
 
-import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductWithCategoryPathDTO;
+import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductWithCategoryPathDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.product.ProductEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -50,6 +50,8 @@ public interface ProductRepo extends JpaRepository<ProductEntity,Long> {
         SELECT 
             p.id AS id,
             p.name AS name,
+            p.description AS description,
+            p.status AS status,
             pc.name AS category_name,
             ch.category_path AS category_path,
             ch.root_name AS top_category_name

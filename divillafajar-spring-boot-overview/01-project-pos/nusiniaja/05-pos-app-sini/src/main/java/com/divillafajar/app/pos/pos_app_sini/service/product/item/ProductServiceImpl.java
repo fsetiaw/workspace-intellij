@@ -1,9 +1,10 @@
 package com.divillafajar.app.pos.pos_app_sini.service.product.item;
 
+import com.divillafajar.app.pos.pos_app_sini.common.enums.ProductStatusEnum;
 import com.divillafajar.app.pos.pos_app_sini.exception.DuplicationErrorException;
 import com.divillafajar.app.pos.pos_app_sini.exception.GenericCustomErrorException;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryEntity;
-import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductWithCategoryPathDTO;
+import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductWithCategoryPathDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientAddressEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientAddressDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.product.ProductDTO;
@@ -12,11 +13,19 @@ import com.divillafajar.app.pos.pos_app_sini.model.item.CreateItemRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.repo.client.ClientAddressRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.product.ProductRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.product.category.ProductCategoryRepo;
+import com.divillafajar.app.pos.pos_app_sini.service.image.ImageStorageService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +38,11 @@ public class ProductServiceImpl implements ProductService{
 	private final ProductCategoryRepo categoryRepo;
 	private final ClientAddressRepo addressRepo;
 	private final ModelMapper modelMapper;
+    private final ImageStorageService imageService;
+
+
+    //@Value("${app.upload.image-dir}")
+    //private String imageBaseDir;
 
 	@Override
 	@Transactional
@@ -53,6 +67,7 @@ public class ProductServiceImpl implements ProductService{
 
 			ProductEntity newItem = new ProductEntity();
 			newItem.setName(createItemRequestModel.getName());
+            newItem.setStatus(ProductStatusEnum.DRAFT);
 			newItem.setCategory(categoryEntity.get());
 			newItem.setDescription(createItemRequestModel.getDescription());
 			System.out.println("pit1");
@@ -71,7 +86,9 @@ public class ProductServiceImpl implements ProductService{
 		return retVal;
 	}
 
-	@Override
+
+
+    @Override
 	public List<ProductWithCategoryPathDTO> getListProduct(String clietnAddressPubId, Long categoryId) {
 		System.out.println("==============getListProduct==================");
 		System.out.println("clietnAddressPubId="+clietnAddressPubId);
