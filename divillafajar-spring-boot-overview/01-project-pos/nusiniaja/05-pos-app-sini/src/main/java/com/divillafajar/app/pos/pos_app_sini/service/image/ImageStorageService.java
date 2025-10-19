@@ -9,7 +9,7 @@ public interface ImageStorageService {
     /**
      * Simpan file ke lokal dan backup ke database
      */
-    void saveProductImage(Long productId, MultipartFile file) throws IOException;
+    String saveProductImage(Long productId, MultipartFile file, String clientAddressPubId) throws IOException;
 
     /**
      * Ambil file untuk runtime (fallback ke DB bila tidak ada di lokal)

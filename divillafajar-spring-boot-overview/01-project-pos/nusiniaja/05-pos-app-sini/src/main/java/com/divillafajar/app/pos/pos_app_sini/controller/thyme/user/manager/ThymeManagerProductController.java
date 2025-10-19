@@ -10,6 +10,7 @@ import com.divillafajar.app.pos.pos_app_sini.model.item.CreateItemRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.service.image.ImageStorageService;
 import com.divillafajar.app.pos.pos_app_sini.service.product.category.ProductCategoryService;
 import com.divillafajar.app.pos.pos_app_sini.service.product.item.ProductService;
+import com.divillafajar.app.pos.pos_app_sini.utils.TelegramNotifier;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -24,10 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.StringTokenizer;
+import java.util.*;
 
 @Controller
 @RequestMapping("/v1/manager/manage/product")
@@ -40,6 +38,7 @@ public class ThymeManagerProductController {
 	private final ProductService productService;
 	private final MessageSource messageSource;
     private final ImageStorageService imageService;
+    private final TelegramNotifier telegramNotifier;
 
     @GetMapping
     public String showProdHome(
@@ -98,16 +97,19 @@ public class ThymeManagerProductController {
     @Transactional
     public ResponseEntity<?> uploadProductImage(
             @PathVariable("id") Long productId,
-            @RequestParam("file") MultipartFile file
+            @RequestParam("file") MultipartFile file,
+            Model model
     ) {
         try {
             System.out.println("======uploadProductImage=======");
             System.out.println("======id="+productId+"=======");
+            telegramNotifier.sendMessage("🧪 *uploadProductImage*\n\n" + "UPLOAD GAMBAR NIH");
             // 🔹 Validasi file kosong
             if (file.isEmpty()) {
                 return ResponseEntity.badRequest().body("File kosong");
             }
-            imageService.saveProductImage(productId,file);
+            ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
+            String thumbUrl = imageService.saveProductImage(productId,file, dto.getPubId());
             /*
             // 🔹 Ambil entity produk
             ProductEntity product = productRepository.findById(productId)
@@ -134,12 +136,18 @@ public class ThymeManagerProductController {
             // 🔹 Kembalikan respons sesuai format FilePond
 
              */
-            return ResponseEntity.ok().body("fileName");
+            System.out.println("oke kan "+thumbUrl);
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "url", thumbUrl
+            ));
 
         //} catch (IOException e) {
         //    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
         //            .body("Gagal upload gambar: " + e.getMessage());
         } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Response error");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Error: " + e.getMessage());
         }

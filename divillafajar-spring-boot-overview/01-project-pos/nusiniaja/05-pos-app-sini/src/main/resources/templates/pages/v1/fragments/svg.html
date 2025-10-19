@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!--
+  Fragment reusable untuk SVG symbol use
+  Pemakaian:
+    <use th:replace="~{fragments/svg :: icon('circle-fill')}"></use>
+-->
+<th:block th:fragment="icon(symbolName)">
+    <use th:attr="xlink:href=@{/icons.svg} + '#' + ${symbolName}"></use>
+</th:block>
+</body>
+</html>

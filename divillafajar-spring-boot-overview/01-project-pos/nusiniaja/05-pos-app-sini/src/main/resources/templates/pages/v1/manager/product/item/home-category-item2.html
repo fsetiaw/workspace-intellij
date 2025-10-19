@@ -65,49 +65,20 @@
         }
 
         .filepond--root {
-          width: auto !important;
-          height: auto !important;
-          min-height: auto !important;
-          border: none !important;
-          background: none !important;
+            height: 0 !important;
+            min-height: 0 !important;
         }
 
-        .filepond--drop-label {
-          background: none !important;
-          border: none !important;
+        .visually-hidden {
+          position: absolute !important;
+          width: 1px !important;
+          height: 1px !important;
           padding: 0 !important;
-          margin: 0 !important;
-          display: inline !important;
-          font-size: 0.9rem !important;
-          color: #0d6efd !important;
-          cursor: pointer !important;
+          margin: -1px !important;
+          overflow: hidden !important;
+          clip: rect(0, 0, 0, 0) !important;
+          border: 0 !important;
         }
-
-        .filepond--drop-label:hover {
-          text-decoration: none;
-        }
-
-        .filepond--panel-root,
-        .filepond--credits {
-          display: none !important;
-        }
-
-        .filepond-btn {
-          background-color: #007bff;  /* biru */
-          color: white;
-          padding: 4px 10px;
-          border-radius: 6px;
-          font-size: 0.75rem;
-          border: none;
-          cursor: pointer;
-          transition: background 0.2s ease-in-out;
-        }
-
-        .filepond-btn:hover {
-          background-color: #0056b3;  /* hover lebih gelap */
-        }
-
-
     </style>
 
 </head>
@@ -172,18 +143,18 @@
                                                 data-bs-target="#collapseOne" aria-expanded="false"
                                                 aria-controls="collapseOne">
                                             <!-- Ikon plus -->
-                                            <i class="bi bi-plus d-inline-flex align-items-center justify-content-center me-2"
-                                               th:style="|background-color:${@appGlobals.get('colorPrimaryBlue')};
+                                                <i class="bi bi-plus d-inline-flex align-items-center justify-content-center me-2"
+                                                   th:style="|background-color:${@appGlobals.get('colorPrimaryBlue')};
                                                        color:white;
                                                        width:22px;
                                                        height:22px;
                                                        border-radius:50%;
                                                        font-size:150%;|">
-                                            </i>
-                                            <span th:utext="|#{label.item}|"
-                                                  style="color: gray;font-size:95%"></span>
-                                            <span th:text="${targetCategoryName}"
-                                                  style="font-weight: 600;font-size:120%; margin-left:4px" class="category-label"></span>
+                                                </i>
+                                                <span th:utext="|#{label.item}|"
+                                                      style="color: gray;font-size:95%"></span>
+                                                <span th:text="${targetCategoryName}"
+                                                      style="font-weight: 600;font-size:120%; margin-left:4px" class="category-label"></span>
 
                                         </button>
                                     </h2>
@@ -200,7 +171,7 @@
                                                     </div>
                                                     <div class="form-group form-label-group">
                                                         <textarea class="form-control" name="description" id="label-textarea" rows="3"
-                                                                  th:placeholder="#{label.description}"></textarea>
+                                                            th:placeholder="#{label.description}"></textarea>
                                                         <label for="label-textarea"></label>
                                                     </div>
                                                 </div>
@@ -221,37 +192,66 @@
                     <!-- 🔁 Loop semua produk -->
                     <div class="col-xl-4 col-md-6 col-sm-12 mb-4"
                          th:each="item : ${listItem}">
-                        <div class="card">
+                        <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
                             <div class="card-content">
                                 <div class="card-body">
-                                    <h4 class="card-title" th:text="${item.name}">Card Title</h4>
-                                    <p class="card-text"
-                                       th:text="${#strings.isEmpty(item.description) ? 'Description Unavailable' : item.description}">
+                                    <!-- 🔹 Nama produk -->
+                                    <h4 class="card-title fw-bold" th:text="${item.name}"></h4>
+
+                                    <!-- 🔹 Deskripsi -->
+                                    <p class="card-text text-muted"
+                                       th:text="${item.description != null ? item.description : #messages.msg('msg.noDescAvail')}">
                                     </p>
                                 </div>
 
-                                <!--div class="p-3">
-                                    <input type="file"
-                                           class="cardImage"
-                                           name="file"
-                                           accept="image/*"
-                                           th:attr="data-product-id=${item.id}">
-                                </div-->
-                                <div class="p-3 text-center">
-                                    <img th:if="${item.imageUrl != null}" th:src="@{${item.thumbnailUrl}}"
-                                         class="card-thumb img-fluid mb-2 rounded w-100"
-                                         style="max-height: 200px; object-fit: cover;">
-                                    <input type="file"
-                                           class="cardImage"
-                                           name="file"
-                                           accept="image/*"
-                                           th:attr="data-product-id=${item.id}">
+                                <!-- 🔹 Jika gambar ADA -->
+                                <div th:if="${item.thumbnailUrl != null and !#strings.isEmpty(item.thumbnailUrl)}"
+                                     class="position-relative">
+                                    <img class="img-fluid w-100 rounded-bottom"
+                                         th:src="@{${item.thumbnailUrl}}"
+                                         alt="Product image"
+                                         style="object-fit: cover; max-height: 250px;">
+
+                                    <!-- 🔹 Tombol Ganti Gambar -->
+                                    <div class="p-2 text-center bg-light border-top">
+                                        <button type="button"
+                                                class="btn btn-outline-primary btn-sm change-image-btn"
+                                                th:attr="data-product-id=${item.id}">
+                                            <i class="bi bi-upload me-1"></i> Ganti Gambar
+                                        </button>
+                                        <input type="file"
+                                               class="filepond visually-hidden"
+                                               th:attr="data-product-id=${item.id}"
+                                               name="file"
+                                               accept="image/*" />
+                                    </div>
+                                </div>
+
+                                <!-- 🔹 Jika gambar TIDAK ADA -->
+                                <div class="p-4 text-center bg-light"
+                                     th:unless="${item.thumbnailUrl != null and !#strings.isEmpty(item.thumbnailUrl)}">
+                                    <div class="text-center mt-2">
+                                        <button type="button"
+                                                class="btn btn-outline-primary btn-sm change-image-btn"
+                                                th:attr="data-product-id=${item.id}">
+                                            <i class="bi bi-image"></i> Upload Gambar
+                                        </button>
+                                        <input type="file"
+                                               class="filepond visually-hidden"
+                                               th:attr="data-product-id=${item.id}"
+                                               name="file"
+                                               accept="image/*" />
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="card-footer d-flex justify-content-between">
-                                <span>Card Footer</span>
-                                <button class="btn btn-light-primary">Read More</button>
+                            <!-- 🔹 Footer -->
+                            <div class="card-footer d-flex justify-content-between align-items-center bg-white border-0">
+                <span class="text-muted small"
+                      th:text="${item.status != null ? #strings.capitalize(#strings.toLowerCase(item.status)) : ''}"></span>
+                                <button class="btn btn-light-primary btn-sm">
+                                    <i class="bi bi-eye"></i> View
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -312,79 +312,65 @@
 <!--script th:src="@{/mine/js/modal/modal-confirm-edit-delete.js}"></script-->
 
 <!-- 🔹 Script -->
-<script src="https://unpkg.com/filepond@^4/dist/filepond.js"></script>
-<script>
-    const contextPath = document.querySelector('meta[name="contextPath"]').content;
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', () => {
+        const contextPath = document.querySelector("meta[name='contextPath']").content;
+        console.log("contextPath:", contextPath);
 
-    document.querySelectorAll('.cardImage').forEach(input => {
-      const productId = input.getAttribute('data-product-id');
+        // 🔹 Register plugin FilePond
+        FilePond.registerPlugin(FilePondPluginImagePreview);
 
-      // Dapatkan elemen <img> thumbnail terdekat
-      const cardThumb = input.closest('.p-3').querySelector('.card-thumb');
+        const pondMap = new Map(); // Simpan semua instance per productId
 
-      const pond = FilePond.create(input, {
-        allowMultiple: false,
-        allowProcess: true,
-        allowRevert: false,
-        instantUpload: true,
-        acceptedFileTypes: ['image/*'],
-        /* 🟡 Tambahkan di sini: custom text label */
-        labelIdle: '<span class="filepond--label-action filepond-btn" style="text-decoration: none;">Upload Foto</span> atau drag ke sini',
+        // 🔹 Inisialisasi FilePond untuk semua input
+        document.querySelectorAll('input.filepond').forEach(input => {
+            const productId = input.dataset.productId;
+console.log("path=" + contextPath + "v1/manager/manage/product/item/upload-image/" + productId);
 
-        server: {
-          process: {
-            url: `${contextPath}v1/manager/manage/product/item/upload-image/${productId}`,
-            method: 'POST',
-            ondata: (formData) => formData,
-            onload: (response) => {
-              try {
-                const data = JSON.parse(response);
-                if (data.success && data.url) {
-                    console.log("data.success");
-                  // update thumbnail image
-                  if (cardThumb) {
-                    cardThumb.src = (contextPath + data.url).replace(/([^:]\/)\/+/g, "$1");
-                    console.log("cardThumb.contextPath=="+contextPath);
-                    console.log("data.url=="+data.url);
-                  } else {
-                    console.log("BENER KESINI");
-                    const img = document.createElement('img');
-                    //img.src = contextPath + data.url;
-                    //img.src = data.url;
-                    const safeUrl = (contextPath + data.url).replace(/([^:]\/)\/+/g, "$1");
-                      setTimeout(() => {
-                        img.src = safeUrl;
-                      }, 200);
-                    img.className = 'card-thumb img-fluid mb-2 rounded';
-                    img.style.maxHeight = '150px';
-                    img.style.objectFit = 'cover';
-                    //input.parentNode.insertBefore(img, input);
-                    pond.element.parentNode.insertBefore(img, pond.element);
-                  }
-                  console.log(`✅ Thumbnail updated for productId=${productId}`);
-                  return data.url;
+            const pond = FilePond.create(input, {
+                labelIdle: 'Tarik & jatuhkan gambar<br>atau <span class="filepond--label-action">Pilih</span>',
+                imagePreviewHeight: 160,
+                stylePanelAspectRatio: '1:1',
+                styleLoadIndicatorPosition: 'center bottom',
+                styleProgressIndicatorPosition: 'right bottom',
+                styleButtonRemoveItemPosition: 'left bottom',
+                styleButtonProcessItemPosition: 'right bottom',
+
+                server: {
+                    process: {
+                        url: `${contextPath}v1/manager/manage/product/item/upload-image/${productId}`,
+                        method: 'POST',
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                        timeout: 7000,
+                        ondata: (formData) => {
+                            console.log("🟢 Uploading to:", `${contextPath}v1/manager/manage/product/item/upload-image/${productId}`);
+                            return formData;
+                        }
+                    },
+                    revert: null
                 }
-              } catch (err) {
-                console.error("Error parsing server response:", err, response);
-              }
-            },
-            onerror: (response) => {
-              console.error("❌ Upload failed:", response);
-            }
-          }
-        }
-      });
+            });
 
-      pond.on('processfile', (error, file) => {
-        if (error) {
-          console.error(`❌ Upload error for productId=${productId}`, error);
-        }
-        else {
-            pond.removeFiles();
-        }
-      });
+            // Simpan instance pond di map supaya bisa diakses tombol
+            pondMap.set(productId, pond);
+            console.log(`✅ FilePond ready for productId=${productId}`);
+        });
+
+        // 🔹 Tambahkan event listener ke tombol Ganti Gambar
+        document.querySelectorAll('.change-image-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const productId = button.dataset.productId;
+                const pond = pondMap.get(productId);
+
+                if (pond) {
+                    console.log(`🖼️ Open picker for productId=${productId}`);
+                    pond.browse();
+                } else {
+                    console.warn(`⚠️ FilePond belum siap untuk productId=${productId}`);
+                }
+            });
+        });
     });
-
 </script>
 
 

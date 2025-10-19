@@ -64,50 +64,6 @@
             padding: 0.25rem 0.6rem;
         }
 
-        .filepond--root {
-          width: auto !important;
-          height: auto !important;
-          min-height: auto !important;
-          border: none !important;
-          background: none !important;
-        }
-
-        .filepond--drop-label {
-          background: none !important;
-          border: none !important;
-          padding: 0 !important;
-          margin: 0 !important;
-          display: inline !important;
-          font-size: 0.9rem !important;
-          color: #0d6efd !important;
-          cursor: pointer !important;
-        }
-
-        .filepond--drop-label:hover {
-          text-decoration: none;
-        }
-
-        .filepond--panel-root,
-        .filepond--credits {
-          display: none !important;
-        }
-
-        .filepond-btn {
-          background-color: #007bff;  /* biru */
-          color: white;
-          padding: 4px 10px;
-          border-radius: 6px;
-          font-size: 0.75rem;
-          border: none;
-          cursor: pointer;
-          transition: background 0.2s ease-in-out;
-        }
-
-        .filepond-btn:hover {
-          background-color: #0056b3;  /* hover lebih gelap */
-        }
-
-
     </style>
 
 </head>
@@ -225,22 +181,12 @@
                             <div class="card-content">
                                 <div class="card-body">
                                     <h4 class="card-title" th:text="${item.name}">Card Title</h4>
-                                    <p class="card-text"
-                                       th:text="${#strings.isEmpty(item.description) ? 'Description Unavailable' : item.description}">
+                                    <p class="card-text">
+                                        Gummies bonbon apple pie fruitcake icing biscuit apple pie jelly-o sweet roll.
                                     </p>
                                 </div>
 
-                                <!--div class="p-3">
-                                    <input type="file"
-                                           class="cardImage"
-                                           name="file"
-                                           accept="image/*"
-                                           th:attr="data-product-id=${item.id}">
-                                </div-->
-                                <div class="p-3 text-center">
-                                    <img th:if="${item.imageUrl != null}" th:src="@{${item.thumbnailUrl}}"
-                                         class="card-thumb img-fluid mb-2 rounded w-100"
-                                         style="max-height: 200px; object-fit: cover;">
+                                <div class="p-3">
                                     <input type="file"
                                            class="cardImage"
                                            name="file"
@@ -315,76 +261,39 @@
 <script src="https://unpkg.com/filepond@^4/dist/filepond.js"></script>
 <script>
     const contextPath = document.querySelector('meta[name="contextPath"]').content;
-
+    // Temukan semua input file
     document.querySelectorAll('.cardImage').forEach(input => {
+
+      // Ambil productId dari atribut data
       const productId = input.getAttribute('data-product-id');
 
-      // Dapatkan elemen <img> thumbnail terdekat
-      const cardThumb = input.closest('.p-3').querySelector('.card-thumb');
-
+      // Buat instance FilePond
       const pond = FilePond.create(input, {
         allowMultiple: false,
-        allowProcess: true,
-        allowRevert: false,
         instantUpload: true,
         acceptedFileTypes: ['image/*'],
-        /* 🟡 Tambahkan di sini: custom text label */
-        labelIdle: '<span class="filepond--label-action filepond-btn" style="text-decoration: none;">Upload Foto</span> atau drag ke sini',
 
         server: {
           process: {
             url: `${contextPath}v1/manager/manage/product/item/upload-image/${productId}`,
             method: 'POST',
-            ondata: (formData) => formData,
-            onload: (response) => {
-              try {
-                const data = JSON.parse(response);
-                if (data.success && data.url) {
-                    console.log("data.success");
-                  // update thumbnail image
-                  if (cardThumb) {
-                    cardThumb.src = (contextPath + data.url).replace(/([^:]\/)\/+/g, "$1");
-                    console.log("cardThumb.contextPath=="+contextPath);
-                    console.log("data.url=="+data.url);
-                  } else {
-                    console.log("BENER KESINI");
-                    const img = document.createElement('img');
-                    //img.src = contextPath + data.url;
-                    //img.src = data.url;
-                    const safeUrl = (contextPath + data.url).replace(/([^:]\/)\/+/g, "$1");
-                      setTimeout(() => {
-                        img.src = safeUrl;
-                      }, 200);
-                    img.className = 'card-thumb img-fluid mb-2 rounded';
-                    img.style.maxHeight = '150px';
-                    img.style.objectFit = 'cover';
-                    //input.parentNode.insertBefore(img, input);
-                    pond.element.parentNode.insertBefore(img, pond.element);
-                  }
-                  console.log(`✅ Thumbnail updated for productId=${productId}`);
-                  return data.url;
-                }
-              } catch (err) {
-                console.error("Error parsing server response:", err, response);
-              }
-            },
-            onerror: (response) => {
-              console.error("❌ Upload failed:", response);
+            ondata: (formData) => {
+              console.log(`📤 Uploading for productId=${productId}`);
+              return formData;
             }
           }
         }
       });
 
+      // Debug event upload
       pond.on('processfile', (error, file) => {
-        if (error) {
+        if (!error) {
+          console.log(`✅ Upload success for productId=${productId}:`, file.filename);
+        } else {
           console.error(`❌ Upload error for productId=${productId}`, error);
-        }
-        else {
-            pond.removeFiles();
         }
       });
     });
-
 </script>
 
 

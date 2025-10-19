@@ -51,6 +51,8 @@ public interface ProductRepo extends JpaRepository<ProductEntity,Long> {
             p.id AS id,
             p.name AS name,
             p.description AS description,
+            p.thumbnail_url as thumbnail_url,
+            p.image_url as image_url,
             p.status AS status,
             pc.name AS category_name,
             ch.category_path AS category_path,
