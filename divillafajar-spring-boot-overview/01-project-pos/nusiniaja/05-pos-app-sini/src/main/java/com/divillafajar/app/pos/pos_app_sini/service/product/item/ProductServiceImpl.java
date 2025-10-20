@@ -89,12 +89,19 @@ public class ProductServiceImpl implements ProductService{
 
 
     @Override
-	public List<ProductWithCategoryPathDTO> getListProduct(String clietnAddressPubId, Long categoryId) {
+	public List<ProductWithCategoryPathDTO> getListProduct(String clietnAddressPubId, Long categoryId, String keyword) {
 		System.out.println("==============getListProduct==================");
 		System.out.println("clietnAddressPubId="+clietnAddressPubId);
 		System.out.println("categoryId="+categoryId);
 		List<ProductWithCategoryPathDTO> retVal = new ArrayList<>();
-		List<ProductWithCategoryPathDTO> listItem = productRepo.findProductsWithCategoryPathByClientAndCategory(clietnAddressPubId, categoryId);
+        List<ProductWithCategoryPathDTO> listItem = null;
+        if(keyword==null || keyword.isEmpty()) {
+            listItem = productRepo.findProductsWithCategoryPathByClientAndCategory(clietnAddressPubId, categoryId);
+        }
+        else {
+            listItem = productRepo.findProductsWithCategoryPathByClientAddressAndCategoryFilterByKwordProductName(clietnAddressPubId, categoryId, keyword);
+        }
+
 		if(listItem!=null) {
 			System.out.println("listItem="+listItem.size());
 			retVal = listItem;

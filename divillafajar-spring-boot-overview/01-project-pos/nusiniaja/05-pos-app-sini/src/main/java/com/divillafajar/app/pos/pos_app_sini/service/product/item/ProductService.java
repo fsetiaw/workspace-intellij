@@ -10,5 +10,5 @@ import java.util.List;
 
 public interface ProductService {
 	ProductDTO addNewProduct(Long catId, ClientAddressDTO dto, CreateItemRequestModel createItemRequestModel);
-    List<ProductWithCategoryPathDTO> getListProduct(String clietnAddressPubId, Long categoryId);
+    List<ProductWithCategoryPathDTO> getListProduct(String clietnAddressPubId, Long categoryId, String keywordOptional);
 }

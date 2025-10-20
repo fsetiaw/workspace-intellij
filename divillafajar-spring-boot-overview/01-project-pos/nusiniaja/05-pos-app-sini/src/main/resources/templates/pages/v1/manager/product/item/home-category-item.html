@@ -7,7 +7,7 @@
     <!-- inject contextPath -->
     <meta name="contextPath" th:content="@{/}">
     <meta name="pAid" th:content="${session.targetAddress.pubId}">
-    <title>Admin Dashboard</title>
+    <title>Product - item</title>
     <link rel="shortcut icon" th:href="@{/assets/compiled/svg/favicon.svg}" type="image/x-icon}">
     <link rel="shortcut icon"
           href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACEAAAAiCAYAAADRcLDBAAAEs2lUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNS41LjAiPgogPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgeG1sbnM6ZXhpZj0iaHR0cDovL25zLmFkb2JlLmNvbS9leGlmLzEuMC8iCiAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyIKICAgIHhtbG5zOnBob3Rvc2hvcD0iaHR0cDovL25zLmFkb2JlLmNvbS9waG90b3Nob3AvMS4wLyIKICAgIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIKICAgIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIgogICAgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZUV2ZW50IyIKICAgZXhpZjpQaXhlbFhEaW1lbnNpb249IjMzIgogICBleGlmOlBpeGVsWURpbWVuc2lvbj0iMzQiCiAgIGV4aWY6Q29sb3JTcGFjZT0iMSIKICAgdGlmZjpJbWFnZVdpZHRoPSIzMyIKICAgdGlmZjpJbWFnZUxlbmd0aD0iMzQiCiAgIHRpZmY6UmVzb2x1dGlvblVuaXQ9IjIiCiAgIHRpZmY6WFJlc29sdXRpb249Ijk2LjAiCiAgIHRpZmY6WVJlc29sdXRpb249Ijk2LjAiCiAgIHBob3Rvc2hvcDpDb2xvck1vZGU9IjMiCiAgIHBob3Rvc2hvcDpJQ0NQcm9maWxlPSJzUkdCIElFQzYxOTY2LTIuMSIKICAgeG1wOk1vZGlmeURhdGU9IjIwMjItMDMtMzFUMTA6NTA6MjMrMDI6MDAiCiAgIHhtcDpNZXRhZGF0YURhdGU9IjIwMjItMDMtMzFUMTA6NTA6MjMrMDI6MDAiPgogICA8eG1wTU06SGlzdG9yeT4KICAgIDxyZGY6U2VxPgogICAgIDxyZGY6bGkKICAgICAgc3RFdnQ6YWN0aW9uPSJwcm9kdWNlZCIKICAgICAgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWZmaW5pdHkgRGVzaWduZXIgMS4xMC4xIgogICAgICBzdEV2dDp3aGVuPSIyMDIyLTAzLTMxVDEwOjUwOjIzKzAyOjAwIi8+CiAgICA8L3JkZjpTZXE+CiAgIDwveG1wTU06SGlzdG9yeT4KICA8L3JkZjpEZXNjcmlwdGlvbj4KIDwvcmRmOlJERj4KPC94OnhtcG1ldGE+Cjw/eHBhY2tldCBlbmQ9InIiPz5V57uAAAABgmlDQ1BzUkdCIElFQzYxOTY2LTIuMQAAKJF1kc8rRFEUxz9maORHo1hYKC9hISNGTWwsRn4VFmOUX5uZZ36oeTOv954kW2WrKLHxa8FfwFZZK0WkZClrYoOe87ypmWTO7dzzud97z+nec8ETzaiaWd4NWtYyIiNhZWZ2TvE946WZSjqoj6mmPjE1HKWkfdxR5sSbgFOr9Ll/rXoxYapQVik8oOqGJTwqPL5i6Q5vCzeo6dii8KlwpyEXFL519LjLLw6nXP5y2IhGBsFTJ6ykijhexGra0ITl5bRqmWU1fx/nJTWJ7PSUxBbxJkwijBBGYYwhBgnRQ7/MIQIE6ZIVJfK7f/MnyUmuKrPOKgZLpEhj0SnqslRPSEyKnpCRYdXp/9++msneoFu9JgwVT7b91ga+LfjetO3PQ9v+PgLvI1xkC/m5A+h7F32zoLXug38dzi4LWnwHzjeg8UGPGbFfySvuSSbh9QRqZ6H+Gqrm3Z7l9zm+h+iafNUV7O5Bu5z3L/wAdthn7QIme0YAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAJTSURBVFiF7Zi9axRBGIefEw2IdxFBRQsLWUTBaywSK4ubdSGVIY1Y6HZql8ZKCGIqwX/AYLmCgVQKfiDn7jZeEQMWfsSAHAiKqPiB5mIgELWYOW5vzc3O7niHhT/YZvY37/swM/vOzJbIqVq9uQ04CYwCI8AhYAlYAB4Dc7HnrOSJWcoJcBS4ARzQ2F4BZ2LPmTeNuykHwEWgkQGAet9QfiMZjUSt3hwD7psGTWgs9pwH1hC1enMYeA7sKwDxBqjGnvNdZzKZjqmCAKh+U1kmEwi3IEBbIsugnY5avTkEtIAtFhBrQCX2nLVehqyRqFoCAAwBh3WGLAhbgCRIYYinwLolwLqKUwwi9pxV4KUlxKKKUwxC6ZElRCPLYAJxGfhSEOCz6m8HEXvOB2CyIMSk6m8HoXQTmMkJcA2YNTHm3congOvATo3tE3A29pxbpnFzQSiQPcB55IFmFNgFfEQeahaAGZMpsIJIAZWAHcDX2HN+2cT6r39GxmvC9aPNwH5gO1BOPFuBVWAZue0vA9+A12EgjPadnhCuH1WAE8ivYAQ4ohKaagV4gvxi5oG7YSA2vApsCOH60WngKrA3R9IsvQUuhIGY00K4flQG7gHH/mLytB4C42EgfrQb0mV7us8AAMeBS8mGNMR4nwHamtBB7B4QRNdaS0M8GxDEog7iyoAguvJ0QYSBuAOcAt71Kfl7wA8DcTvZ2KtOlJEr+ByyQtqqhTyHTIeB+ONeqi3brh+VgIN0fohUgWGggizZFTplu12yW8iy/YLOGWMpDMTPXnl+Az9vj2HERYqPAAAAAElFTkSuQmCC"
@@ -78,7 +78,7 @@
           padding: 0 !important;
           margin: 0 !important;
           display: inline !important;
-          font-size: 0.9rem !important;
+          font-size: 0.85rem !important;
           color: #0d6efd !important;
           cursor: pointer !important;
         }
@@ -158,11 +158,63 @@
         <div layout:fragment="content">
             <div class="page-content">
                 <!-- list group button & badge start-->
-                Home Category Item
-                <div class="card collapse-icon accordion-icon-rotate">
-                    <!--div class="card-header">
-                        <h4 class="card-title pl-1">Accordion</h4>
-                    </div-->
+                <div class="d-inline-flex align-items-center gap-2 flex-nowrap">
+                    <button type="button" id="add"
+                            class="d-flex align-items-center justify-content-center"
+                            th:style="|background-color:${@appGlobals.get('colorPrimaryBlue')};
+                       color:white;padding-bottom:8px;padding-right:13px;
+                       width:32px;
+                       height:32px;
+                       border:none;
+                       border-radius:50%;
+                       line-height:0;|">
+                        <i class="bi bi-plus" style="font-size:150%;"></i>
+                    </button>
+                    <!--a th:href="@{/produk}" th:text="#{label.add}"></a-->
+                    <span th:text="#{label.add}" id="txtAdd"></span>
+
+
+                    <span>/</span>
+
+                    <button type="button" id="src"
+                            class="d-flex align-items-center justify-content-center"
+                            th:style="|background-color:${@appGlobals.get('colorSecondaryGrey')};
+                       color:white;
+                       width:32px;
+                       height:32px;
+                       border:none;
+                       border-radius:50%;
+                       line-height:0;|">
+                        <i class="bi bi-search" style="font-size:100%;"></i>
+                    </button>
+                    <span th:text="#{label.search}" id="txtSearch"></span>
+                </div>
+
+                <div class="card" id="searchCard">
+                    <div class="card-content">
+                        <div class="card-body">
+                            <div class="form form-horizontal">
+                                <div class="form-body">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="form-group has-icon-left">
+                                                <div class="position-relative">
+                                                    <input type="text" class="form-control"
+                                                           th:placeholder="#{label.search}" id="searchKeyword">
+                                                    <div class="form-control-icon">
+                                                        <i class="bi bi-search"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card collapse-icon accordion-icon-rotate" id="collapsableCard">
                     <div class="card-body">
                         <div class="accordion" id="cardAccordion">
                             <div class="accordion" id="accordionExample">
@@ -190,7 +242,7 @@
                                     <div id="collapseOne" class="accordion-collapse collapse "
                                          aria-labe  lledby="headingOne" data-bs-parent="#accordionExample">
                                         <div class="accordion-body">
-                                            <form class="form" method="post" th:action="@{/v1/manager/manage/product/item/{categoryId}(categoryId=${categoryId},activePage=${activePage},activeSub=${activeSub})}">
+                                            <form class="form">
                                                 <div class="form-body">
                                                     <div class="form-group">
                                                         <!--label for="feedback1" class="sr-only" th:text="#{label.itemName}"></label-->
@@ -217,14 +269,26 @@
                     </div>
                 </div>
                 <!-- list group button & badge ends -->
-                <div class="row">
+                <div class="row" id="productList">
                     <!-- 🔁 Loop semua produk -->
-                    <div class="col-xl-4 col-md-6 col-sm-12 mb-4"
+                    <!--div class="col-xl-4 col-md-6 col-sm-12 mb-4"-->
+                    <div class="col-xl-4 col-md-6 col-sm-6 col-6 mb-4"
                          th:each="item : ${listItem}">
                         <div class="card">
                             <div class="card-content">
                                 <div class="card-body">
                                     <h4 class="card-title" th:text="${item.name}">Card Title</h4>
+                                    <div class="p-3 text-center">
+                                        <img th:if="${item.imageUrl != null}" th:src="@{${item.thumbnailUrl}}"
+                                             class="card-thumb img-fluid mb-2 rounded w-100"
+                                             style="max-height: 200px; object-fit: cover;">
+                                        <input type="file"
+                                               class="cardImage"
+                                               name="file"
+                                               accept="image/*"
+                                               th:attr="data-product-id=${item.id}">
+                                    </div>
+                                    <!-- descripsi-->
                                     <p class="card-text"
                                        th:text="${#strings.isEmpty(item.description) ? 'Description Unavailable' : item.description}">
                                     </p>
@@ -237,16 +301,7 @@
                                            accept="image/*"
                                            th:attr="data-product-id=${item.id}">
                                 </div-->
-                                <div class="p-3 text-center">
-                                    <img th:if="${item.imageUrl != null}" th:src="@{${item.thumbnailUrl}}"
-                                         class="card-thumb img-fluid mb-2 rounded w-100"
-                                         style="max-height: 200px; object-fit: cover;">
-                                    <input type="file"
-                                           class="cardImage"
-                                           name="file"
-                                           accept="image/*"
-                                           th:attr="data-product-id=${item.id}">
-                                </div>
+
                             </div>
 
                             <div class="card-footer d-flex justify-content-between">
@@ -385,6 +440,103 @@
       });
     });
 
+</script>
+
+<script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+        const addBtn = document.getElementById("add");
+        const srcBtn = document.getElementById("src");
+        const txtAdd = document.getElementById("txtAdd");
+        const txtSearch = document.getElementById("txtSearch");
+        const searchCard = document.getElementById("searchCard");
+        const collapsableCard = document.getElementById("collapsableCard");
+
+        const searchInput = document.getElementById("searchKeyword");
+        const productList = document.getElementById("productList");
+        const cards = productList ? productList.querySelectorAll(".col-xl-4, .col-md-6, .col-sm-12") : [];
+
+        const colorPrimaryBlue = /*[[${@appGlobals.get('colorPrimaryBlue')}]]*/ '#007bff';
+        const colorSecondaryGrey = /*[[${@appGlobals.get('colorSecondaryGrey')}]]*/ '#6c757d';
+
+        // Kondisi awal
+        searchCard.style.display = "none";
+        collapsableCard.style.display = "block";
+        addBtn.style.backgroundColor = colorPrimaryBlue;
+        srcBtn.style.backgroundColor = colorSecondaryGrey;
+
+        // Tombol Search
+        srcBtn.addEventListener("click", function () {
+            searchCard.style.display = "block";
+            collapsableCard.style.display = "none";
+            srcBtn.style.backgroundColor = colorPrimaryBlue;
+            addBtn.style.backgroundColor = colorSecondaryGrey;
+        });
+
+        // Tombol Add
+        addBtn.addEventListener("click", function () {
+            searchCard.style.display = "none";
+            collapsableCard.style.display = "block";
+            addBtn.style.backgroundColor = colorPrimaryBlue;
+            srcBtn.style.backgroundColor = colorSecondaryGrey;
+
+            // 🔹 Reset filter search
+            if (searchInput) {
+                searchInput.value = ""; // kosongkan input
+                cards.forEach(card => card.style.display = ""); // tampilkan semua kartu
+            }
+        });
+
+        // 🔹 Klik teks = klik tombol
+        txtAdd.addEventListener("click", function () {
+            addBtn.click();
+        });
+
+        txtSearch.addEventListener("click", function () {
+            srcBtn.click();
+        });
+
+        // 🔹 (Opsional) Tambahkan efek hover pada teks agar terasa interaktif
+        [txtAdd, txtSearch].forEach(el => {
+            el.style.cursor = "pointer";
+            el.addEventListener("mouseenter", () => el.style.textDecoration = "underline");
+            el.addEventListener("mouseleave", () => el.style.textDecoration = "none");
+        });
+    });
+</script>
+<!-- === SCRIPT UNTUK FORM PENCARIAN DINAMIS === -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById("searchKeyword");
+        const productList = document.getElementById("productList");
+        const cards = productList.querySelectorAll(".col-xl-4, .col-md-6, .col-sm-12");
+
+        searchInput.addEventListener("input", function () {
+            const keyword = this.value.trim().toLowerCase();
+
+            cards.forEach(card => {
+                const titleElement = card.querySelector(".card-title");
+                const descElement = card.querySelector(".card-text");
+                const name = titleElement ? titleElement.textContent.toLowerCase() : "";
+                const desc = descElement ? descElement.textContent.toLowerCase() : "";
+
+                // kalau deskripsi "Description Unavailable", abaikan
+                const isDescUnavailable = desc.includes("description unavailable");
+
+                // kalau keyword kosong → tampilkan semua
+                if (keyword === "") {
+                    card.style.display = "";
+                }
+                // kalau keyword cocok dengan nama atau deskripsi → tampilkan
+                else if (!isDescUnavailable && (name.includes(keyword) || desc.includes(keyword))) {
+                    card.style.display = "";
+                }
+                // kalau tidak cocok → sembunyikan
+                else {
+                    card.style.display = "none";
+                }
+            });
+        });
+    });
 </script>
 
 

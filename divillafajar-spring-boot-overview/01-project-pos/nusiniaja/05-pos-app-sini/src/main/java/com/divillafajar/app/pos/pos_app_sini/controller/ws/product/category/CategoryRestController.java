@@ -5,12 +5,14 @@ import com.divillafajar.app.pos.pos_app_sini.exception.GenericCustomErrorExcepti
 import com.divillafajar.app.pos.pos_app_sini.exception.category.CategoryHasSubCategoryException;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientAddressDTO;
+import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductWithCategoryPathDTO;
 import com.divillafajar.app.pos.pos_app_sini.model.product.CategorySearchResultModel;
 import com.divillafajar.app.pos.pos_app_sini.model.product.CreateSubCategoryProductRespModel;
 import com.divillafajar.app.pos.pos_app_sini.model.product.RequestItemSubItemModel;
 import com.divillafajar.app.pos.pos_app_sini.model.product.UpdateCategoryProductRespModel;
 import com.divillafajar.app.pos.pos_app_sini.service.client.ClientAddressService;
 import com.divillafajar.app.pos.pos_app_sini.service.product.category.ProductCategoryService;
+import com.divillafajar.app.pos.pos_app_sini.service.product.item.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,7 @@ public class CategoryRestController {
     private final ProductCategoryService categoryService;
     private MessageSource messageSource;
     private final ClientAddressService clientAddressService;
+    private final ProductService productService;
 
 
     @PostMapping("/category/{pubAid}")
@@ -194,21 +197,26 @@ public class CategoryRestController {
         //ProductCategoryDTO updated = categoryService.update(id, dto);
         return ResponseEntity.ok(retVal);
     }
-    /*
-    public ResponseEntity<ProductCategoryDTO> updateCategory(
-            @PathVariable Long id,
-            @RequestBody ProductCategoryDTO dto) {
-        System.out.println("Rest Controller updateCategory");
-        ProductCategoryDTO retVal = new ProductCategoryDTO();
-        retVal.setId(id);
-        retVal.setName(dto.getName());
-        //ProductCategoryDTO updated = categoryService.update(id, dto);
+
+    @GetMapping("/category/{catId}/search/{kword}")
+    public ResponseEntity<?> showSearchItemCategoryResult(
+            @RequestParam(name = "activePage", required = false) String activePage,
+            @RequestParam(name = "activeSub", required = false) String activeSub,
+            @RequestParam(name = "adrPubId", required = false) String adrPubId,
+            @PathVariable("catId") Long catId,
+            @PathVariable("kword") String kword,
+            RedirectAttributes redirectAttributes,
+            HttpServletRequest request,
+            Model model, HttpSession session
+    ) {
+        System.out.println(catId+" ---showSearchItemCategoryResult is called = "+kword);
+        System.out.println(activePage+" --- "+activeSub);
+        System.out.println(adrPubId);
+        List<ProductWithCategoryPathDTO> retVal = new ArrayList<>();
+        ClientAddressDTO address = (ClientAddressDTO) session.getAttribute("targetAddress");
+        List<ProductWithCategoryPathDTO> listItem = productService.getListProduct(adrPubId,catId, kword);
+        if(listItem!=null)
+            return ResponseEntity.ok(listItem);
         return ResponseEntity.ok(retVal);
-
-        //return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-        //        .body(null);
-
-
     }
-     */
 }

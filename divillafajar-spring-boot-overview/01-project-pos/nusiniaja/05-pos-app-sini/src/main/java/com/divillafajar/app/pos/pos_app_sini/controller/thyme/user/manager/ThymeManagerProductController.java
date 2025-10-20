@@ -11,6 +11,7 @@ import com.divillafajar.app.pos.pos_app_sini.service.image.ImageStorageService;
 import com.divillafajar.app.pos.pos_app_sini.service.product.category.ProductCategoryService;
 import com.divillafajar.app.pos.pos_app_sini.service.product.item.ProductService;
 import com.divillafajar.app.pos.pos_app_sini.utils.TelegramNotifier;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -153,6 +154,8 @@ public class ThymeManagerProductController {
         }
     }
 
+
+
 	@GetMapping("/item/{categoryId}")
 	public String showCategoryItemHome(
 			@RequestParam(name = "activePage", required = true) String activePage,
@@ -189,13 +192,15 @@ public class ThymeManagerProductController {
 			}
 		}
 		ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
-		List<ProductWithCategoryPathDTO> listItem = productService.getListProduct(dto.getPubId(),categoryId);
+		List<ProductWithCategoryPathDTO> listItem = productService.getListProduct(dto.getPubId(),categoryId, null);
 		model.addAttribute("pathCategory",pathCategory);
 		model.addAttribute("path",path);
 		model.addAttribute("targetCategoryName",targetCategoryName);
 		model.addAttribute("trimPath",trimPath);
 		model.addAttribute("activePage",activePage);
 		model.addAttribute("activeSub",activeSub);
+        model.addAttribute("categoryId",categoryId);
+        model.addAttribute("adrPubId",dto.getPubId());
 		if(listItem!=null) {
 			model.addAttribute("listItem",listItem);
 		}
