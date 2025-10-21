@@ -107,6 +107,44 @@
           background-color: #0056b3;  /* hover lebih gelap */
         }
 
+        @media (max-width: 576px) {
+            .card-body .d-flex {
+                justify-content: center !important;
+            }
+        }
+
+        /*
+        .card-wrapper {
+          margin-bottom: 5px !important;
+        }
+        */
+
+        .card {
+          margin-bottom: 0.5rem !important;
+        }
+
+        .card-body {
+          padding-bottom: 0.75rem !important;
+          padding-top: 0.75rem !important;
+        }
+
+        /* Warna latar belakang body accordion */
+          #collapseOne .accordion-body {
+            background-color: #e3f2fd; /* biru muda lembut */
+          }
+
+          /* Kalau ada tombol accordion header */
+          #headingOne .accordion-button {
+            background-color: #bbdefb; /* biru muda */
+            color: #0d47a1;            /* teks biru tua */
+          }
+
+          /* Saat tombol accordion terbuka (expanded) */
+          #headingOne .accordion-button:not(.collapsed) {
+            background-color: #90caf9; /* biru sedikit lebih terang */
+            color: #0d47a1;
+            box-shadow: none;
+          }
 
     </style>
 
@@ -133,6 +171,14 @@
 
         <!-- Main content slot -->
         <div class="page-heading">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="#">Management</a></li>
+                    <li class="breadcrumb-item"><a href="#">Product</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Product List</li>
+                </ol>
+            </nav>
             <h3>
                 <span style="font-size:70%; display:block; line-height:1;"
                       th:text="|${#strings.toUpperCase(#messages.msg('label.setting'))}|">
@@ -241,8 +287,8 @@
                                     </h2>
                                     <div id="collapseOne" class="accordion-collapse collapse "
                                          aria-labe  lledby="headingOne" data-bs-parent="#accordionExample">
-                                        <div class="accordion-body">
-                                            <form class="form">
+                                        <div class="accordion-body" id="addSearch">
+                                            <form class="form" method="post" th:action="@{/v1/manager/manage/product/item/{categoryId}(categoryId=${categoryId},activePage=${activePage},activeSub=${activeSub})}">
                                                 <div class="form-body">
                                                     <div class="form-group">
                                                         <!--label for="feedback1" class="sr-only" th:text="#{label.itemName}"></label-->
@@ -271,45 +317,119 @@
                 <!-- list group button & badge ends -->
                 <div class="row" id="productList">
                     <!-- 🔁 Loop semua produk -->
-                    <!--div class="col-xl-4 col-md-6 col-sm-12 mb-4"-->
-                    <div class="col-xl-4 col-md-6 col-sm-6 col-6 mb-4"
-                         th:each="item : ${listItem}">
+                    <h3 th:if="${#lists.size(listItem) > 0}">
+                        <span style="font-size:60%; display:block; line-height:1;padding:10px 0 5px 0;"
+                              th:text="|${#messages.msg('label.listProductItem')}:|">
+                        </span>
+                    </h3>
+
+                    <!--div class="col-xl-4 col-md-6 col-sm-6 col-6 mb-4"-->
+                    <div class="col-xl-4 col-md-6 col-sm-12 mb-2"
+                         th:each="item, iterStat : ${listItem}">
                         <div class="card">
                             <div class="card-content">
                                 <div class="card-body">
-                                    <h4 class="card-title" th:text="${item.name}">Card Title</h4>
-                                    <div class="p-3 text-center">
-                                        <img th:if="${item.imageUrl != null}" th:src="@{${item.thumbnailUrl}}"
-                                             class="card-thumb img-fluid mb-2 rounded w-100"
-                                             style="max-height: 200px; object-fit: cover;">
-                                        <input type="file"
-                                               class="cardImage"
-                                               name="file"
-                                               accept="image/*"
-                                               th:attr="data-product-id=${item.id}">
+                                    <div class="accordion accordion-flush"
+                                         th:attr="id=${'accordionFlushExample' + iterStat.count}">
+                                        <div class="accordion-item">
+
+                                            <!-- Tombol Accordion -->
+                                            <button class="accordion-button collapsed" type="button"
+                                                    data-bs-toggle="collapse"
+                                                    th:attr="data-bs-target=${'#flush-collapseOne' + iterStat.count},
+                                         aria-controls=${'flush-collapseOne' + iterStat.count}">
+                                                <div class="d-flex flex-wrap justify-content-between align-items-center text-center">
+                                                    <h4 class="card-title mb-0 flex-grow-1 text-start"
+                                                        th:text="${item.name}">Card Title</h4>
+                                                </div>
+                                            </button>
+
+                                            <!-- Isi Accordion -->
+                                            <div class="accordion-collapse collapse"
+                                                 th:attr="id=${'flush-collapseOne' + iterStat.count},
+                                      aria-labelledby=${'flush-headingOne' + iterStat.count},
+                                      data-bs-parent=${'#accordionFlushExample' + iterStat.count}">
+                                                <div class="accordion-body">
+
+                                                    <!-- Tombol edit -->
+                                                    <div class="text-center my-2">
+                                                        <a class="btn btn-sm btn-outline-primary toggle-edit"
+                                                           th:attr="data-target-id=${'collapseExample' + item.id}"
+                                                           role="button">
+                                                            <i class="bi bi-pencil" style="font-size: 0.7rem;"></i>
+                                                        </a>
+                                                    </div>
+
+                                                    <!-- Deskripsi -->
+                                                    <section class="desc">
+                                                        <div class="p-3 text-center">
+                                                            <img th:if="${item.imageUrl != null}"
+                                                                 th:src="@{${item.thumbnailUrl}}"
+                                                                 class="card-thumb img-fluid mb-2 rounded w-100"
+                                                                 style="max-height: 200px; object-fit: cover;">
+                                                            <input type="file"
+                                                                   class="cardImage"
+                                                                   name="file"
+                                                                   accept="image/*"
+                                                                   th:attr="data-product-id=${item.id}">
+                                                        </div>
+                                                        <p class="card-text"
+                                                           th:text="${#strings.isEmpty(item.description) ? 'Description Unavailable' : item.description}">
+                                                        </p>
+                                                    </section>
+
+                                                    <!-- Collapse Form -->
+                                                    <div class="collapse"
+                                                         th:attr="id=${'collapseExample' + item.id}">
+                                                        <h4 class="card-title">Edit Form</h4>
+                                                        <form class="form" method="post">
+                                                            <div class="form-body">
+                                                                <div class="form-group">
+                                                                    <label for="feedback1" class="sr-only">Name</label>
+                                                                    <input type="text" id="name" class="form-control" placeholder="Name"
+                                                                           name="name" th:value="${item.name}">
+                                                                </div>
+                                                                <div class="form-group form-label-group">
+                                                                    <label for="label-textarea">Description</label>
+                                                                    <textarea class="form-control" id="desc" rows="3" name="desc"
+                                                                              th:placeholder="${item.description}"></textarea>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="feedback4" class="sr-only">Last Game</label>
+                                                                    <input type="text" id="feedback4" class="form-control"
+                                                                           placeholder="Last Name" name="LastName">
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="feedback2" class="sr-only">Email</label>
+                                                                    <input type="email" id="feedback2" class="form-control"
+                                                                           placeholder="Email" name="email">
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <select name="reason" class="form-control">
+                                                                        <option value="Inquiry">Inquiry</option>
+                                                                        <option value="Complain">Complaints</option>
+                                                                        <option value="Quotation">Quotation</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-actions d-flex justify-content-end">
+                                                                <button type="submit" class="btn btn-primary me-1">Submit</button>
+                                                                <button type="reset" class="btn btn-light-primary">Cancel</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+                                        </div>
                                     </div>
-                                    <!-- descripsi-->
-                                    <p class="card-text"
-                                       th:text="${#strings.isEmpty(item.description) ? 'Description Unavailable' : item.description}">
-                                    </p>
                                 </div>
-
-                                <!--div class="p-3">
-                                    <input type="file"
-                                           class="cardImage"
-                                           name="file"
-                                           accept="image/*"
-                                           th:attr="data-product-id=${item.id}">
-                                </div-->
-
-                            </div>
-
-                            <div class="card-footer d-flex justify-content-between">
-                                <span>Card Footer</span>
-                                <button class="btn btn-light-primary">Read More</button>
                             </div>
                         </div>
                     </div>
+
+
                 </div>
             </div>
         </div>
@@ -384,7 +504,7 @@
         instantUpload: true,
         acceptedFileTypes: ['image/*'],
         /* 🟡 Tambahkan di sini: custom text label */
-        labelIdle: '<span class="filepond--label-action filepond-btn" style="text-decoration: none;">Upload Foto</span> atau drag ke sini',
+        labelIdle: '<span class="filepond--label-action filepond-btn" style="text-decoration: none;">Upload Foto</span>',
 
         server: {
           process: {
@@ -538,11 +658,30 @@
         });
     });
 </script>
+<!-- colapsable form --->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.toggle-edit').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('data-target-id');
+                const cardBody = this.closest('.card-body');
+                const desc = cardBody.querySelector('.desc');
+                const collapse = cardBody.querySelector(`#${targetId}`);
+                const bsCollapse = new bootstrap.Collapse(collapse, { toggle: false });
 
-
-
-
-
+                // toggle collapse
+                if (collapse.classList.contains('show')) {
+                    bsCollapse.hide();
+                    desc.style.display = ''; // tampilkan kembali section
+                } else {
+                    bsCollapse.show();
+                    desc.style.display = 'none'; // sembunyikan section
+                }
+            });
+        });
+    });
+</script>
 </body>
 
 </html>
