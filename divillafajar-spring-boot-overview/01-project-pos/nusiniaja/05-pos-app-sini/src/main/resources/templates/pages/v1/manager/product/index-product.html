@@ -35,28 +35,26 @@
 
         <!-- Main content slot -->
         <div class="page-heading">
+            <ol class="breadcrumb">
+                <li sec:authorize="hasRole('SUPERADMIN')" class="breadcrumb-item active">
+                    <a href="#" th:text="|${#messages.msg('label.dashboard')}|"></a>
+                </li>
+                <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN')" class="breadcrumb-item active">
+                    <a th:href="@{/v2/admin/home}" th:text="|${#messages.msg('label.dashboard')}|"></a>
+                </li>
+                <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN','MANAGER')" class="breadcrumb-item active">
+                    <a th:href="@{/v1/manager/home(pid=${targetAddress.pubId})}" th:text="|${#messages.msg('label.management')}|"></a>
+                </li>
+                <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN')" class="breadcrumb-item"
+                    aria-current="page" th:text="|${#messages.msg('label.manager.setting.product')}|">
+                </li>
+            </ol>
             <h3>
                 <span th:text="|${#strings.toUpperCase(#messages.msg('label.manager.setting.product'))}|"></span>
                 <span style="font-size:70%; display:block; line-height:1;"
                       th:text="|${#strings.toUpperCase(#messages.msg('label.dashboard'))}|">
                 </span>
             </h3>
-            <div class="btn-group dropdown me-1 mb-1">
-                <button type="button" class="btn btn-warning" th:text="#{label.setting}"></button>
-                <button type="button"
-                        class="btn btn-warning dropdown-toggle dropdown-toggle-split"
-                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                        data-reference="parent">
-                    <span class="sr-only">Toggle Dropdown</span>
-                </button>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#">Option 1</a>
-                    <a class="dropdown-item" href="#">Option 2</a>
-                    <a class="dropdown-item" href="#">Option 3</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#">Separated link</a>
-                </div>
-            </div>
         </div>
         <div layout:fragment="content">
             <section class="row">

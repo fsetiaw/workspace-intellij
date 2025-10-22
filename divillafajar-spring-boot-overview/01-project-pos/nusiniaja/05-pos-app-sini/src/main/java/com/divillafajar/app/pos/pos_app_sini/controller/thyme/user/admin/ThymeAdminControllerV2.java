@@ -106,7 +106,6 @@ public class ThymeAdminControllerV2 {
         System.out.println("showAddLocationForm CALLED = "+clientName+pid);
         UserSessionDTO userLogInfo = (UserSessionDTO) session.getAttribute("userLogInfo");
         List<ClientAddressDTO> listActiveLocation = clientAddressService.getActiveClientAddress(userLogInfo.getClientPid());
-        System.out.println("listActiveLocation size = "+listActiveLocation.size());
         if (listActiveLocation != null && !listActiveLocation.isEmpty()) {
             model.addAttribute("listActiveLocation", listActiveLocation);
         }
@@ -115,7 +114,6 @@ public class ThymeAdminControllerV2 {
         model.addAttribute("isAdd", add);
         model.addAttribute("activePage", "menu1");
         model.addAttribute("activeSub", "subMenu1");
-        System.out.println("showAddClientForm is called");
         return "pages/v1/admin/add-location";
     }
 

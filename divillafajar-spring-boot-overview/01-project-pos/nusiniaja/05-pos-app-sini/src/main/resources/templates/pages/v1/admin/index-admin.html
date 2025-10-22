@@ -35,6 +35,16 @@
 
         <!-- Main content slot -->
         <div class="page-heading">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li sec:authorize="hasRole('SUPERADMIN')" class="breadcrumb-item">
+                        <a th:href="@{/v2/admin/home}" th:text="|SUPER ${#messages.msg('label.dashboard')}|"></a>
+                    </li>
+                    <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN')" class="breadcrumb-item active" aria-current="page"
+                        th:text="|${#messages.msg('label.dashboard')}|"></a>
+                    </li>
+                </ol>
+            </nav>
             <h3>
                 <span th:text="|${session.userLogInfo.clientName}|"></span>
                 <span style="font-size:70%; display:block; line-height:1;"

@@ -19,9 +19,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
                 if (btn.classList.contains("delete-btn")) {
                   document.getElementById("confirmDeleteToast").style.display = "block";
-                } else if (btn.classList.contains("update-btn")) {
-                  document.getElementById("confirmUpdateToast").style.display = "block";
                 }
+                //else if (btn.classList.contains("update-btn")) {
+                //  document.getElementById("confirmUpdateToast").style.display = "block";
+                //}
               });
         });
     });
@@ -194,7 +195,7 @@ confirmDelete.addEventListener("click", () => {
 });
 
 
-<!-- buat handle update-->
+/*<!-- buat handle update-->
 const toastUpdate = document.getElementById("confirmUpdateToast");
 const confirmUpdateMessage = document.getElementById("confirmUpdateMessage");
 const cancelUpdate = document.getElementById("cancelUpdate");
@@ -261,6 +262,23 @@ confirmUpdate.addEventListener("click", () => {
   }
   toastUpdate.classList.remove("show");
 });
+*/
+
+// === Handle langsung submit update tanpa konfirmasi ===
+document.querySelectorAll(".update-btn").forEach(btn => {
+  btn.addEventListener("click", function (e) {
+    e.preventDefault(); // cegah link/button default behavior
+    e.stopPropagation(); // biar nggak trigger event card click
+
+    const targetKeyValue = this.getAttribute("data-store-pid"); // ambil ID dari tombol
+    const form = document.getElementById("updateForm");
+    const formField = document.getElementById("updPubId");
+
+    formField.value = targetKeyValue;
+    form.submit(); // langsung submit
+  });
+});
+
 
 // === tambahan buat sync QuickMenu → Sidebar ===
 document.querySelectorAll('.shake-trigger[data-submenu]').forEach(trigger => {

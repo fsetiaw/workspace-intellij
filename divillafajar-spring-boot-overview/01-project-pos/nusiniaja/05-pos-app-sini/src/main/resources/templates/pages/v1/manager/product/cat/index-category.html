@@ -44,6 +44,24 @@
 
         <!-- Main content slot -->
         <div class="page-heading">
+            <ol class="breadcrumb">
+                <li sec:authorize="hasRole('SUPERADMIN')" class="breadcrumb-item active">
+                    <a href="#" th:text="|${#messages.msg('label.dashboard')}|"></a>
+                </li>
+                <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN')" class="breadcrumb-item active">
+                    <a th:href="@{/v2/admin/home}" th:text="|${#messages.msg('label.dashboard')}|"></a>
+                </li>
+                <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN','MANAGER')" class="breadcrumb-item active">
+                    <a th:href="@{/v1/manager/home(pid=${targetAddress.pubId})}" th:text="|${#messages.msg('label.management')}|"></a>
+                </li>
+                <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN')" class="breadcrumb-item active">
+                    <a th:href="@{/v1/manager/manage/product(activePage='dashboard')}"
+                       th:text="|${#messages.msg('label.manager.setting.product')}|"></a>
+                </li>
+                <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN')" class="breadcrumb-item"
+                    aria-current="page" th:text="|${#messages.msg('label.manager.setting.product.category')}|">
+                </li>
+            </ol>
             <h3>
                 <span style="font-size:70%; display:block; line-height:1;"
                       th:utext="|${#strings.toUpperCase(#messages.msg('label.setting'))}|">

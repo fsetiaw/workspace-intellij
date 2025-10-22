@@ -49,6 +49,21 @@
         <div layout:fragment="logout-and-other-hidden-form">
             <div th:replace="~{/pages/v1/fragments/logout-and-other-hidden-form.html :: hidden-form(${clientName}, ${updatePath}, ${deletePath})}"></div>
         </div>
+        <div class="page-heading">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/v2/admin/home}" th:text="|${#messages.msg('label.dashboard')}|"></a></li>
+                    <li class="breadcrumb-item active" aria-current="page" th:text="|${#messages.msg('label.update')} ${#messages.msg('label.location')}|"></li>
+                </ol>
+            </nav>
+            <!--h3>
+                <span th:text="|${session.userLogInfo.clientName}|"></span>
+                <span style="font-size:70%; display:block; line-height:1;"
+                      th:text="|${#strings.toUpperCase(#messages.msg('label.dashboard'))}|">
+                </span>
+            </h3-->
+        </div>
+
         <!-- Main content slot -->
         <div layout:fragment="content">
             <div class="page-content">

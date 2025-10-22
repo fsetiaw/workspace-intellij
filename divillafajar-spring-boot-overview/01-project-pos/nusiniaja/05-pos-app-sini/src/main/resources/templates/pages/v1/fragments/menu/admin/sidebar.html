@@ -45,6 +45,7 @@
                     <li class="sidebar-title">Menu</li>
                     <li sec:authorize="hasRole('SUPERADMIN')" class="sidebar-item"
                         th:if="${activePage == 'dashboard'}">
+                        <!-- superadmin dashboar : belum ada -->
                         <a th:href="@{/v1/superuser/home}" class='sidebar-link'>
                             <i class="bi bi-arrow-left-square-fill"></i>
                             <span th:text="#{label.previousPage}"></span>
