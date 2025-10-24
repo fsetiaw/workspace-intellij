@@ -4,7 +4,7 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-@Component
+//@Component
 @ConfigurationProperties(prefix = "default")
 @Data
 public class CustomDefaultProperties {
@@ -17,8 +17,12 @@ public class CustomDefaultProperties {
     private String masterClientEmail;
     private String masterClientPubid;
     private String basicFeatureName;
+	/*
+	=====PINDAH KE GLOBAL APPS====
+	 */
     private String toastTimeout;
     private String toastShortTimeout;
     private String toastMediumTimeout;
     private String toastLongTimeout;
+	/// /////////////////////////////
 }

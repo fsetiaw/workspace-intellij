@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class AppGlobals {
 
-	private final CustomDefaultProperties customDefaultProperties;
+	private final CustomDefaultProperties props;
 	private final Map<String, Object> globals = new ConcurrentHashMap<>();
 
 	@PostConstruct
@@ -24,6 +24,10 @@ public class AppGlobals {
         globals.put("colorDanger", BootstrapColorEnum.DANGER.getHexCode());
         globals.put("colorWarning", BootstrapColorEnum.WARNING.getHexCode());
         globals.put("colorInfo", BootstrapColorEnum.INFO.getHexCode());
+		globals.put("toastTimeout", 2000);
+		globals.put("toastShortTimeout", 1500);
+		globals.put("toastMediumTimeout", 3000);
+		globals.put("toastLongTimeout", 5000);
 
 		System.out.println("[AppGlobals] Default values loaded from application.properties="+BootstrapColorEnum.PRIMARY_BLUE.getHexCode());
 	}

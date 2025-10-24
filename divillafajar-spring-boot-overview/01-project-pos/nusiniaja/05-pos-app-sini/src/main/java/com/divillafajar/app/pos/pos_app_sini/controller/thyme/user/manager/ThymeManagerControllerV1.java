@@ -22,6 +22,10 @@ import java.util.Optional;
 @Controller
 @RequestMapping("/v1/manager")
 @RequiredArgsConstructor
+/*
+@SessionAttributes({"toastShortTimeout","toastMediumTimeout","toastLongTimeout"})
+value ini pindah ke appGlobal
+ */
 @SessionAttributes({"targetAddress","toastShortTimeout","toastMediumTimeout","toastLongTimeout"})
 public class ThymeManagerControllerV1 {
 

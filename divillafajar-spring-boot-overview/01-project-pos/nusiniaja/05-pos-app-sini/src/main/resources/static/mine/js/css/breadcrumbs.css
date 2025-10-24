@@ -1,0 +1,60 @@
+/* --- Efek Hover di tiap breadcrumb row --- */
+nav.breadcrumb-row {
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    border-radius: 8px;
+    padding: 4px 8px;
+}
+
+nav.breadcrumb-row:hover {
+    background-color: #f8f9fa;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+
+/* --- Breadcrumb aktif (link terakhir) --- */
+.breadcrumb-item.active a {
+    position: relative;
+    color: #0d6efd; /* biru bootstrap */
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    transition: color 0.3s ease;
+}
+
+/* Underline animasi (default: tidak terlihat) */
+.breadcrumb-item.active a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 100%;
+    height: 2px;
+    background-color: currentColor;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.4s ease-out;
+}
+
+/* 🟦 Efek aktif saat hover di seluruh baris nav */
+nav.breadcrumb-row:hover .breadcrumb-item.active a {
+    color: #084298;
+}
+nav.breadcrumb-row:hover .breadcrumb-item.active a::after {
+    transform: scaleX(1);
+    transform-origin: left;
+}
+
+/* Glow lembut */
+.breadcrumb-item.active a {
+    animation: pulseLink 2s infinite;
+}
+
+@keyframes pulseLink {
+    0%, 100% {
+        text-shadow: 0 0 6px rgba(13,110,253,0.4);
+    }
+    50% {
+        text-shadow: 0 0 12px rgba(13,110,253,0.8);
+    }
+}

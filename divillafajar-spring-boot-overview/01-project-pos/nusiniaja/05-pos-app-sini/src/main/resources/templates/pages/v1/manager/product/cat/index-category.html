@@ -18,6 +18,7 @@
     <link rel="stylesheet" th:href="@{/mine/js/css/toast.css}">
     <link rel="stylesheet" th:href="@{/assets/vendors/toastify/toastify.css}">
     <link rel="stylesheet" th:href="@{/mine/js/css/additional-index.css}">
+    <link rel="stylesheet" th:href="@{/mine/js/css/breadcrumbs.css}">
     <!--link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"-->
 
@@ -354,7 +355,7 @@
         if (span.contains(savingSpan)) span.replaceChild(finalName, savingSpan);
         buttons.style.display = "block";
         buttons.querySelectorAll("a").forEach(btn => btn.disabled = false);
-        showToastText(msgSuccessUpdate, toastShortTimeout, greenSuccess);
+        showToastText(msgSuccessUpdate, toastShortTimeout, greenSuccess,,"#fff");
       })
       .catch(err => {
         console.error(err);
@@ -405,7 +406,7 @@
           }
         const newValue = newItemInput.value.trim();
         if (!newValue) {
-            showToastText(`${msgNewCategory}`, toastShortTimeout, "#ffc107");
+            showToastText(`${msgNewCategory}`, toastShortTimeout, "#ffc107","#fff");
             return;
         }
 
@@ -477,7 +478,7 @@
             // show lblNonUrutan
             document.getElementById("lblNonUrutan").style.display = "block";
 
-            showToastText(newValue + " " + msgSuccessInsert, toastShortTimeout, greenSuccess);
+            showToastText(newValue + " " + msgSuccessInsert, toastShortTimeout, greenSuccess,"#fff");
           })
           .catch(err => {
           setGlobalActionButtonsDisabled(false); // ✅ aktifkan kembali semua tombol
@@ -503,7 +504,7 @@
 searchItemBtn.addEventListener("click", function() {
   const query = newItemInput.value.trim();
   if (!query) {
-    showToastText(`${msgEnterKword}`, toastShortTimeout, "#ffc107");
+    showToastText(`${msgEnterKword}`, toastShortTimeout, "#ffc107","#fff");
     return;
   }
 
@@ -529,7 +530,7 @@ searchItemBtn.addEventListener("click", function() {
       const inputGroupLabel = document.querySelector(".input-group-text.bg-primary.text-white");
 
       if (!data || data.length === 0) {
-        showToastText(`Category "${query}" not found`, toastShortTimeout, "#ffc107");
+        showToastText(`Category "${query}" not found`, toastShortTimeout, "#ffc107","#fff");
 
         // 🔁 Balikkan label ke "Add" kalau hasil kosong
         if (inputGroupLabel) inputGroupLabel.textContent = lblSearch; //ngga jadi balikin deh
@@ -684,7 +685,7 @@ searchItemBtn.addEventListener("click", function() {
               // show add-sub on parent again (if exists)
               const parentAddSubBtn = parentLi.querySelector(".add-sub-btn");
               if (parentAddSubBtn) parentAddSubBtn.style.display = "";
-                showToastText(`msgSuccessUpdate`, toastShortTimeout, greenSuccess);
+                showToastText(`msgSuccessUpdate`, toastShortTimeout, greenSuccess,"#fff");
               //showToastText(`${data.name} berhasil ditambahkan`, toastShortTimeout, "#198754");
                 // hide lblUrutan
                 document.getElementById("lblUrutan").style.display = "none";
@@ -701,7 +702,7 @@ searchItemBtn.addEventListener("click", function() {
               const parentAddSubBtn = parentLi.querySelector(".add-sub-btn");
               if (parentAddSubBtn) parentAddSubBtn.style.display = "";
                 //showToastText(`${data.name} msgFailedInsert`, toastMediumTimeout, redError);
-              showToastText(`msgFailedInsert`, toastMediumTimeout, redError);
+              showToastText(`msgFailedInsert`, toastMediumTimeout, redError,"#fff");
             })
             .finally(() => {
               saveBtn.disabled = false;
@@ -781,7 +782,7 @@ searchItemBtn.addEventListener("click", function() {
               } else {
                 console.warn(`Tidak ditemukan elemen li dengan data-id=${itemId}`);
               }
-              showToastText(msgSuccessDelete, toastShortTimeout, greenSuccess);
+              showToastText(msgSuccessDelete, toastShortTimeout, greenSuccess,"#fff");
           })
           .catch(err => {
             console.error(err);

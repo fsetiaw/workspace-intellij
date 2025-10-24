@@ -2,6 +2,7 @@ package com.divillafajar.app.pos.pos_app_sini.controller.thyme.user.manager;
 
 import com.divillafajar.app.pos.pos_app_sini.config.properties.CustomDefaultProperties;
 import com.divillafajar.app.pos.pos_app_sini.exception.DuplicationErrorException;
+import com.divillafajar.app.pos.pos_app_sini.global.AppGlobals;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.product.ProductEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductWithCategoryPathDTO;
@@ -31,7 +32,7 @@ import java.util.*;
 @Controller
 @RequestMapping("/v1/manager/manage/product")
 @RequiredArgsConstructor
-@SessionAttributes({"targetAddress","toastShortTimeout","toastMediumTimeout","toastLongTimeout"})
+@SessionAttributes({"targetAddress"})
 public class ThymeManagerProductController {
 
     private final ProductCategoryService categoryService;
@@ -40,6 +41,7 @@ public class ThymeManagerProductController {
 	private final MessageSource messageSource;
     private final ImageStorageService imageService;
     private final TelegramNotifier telegramNotifier;
+	private final AppGlobals globals;
 
     @GetMapping
     public String showProdHome(
@@ -201,6 +203,10 @@ public class ThymeManagerProductController {
 		model.addAttribute("activeSub",activeSub);
         model.addAttribute("categoryId",categoryId);
         model.addAttribute("adrPubId",dto.getPubId());
+		model.addAttribute("toastShortTimeout",globals.get("toastShortTimeout"));
+		model.addAttribute("toastMediumTimeout",globals.get("toastMediumTimeout"));
+		model.addAttribute("toastLongTimeout",globals.get("toastLongTimeout"));
+		//"","",""
 		if(listItem!=null) {
 			model.addAttribute("listItem",listItem);
 		}

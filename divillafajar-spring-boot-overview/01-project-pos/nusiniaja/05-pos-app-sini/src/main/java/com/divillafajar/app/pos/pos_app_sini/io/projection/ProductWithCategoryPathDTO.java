@@ -5,6 +5,9 @@ public interface ProductWithCategoryPathDTO {
 	String getName();
 	String getDescription();
     String getStatus();
+	String getPrice();
+	Long getStockQuantity();
+	Long getMinStockAlert();
 	String getCategoryName();
 	String getCategoryPath();
 	String getTopCategoryName();
