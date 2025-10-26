@@ -351,11 +351,35 @@
                                                         <h2 class="card-title mb-0" th:text="${item.name}">Basic</h2>
                                                     </div-->
                                                     <div class="card-body text-center">
-                                                        <h2 class="card-title mb-0" th:text="${item.name}"
+                                                        <h2 class="card-title mb-0" th:utext="|${item.name}|"
                                                             th:id="'itemName' + ${item.id}"></h2>
-                                                        <h4 class="price" th:text="${#numbers.formatDecimal(item.price, 0, 'POINT', 0, 'COMMA')}">$100</h4>
-                                                        <ul class="list-unstyled">
+                                                        <h4 class="price">
+                                                            <span th:text="${#numbers.formatDecimal(item.price, 0, 'POINT', 0, 'COMMA')}"></span>
+                                                            <!-- Kalau stok kosong -->
+                                                            <span th:if="${item.stockQuantity == null || item.stockQuantity < 1}"
+                                                                  class="text-danger" style="font-size:45%"
+                                                                  th:text="${#strings.toLowerCase(#messages.msg('label.stock') + ': ' + (item.stockQuantity == null ? 0 : item.stockQuantity))}">
+</span>
+
+                                                            <!-- Kalau stok di bawah alert -->
+                                                            <span th:if="${item.stockQuantity >= 1 and item.stockQuantity < item.minStockAlert}"
+                                                                  class="text-warning" style="font-size:45%"
+                                                                  th:text="${#strings.toLowerCase(#messages.msg('label.stock') + ': ' + (item.stockQuantity == null ? 0 : item.stockQuantity))}">
+</span>
+
+                                                            <!-- Kalau stok aman -->
+                                                            <span th:if="${item.stockQuantity >= item.minStockAlert}"
+                                                                  style="font-size:45%"
+                                                                  th:text="${#strings.toLowerCase(#messages.msg('label.stock') + ': ' + (item.stockQuantity == null ? 0 : item.stockQuantity))}">
+</span>
+</span>
+                                                        </h4>
+                                                        <ul class="list-unstyled" th:attr="data-product-id=${item.id}">
                                                             <!-- Jika item.description ADA -->
+                                                            <li th:if="${item.price == null or #strings.isEmpty(item.price)}">
+                                                                <i class="bi bi-x-circle text-danger"></i>
+                                                                <span th:text="#{msg.priceNotSet}"></span>
+                                                            </li>
                                                             <li th:if="${item.description != null and !#strings.isEmpty(item.description)}">
                                                                 <i class="bi bi-check-circle text-success"></i> <span th:text="#{msg.descProvided}"></span>
                                                             </li>
@@ -364,10 +388,15 @@
                                                                 <span th:text="#{msg.noDescProvided}"></span>
                                                             </li>
                                                             <!-- image -->
-                                                            <li th:if="${item.thumbnailUrl != null and !#strings.isEmpty(item.thumbnailUrl)}">
-                                                                <i class="bi bi-check-circle text-success"></i> <span th:text="#{msg.imageProvided}"></span>
+                                                            <li th:id="'status-image-' + ${item.id}"
+                                                                th:if="${item.thumbnailUrl != null and !#strings.isEmpty(item.thumbnailUrl)}"
+                                                                style="display: none;">
+                                                                <i class="bi bi-check-circle text-success"></i>
+                                                                <span th:text="#{msg.imageProvided}"></span>
                                                             </li>
-                                                            <li th:if="${item.thumbnailUrl == null or #strings.isEmpty(item.thumbnailUrl)}">
+
+                                                            <li th:id="'status-noimage-' + ${item.id}"
+                                                                th:if="${item.thumbnailUrl == null or #strings.isEmpty(item.thumbnailUrl)}">
                                                                 <i class="bi bi-x-circle text-danger"></i>
                                                                 <span th:text="#{msg.noImageProvided}"></span>
                                                             </li>
@@ -421,13 +450,13 @@
                                                               th:attr="id=${'editForm' + iterStat.count}, data-item-id=${item.id}">
                                                             <div class="form-body">
                                                                 <div class="form-group">
-                                                                    <label for="feedback1" class="sr-only">Name</label>
+                                                                    <label for="feedback1" class="sr-only" th:text="#{label.name}"></label>
                                                                     <input type="text" id="name" class="form-control" placeholder="Name"
                                                                            name="name" th:value="${item.name}" th:id="'formItemName' + ${item.id}">
                                                                 </div>
 
                                                                 <div class="form-group form-label-group">
-                                                                    <label for="label-textarea">Description</label>
+                                                                    <label for="label-textarea" th:text="#{label.description}"></label>
                                                                     <textarea class="form-control" id="description" rows="3" name="description"
                                                                               th:text="${item.description != null ? item.description : ''}"
                                                                               th:placeholder="#{msg.noDescProvided}">
@@ -439,7 +468,7 @@
                                                                     <input type="text" id="price" class="form-control"
                                                                            th:placeholder="#{label.price}"
                                                                            th:value="${#numbers.formatDecimal(item.price, 0, 'POINT', 2, 'COMMA')}"
-                                                                           name="priceDisplay" inputmode="decimal">
+                                                                           name="price" inputmode="decimal">
                                                                     <!--input type="hidden" th:attr="id=${'itemPrice' + item.id}" th:value="${item.price}" /-->
                                                                     <input type="hidden" id="priceRaw" name="priceRaw"
                                                                            th:value="${item != null && item.price != null ? item.price : 0}">
@@ -540,90 +569,13 @@
 
 <!-- 🔹 Script -->
 <script src="https://unpkg.com/filepond@^4/dist/filepond.js"></script>
-<script>
-    const toastMediumTimeout = [[${toastMediumTimeout}]];
-    const toastShortTimeout = [[${toastShortTimeout}]];
-    const toastLongTimeout = [[${toastLongTimeout}]];
-    const redError = "#dc3545";
-    const greenSuccess = "#198754";
 
-    const contextPath = document.querySelector('meta[name="contextPath"]').content;
-
-    document.querySelectorAll('.cardImage').forEach(input => {
-      const productId = input.getAttribute('data-product-id');
-      const hasImage = input.getAttribute('data-has-image') === 'true';
-
-      // Dapatkan elemen <img> thumbnail terdekat
-      const cardThumb = input.closest('.p-3').querySelector('.card-thumb');
-
-      const pond = FilePond.create(input, {
-        allowMultiple: false,
-        allowProcess: true,
-        allowRevert: false,
-        instantUpload: true,
-        acceptedFileTypes: ['image/*'],
-
-        /* 🟡 Custom text label */
-        labelIdle: hasImage
-          ? '<span class="filepond--label-action filepond-btn" style="text-decoration: none;">Change Foto</span>'
-          : '<span class="filepond--label-action filepond-btn" style="text-decoration: none;">Upload Foto</span>',
-
-        /* 🟢 Konfigurasi server */
-        server: {
-          process: {
-            url: `${contextPath}v1/manager/manage/product/item/upload-image/${productId}`,
-            method: 'POST',
-            ondata: (formData) => formData,
-            onload: (response) => {
-              try {
-                const data = JSON.parse(response);
-                if (data.success && data.url) {
-                  console.log("data.success");
-
-                  // update thumbnail image
-                  if (cardThumb) {
-                    cardThumb.src = (contextPath + data.url).replace(/([^:]\/)\/+/g, "$1");
-                    console.log("cardThumb.contextPath=="+contextPath);
-                    console.log("data.url=="+data.url);
-                  } else {
-                    console.log("BENER KESINI");
-                    const img = document.createElement('img');
-                    const safeUrl = (contextPath + data.url).replace(/([^:]\/)\/+/g, "$1");
-                    setTimeout(() => {
-                      img.src = safeUrl;
-                    }, 200);
-                    img.className = 'card-thumb img-fluid mb-2 rounded';
-                    img.style.maxHeight = '150px';
-                    img.style.objectFit = 'cover';
-                    pond.element.parentNode.insertBefore(img, pond.element);
-                  }
-
-                  console.log(`✅ Thumbnail updated for productId=${productId}`);
-                  return data.url;
-                }
-              } catch (err) {
-                console.error("Error parsing server response:", err, response);
-              }
-            },
-            onerror: (response) => {
-              console.error("❌ Upload failed:", response);
-            }
-          }
-        }
-      });
-
-      pond.on('processfile', (error, file) => {
-        if (error) {
-          console.error(`❌ Upload error for productId=${productId}`, error);
-        } else {
-          pond.removeFiles();
-        }
-      });
-    });
-</script>
 
 
 <script th:inline="javascript">
+    const msgImageProvided = /*[[#{msg.imageProvided}]]*/ 'Image provided';
+  const msgNoImageProvided = /*[[#{msg.noImageProvided}]]*/ 'No image provided';
+
     document.addEventListener("DOMContentLoaded", function () {
         const addBtn = document.getElementById("add");
         const srcBtn = document.getElementById("src");
@@ -821,7 +773,46 @@
             });
         });
 
+        // 🔹 Tombol accordion utama
+        document.querySelectorAll('.accordion-button').forEach(btn => {
+            btn.addEventListener('click', function () {
+                console.log('Accordion diklik — reset semua collapse di dalam card ini.');
 
+                // Ambil card-body terkait tombol accordion ini
+                const cardBody = this.closest('.card-body');
+                if (!cardBody) return;
+
+                // Tutup semua collapse di dalam accordion yang sama
+                cardBody.querySelectorAll('.collapse.show').forEach(collapse => {
+                    const bsCollapse = bootstrap.Collapse.getInstance(collapse)
+                        || new bootstrap.Collapse(collapse, { toggle: false });
+                    bsCollapse.hide();
+
+                    // Tampilkan kembali deskripsi
+                    const desc = cardBody.querySelector('.desc');
+                    if (desc) desc.style.display = '';
+
+                    // Reset form di dalam collapse
+                    const form = collapse.querySelector('.edit-item-form');
+                    if (form && form.dataset.initialData) {
+                        const initialData = JSON.parse(form.dataset.initialData);
+                        form.querySelectorAll('input, textarea, select').forEach(input => {
+                            if (initialData.hasOwnProperty(input.name)) {
+                                input.value = initialData[input.name];
+                            }
+                        });
+                    }
+
+                    // Hilangkan status aktif tombol edit terkait
+                    const targetId = collapse.id;
+                    const toggleBtn = cardBody.querySelector(`.toggle-edit[data-target-id='${targetId}']`);
+                    if (toggleBtn) {
+                        toggleBtn.classList.remove('active');
+                        toggleBtn.setAttribute('aria-expanded', 'false');
+                    }
+                });
+            });
+        });
     });
 </script>
 
@@ -854,6 +845,7 @@
 
       // Event: setiap kali user ketik
       priceInput.addEventListener("input", function(e) {
+        console.log("detected");
         const cleanValue = e.target.value.replace(/[^0-9]/g, "");
         hiddenInput.value = cleanValue; // nilai murni untuk dikirim ke server
         e.target.value = formatCurrency(cleanValue);
@@ -917,7 +909,8 @@
                         const newInitialData = {
                             name: data.name || "",
                             description: data.description || "",
-                            priceRaw: data.price ?? 0
+                            priceRaw: data.price ?? 0,
+                            price: data.price ?? 0
                         };
                         form.dataset.initialData = JSON.stringify(newInitialData);
                         console.log("✅ initialData updated:", form.dataset.initialData);
@@ -984,7 +977,112 @@
             return tempLi;
           }
 </script>
+<script>
+    const toastMediumTimeout = [[${toastMediumTimeout}]];
+    const toastShortTimeout = [[${toastShortTimeout}]];
+    const toastLongTimeout = [[${toastLongTimeout}]];
+    const redError = "#dc3545";
+    const greenSuccess = "#198754";
 
+    const contextPath = document.querySelector('meta[name="contextPath"]').content;
+
+    document.querySelectorAll('.cardImage').forEach(input => {
+      const productId = input.getAttribute('data-product-id');
+      const hasImage = input.getAttribute('data-has-image') === 'true';
+
+      // Dapatkan elemen <img> thumbnail terdekat
+      const cardThumb = input.closest('.p-3').querySelector('.card-thumb');
+
+      const pond = FilePond.create(input, {
+        allowMultiple: false,
+        allowProcess: true,
+        allowRevert: false,
+        instantUpload: true,
+        acceptedFileTypes: ['image/*'],
+
+        /* 🟡 Custom text label */
+        labelIdle: hasImage
+          ? '<span class="filepond--label-action filepond-btn" style="text-decoration: none;">Change Foto</span>'
+          : '<span class="filepond--label-action filepond-btn" style="text-decoration: none;">Upload Foto</span>',
+
+        /* 🟢 Konfigurasi server */
+        server: {
+          process: {
+            url: `${contextPath}v1/manager/manage/product/item/upload-image/${productId}`,
+            method: 'POST',
+            ondata: (formData) => formData,
+            onload: (response) => {
+              try {
+                const data = JSON.parse(response);
+                if (data.success && data.url) {
+                  console.log("data.success");
+
+                  // update thumbnail image
+                  if (cardThumb) {
+                    cardThumb.src = (contextPath + data.url).replace(/([^:]\/)\/+/g, "$1");
+                    console.log("cardThumb.contextPath=="+contextPath);
+                    console.log("data.url=="+data.url);
+                  } else {
+                    console.log("BENER KESINI");
+                    const img = document.createElement('img');
+                    const safeUrl = (contextPath + data.url).replace(/([^:]\/)\/+/g, "$1");
+                    setTimeout(() => {
+                      img.src = safeUrl;
+                    }, 200);
+                    img.className = 'card-thumb img-fluid mb-2 rounded';
+                    img.style.maxHeight = '150px';
+                    img.style.objectFit = 'cover';
+                    pond.element.parentNode.insertBefore(img, pond.element);
+                  }
+
+                  // 🔹 Update status "image provided"
+                  const statusNoImage = document.querySelector(`#status-noimage-${productId}`);
+                  console.log("statusNoImage="+statusNoImage);
+                  const statusHasImage = document.querySelector(`#status-image-${productId}`);
+
+                  // Sembunyikan li "no image"
+                  if (statusNoImage) statusNoImage.style.display = "none";
+
+                  // Tampilkan atau buat li "image provided"
+                  if (statusHasImage) {
+                    statusHasImage.style.display = "list-item";
+                  } else {
+                    const ul = document.querySelector(`ul[data-product-id="${productId}"]`);
+                    if (ul) {
+                      const newLi = document.createElement("li");
+                      newLi.id = `status-image-${productId}`;
+                      newLi.innerHTML = `
+                        <i class="bi bi-check-circle text-success"></i>
+                        <span>${msgImageProvided}</span>
+                      `;
+                      ul.appendChild(newLi);
+                    }
+                  }
+
+
+                  console.log(`✅ Thumbnail updated for productId=${productId}`);
+                  return data.url;
+                }
+              } catch (err) {
+                console.error("Error parsing server response:", err, response);
+              }
+            },
+            onerror: (response) => {
+              console.error("❌ Upload failed:", response);
+            }
+          }
+        }
+      });
+
+      pond.on('processfile', (error, file) => {
+        if (error) {
+          console.error(`❌ Upload error for productId=${productId}`, error);
+        } else {
+          pond.removeFiles();
+        }
+      });
+    });
+</script>
 
     </body>
 
