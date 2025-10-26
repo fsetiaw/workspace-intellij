@@ -351,22 +351,26 @@
                                                         <h2 class="card-title mb-0" th:text="${item.name}">Basic</h2>
                                                     </div-->
                                                     <div class="card-body text-center">
-                                                        <h2 class="card-title mb-0" th:text="${item.name}"></h2>
+                                                        <h2 class="card-title mb-0" th:text="${item.name}"
+                                                            th:id="'itemName' + ${item.id}"></h2>
                                                         <h4 class="price" th:text="${#numbers.formatDecimal(item.price, 0, 'POINT', 0, 'COMMA')}">$100</h4>
                                                         <ul class="list-unstyled">
                                                             <!-- Jika item.description ADA -->
-                                                            <li th:if="${item.description != null}">
-                                                                <i class="bi bi-check-circle text-success"></i>
-                                                                <span th:text="#{label.description}"></span>
+                                                            <li th:if="${item.description != null and !#strings.isEmpty(item.description)}">
+                                                                <i class="bi bi-check-circle text-success"></i> <span th:text="#{msg.descProvided}"></span>
                                                             </li>
-
-                                                            <!-- Jika item.description TIDAK ADA -->
-                                                            <li th:unless="${item.description != null}">
+                                                            <li th:if="${item.description == null or #strings.isEmpty(item.description)}">
                                                                 <i class="bi bi-x-circle text-danger"></i>
-                                                                <span th:text="#{msg
-                                                                .noDescAvail}"></span>
+                                                                <span th:text="#{msg.noDescProvided}"></span>
                                                             </li>
-                                                            <li><i class="bi bi-check-circle"></i> Consectetur adipiscing elit</li>
+                                                            <!-- image -->
+                                                            <li th:if="${item.thumbnailUrl != null and !#strings.isEmpty(item.thumbnailUrl)}">
+                                                                <i class="bi bi-check-circle text-success"></i> <span th:text="#{msg.imageProvided}"></span>
+                                                            </li>
+                                                            <li th:if="${item.thumbnailUrl == null or #strings.isEmpty(item.thumbnailUrl)}">
+                                                                <i class="bi bi-x-circle text-danger"></i>
+                                                                <span th:text="#{msg.noImageProvided}"></span>
+                                                            </li>
                                                         </ul>
                                                     </div>
                                                 </div>
@@ -405,7 +409,7 @@
                                                         </div>
                                                         <p class="card-text"
                                                            th:attr="id=${'itemDesc' + item.id}"
-                                                           th:text="${#strings.isEmpty(item.description) ? 'Description Unavailable' : item.description}">
+                                                           th:text="${#strings.isEmpty(item.description) ? #messages.msg('msg.noDescProvided') : item.description}">
                                                         </p>
                                                     </section>
 
@@ -419,14 +423,14 @@
                                                                 <div class="form-group">
                                                                     <label for="feedback1" class="sr-only">Name</label>
                                                                     <input type="text" id="name" class="form-control" placeholder="Name"
-                                                                           name="name" th:value="${item.name}">
+                                                                           name="name" th:value="${item.name}" th:id="'formItemName' + ${item.id}">
                                                                 </div>
 
                                                                 <div class="form-group form-label-group">
                                                                     <label for="label-textarea">Description</label>
                                                                     <textarea class="form-control" id="description" rows="3" name="description"
                                                                               th:text="${item.description != null ? item.description : ''}"
-                                                                              th:placeholder="#{label.noDescAvail}">
+                                                                              th:placeholder="#{msg.noDescProvided}">
                                                                     </textarea>
                                                                 </div>
 
@@ -458,7 +462,7 @@
 
                                                             <div class="form-actions d-flex justify-content-end">
                                                                 <button type="submit" class="btn btn-primary me-1">Submit</button>
-                                                                <button type="reset"
+                                                                <button type="button"
                                                                         class="btn btn-light-primary cancel-collapse"
                                                                         th:attr="data-target-id=${'collapseExample' + item.id}">
                                                                     Cancel
@@ -717,6 +721,7 @@
 </script>
 <!-- colapsable form --->
 <script>
+    //let initialData = {};
     document.addEventListener('DOMContentLoaded', function () {
 
         // Simpan nilai awal form saat pertama kali dimuat
@@ -734,7 +739,7 @@
         document.querySelectorAll('.toggle-edit').forEach(btn => {
             btn.addEventListener('click', function (e) {
                 e.preventDefault();
-
+                console.log("----icon edit called----");
                 const targetId = this.getAttribute('data-target-id');
                 const cardBody = this.closest('.card-body');
                 const desc = cardBody.querySelector('.desc');
@@ -748,9 +753,9 @@
                     bsCollapse.hide();
                     desc.style.display = ''; // tampilkan kembali deskripsi
 
-                    // ✅ 2. Kembalikan semua input ke nilai awal
+                    // ✅ 2. Kembalikan semua input ke nilai awal <why doublle clic?>
                     if (form && form.dataset.initialData) {
-                        const initialData = JSON.parse(form.dataset.initialData);
+                        initialData = JSON.parse(form.dataset.initialData);
                         form.querySelectorAll('input, textarea, select').forEach(input => {
                             if (initialData.hasOwnProperty(input.name)) {
                                 input.value = initialData[input.name];
@@ -758,9 +763,12 @@
                         });
                     }
 
+
                     // ✅ 3. Hilangkan status aktif toggle
                     this.classList.remove('active');
                     this.setAttribute('aria-expanded', 'false');
+
+
 
                 } else {
                     // ✅ 4. Buka collapse
@@ -770,6 +778,10 @@
                     // ✅ 5. Tambahkan status aktif
                     this.classList.add('active');
                     this.setAttribute('aria-expanded', 'true');
+
+                    // ✅ reset text tombol  jadi Cancel
+                    const cancelBtn = form.querySelector('.cancel-collapse');
+                    if (cancelBtn) cancelBtn.textContent = 'Cancel';
                 }
             });
         });
@@ -777,18 +789,14 @@
         // Tombol Cancel di dalam form
         document.querySelectorAll('.cancel-collapse').forEach(btn => {
             btn.addEventListener('click', function (e) {
+                console.log("----button cancel called----");
                 const targetId = this.getAttribute('data-target-id');
                 const targetCollapse = document.getElementById(targetId);
                 const bsCollapse = bootstrap.Collapse.getInstance(targetCollapse)
                     || new bootstrap.Collapse(targetCollapse, { toggle: false });
                 bsCollapse.hide();
 
-                // tampilkan kembali deskripsi
-                const cardBody = this.closest('.card-body');
-                const desc = cardBody.querySelector('.desc');
-                if (desc) desc.style.display = '';
-
-                // kembalikan value form ke nilai awal
+                // ✅ ambil form terkait
                 const form = targetCollapse.querySelector('.edit-item-form');
                 if (form && form.dataset.initialData) {
                     const initialData = JSON.parse(form.dataset.initialData);
@@ -799,7 +807,12 @@
                     });
                 }
 
-                // toggle-edit kembali ke non-aktif
+                // ✅ tampilkan kembali deskripsi
+                const cardBody = this.closest('.card-body');
+                const desc = cardBody.querySelector('.desc');
+                if (desc) desc.style.display = '';
+
+                // ✅ toggle-edit kembali ke non-aktif
                 const toggleBtn = document.querySelector(`.toggle-edit[data-target-id='${targetId}']`);
                 if (toggleBtn) {
                     toggleBtn.classList.remove('active');
@@ -807,6 +820,7 @@
                 }
             });
         });
+
 
     });
 </script>
@@ -890,13 +904,27 @@
                         const card = document.querySelector(`[data-item-id="${itemId}"]`);
                         if (card) {
                             const nameElem = card.querySelector(`#itemName${itemId}`);
+                            //const formNameElem = card.querySelector(`#formItemName${itemId}`);
                             const descElem = card.querySelector(`#itemDesc${itemId}`);
                             const priceElem = card.querySelector(`#itemPrice${itemId}`);
 
                             if (nameElem) nameElem.textContent = data.name || "";
-                            if (descElem) descElem.textContent = data.description || "Description Unavailable";
+                            //if (formNameElem) formNameElem.textContent = data.name || "";
+                            if (descElem) descElem.textContent = data.description || "Description kosong";
                             if (priceElem) priceElem.value = data.price ?? 0;
                         }
+                        // 🔹 Update dataset initialData setelah PUT sukses
+                        const newInitialData = {
+                            name: data.name || "",
+                            description: data.description || "",
+                            priceRaw: data.price ?? 0
+                        };
+                        form.dataset.initialData = JSON.stringify(newInitialData);
+                        console.log("✅ initialData updated:", form.dataset.initialData);
+
+                        // ✅ ubah tombol Cancel jadi Close
+                        const cancelBtn = form.querySelector('.cancel-collapse');
+                        if (cancelBtn) cancelBtn.textContent = 'Close';
                     }
 
 

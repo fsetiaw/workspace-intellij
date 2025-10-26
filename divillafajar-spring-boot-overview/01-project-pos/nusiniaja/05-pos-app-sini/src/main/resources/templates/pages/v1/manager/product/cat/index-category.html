@@ -355,7 +355,7 @@
         if (span.contains(savingSpan)) span.replaceChild(finalName, savingSpan);
         buttons.style.display = "block";
         buttons.querySelectorAll("a").forEach(btn => btn.disabled = false);
-        showToastText(msgSuccessUpdate, toastShortTimeout, greenSuccess,,"#fff");
+        showToastText(msgSuccessUpdate, toastShortTimeout, greenSuccess,"#fff");
       })
       .catch(err => {
         console.error(err);

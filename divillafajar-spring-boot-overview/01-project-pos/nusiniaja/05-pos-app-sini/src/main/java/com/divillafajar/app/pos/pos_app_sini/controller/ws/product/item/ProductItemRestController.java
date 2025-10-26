@@ -23,7 +23,10 @@ public class ProductItemRestController {
 		System.out.println("Deskripsi: " + dto.getDescription());
 		System.out.println("Harga: " + dto.getPrice());
 		//System.out.println("Stok: " + dto.getStock());
-		retVal = modelMapper.map(dto, UpdateItemRequestModel.class);
+        retVal.setName("Updated Name");
+        retVal.setDescription("Updated Desc");
+        retVal.setPrice(21212D);
+		//retVal = modelMapper.map(dto, UpdateItemRequestModel.class);
 		return ResponseEntity.ok(retVal);
 	}
 }
