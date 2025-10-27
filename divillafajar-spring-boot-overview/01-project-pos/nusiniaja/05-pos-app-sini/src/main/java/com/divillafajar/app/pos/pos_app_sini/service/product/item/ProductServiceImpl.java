@@ -10,6 +10,7 @@ import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientAddressD
 import com.divillafajar.app.pos.pos_app_sini.io.entity.product.ProductDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.product.ProductEntity;
 import com.divillafajar.app.pos.pos_app_sini.model.item.CreateItemRequestModel;
+import com.divillafajar.app.pos.pos_app_sini.model.item.UpdateItemRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.repo.client.ClientAddressRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.product.ProductRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.product.category.ProductCategoryRepo;
@@ -23,6 +24,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -86,6 +88,20 @@ public class ProductServiceImpl implements ProductService{
 		return retVal;
 	}
 
+    @Override
+    public ProductDTO updateProduct(Long itemId, UpdateItemRequestModel updateItemRequestModel) {
+        ProductDTO retVal = new ProductDTO();
+        Optional<ProductEntity> targetEntity = productRepo.findById(itemId);
+        if(targetEntity.isEmpty())
+            throw new NullPointerException("item not found");
+
+        targetEntity.get().setName(updateItemRequestModel.getName());
+        targetEntity.get().setDescription(updateItemRequestModel.getDescription());
+        targetEntity.get().setPrice(BigDecimal.valueOf(updateItemRequestModel.getPrice()));
+        ProductEntity updatedProduct = productRepo.save(targetEntity.get());
+        retVal = modelMapper.map(updatedProduct, ProductDTO.class);
+        return retVal;
+    }
 
 
     @Override

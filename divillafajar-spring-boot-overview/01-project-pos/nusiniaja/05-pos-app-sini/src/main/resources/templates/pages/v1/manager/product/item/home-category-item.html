@@ -128,14 +128,14 @@
         }
 
         .accordion-icon i {
-  transition: transform 0.3s ease;
-  color: #0d6efd;
-}
+          transition: transform 0.3s ease;
+          color: #0d6efd;
+        }
 
-/* saat aktif (accordion terbuka) */
-.accordion-button:not(.collapsed) .accordion-icon i {
-  transform: rotate(180deg);
-}
+        /* saat aktif (accordion terbuka) */
+        .accordion-button:not(.collapsed) .accordion-icon i {
+          transform: rotate(180deg);
+        }
 
 
     </style>
@@ -353,37 +353,58 @@
                                                     <div class="card-body text-center">
                                                         <h2 class="card-title mb-0" th:utext="|${item.name}|"
                                                             th:id="'itemName' + ${item.id}"></h2>
-                                                        <h4 class="price">
-                                                            <span th:text="${#numbers.formatDecimal(item.price, 0, 'POINT', 0, 'COMMA')}"></span>
-                                                            <!-- Kalau stok kosong -->
+                                                        <!-- 🔹 Harga tampil -->
+                                                        <h4 class="price" th:id="'price-display-' + ${item.id}"
+                                                            th:attr="style=${item.price == null or item.price == 0} ? 'display:block;' : 'display:block;'">
+
+                                                            <!--span th:id="'itemPriceFormatted' + ${item.id}"
+                                                                  th:text="${#numbers.formatDecimal(item.price, 0, 'POINT', 0, 'COMMA')}"></span-->
+                                                            <!-- harga null/kosong -->
+                                                            <span th:id="'itemPriceFormatted' + ${item.id}" th:if="${item.price == null or item.price == '' and T(java.lang.Double).parseDouble(item.price) > 0}"
+                                                                  class="text-danger" style="font-size:90%"
+                                                                  th:text="${#numbers.formatDecimal(0, 0, 'POINT', 0, 'COMMA')}">
+                                                            </span>
+
+                                                            <!-- harga ada -->
+                                                            <span th:id="'itemPriceFormatted' + ${item.id}" th:if="${item.price != null and item.price != '' and T(java.lang.Double).parseDouble(item.price) > 0}"
+                                                                  class="text-primary" style="font-size:125%"
+                                                                  th:text="${#numbers.formatDecimal(item.price, 0, 'POINT', 0, 'COMMA')}">
+                                                            </span>
+
+                                                            <!-- stok kosong -->
                                                             <span th:if="${item.stockQuantity == null || item.stockQuantity < 1}"
                                                                   class="text-danger" style="font-size:45%"
                                                                   th:text="${#strings.toLowerCase(#messages.msg('label.stock') + ': ' + (item.stockQuantity == null ? 0 : item.stockQuantity))}">
-</span>
+                                                            </span>
 
-                                                            <!-- Kalau stok di bawah alert -->
+                                                            <!-- stok di bawah alert -->
                                                             <span th:if="${item.stockQuantity >= 1 and item.stockQuantity < item.minStockAlert}"
                                                                   class="text-warning" style="font-size:45%"
                                                                   th:text="${#strings.toLowerCase(#messages.msg('label.stock') + ': ' + (item.stockQuantity == null ? 0 : item.stockQuantity))}">
-</span>
+                                                            </span>
 
-                                                            <!-- Kalau stok aman -->
+                                                            <!-- stok aman -->
                                                             <span th:if="${item.stockQuantity >= item.minStockAlert}"
                                                                   style="font-size:45%"
                                                                   th:text="${#strings.toLowerCase(#messages.msg('label.stock') + ': ' + (item.stockQuantity == null ? 0 : item.stockQuantity))}">
-</span>
-</span>
+                                                            </span>
                                                         </h4>
                                                         <ul class="list-unstyled" th:attr="data-product-id=${item.id}">
-                                                            <!-- Jika item.description ADA -->
-                                                            <li th:if="${item.price == null or #strings.isEmpty(item.price)}">
+                                                            <!-- 🔹 Indikator harga belum diatur -->
+                                                            <li th:id="'price-notset-' + ${item.id}"
+                                                                th:attr="style=${item.price == null or item.price == 0} ? 'display:block;' : 'display:none;'">
                                                                 <i class="bi bi-x-circle text-danger"></i>
                                                                 <span th:text="#{msg.priceNotSet}"></span>
                                                             </li>
-                                                            <li th:if="${item.description != null and !#strings.isEmpty(item.description)}">
-                                                                <i class="bi bi-check-circle text-success"></i> <span th:text="#{msg.descProvided}"></span>
-                                                            </li>
-                                                            <li th:if="${item.description == null or #strings.isEmpty(item.description)}">
+                                                            <!-- description -->
+                                                            <!--li th:id="'desc-ok-' + ${item.id}"
+                                                                th:attr="style=${item.description != null and !#strings.isEmpty(item.description)} ? 'display:block;' : 'display:none;'">
+                                                                <i class="bi bi-check-circle text-success"></i>
+                                                                <span th:text="#{msg.descProvided}"></span>
+                                                            </li-->
+
+                                                            <li th:id="'desc-no-' + ${item.id}"
+                                                                th:attr="style=${item.description == null or #strings.isEmpty(item.description)} ? 'display:block;' : 'display:none;'">
                                                                 <i class="bi bi-x-circle text-danger"></i>
                                                                 <span th:text="#{msg.noDescProvided}"></span>
                                                             </li>
@@ -815,12 +836,6 @@
         });
     });
 </script>
-
-
-
-
-
-
 <script>
     document.addEventListener("DOMContentLoaded", function() {
       const priceInput = document.getElementById("price");
@@ -899,11 +914,41 @@
                             //const formNameElem = card.querySelector(`#formItemName${itemId}`);
                             const descElem = card.querySelector(`#itemDesc${itemId}`);
                             const priceElem = card.querySelector(`#itemPrice${itemId}`);
+                            const priceFormattedElem = card.querySelector(`#itemPriceFormatted${itemId}`);
+                            const priceNotSetLi = card.querySelector(`#price-notset-${itemId}`);
+
 
                             if (nameElem) nameElem.textContent = data.name || "";
                             //if (formNameElem) formNameElem.textContent = data.name || "";
                             if (descElem) descElem.textContent = data.description || "Description kosong";
                             if (priceElem) priceElem.value = data.price ?? 0;
+
+                            const price = data.price ?? 0;
+
+                            // 🔹 Update tampilan harga
+                            if (priceFormattedElem) {
+                                if (price > 0) {
+                                    priceFormattedElem.textContent = price.toLocaleString('id-ID');
+                                    priceFormattedElem.classList.remove('text-danger');
+                                    priceFormattedElem.classList.add('text-primary');
+                                    priceFormattedElem.style.fontSize = '125%';
+                                } else {
+                                    priceFormattedElem.textContent = '0';
+                                    priceFormattedElem.classList.remove('text-primary');
+                                    priceFormattedElem.classList.add('text-danger');
+                                    priceFormattedElem.style.fontSize = '90%';
+                                }
+                            }
+
+                            // 🔹 Toggle indikator harga belum diatur
+                            if (priceNotSetLi) {
+                                if (price > 0) {
+                                    priceNotSetLi.style.display = 'none'; // sembunyikan kalau sudah ada harga
+                                } else {
+                                    priceNotSetLi.style.display = 'block'; // tampilkan kalau harga kosong / 0
+                                }
+                            }
+
                         }
                         // 🔹 Update dataset initialData setelah PUT sukses
                         const newInitialData = {
@@ -914,6 +959,37 @@
                         };
                         form.dataset.initialData = JSON.stringify(newInitialData);
                         console.log("✅ initialData updated:", form.dataset.initialData);
+
+                        // 🔹 Toggle indikator deskripsi
+                        const descOkLi = card.querySelector(`#desc-ok-${itemId}`);
+                        const descNoLi = card.querySelector(`#desc-no-${itemId}`);
+                        console.log("data desc="+data.description);
+                        if (data.description && data.description.trim() !== "") {
+                            if (descOkLi) descOkLi.style.display = 'none';
+                            if (descNoLi) descNoLi.style.display = 'none';
+                        } else {
+                            if (descOkLi) descOkLi.style.display = 'none';
+                            if (descNoLi) descNoLi.style.display = 'block';
+                        }
+
+                        //Update Harga
+                        const priceFormattedElem = card.querySelector(`#itemPriceFormatted${itemId}`);
+                        if (priceFormattedElem) {
+                            const price = data.price ?? 0;
+
+                            if (price > 0) {
+                                // format ribuan manual
+                                priceFormattedElem.textContent = price.toLocaleString('id-ID');
+                                priceFormattedElem.classList.remove('text-danger');
+                                priceFormattedElem.classList.add('text-primary');
+                                priceFormattedElem.style.fontSize = '125%';
+                            } else {
+                                priceFormattedElem.textContent = '0';
+                                priceFormattedElem.classList.remove('text-primary');
+                                priceFormattedElem.classList.add('text-danger');
+                                priceFormattedElem.style.fontSize = '90%';
+                            }
+                        }
 
                         // ✅ ubah tombol Cancel jadi Close
                         const cancelBtn = form.querySelector('.cancel-collapse');
@@ -1045,7 +1121,8 @@
 
                   // Tampilkan atau buat li "image provided"
                   if (statusHasImage) {
-                    statusHasImage.style.display = "list-item";
+                    //statusHasImage.style.display = "list-item";
+                    statusHasImage.style.display = "none";
                   } else {
                     const ul = document.querySelector(`ul[data-product-id="${productId}"]`);
                     if (ul) {
@@ -1058,6 +1135,26 @@
                       ul.appendChild(newLi);
                     }
                   }
+
+                  // 🔹 Toggle indikator harga
+                    const priceNotSetLi = card.querySelector(`#price-notset-${itemId}`);
+                    const priceDisplay = card.querySelector(`#price-display-${itemId}`);
+                    const priceFormatted = card.querySelector(`#itemPriceFormatted${itemId}`);
+
+                    if (data.price && data.price > 0) {
+                        // ✅ Harga valid → tampilkan <h4> dan sembunyikan <li> not set
+                        if (priceNotSetLi) priceNotSetLi.style.display = 'none';
+                        if (priceDisplay) priceDisplay.style.display = 'block';
+                        if (priceFormatted) {
+                            // Format angka pakai ribuan (IDR style)
+                            const formatted = new Intl.NumberFormat('id-ID').format(data.price);
+                            priceFormatted.textContent = formatted;
+                        }
+                    } else {
+                        // ❌ Harga kosong / 0 → tampilkan <li> not set dan sembunyikan harga
+                        if (priceNotSetLi) priceNotSetLi.style.display = 'block';
+                        if (priceDisplay) priceDisplay.style.display = 'none';
+                    }
 
 
                   console.log(`✅ Thumbnail updated for productId=${productId}`);
