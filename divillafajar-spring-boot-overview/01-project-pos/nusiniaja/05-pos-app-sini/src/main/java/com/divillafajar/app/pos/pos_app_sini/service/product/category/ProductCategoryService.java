@@ -14,4 +14,5 @@ public interface ProductCategoryService {
 	void deleteCategory(Long catId);
 	List<CategorySearchResultModel> searchCategory(String pAid, String kword);
     List<String> getPathToEachEndChildCategoryByClientAddressPubId(String pAid);
+	boolean locationHasCategoryProduct(String pAid);
 }

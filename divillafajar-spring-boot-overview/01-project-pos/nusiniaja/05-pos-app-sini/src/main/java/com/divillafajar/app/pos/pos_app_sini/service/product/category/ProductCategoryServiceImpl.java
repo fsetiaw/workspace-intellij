@@ -237,4 +237,11 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
         return retVal;
     }
 
+	@Override
+	public boolean locationHasCategoryProduct(String pAid) {
+		boolean retVal=false;
+		retVal = catRepo.isCategoryExistAtClientAddressByPubId(pAid);
+		return retVal;
+	}
+
 }

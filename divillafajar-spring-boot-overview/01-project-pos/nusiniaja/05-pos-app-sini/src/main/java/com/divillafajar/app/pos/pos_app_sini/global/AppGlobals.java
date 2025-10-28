@@ -24,6 +24,11 @@ public class AppGlobals {
         globals.put("colorDanger", BootstrapColorEnum.DANGER.getHexCode());
         globals.put("colorWarning", BootstrapColorEnum.WARNING.getHexCode());
         globals.put("colorInfo", BootstrapColorEnum.INFO.getHexCode());
+		globals.put("colorLight", BootstrapColorEnum.LIGHT.getHexCode());//putih keabu2an
+		globals.put("colorDark", BootstrapColorEnum.DARK.getHexCode());//abu tua
+		globals.put("colorWhite", BootstrapColorEnum.WHITE.getHexCode());
+		globals.put("colorBlack", BootstrapColorEnum.BLACK.getHexCode());
+		globals.put("colorOrange", BootstrapColorEnum.ORANGE.getHexCode());
 		globals.put("toastTimeout", 2000);
 		globals.put("toastShortTimeout", 1500);
 		globals.put("toastMediumTimeout", 3000);

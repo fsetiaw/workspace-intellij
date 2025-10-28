@@ -41,7 +41,7 @@ public class ThymeManagerProductController {
 	private final MessageSource messageSource;
     private final ImageStorageService imageService;
     private final TelegramNotifier telegramNotifier;
-	private final AppGlobals globals;
+	private final AppGlobals appGlobals;
 
     @GetMapping
     public String showProdHome(
@@ -51,7 +51,18 @@ public class ThymeManagerProductController {
     ) {
         System.out.println("showCategoryHome HOME");
 	    ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
-	    model.addAttribute("activePage",activePage);
+		boolean hasCategory = categoryService.locationHasCategoryProduct(dto.getPubId());
+	    model.addAttribute("hasCategory",hasCategory);
+	    model.addAttribute("globals", appGlobals.getAll());
+	    //Map<?,?> globals = appGlobals.getAll();
+		//globals.get
+	    //model.addAttribute("toastTimeout", appGlobals.get("toastTimeout"));
+	    //model.addAttribute("toastShortTimeout", appGlobals.get("toastShortTimeout"));
+	    //model.addAttribute("toastMediumTimeout", appGlobals.get("toastMediumTimeout"));
+	    //model.addAttribute("toastLongTimeout", appGlobals.get("toastLongTimeout"));
+		//System.out.println("toastShortTimeout = "+appGlobals.get("toastShortTimeout"));
+	    //System.out.println("hasCategory = "+hasCategory);
+		model.addAttribute("activePage",activePage);
         model.addAttribute("activeSub",activeSub);
         return "pages/v1/manager/product/index-product";
     }
@@ -203,9 +214,9 @@ public class ThymeManagerProductController {
 		model.addAttribute("activeSub",activeSub);
         model.addAttribute("categoryId",categoryId);
         model.addAttribute("adrPubId",dto.getPubId());
-		model.addAttribute("toastShortTimeout",globals.get("toastShortTimeout"));
-		model.addAttribute("toastMediumTimeout",globals.get("toastMediumTimeout"));
-		model.addAttribute("toastLongTimeout",globals.get("toastLongTimeout"));
+		model.addAttribute("toastShortTimeout",appGlobals.get("toastShortTimeout"));
+		model.addAttribute("toastMediumTimeout",appGlobals.get("toastMediumTimeout"));
+		model.addAttribute("toastLongTimeout",appGlobals.get("toastLongTimeout"));
 		//"","",""
 		if(listItem!=null) {
 			model.addAttribute("listItem",listItem);

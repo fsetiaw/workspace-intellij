@@ -22,6 +22,15 @@ public interface ProductCategoryRepo extends JpaRepository<ProductCategoryEntity
         ORDER BY CASE WHEN c.parent IS NULL THEN 0 ELSE 1 END, c.parent.id, c.id
     """)
     List<ProductCategoryEntity> findAllByClientAddressSorted(@Param("clientAddressId") Long clientAddressId);
+
+	@Query("""
+	    SELECT EXISTS (
+	        SELECT 1 FROM ProductCategoryEntity pc
+	        WHERE pc.clientAddress.pubId = :pubId
+	    )
+	""")
+	boolean isCategoryExistAtClientAddressByPubId(@Param("pubId") String pubId);
+
 /*
     @Query(
             value = """
