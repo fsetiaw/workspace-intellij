@@ -104,7 +104,7 @@
                                 </a>
                                 <a th:if="${!hasCategory}"
                                    href="#"
-                                   th:onclick='showToastText("You must create a product category first", [[${globals.get("toastShortTimeout")}]], [[${globals.get("colorDanger")}]], [[${globals.get("colorWhite")}]]); return false;'>
+                                   th:onclick='showToastText([[#{modal.createCategoryFirest}]], [[${globals.get("toastShortTimeout")}]], [[${globals.get("colorDanger")}]], [[${globals.get("colorWhite")}]]); return false;'>
                                     <div class="card-body px-4 py-4-5">
                                         <div class="row">
                                             <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">

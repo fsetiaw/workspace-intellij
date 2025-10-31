@@ -5,6 +5,7 @@ import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryE
 import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductCategoryHierarchyProjection;
 import com.divillafajar.app.pos.pos_app_sini.model.product.CategorySearchResultModel;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -233,5 +234,76 @@ public interface ProductCategoryRepo extends JpaRepository<ProductCategoryEntity
     )
     List<String> findAllPathEndCategoryChildHierarchical(@Param("clientAddressId") Long clientAddressId);
 
+	@Query(value = """
+        INSERT IGNORE INTO product_category (name, indent_level, parent_id, client_address_id, created_by, deleted)
+        VALUES
+        ('Food', NULL, NULL, 1, 'system', 0),
+        ('Beverage', NULL, NULL, 1, 'system', 0),
+        ('Dessert', NULL, NULL, 1, 'system', 0),
+        ('Package / Combo', NULL, NULL, 1, 'system', 0),
+        ('Add-ons', NULL, NULL, 1, 'system', 0),
+        ('Merchandise', NULL, NULL, 1, 'system', 0)
+    """, nativeQuery = true)
+	void insertDefaultEnCategories();
 
+	@Query(value = """
+       INSERT IGNORE INTO product_category (name, indent_level, parent_id, client_address_id, created_by, deleted)
+       VALUES
+       ('Main Course', 1, (SELECT id FROM (SELECT id FROM product_category WHERE name='Food' LIMIT 1) AS t), 1, 'system', 0),
+       ('Appetizer', 1, (SELECT id FROM (SELECT id FROM product_category WHERE name='Food' LIMIT 1) AS t), 1, 'system', 0),
+       ('Side Dish', 1, (SELECT id FROM (SELECT id FROM product_category WHERE name='Food' LIMIT 1) AS t), 1, 'system', 0),
+       ('Snack', 1, (SELECT id FROM (SELECT id FROM product_category WHERE name='Food' LIMIT 1) AS t), 1, 'system', 0),
+       ('Soup', 1, (SELECT id FROM (SELECT id FROM product_category WHERE name='Food' LIMIT 1) AS t), 1, 'system', 0),
+       ('Salad', 1, (SELECT id FROM (SELECT id FROM product_category WHERE name='Food' LIMIT 1) AS t), 1, 'system', 0);
+    """, nativeQuery = true)
+	void insertDefaultEnSubFoodCategories();
+
+	@Query(value = """
+       INSERT INTO product_category (name, indent_level, parent_id, client_address_id, created_by, deleted)
+       VALUES
+	   ('Coffee', 1, (SELECT id FROM (SELECT id FROM product_category WHERE name='Beverage' LIMIT 1) AS t), 1, 'system', 0),
+	   ('Non-Coffee', 1, (SELECT id FROM (SELECT id FROM product_category WHERE name='Beverage' LIMIT 1) AS t), 1, 'system', 0),
+	   ('Tea', 1, (SELECT id FROM (SELECT id FROM product_category WHERE name='Beverage' LIMIT 1) AS t), 1, 'system', 0),
+	   ('Juice & Fresh Drink', 1, (SELECT id FROM (SELECT id FROM product_category WHERE name='Beverage' LIMIT 1) AS t), 1, 'system', 0),
+	   ('Mocktail', 1, (SELECT id FROM (SELECT id FROM product_category WHERE name='Beverage' LIMIT 1) AS t), 1, 'system', 0),
+	   ('Water', 1, (SELECT id FROM (SELECT id FROM product_category WHERE name='Beverage' LIMIT 1) AS t), 1, 'system', 0);
+    """, nativeQuery = true)
+	void insertDefaultEnSubDrinkCategories();
+
+/******************************ID***************************************/
+	@Query(value = """
+        INSERT IGNORE INTO product_category (name, indent_level, parent_id, client_address_id, created_by, deleted)
+        VALUES
+        ('Makanan', NULL, NULL, 1, 'system', 0),
+        ('Minuman', NULL, NULL, 1, 'system', 0),
+        ('Pencuci Mulut', NULL, NULL, 1, 'system', 0),
+        ('Paket / Combo', NULL, NULL, 1, 'system', 0),
+        ('Tambahan', NULL, NULL, 1, 'system', 0),
+        ('Merchandise', NULL, NULL, 1, 'system', 0);
+    """, nativeQuery = true)
+	void insertDefaultIdCategories();
+
+	@Query(value = """
+       INSERT IGNORE INTO product_category (name, indent_level, parent_id, client_address_id, created_by, deleted)
+       VALUES
+       ('Hidangan Utama', 1, (SELECT id FROM (SELECT id FROM product_category WHERE name='Makanan' LIMIT 1) AS t), 1, 'system', 0),
+       ('Pembuka', 1, (SELECT id FROM (SELECT id FROM product_category WHERE name='Makanan' LIMIT 1) AS t), 1, 'system', 0),
+       ('Pendamping', 1, (SELECT id FROM (SELECT id FROM product_category WHERE name='Makanan' LIMIT 1) AS t), 1, 'system', 0),
+       ('Camilan', 1, (SELECT id FROM (SELECT id FROM product_category WHERE name='Makanan' LIMIT 1) AS t), 1, 'system', 0),
+       ('Sup', 1, (SELECT id FROM (SELECT id FROM product_category WHERE name='Makanan' LIMIT 1) AS t), 1, 'system', 0),
+       ('Salad', 1, (SELECT id FROM (SELECT id FROM product_category WHERE name='Makanan' LIMIT 1) AS t), 1, 'system', 0);
+    """, nativeQuery = true)
+	void insertDefaultIdSubFoodCategories();
+
+	@Query(value = """
+      INSERT IGNORE INTO product_category (name, indent_level, parent_id, client_address_id, created_by, deleted)
+      VALUES
+      ('Kopi', 1, (SELECT id FROM (SELECT id FROM product_category WHERE name='Minuman' LIMIT 1) AS t), 1, 'system', 0),
+      ('Non-Kopi', 1, (SELECT id FROM (SELECT id FROM product_category WHERE name='Minuman' LIMIT 1) AS t), 1, 'system', 0),
+      ('Teh', 1, (SELECT id FROM (SELECT id FROM product_category WHERE name='Minuman' LIMIT 1) AS t), 1, 'system', 0),
+      ('Jus & Minuman Segar', 1, (SELECT id FROM (SELECT id FROM product_category WHERE name='Minuman' LIMIT 1) AS t), 1, 'system', 0),
+      ('Mocktail', 1, (SELECT id FROM (SELECT id FROM product_category WHERE name='Minuman' LIMIT 1) AS t), 1, 'system', 0),
+      ('Air Mineral', 1, (SELECT id FROM (SELECT id FROM product_category WHERE name='Minuman' LIMIT 1) AS t), 1, 'system', 0);
+    """, nativeQuery = true)
+	void insertDefaultIdSubDrinkCategories();
 }

@@ -244,4 +244,11 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
 		return retVal;
 	}
 
+	@Override
+	public void createDefaultCategory(String lang) {
+		if(lang.equalsIgnoreCase("id")) {
+
+		}
+	}
+
 }

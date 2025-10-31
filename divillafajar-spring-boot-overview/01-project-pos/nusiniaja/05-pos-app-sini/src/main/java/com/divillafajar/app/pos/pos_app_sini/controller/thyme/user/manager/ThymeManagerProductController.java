@@ -80,11 +80,32 @@ public class ThymeManagerProductController {
         List<ProductCategoryDTO> orderList = new ArrayList<>();
         ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
         List<ProductCategoryDTO> orderListCategoryAnsSub = categoryService.getCategoryAndSubCategoryByClientAddressPubId(dto.getPubId());
-        model.addAttribute("orderListCategoryAnsSub",orderListCategoryAnsSub);
+	    System.out.println("orderListCategoryAnsSub size = "+orderListCategoryAnsSub.size());
+		model.addAttribute("orderListCategoryAnsSub",orderListCategoryAnsSub);
         model.addAttribute("activePage",activePage);
         model.addAttribute("activeSub",activeSub);
         return "pages/v1/manager/product/cat/index-category";
     }
+
+	@PostMapping("/cat/use-default")
+	public String createDefaultCategory(
+			@RequestParam(required = false) String lang,
+			@RequestParam(name = "activePage", required = true) String activePage,
+			@RequestParam(name = "activeSub", required = true) String activeSub,
+			Model model, HttpSession session
+	) {
+		System.out.println("createDefaultCategory HOME");
+		System.out.println("lang="+lang);
+		List<ProductCategoryDTO> orderList = new ArrayList<>();
+		ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
+		List<ProductCategoryDTO> orderListCategoryAnsSub = categoryService.getCategoryAndSubCategoryByClientAddressPubId(dto.getPubId());
+		System.out.println("orderListCategoryAnsSub size = "+orderListCategoryAnsSub.size());
+		model.addAttribute("orderListCategoryAnsSub",orderListCategoryAnsSub);
+		model.addAttribute("activePage",activePage);
+		model.addAttribute("activeSub",activeSub);
+		model.addAttribute("globals", appGlobals.getAll());
+		return "pages/v1/manager/product/cat/index-category";
+	}
 
     @GetMapping("/item")
     public String showProductItemHome(
