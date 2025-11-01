@@ -36,6 +36,12 @@ public class ClientAddressEntity implements Serializable {
         if (active == null) {
             active = true;
         }
+        if(usedDefaultCategory==null)
+            usedDefaultCategory=false;
+
+        if(deleted==null)
+            deleted=false;
+
         if (pubId == null) {
             pubId = UUID.randomUUID().toString(); // UUID jadi string
         }
@@ -120,6 +126,9 @@ public class ClientAddressEntity implements Serializable {
 	@Column(name = "updated_by", length = 100)
 	private String updatedBy;
 
-	@Column(name = "deleted")
+	@Column(name = "deleted", nullable = false, columnDefinition = "TINYINT(1)")
 	private Boolean deleted = false;
+
+    @Column(name = "used_default_category", nullable = false, columnDefinition = "TINYINT(1)")
+    private Boolean usedDefaultCategory = false;
 }

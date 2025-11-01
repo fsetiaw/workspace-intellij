@@ -17,7 +17,9 @@ import org.modelmapper.TypeToken;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -29,6 +31,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
     private final ClientAddressRepo addressRepo;
     private final ModelMapper modelMapper;
     private final MessageSource messageSource;
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     public ProductCategoryDTO addNewProductCategory(String categoryName, String pAid) throws Exception {
@@ -244,11 +247,52 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
 		return retVal;
 	}
 
+    @Transactional
 	@Override
-	public void createDefaultCategory(String lang) {
+	public void createDefaultCategory(String lang, String clientAddressPubId) {
+        ClientAddressEntity targetAddress = addressRepo.findByPubId(clientAddressPubId);
+        long cAid = targetAddress.getId();
+        System.out.println("cAid = "+cAid+"-"+lang);
 		if(lang.equalsIgnoreCase("id")) {
+            //insert top cat
+            catRepo.insertDefaultIdCategories(cAid);
+            //insert sub
+            catRepo.insertDefaultIdSubFoodCategories(cAid);
+            catRepo.insertDefaultIdSubBeverageCategories(cAid);
+            catRepo.insertDefaultIdSubComboCategories(cAid);
+            catRepo.insertDefaultIdSubDessertCategories(cAid);
+            catRepo.insertDefaultIdSubAddOnsCategories(cAid);
+            catRepo.insertDefaultIdSubMerchandiseCategories(cAid);
 
-		}
+		} else if(lang.equalsIgnoreCase("en")) {
+            //insert top cat
+            catRepo.insertDefaultEnCategories(cAid);
+            //insert sub
+            catRepo.insertDefaultEnSubFoodCategories(cAid);
+            catRepo.insertDefaultEnSubBeverageCategories(cAid);
+            catRepo.insertDefaultEnSubComboCategories(cAid);
+            catRepo.insertDefaultEnSubDessertCategories(cAid);
+            catRepo.insertDefaultEnSubAddOnsCategories(cAid);
+            catRepo.insertDefaultEnSubMerchandiseCategories(cAid);
+        }
+        //set sudah useDefaultCategory
+        targetAddress.setUsedDefaultCategory(true);
+        addressRepo.save(targetAddress);
 	}
+
+    @Transactional
+    public void deleteAllByClientAddressId(Long clientAddressId) {
+        jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 0");
+        jdbcTemplate.update("DELETE FROM product_category WHERE client_address_id = ?", clientAddressId);
+        jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 1");
+    }
+
+    @Transactional
+    @Override
+    public void resetCategoryByClientAddress(String clientAddressPubId) {
+        ClientAddressEntity targetAddress = addressRepo.findByPubId(clientAddressPubId);
+        long cAid = targetAddress.getId();
+        deleteAllByClientAddressId(cAid);
+    }
 
 }

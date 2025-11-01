@@ -15,5 +15,6 @@ public interface ProductCategoryService {
 	List<CategorySearchResultModel> searchCategory(String pAid, String kword);
     List<String> getPathToEachEndChildCategoryByClientAddressPubId(String pAid);
 	boolean locationHasCategoryProduct(String pAid);
-	void createDefaultCategory(String lang);
+	void createDefaultCategory(String lang, String clientAddressPubId);
+    void resetCategoryByClientAddress(String clientAddressPubId);
 }

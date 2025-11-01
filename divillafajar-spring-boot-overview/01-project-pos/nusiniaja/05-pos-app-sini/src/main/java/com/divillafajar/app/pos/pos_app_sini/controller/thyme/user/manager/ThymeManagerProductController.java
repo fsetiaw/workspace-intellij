@@ -87,25 +87,51 @@ public class ThymeManagerProductController {
         return "pages/v1/manager/product/cat/index-category";
     }
 
+    @Transactional
 	@PostMapping("/cat/use-default")
 	public String createDefaultCategory(
 			@RequestParam(required = false) String lang,
 			@RequestParam(name = "activePage", required = true) String activePage,
 			@RequestParam(name = "activeSub", required = true) String activeSub,
+            RedirectAttributes redirectAttributes,
 			Model model, HttpSession session
 	) {
 		System.out.println("createDefaultCategory HOME");
 		System.out.println("lang="+lang);
 		List<ProductCategoryDTO> orderList = new ArrayList<>();
 		ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
+        categoryService.createDefaultCategory(lang, dto.getPubId());
+        dto.setUsedDefaultCategory(true);
 		List<ProductCategoryDTO> orderListCategoryAnsSub = categoryService.getCategoryAndSubCategoryByClientAddressPubId(dto.getPubId());
-		System.out.println("orderListCategoryAnsSub size = "+orderListCategoryAnsSub.size());
-		model.addAttribute("orderListCategoryAnsSub",orderListCategoryAnsSub);
-		model.addAttribute("activePage",activePage);
-		model.addAttribute("activeSub",activeSub);
-		model.addAttribute("globals", appGlobals.getAll());
-		return "pages/v1/manager/product/cat/index-category";
+        model.addAttribute("orderListCategoryAnsSub",orderListCategoryAnsSub);
+        redirectAttributes.addAttribute("activePage",activePage);
+        redirectAttributes.addAttribute("activeSub",activeSub);
+        model.addAttribute("globals", appGlobals.getAll());
+        model.addAttribute("targetAddress", dto);
+		//return "pages/v1/manager/product/cat/index-category";
+        return "redirect:/v1/manager/manage/product/cat";
 	}
+
+    @Transactional
+    @PostMapping("/cat/reset-categories")
+    public String resetClientAddressCategoris(
+            @RequestParam(required = false) String lang,
+            @RequestParam(name = "activePage", required = true) String activePage,
+            @RequestParam(name = "activeSub", required = true) String activeSub,
+            Model model, HttpSession session
+    ) {
+        System.out.println("resetClientAddressCategoris HOME");
+        System.out.println("lang="+lang);
+        List<ProductCategoryDTO> orderList = new ArrayList<>();
+        ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
+        categoryService.resetCategoryByClientAddress(dto.getPubId());
+        List<ProductCategoryDTO> orderListCategoryAnsSub = categoryService.getCategoryAndSubCategoryByClientAddressPubId(dto.getPubId());
+        model.addAttribute("orderListCategoryAnsSub",orderListCategoryAnsSub);
+        model.addAttribute("activePage",activePage);
+        model.addAttribute("activeSub",activeSub);
+        model.addAttribute("globals", appGlobals.getAll());
+        return "pages/v1/manager/product/cat/index-category";
+    }
 
     @GetMapping("/item")
     public String showProductItemHome(

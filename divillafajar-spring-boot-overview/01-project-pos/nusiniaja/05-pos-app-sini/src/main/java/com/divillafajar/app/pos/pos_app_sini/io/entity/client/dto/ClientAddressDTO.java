@@ -33,4 +33,5 @@ public class ClientAddressDTO {
 	private String createdBy;
 	private String updatedBy;
 	private Boolean deleted;
+    private Boolean usedDefaultCategory;
 }
