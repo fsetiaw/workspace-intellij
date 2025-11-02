@@ -204,7 +204,7 @@ public interface ProductCategoryRepo extends JpaRepository<ProductCategoryEntity
             name,
             parent_id,
             client_address_id,
-            CAST(CONCAT(name, '~', id) AS CHAR(1000)) AS full_path
+            CAST(CONCAT(REPLACE(name, '/', '|'), '~', id) AS CHAR(1000)) AS full_path
           FROM product_category
           WHERE parent_id IS NULL
             AND client_address_id = :clientAddressId
@@ -216,7 +216,7 @@ public interface ProductCategoryRepo extends JpaRepository<ProductCategoryEntity
             c.name,
             c.parent_id,
             c.client_address_id,
-            CONCAT(cp.full_path, ' / ', c.name, '~', c.id) AS full_path
+            CONCAT(cp.full_path, ' / ', REPLACE(c.name, '/', '|'), '~', c.id) AS full_path
           FROM product_category c
           INNER JOIN category_path cp ON cp.id = c.parent_id
         )

@@ -87,25 +87,26 @@
                                         <!-- Form input add item -->
                                         <!--form id="addItemForm" class="mb-3" th:action="@{/v1/manager/product/category}" method="post"-->
                                         <div class="input-group">
-                                            <span class="input-group-text bg-primary text-white"
+                                            <!--span class="input-group-text bg-primary text-white"
                                                     style="font-weight:bold;font-size:1.2rem"
                                                     th:text="#{label.add}">
-                                            </span>
+                                            </span-->
                                             <input type="text" id="newItemInput" class="form-control"
                                                    th:placeholder="${(orderListCategoryAnsSub != null and orderListCategoryAnsSub.size() > 0)
                                                    ? #strings.toLowerCase(#messages.msg('msg.enterCategoryNameToAddOrKword')) + ' . . .'
                                                    : #strings.toLowerCase(#messages.msg('msg.enterCategoryName')) + ' . . .'}"
                                                    required>
+                                            <button id="addItemBtn" class="btn btn-success" type="button" title="Add Category">
+                                                <i class="bi bi-plus"></i>
+                                            </button>
                                             <button id="searchItemBtn"
                                                     class="btn btn-outline-primary"
                                                     type="button"
                                                     th:if="${orderListCategoryAnsSub != null and orderListCategoryAnsSub.size() > 0}"
-                                                    title="Search">
+                                                    title="Search Category">
                                                 <i class="bi bi-search"></i>
                                             </button>
-                                            <button id="addItemBtn" class="btn btn-success" type="button" title="Add">
-                                                <i class="bi bi-plus"></i>
-                                            </button>
+
                                         </div>
                                         <!--/form-->
                                         <div class="row">
@@ -575,11 +576,11 @@
             span.appendChild(nameSpan);
 
             const buttons = document.createElement("div");
-            buttons.className = "buttons";
+            buttons.className = "btn-group mb-0 btn-group-sm buttons";
             buttons.innerHTML = `
-              <a href="#" class="btn btn-sm btn-primary edit-btn"><i class="bi bi-pencil"></i></a>
-              <a href="#" class="btn btn-sm btn-danger delete-btn"><i class="bi bi-trash"></i></a>
-              <a href="#" class="btn btn-sm btn-success add-sub-btn"><i class="bi bi-plus"></i></a>
+              <a href="#" class="btn btn-sm btn-primary edit-btn" style="margin:0; transform: scale(0.8); transform-origin: center;"><i class="bi bi-pencil"></i></a>
+              <a href="#" class="btn btn-sm btn-danger delete-btn" style="margin:0; transform: scale(0.8); transform-origin: center;"><i class="bi bi-trash"></i></a>
+              <a href="#" class="btn btn-sm btn-success add-sub-btn" style="margin:0; transform: scale(0.8); transform-origin: center;"><i class="bi bi-plus"></i></a>
             `;
 
             li.appendChild(span);
@@ -795,10 +796,10 @@
                 <span class="item-text d-flex flex-column">
                   <span class="item-name">${data.name}</span>
                 </span>
-                <div class="buttons">
-                  <a href="#" class="btn btn-sm btn-primary edit-btn"><i class="bi bi-pencil"></i></a>
-                  <a href="#" class="btn btn-sm btn-danger delete-btn"><i class="bi bi-trash"></i></a>
-                  <a href="#" class="btn btn-sm btn-success add-sub-btn"><i class="bi bi-plus"></i></a>
+                <div class="btn-group mb-0 btn-group-sm buttons">
+                  <a href="#" class="btn btn-sm btn-primary edit-btn" style="margin:0; transform: scale(0.8); transform-origin: center;"><i class="bi bi-pencil"></i></a>
+                  <a href="#" class="btn btn-sm btn-danger delete-btn" style="margin:0; transform: scale(0.8); transform-origin: center;"><i class="bi bi-trash"></i></a>
+                  <a href="#" class="btn btn-sm btn-success add-sub-btn" style="margin:0; transform: scale(0.8); transform-origin: center;"><i class="bi bi-plus"></i></a>
                 </div>
               `;
 
@@ -989,11 +990,11 @@ function renderCategorySearchResult(data) {
         span.style.paddingLeft = `${pad}px`;
 
         const buttons = document.createElement("div");
-        buttons.className = "buttons";
+        buttons.className = "btn-group mb-0 btn-group-sm buttons";
         buttons.innerHTML = `
-          <a href="#" class="btn btn-sm btn-primary edit-btn"><i class="bi bi-pencil"></i></a>
-          <a href="#" class="btn btn-sm btn-danger delete-btn"><i class="bi bi-trash"></i></a>
-          <a href="#" class="btn btn-sm btn-success add-sub-btn"><i class="bi bi-plus"></i></a>
+          <a href="#" class="btn btn-sm btn-primary edit-btn" style="margin:0; transform: scale(0.8); transform-origin: center;"><i class="bi bi-pencil"></i></a>
+          <a href="#" class="btn btn-sm btn-danger delete-btn" style="margin:0; transform: scale(0.8); transform-origin: center;"><i class="bi bi-trash"></i></a>
+          <a href="#" class="btn btn-sm btn-success add-sub-btn" style="margin:0; transform: scale(0.8); transform-origin: center;"><i class="bi bi-plus"></i></a>
         `;
 
         li.appendChild(span);

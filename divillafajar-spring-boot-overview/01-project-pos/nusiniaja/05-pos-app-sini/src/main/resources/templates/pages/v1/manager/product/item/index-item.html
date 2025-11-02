@@ -123,7 +123,7 @@
                                                                 <li class="breadcrumb-item" th:classappend="${iterStat.last} ? 'active'">
                                                                     <a th:if="${iterStat.last}"
                                                                        th:href="@{/v1/manager/manage/product/item/{id}(id=${id},path=${path},activePage=${activePage},activeSub=${activeSub})}"
-                                                                       th:text="${name}"></a>
+                                                                       th:text="${#strings.replace(name, '|', '/')}"></a>
                                                                     <span th:if="${!iterStat.last}"
                                                                           th:text="${name}"></span>
                                                                 </li>
