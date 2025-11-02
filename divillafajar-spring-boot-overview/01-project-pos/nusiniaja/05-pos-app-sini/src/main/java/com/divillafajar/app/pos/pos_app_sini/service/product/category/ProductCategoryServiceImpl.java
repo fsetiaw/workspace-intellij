@@ -293,6 +293,9 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
         ClientAddressEntity targetAddress = addressRepo.findByPubId(clientAddressPubId);
         long cAid = targetAddress.getId();
         deleteAllByClientAddressId(cAid);
+        //reset sudah useDefaultCategory
+        targetAddress.setUsedDefaultCategory(false);
+        addressRepo.save(targetAddress);
     }
 
 }

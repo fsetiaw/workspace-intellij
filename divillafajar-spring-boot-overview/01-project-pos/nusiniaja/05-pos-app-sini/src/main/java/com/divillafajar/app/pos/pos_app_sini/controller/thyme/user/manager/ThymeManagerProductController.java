@@ -118,6 +118,7 @@ public class ThymeManagerProductController {
             @RequestParam(required = false) String lang,
             @RequestParam(name = "activePage", required = true) String activePage,
             @RequestParam(name = "activeSub", required = true) String activeSub,
+            RedirectAttributes redirectAttributes,
             Model model, HttpSession session
     ) {
         System.out.println("resetClientAddressCategoris HOME");
@@ -125,12 +126,15 @@ public class ThymeManagerProductController {
         List<ProductCategoryDTO> orderList = new ArrayList<>();
         ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
         categoryService.resetCategoryByClientAddress(dto.getPubId());
+        dto.setUsedDefaultCategory(false);
         List<ProductCategoryDTO> orderListCategoryAnsSub = categoryService.getCategoryAndSubCategoryByClientAddressPubId(dto.getPubId());
         model.addAttribute("orderListCategoryAnsSub",orderListCategoryAnsSub);
-        model.addAttribute("activePage",activePage);
-        model.addAttribute("activeSub",activeSub);
+        redirectAttributes.addAttribute("activePage",activePage);
+        redirectAttributes.addAttribute("activeSub",activeSub);
         model.addAttribute("globals", appGlobals.getAll());
-        return "pages/v1/manager/product/cat/index-category";
+        model.addAttribute("targetAddress", dto);
+        //return "pages/v1/manager/product/cat/index-category";
+        return "redirect:/v1/manager/manage/product/cat";
     }
 
     @GetMapping("/item")
