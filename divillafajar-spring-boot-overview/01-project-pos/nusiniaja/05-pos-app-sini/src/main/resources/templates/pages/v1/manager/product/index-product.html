@@ -48,7 +48,7 @@
                 <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN','MANAGER')" class="breadcrumb-item active">
                     <a th:href="@{/v1/manager/home(pid=${targetAddress.pubId})}" th:text="|${#messages.msg('label.management')}|"></a>
                 </li>
-                <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN')" class="breadcrumb-item"
+                <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN','MANAGER')" class="breadcrumb-item"
                     aria-current="page" th:text="|${#messages.msg('label.manager.setting.product')}|">
                 </li>
             </ol>
@@ -126,7 +126,7 @@
                         <div class="col-6 col-lg-3 col-md-6">
                             <div class="card">
                                 <a th:if="${hasCategory}"
-                                   th:href="@{/v1/manager/manage/product/item(pid=${targetAddress.pubId},activePage='menu1',activeSub='subMenu1-2')}">
+                                   th:href="@{/v1/manager/manage/product/stock(pid=${targetAddress.pubId},activePage='menu1',activeSub='subMenu1-2')}">
                                     <div class="card-body px-4 py-4-5">
                                         <div class="row">
                                             <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">

@@ -47,7 +47,7 @@
         <!-- Main content slot -->
         <div class="page-heading">
             <ol class="breadcrumb">
-                <li sec:authorize="hasRole('SUPERADMIN')" class="breadcrumb-item active">
+                <!--li sec:authorize="hasRole('SUPERADMIN')" class="breadcrumb-item active">
                     <a href="#" th:text="|${#messages.msg('label.dashboard')}|"></a>
                 </li>
                 <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN')" class="breadcrumb-item active">
@@ -56,11 +56,13 @@
                 <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN','MANAGER')" class="breadcrumb-item active">
                     <a th:href="@{/v1/manager/home(pid=${targetAddress.pubId})}" th:text="|${#messages.msg('label.management')}|"></a>
                 </li>
-                <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN')" class="breadcrumb-item active">
+                <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN','MANAGER')" class="breadcrumb-item active">
                     <a th:href="@{/v1/manager/manage/product(activePage='dashboard')}"
                        th:text="|${#messages.msg('label.manager.setting.product')}|"></a>
-                </li>
-                <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN')" class="breadcrumb-item"
+                </li-->
+
+                <th:block th:replace="~{/pages/v1/fragments/crumbs/manager-product-root-crumb.html :: manager-product-root-crumb}"></th:block>
+                <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN','MANAGER')" class="breadcrumb-item"
                     aria-current="page" th:text="|${#messages.msg('label.manager.setting.product.category')}|">
                 </li>
             </ol>

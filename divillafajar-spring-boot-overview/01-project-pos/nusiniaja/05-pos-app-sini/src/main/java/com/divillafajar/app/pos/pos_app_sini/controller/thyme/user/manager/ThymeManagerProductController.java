@@ -32,7 +32,7 @@ import java.util.*;
 @Controller
 @RequestMapping("/v1/manager/manage/product")
 @RequiredArgsConstructor
-@SessionAttributes({"targetAddress"})
+@SessionAttributes({"targetAddress","globals"})
 public class ThymeManagerProductController {
 
     private final ProductCategoryService categoryService;
@@ -68,7 +68,21 @@ public class ThymeManagerProductController {
     }
 
 
-
+    @GetMapping("/stock")
+    public String showStockHomeDashboard(
+            @RequestParam(name = "activePage", required = true) String activePage,
+            @RequestParam(name = "activeSub", required = false) String activeSub,
+            Model model, HttpSession session
+    ) {
+        System.out.println("showStockHomeDashboard HOME");
+        ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
+        boolean hasCategory = categoryService.locationHasCategoryProduct(dto.getPubId());
+        model.addAttribute("hasCategory",hasCategory);
+        //model.addAttribute("globals", appGlobals.getAll());
+        model.addAttribute("activePage",activePage);
+        model.addAttribute("activeSub",activeSub);
+        return "pages/v1/manager/product/stock/index-stock";
+    }
 
     @GetMapping("/cat")
     public String showCategoryHome(

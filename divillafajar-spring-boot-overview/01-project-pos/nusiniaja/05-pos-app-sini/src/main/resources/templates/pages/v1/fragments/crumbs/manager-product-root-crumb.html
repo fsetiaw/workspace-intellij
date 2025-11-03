@@ -1,0 +1,16 @@
+<th:block th:fragment="manager-product-root-crumb" xmlns:th="http://www.w3.org/1999/xhtml"
+     xmlns:sec="http://www.w3.org/1999/xhtml">
+    <li sec:authorize="hasRole('SUPERADMIN')" class="breadcrumb-item active">
+        <a href="#" th:text="|${#messages.msg('label.dashboard')}|"></a>
+    </li>
+    <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN')" class="breadcrumb-item active">
+        <a th:href="@{/v2/admin/home}" th:text="|${#messages.msg('label.dashboard')}|"></a>
+    </li>
+    <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN','MANAGER')" class="breadcrumb-item active">
+        <a th:href="@{/v1/manager/home(pid=${targetAddress.pubId})}" th:text="|${#messages.msg('label.management')}|"></a>
+    </li>
+    <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN','MANAGER')" class="breadcrumb-item active">
+        <a th:href="@{/v1/manager/manage/product(activePage='dashboard')}"
+           th:text="|${#messages.msg('label.manager.setting.product')}|"></a>
+    </li>
+</th:block>
