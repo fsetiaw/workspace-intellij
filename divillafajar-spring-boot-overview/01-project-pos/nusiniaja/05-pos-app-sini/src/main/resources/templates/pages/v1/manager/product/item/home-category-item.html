@@ -173,16 +173,26 @@
                 <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN','MANAGER')" class="breadcrumb-item active">
                     <a th:href="@{/v1/manager/home(pid=${targetAddress.pubId})}" th:text="|${#messages.msg('label.management')}|"></a>
                 </li>
-                <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN')" class="breadcrumb-item active">
+                <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN','MANAGER')" class="breadcrumb-item active">
                     <a th:href="@{/v1/manager/manage/product(activePage='dashboard')}"
                        th:text="|${#messages.msg('label.manager.setting.product')}|"></a>
                 </li>
-                <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN')" class="breadcrumb-item active">
+                <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN','MANAGER')" class="breadcrumb-item active">
                     <a th:href="@{/v1/manager/manage/product/item(pid=${targetAddress.pubId},activePage='menu1',activeSub='subMenu1-2')}"
                     th:text="|${#messages.msg('label.manager.setting.product.item')}|"></a>
                 </li>
-                <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN')" class="breadcrumb-item"
-                    aria-current="page" th:text="|${#messages.msg('label.itemList')}|">
+                <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN','MANAGER')" class="breadcrumb-item"
+                    aria-current="page"><!-- th:text="|${#messages.msg('label.itemList')}|"-->
+                    <span th:with="
+                    parts=${#strings.arraySplit(trimPath, '/')},
+                    lastIndex=${#lists.size(parts) - 1}">
+
+                    <span th:each="p, iter : ${parts}">
+                        <span th:if="${iter.last}"
+                              th:text="${p.trim()}">
+                        </span>
+                    </span>
+                </span>
                 </li>
             </ol>
             <h3>
@@ -351,7 +361,7 @@
                                                         <h2 class="card-title mb-0" th:text="${item.name}">Basic</h2>
                                                     </div-->
                                                     <div class="card-body text-center">
-                                                        <h2 class="card-title mb-0" th:utext="|${item.name}|"
+                                                        <h2 class="card-title mb-0 text-primary" th:utext="|${item.name}|"
                                                             th:id="'itemName' + ${item.id}"></h2>
                                                         <!-- 🔹 Harga tampil -->
                                                         <h4 class="price" th:id="'price-display-' + ${item.id}"
@@ -367,7 +377,7 @@
 
                                                             <!-- harga ada -->
                                                             <span th:id="'itemPriceFormatted' + ${item.id}" th:if="${item.price != null and item.price != '' and T(java.lang.Double).parseDouble(item.price) > 0}"
-                                                                  class="text-primary" style="font-size:125%"
+                                                                  class="text-secondary" style="font-size:125%"
                                                                   th:text="${#numbers.formatDecimal(item.price, 0, 'POINT', 0, 'COMMA')}">
                                                             </span>
 
@@ -384,7 +394,8 @@
                                                             </span>
 
                                                             <!-- stok aman -->
-                                                            <span th:if="${item.stockQuantity >= item.minStockAlert}"
+                                                            <span th:if="${item.stockQuantity != null and item.stockQuantity >= item.minStockAlert}"
+                                                                  class="text-info"
                                                                   style="font-size:45%"
                                                                   th:text="${#strings.toLowerCase(#messages.msg('label.stock') + ': ' + (item.stockQuantity == null ? 0 : item.stockQuantity))}">
                                                             </span>
@@ -394,7 +405,7 @@
                                                             <li th:id="'price-notset-' + ${item.id}"
                                                                 th:attr="style=${item.price == null or item.price == 0} ? 'display:block;' : 'display:none;'">
                                                                 <i class="bi bi-x-circle text-danger"></i>
-                                                                <span th:text="#{msg.priceNotSet}"></span>
+                                                                <span class="text-danger" th:text="#{msg.priceNotSet}"></span>
                                                             </li>
                                                             <!-- description -->
                                                             <!--li th:id="'desc-ok-' + ${item.id}"
@@ -439,8 +450,8 @@
                                                     <div class="text-center my-2">
                                                         <a class="btn btn-sm btn-outline-primary toggle-edit"
                                                            th:attr="data-target-id=${'collapseExample' + item.id}"
-                                                           role="button">
-                                                            <i class="bi bi-pencil" style="font-size: 0.7rem;"></i>
+                                                           role="button" style="border-width: 2px;">
+                                                            <i class="bi bi-pencil-fill text-primary" style="font-size: 0.7rem;"></i>
                                                         </a>
                                                     </div>
 
@@ -457,7 +468,8 @@
                                                                    accept="image/*"
                                                                    th:attr="data-product-id=${item.id}, data-has-image=${item.imageUrl != null}">
                                                         </div>
-                                                        <p class="card-text"
+                                                        <p class="card-text fw-bold fs-5 text-center text-info mt-3 mb-0" th:utext="|#{label.description}:|")></p>
+                                                        <p class="card-text text-center"
                                                            th:attr="id=${'itemDesc' + item.id}"
                                                            th:text="${#strings.isEmpty(item.description) ? #messages.msg('msg.noDescProvided') : item.description}">
                                                         </p>
@@ -502,7 +514,7 @@
                                                                                th:value="${item.stockQuantity != null ? item.stockQuantity : 0}"
                                                                                th:placeholder="#{label.quantity}" name="stock"
                                                                                min="0" max="999" step="1"
-                                                                               style="width: 100px; text-align: center;">
+                                                                               style="width: 100px; text-align: center;" readonly>
                                                                         <a href="#" class="btn btn-outline-secondary" title="Atur Stok">
                                                                             <i class="bi bi-gear-fill"></i>
                                                                         </a>
