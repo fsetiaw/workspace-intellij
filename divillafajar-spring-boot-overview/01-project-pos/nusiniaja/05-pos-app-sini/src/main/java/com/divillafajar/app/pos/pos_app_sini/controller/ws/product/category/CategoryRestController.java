@@ -40,9 +40,6 @@ public class CategoryRestController {
     public ResponseEntity<?> addNewCategory( //defaultnya <CreateSubCategoryProductRespModel>
              @PathVariable String pubAid,
             @RequestBody RequestItemSubItemModel dto) {
-        System.out.println("Rest Controller AddNewCategory="+pubAid);
-        //ClientAddressDTO address = (ClientAddressDTO) session.getAttribute("targetAddress");
-        //ClientAddressDTO address = clientAddressService.getStore(pubAid);
         CreateSubCategoryProductRespModel retVal = new CreateSubCategoryProductRespModel();
         try {
             ProductCategoryDTO added =  categoryService.addNewProductCategory(dto.getName(), pubAid);
@@ -68,13 +65,11 @@ public class CategoryRestController {
     public ResponseEntity<?> deleteCategory( //defaultnya <CreateSubCategoryProductRespModel>
                                              HttpSession session,
                                              @PathVariable Long id) {
-        System.out.println("Rest Controller deleteCategory id="+id);
         ClientAddressDTO address = (ClientAddressDTO) session.getAttribute("targetAddress");
         CreateSubCategoryProductRespModel retVal = new CreateSubCategoryProductRespModel();
 		try {
 			categoryService.deleteCategory(id);
 		} catch (CategoryHasSubCategoryException e) {
-			System.out.println("Rest Controller deleteCategory msg = "+e.getMessage());
 			Map<String, Object> body = new HashMap<>();
 			body.put("message", e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -99,23 +94,19 @@ public class CategoryRestController {
 			HttpServletRequest request,
 			Model model, HttpSession session
 	) {
-		System.out.println("showSearchCategoryResult is called = "+kword);
 		ClientAddressDTO address = (ClientAddressDTO) session.getAttribute("targetAddress");
 		List<ProductCategoryDTO> retVal = new ArrayList<>();
 		List<CategorySearchResultModel> searchResult = new ArrayList<>();
 		searchResult = categoryService.searchCategory(address.getPubId(),kword);
 		if(searchResult!=null && searchResult.size()>0) {
 			for(CategorySearchResultModel cat : searchResult) {
-				System.out.println("cat.getPath(="+cat.getPath());
 				ProductCategoryDTO dto = new ProductCategoryDTO();
 				dto.setIndentLevel(0L);
 				String kategori = cat.getPath();
 				String lastPart = kategori.substring(kategori.lastIndexOf(">") + 1);
-				System.out.println("lastPart="+lastPart);
 				dto.setName(lastPart);
 				int idx = kategori.lastIndexOf('>');
 				String beforeLastPart = (idx != -1) ? kategori.substring(0, idx) : kategori;
-				System.out.println("beforeLastPart="+beforeLastPart);
 				dto.setPath(beforeLastPart+">");
 				dto.setId(cat.getId());
 				retVal.add(dto);
@@ -128,12 +119,7 @@ public class CategoryRestController {
     public ResponseEntity<CreateSubCategoryProductRespModel> addSubCategory(
             HttpSession session,
             @RequestBody RequestItemSubItemModel dto) {
-        System.out.println("Rest Controller addSubCategory");
         ClientAddressDTO address = (ClientAddressDTO) session.getAttribute("targetAddress");
-        System.out.println("addSubCategory address = "+address.getPubId());
-        System.out.println("addSubCategory dto = "+dto.getName());
-        System.out.println("addSubCategory dto = "+dto.getParentId());
-        //System.out.println("addSubCategory indent = "+dto.getIndentLevel());
 
         CreateSubCategoryProductRespModel retVal = new CreateSubCategoryProductRespModel();
         try {
@@ -142,22 +128,18 @@ public class CategoryRestController {
             retVal.setName(added.getName());
             retVal.setParentId(added.getParent().getId());
             retVal.setIndentLevel(added.getIndentLevel());
-            System.out.println("added indent = "+added.getIndentLevel());
             retVal.setClientAddressPubId(address.getPubId());
 
         } catch(DuplicationErrorException e) {
-            System.out.println("Cought agai = "+HttpStatus.CONFLICT);
             retVal.setMessage(e.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(retVal);
         } catch (Exception e) {
-            System.out.println("controller error ok");
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(null);
         }
         //ProductCategoryDTO updated = categoryService.update(id, dto);
-        System.out.println("returning ok");
         return ResponseEntity.ok(retVal);
 
     }
@@ -169,10 +151,6 @@ public class CategoryRestController {
             @RequestBody RequestItemSubItemModel dto,
             HttpSession session
         ) {
-        System.out.println("Rest Controller updateCategory");
-        System.out.println("dto="+dto.getId());
-        System.out.println("dto="+dto.getName());
-        System.out.println("dto="+dto.getIndentLevel());
         UpdateCategoryProductRespModel retVal = new UpdateCategoryProductRespModel();
         ProductCategoryDTO productCategoryDTO = new ProductCategoryDTO();
         ClientAddressDTO address = (ClientAddressDTO) session.getAttribute("targetAddress");
@@ -191,9 +169,6 @@ public class CategoryRestController {
         }
 
         retVal.setIndentLevel(dto.getIndentLevel());
-        System.out.println("name = "+retVal.getId());
-        System.out.println("name = "+retVal.getIndentLevel());
-        System.out.println("name = "+retVal.getName());
         //ProductCategoryDTO updated = categoryService.update(id, dto);
         return ResponseEntity.ok(retVal);
     }
@@ -209,9 +184,6 @@ public class CategoryRestController {
             HttpServletRequest request,
             Model model, HttpSession session
     ) {
-        System.out.println(catId+" ---showSearchItemCategoryResult is called = "+kword);
-        System.out.println(activePage+" --- "+activeSub);
-        System.out.println(adrPubId);
         List<ProductWithCategoryPathDTO> retVal = new ArrayList<>();
         ClientAddressDTO address = (ClientAddressDTO) session.getAttribute("targetAddress");
         List<ProductWithCategoryPathDTO> listItem = productService.getListProduct(adrPubId,catId, kword);

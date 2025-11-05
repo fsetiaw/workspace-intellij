@@ -417,7 +417,7 @@
                                                             <li th:id="'desc-no-' + ${item.id}"
                                                                 th:attr="style=${item.description == null or #strings.isEmpty(item.description)} ? 'display:block;' : 'display:none;'">
                                                                 <i class="bi bi-x-circle text-danger"></i>
-                                                                <span th:text="#{msg.noDescProvided}"></span>
+                                                                <span class="text-danger" th:text="#{msg.noDescProvided}"></span>
                                                             </li>
                                                             <!-- image -->
                                                             <li th:id="'status-image-' + ${item.id}"
@@ -430,7 +430,7 @@
                                                             <li th:id="'status-noimage-' + ${item.id}"
                                                                 th:if="${item.thumbnailUrl == null or #strings.isEmpty(item.thumbnailUrl)}">
                                                                 <i class="bi bi-x-circle text-danger"></i>
-                                                                <span th:text="#{msg.noImageProvided}"></span>
+                                                                <span class="text-danger" th:text="#{msg.noImageProvided}"></span>
                                                             </li>
                                                         </ul>
                                                     </div>

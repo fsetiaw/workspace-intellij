@@ -8,6 +8,7 @@ import com.divillafajar.app.pos.pos_app_sini.io.entity.product.ProductEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductWithCategoryPathDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientAddressDTO;
 import com.divillafajar.app.pos.pos_app_sini.model.item.CreateItemRequestModel;
+import com.divillafajar.app.pos.pos_app_sini.model.product.ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId;
 import com.divillafajar.app.pos.pos_app_sini.service.image.ImageStorageService;
 import com.divillafajar.app.pos.pos_app_sini.service.product.category.ProductCategoryService;
 import com.divillafajar.app.pos.pos_app_sini.service.product.item.ProductService;
@@ -32,7 +33,7 @@ import java.util.*;
 @Controller
 @RequestMapping("/v1/manager/manage/product")
 @RequiredArgsConstructor
-@SessionAttributes({"targetAddress","globals"})
+@SessionAttributes({"targetAddress","globals","filter"})
 public class ThymeManagerProductController {
 
     private final ProductCategoryService categoryService;
@@ -49,40 +50,21 @@ public class ThymeManagerProductController {
             @RequestParam(name = "activeSub", required = false) String activeSub,
             Model model, HttpSession session
     ) {
-        System.out.println("showCategoryHome HOME");
 	    ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
 		boolean hasCategory = categoryService.locationHasCategoryProduct(dto.getPubId());
+        boolean hasItem=false;
+        if(hasCategory)
+            hasItem = categoryService.locationHasItemProduct(dto.getPubId());
 	    model.addAttribute("hasCategory",hasCategory);
+        model.addAttribute("hasItem",hasItem);
 	    model.addAttribute("globals", appGlobals.getAll());
-	    //Map<?,?> globals = appGlobals.getAll();
-		//globals.get
-	    //model.addAttribute("toastTimeout", appGlobals.get("toastTimeout"));
-	    //model.addAttribute("toastShortTimeout", appGlobals.get("toastShortTimeout"));
-	    //model.addAttribute("toastMediumTimeout", appGlobals.get("toastMediumTimeout"));
-	    //model.addAttribute("toastLongTimeout", appGlobals.get("toastLongTimeout"));
-		//System.out.println("toastShortTimeout = "+appGlobals.get("toastShortTimeout"));
-	    //System.out.println("hasCategory = "+hasCategory);
 		model.addAttribute("activePage",activePage);
         model.addAttribute("activeSub",activeSub);
         return "pages/v1/manager/product/index-product";
     }
 
 
-    @GetMapping("/stock")
-    public String showStockHomeDashboard(
-            @RequestParam(name = "activePage", required = true) String activePage,
-            @RequestParam(name = "activeSub", required = false) String activeSub,
-            Model model, HttpSession session
-    ) {
-        System.out.println("showStockHomeDashboard HOME");
-        ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
-        boolean hasCategory = categoryService.locationHasCategoryProduct(dto.getPubId());
-        model.addAttribute("hasCategory",hasCategory);
-        //model.addAttribute("globals", appGlobals.getAll());
-        model.addAttribute("activePage",activePage);
-        model.addAttribute("activeSub",activeSub);
-        return "pages/v1/manager/product/stock/index-stock";
-    }
+
 
     @GetMapping("/cat")
     public String showCategoryHome(
@@ -90,11 +72,9 @@ public class ThymeManagerProductController {
             @RequestParam(name = "activeSub", required = true) String activeSub,
             Model model, HttpSession session
     ) {
-        System.out.println("showCategoryHome HOME");
         List<ProductCategoryDTO> orderList = new ArrayList<>();
         ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
         List<ProductCategoryDTO> orderListCategoryAnsSub = categoryService.getCategoryAndSubCategoryByClientAddressPubId(dto.getPubId());
-	    System.out.println("orderListCategoryAnsSub size = "+orderListCategoryAnsSub.size());
 		model.addAttribute("orderListCategoryAnsSub",orderListCategoryAnsSub);
         model.addAttribute("activePage",activePage);
         model.addAttribute("activeSub",activeSub);
@@ -110,8 +90,6 @@ public class ThymeManagerProductController {
             RedirectAttributes redirectAttributes,
 			Model model, HttpSession session
 	) {
-		System.out.println("createDefaultCategory HOME");
-		System.out.println("lang="+lang);
 		List<ProductCategoryDTO> orderList = new ArrayList<>();
 		ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
         categoryService.createDefaultCategory(lang, dto.getPubId());
@@ -135,8 +113,6 @@ public class ThymeManagerProductController {
             RedirectAttributes redirectAttributes,
             Model model, HttpSession session
     ) {
-        System.out.println("resetClientAddressCategoris HOME");
-        System.out.println("lang="+lang);
         List<ProductCategoryDTO> orderList = new ArrayList<>();
         ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
         categoryService.resetCategoryByClientAddress(dto.getPubId());
@@ -155,21 +131,47 @@ public class ThymeManagerProductController {
     public String showProductItemHome(
             @RequestParam(name = "activePage", required = true) String activePage,
             @RequestParam(name = "activeSub", required = true) String activeSub,
+            @RequestParam(name = "filter", required = false) String filter,
             //RedirectAttributes redirectAttributes,
             //HttpServletRequest request,
             Model model, HttpSession session
     ) {
-        System.out.println("showProductItemHome HOME!!!");
         ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
-        List<String> listEndCategory = categoryService.getPathToEachEndChildCategoryByClientAddressPubId(dto.getPubId());
+
+
+        List<ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId> listRecord = new ArrayList<>();
+        //pettama kali sampi laman
+        if(filter==null) {
+            model.addAttribute("filter","noFilter");
+            listRecord = categoryService.getPathToEachEndChildCategoryByClientAddressPubId(dto.getPubId());
+        }
+        else {
+            model.addAttribute("filter",filter);
+            listRecord = categoryService.getPathToEachEndChildCategoryByClientAddressPubId(dto.getPubId(), filter);
+        }
+        List<String> listEndCategory = new ArrayList<>();
+        List<Long> listCategoryTotItem = new ArrayList<>();
+        if(listRecord!=null) {
+
+            for(ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId singleton : listRecord) {
+                listEndCategory.add(singleton.getFullPath());
+                listCategoryTotItem.add(singleton.getTotalProducts());
+            }
+        }
+        /*
         listEndCategory.forEach(cat -> {
             System.out.println(cat);
         });
+        listCategoryTotItem.forEach(cat -> {
+            System.out.println(cat);
+        });
+
+         */
         model.addAttribute("listEndCategory",listEndCategory);
+        model.addAttribute("listCategoryTotItem",listCategoryTotItem);
         model.addAttribute("activePage",activePage);
         model.addAttribute("activeSub",activeSub);
-
-        return "pages/v1/manager/product/item/index-item.html";
+        return "pages/v1/manager/product/item/index-item";
     }
 
     @PostMapping("/item/upload-image/{id}")
@@ -180,8 +182,6 @@ public class ThymeManagerProductController {
             Model model
     ) {
         try {
-            System.out.println("======uploadProductImage=======");
-            System.out.println("======id="+productId+"=======");
             telegramNotifier.sendMessage("🧪 *uploadProductImage*\n\n" + "UPLOAD GAMBAR NIH");
             // 🔹 Validasi file kosong
             if (file.isEmpty()) {
@@ -215,7 +215,6 @@ public class ThymeManagerProductController {
             // 🔹 Kembalikan respons sesuai format FilePond
 
              */
-            System.out.println("oke kan "+thumbUrl);
             return ResponseEntity.ok(Map.of(
                     "success", true,
                     "url", thumbUrl
@@ -242,7 +241,6 @@ public class ThymeManagerProductController {
 			@PathVariable Long categoryId,
 			Model model, HttpSession session
 	) {
-		System.out.println("showCategoryItemHome HOME - Catid ="+categoryId+"-"+path);
 		String trimPath = "";
 		StringTokenizer st = new StringTokenizer(path,"/");
 		while(st.hasMoreTokens()) {
@@ -303,7 +301,6 @@ public class ThymeManagerProductController {
 			RedirectAttributes redirectAttributes,
 			Model model, HttpSession session
 	) {
-		System.out.println("addNewItemCategory HOME - Catid ="+categoryId);
 		try {
 			ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
 			productService.addNewProduct(categoryId, dto, createItemRequestModel);
@@ -325,23 +322,19 @@ public class ThymeManagerProductController {
 
 	}
 
-    /*
-    ** NGGA JADi DIPAKE, PAKI YG RestControl untuk CRUD
-    **
-    *
 
-    @PostMapping("/category")
-    public String addProdCat(@ModelAttribute("targetAddress") ClientAddressDTO targetAddress, Model model) {
-        System.out.println("manage.addProdCat is called");
-        return "redirect:/v1/manager/home?pid="+targetAddress.getPubId();
+    /**********************************************STOCK************************************************************/
+    @GetMapping("/stock")
+    public String showStockHomeDashboard(
+            @RequestParam(name = "activePage", required = true) String activePage,
+            @RequestParam(name = "activeSub", required = false) String activeSub,
+            Model model, HttpSession session
+    ) {
+        ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
+        boolean hasCategory = categoryService.locationHasCategoryProduct(dto.getPubId());
+        model.addAttribute("hasCategory",hasCategory);
+        model.addAttribute("activePage",activePage);
+        model.addAttribute("activeSub",activeSub);
+        return "pages/v1/manager/product/stock/index-stock";
     }
-
-    @PutMapping("/category/{id}")
-    public String editProdCat(@ModelAttribute("targetAddress") ClientAddressDTO targetAddress,
-                              @PathVariable("id") long id, Model model) {
-        System.out.println("manage.editProdCat is called");
-        return "redirect:/v1/manager/home?pid="+targetAddress.getPubId();
-    }
-
-     */
 }

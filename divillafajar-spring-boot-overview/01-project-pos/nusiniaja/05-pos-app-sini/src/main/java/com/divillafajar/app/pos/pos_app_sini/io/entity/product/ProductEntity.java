@@ -114,27 +114,3 @@ public class ProductEntity {
 	private Boolean deleted = false;
 
 }
-/*
-document.addEventListener('DOMContentLoaded', function () {
-	document.querySelectorAll('.toggle-edit').forEach(btn => {
-			btn.addEventListener('click', function (e) {
-			e.preventDefault();
-                const targetId = this.getAttribute('data-target-id');
-                const cardBody = this.closest('.card-body');
-                const desc = cardBody.querySelector('.desc');
-                const collapse = cardBody.querySelector(`#${targetId}`);
-                const bsCollapse = new bootstrap.Collapse(collapse, { toggle: false });
-
-	// toggle collapse
-	if (collapse.classList.contains('show')) {
-		bsCollapse.hide();
-		desc.style.display = ''; // tampilkan kembali section
-	} else {
-		bsCollapse.show();
-		desc.style.display = 'none'; // sembunyikan section
-	}
-            });
-        });
-});
-
- */

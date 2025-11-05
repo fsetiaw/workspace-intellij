@@ -2,14 +2,17 @@ package com.divillafajar.app.pos.pos_app_sini.repo.product.category;
 
 import com.divillafajar.app.pos.pos_app_sini.io.projection.CategoryHierarchyProjectionDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryEntity;
+import com.divillafajar.app.pos.pos_app_sini.io.projection.CategorySummaryProjection;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductCategoryHierarchyProjection;
 import com.divillafajar.app.pos.pos_app_sini.model.product.CategorySearchResultModel;
+import com.divillafajar.app.pos.pos_app_sini.model.product.ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface ProductCategoryRepo extends JpaRepository<ProductCategoryEntity,Long> {
@@ -32,6 +35,9 @@ public interface ProductCategoryRepo extends JpaRepository<ProductCategoryEntity
 	""")
 	boolean isCategoryExistAtClientAddressByPubId(@Param("pubId") String pubId);
 
+
+    @Query("SELECT COUNT(p) > 0 FROM ProductEntity p WHERE p.clientAddress.id = :clientAddressId AND p.deleted = false")
+    boolean isItemExistsByClientAddressId(@Param("clientAddressId") Long clientAddressId);
 /*
     @Query(
             value = """
@@ -197,6 +203,295 @@ public interface ProductCategoryRepo extends JpaRepository<ProductCategoryEntity
 
 
     @Query(
+        value = """
+            WITH RECURSIVE category_path AS (
+              SELECT
+                id,
+                name,
+                parent_id,
+                client_address_id,
+                CAST(CONCAT(REPLACE(name, '/', '|'), '~', id) AS CHAR(1000)) AS full_path
+              FROM product_category
+              WHERE parent_id IS NULL
+                AND client_address_id = :clientAddressId
+    
+              UNION ALL
+    
+              SELECT
+                c.id,
+                c.name,
+                c.parent_id,
+                c.client_address_id,
+                CONCAT(cp.full_path, ' / ', REPLACE(c.name, '/', '|'), '~', c.id) AS full_path
+              FROM product_category c
+              INNER JOIN category_path cp ON cp.id = c.parent_id
+            )
+    
+            SELECT 
+              cp.full_path,
+              cp.id AS category_id,
+              COUNT(p.id) AS total_products
+            FROM category_path cp
+            LEFT JOIN product p
+              ON p.category_id = cp.id
+              AND p.deleted = FALSE
+              AND p.client_address_id = :clientAddressId
+            WHERE NOT EXISTS (
+              SELECT 1 FROM product_category child WHERE child.parent_id = cp.id
+            )
+            GROUP BY cp.id, cp.full_path
+            ORDER BY cp.full_path;                 
+    """,
+            nativeQuery = true
+    )
+    List<ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId> findAllPathEndCategoryChildHierarchical(@Param("clientAddressId") Long clientAddressId);
+
+    @Query(
+            value = """
+            WITH RECURSIVE category_path AS (
+             SELECT
+               id,
+               name,
+               parent_id,
+               client_address_id,
+               CAST(CONCAT(REPLACE(name, '/', '|'), '~', id) AS CHAR(1000)) AS full_path
+             FROM product_category
+             WHERE parent_id IS NULL
+               AND client_address_id = :clientAddressId
+
+             UNION ALL
+
+             SELECT
+               c.id,
+               c.name,
+               c.parent_id,
+               c.client_address_id,
+               CONCAT(cp.full_path, ' / ', REPLACE(c.name, '/', '|'), '~', c.id) AS full_path
+             FROM product_category c
+             INNER JOIN category_path cp ON cp.id = c.parent_id
+           ),
+           category_with_total AS (
+             SELECT
+               cp.full_path,
+               cp.id AS category_id,
+               COUNT(p.id) AS total_products
+             FROM category_path cp
+             LEFT JOIN product p
+               ON p.category_id = cp.id
+               AND p.deleted = FALSE
+               AND p.client_address_id = :clientAddressId
+             WHERE NOT EXISTS (
+               SELECT 1 FROM product_category child WHERE child.parent_id = cp.id
+             )
+             GROUP BY cp.id, cp.full_path
+           )
+           SELECT *
+           FROM category_with_total
+           WHERE total_products < 1
+           ORDER BY full_path;
+    """,
+            nativeQuery = true
+    )
+    List<ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId> findAllPathEndCategoryChildHierarchicalHasNoItemOnly(@Param("clientAddressId") Long clientAddressId);
+
+    @Query(
+            value = """
+            WITH RECURSIVE category_path AS (
+             SELECT
+               id,
+               name,
+               parent_id,
+               client_address_id,
+               CAST(CONCAT(REPLACE(name, '/', '|'), '~', id) AS CHAR(1000)) AS full_path
+             FROM product_category
+             WHERE parent_id IS NULL
+               AND client_address_id = :clientAddressId
+
+             UNION ALL
+
+             SELECT
+               c.id,
+               c.name,
+               c.parent_id,
+               c.client_address_id,
+               CONCAT(cp.full_path, ' / ', REPLACE(c.name, '/', '|'), '~', c.id) AS full_path
+             FROM product_category c
+             INNER JOIN category_path cp ON cp.id = c.parent_id
+           ),
+           category_with_total AS (
+             SELECT
+               cp.full_path,
+               cp.id AS category_id,
+               COUNT(p.id) AS total_products
+             FROM category_path cp
+             LEFT JOIN product p
+               ON p.category_id = cp.id
+               AND p.deleted = FALSE
+               AND p.client_address_id = :clientAddressId
+             WHERE NOT EXISTS (
+               SELECT 1 FROM product_category child WHERE child.parent_id = cp.id
+             )
+             GROUP BY cp.id, cp.full_path
+           )
+           SELECT *
+           FROM category_with_total
+           WHERE total_products > 0
+           ORDER BY full_path;
+    """,
+            nativeQuery = true
+    )
+    List<ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId> findAllPathEndCategoryChildHierarchicalHasItemOnly(@Param("clientAddressId") Long clientAddressId);
+
+
+
+    @Query(
+        value = """
+        WITH RECURSIVE category_path AS (
+          SELECT
+            id,
+            name,
+            parent_id,
+            client_address_id,
+            CAST(CONCAT(REPLACE(name, '/', '|'), '~', id) AS CHAR(1000)) AS full_path
+          FROM product_category
+          WHERE parent_id IS NULL
+            AND client_address_id = :clientAddressId
+
+          UNION ALL
+
+          SELECT
+            c.id,
+            c.name,
+            c.parent_id,
+            c.client_address_id,
+            CONCAT(cp.full_path, ' / ', REPLACE(c.name, '/', '|'), '~', c.id) AS full_path
+          FROM product_category c
+          INNER JOIN category_path cp ON cp.id = c.parent_id
+        ),
+        category_with_missing_thumb AS (
+          SELECT\s
+            cp.full_path,
+            cp.id AS category_id,
+            COUNT(p.id) AS total_products_without_thumb
+          FROM category_path cp
+          LEFT JOIN product p
+            ON p.category_id = cp.id
+            AND p.deleted = FALSE
+            AND p.client_address_id = :clientAddressId
+            AND (p.thumbnail_url IS NULL OR TRIM(p.thumbnail_url) = '')
+          WHERE NOT EXISTS (
+            SELECT 1 FROM product_category child WHERE child.parent_id = cp.id
+          )
+          GROUP BY cp.id, cp.full_path
+        )
+        SELECT *
+        FROM category_with_missing_thumb
+        WHERE total_products_without_thumb > 0
+        ORDER BY full_path;
+    """,
+            nativeQuery = true
+    )
+    List<ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId> findAllPathEndCategoryChildHierarchicalHasItemOnlyButNoImage(@Param("clientAddressId") Long clientAddressId);
+
+    @Query(
+            value = """
+        WITH RECURSIVE category_path AS (
+          SELECT
+            id,
+            name,
+            parent_id,
+            client_address_id,
+            CAST(CONCAT(REPLACE(name, '/', '|'), '~', id) AS CHAR(1000)) AS full_path
+          FROM product_category
+          WHERE parent_id IS NULL
+            AND client_address_id = :clientAddressId
+
+          UNION ALL
+
+          SELECT
+            c.id,
+            c.name,
+            c.parent_id,
+            c.client_address_id,
+            CONCAT(cp.full_path, ' / ', REPLACE(c.name, '/', '|'), '~', c.id) AS full_path
+          FROM product_category c
+          INNER JOIN category_path cp ON cp.id = c.parent_id
+        ),
+        category_with_missing_thumb AS (
+          SELECT\s
+            cp.full_path,
+            cp.id AS category_id,
+            COUNT(p.id) AS total_products_without_thumb
+          FROM category_path cp
+          LEFT JOIN product p
+            ON p.category_id = cp.id
+            AND p.deleted = FALSE
+            AND p.client_address_id = :clientAddressId
+            AND (p.description IS NULL OR TRIM(p.description) = '')
+          WHERE NOT EXISTS (
+            SELECT 1 FROM product_category child WHERE child.parent_id = cp.id
+          )
+          GROUP BY cp.id, cp.full_path
+        )
+        SELECT *
+        FROM category_with_missing_thumb
+        WHERE total_products_without_thumb > 0
+        ORDER BY full_path;
+    """,
+            nativeQuery = true
+    )
+    List<ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId> findAllPathEndCategoryChildHierarchicalHasItemOnlyButNoDesc(@Param("clientAddressId") Long clientAddressId);
+
+    @Query(
+            value = """
+        WITH RECURSIVE category_path AS (
+          SELECT
+            id,
+            name,
+            parent_id,
+            client_address_id,
+            CAST(CONCAT(REPLACE(name, '/', '|'), '~', id) AS CHAR(1000)) AS full_path
+          FROM product_category
+          WHERE parent_id IS NULL
+            AND client_address_id = :clientAddressId
+
+          UNION ALL
+
+          SELECT
+            c.id,
+            c.name,
+            c.parent_id,
+            c.client_address_id,
+            CONCAT(cp.full_path, ' / ', REPLACE(c.name, '/', '|'), '~', c.id) AS full_path
+          FROM product_category c
+          INNER JOIN category_path cp ON cp.id = c.parent_id
+        ),
+        category_with_missing_thumb AS (
+          SELECT\s
+            cp.full_path,
+            cp.id AS category_id,
+            COUNT(p.id) AS total_products_without_thumb
+          FROM category_path cp
+          LEFT JOIN product p
+            ON p.category_id = cp.id
+            AND p.deleted = FALSE
+            AND p.client_address_id = :clientAddressId
+            AND (p.price IS NULL OR price<=0)
+          WHERE NOT EXISTS (
+            SELECT 1 FROM product_category child WHERE child.parent_id = cp.id
+          )
+          GROUP BY cp.id, cp.full_path
+        )
+        SELECT *
+        FROM category_with_missing_thumb
+        WHERE total_products_without_thumb > 0
+        ORDER BY full_path;
+    """,
+            nativeQuery = true
+    )
+    List<ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId> findAllPathEndCategoryChildHierarchicalHasItemOnlyButNoPrice(@Param("clientAddressId") Long clientAddressId);
+
+    @Query(
             value = """
         WITH RECURSIVE category_path AS (
           SELECT
@@ -232,7 +527,7 @@ public interface ProductCategoryRepo extends JpaRepository<ProductCategoryEntity
     """,
             nativeQuery = true
     )
-    List<String> findAllPathEndCategoryChildHierarchical(@Param("clientAddressId") Long clientAddressId);
+    List<String> findAllPathEndCategoryChildHierarchical_vBeta1(@Param("clientAddressId") Long clientAddressId);
 
     @Modifying
 	@Query(value = """
@@ -658,4 +953,49 @@ public interface ProductCategoryRepo extends JpaRepository<ProductCategoryEntity
     @Modifying
     @Query("DELETE FROM ProductCategoryEntity c WHERE c.clientAddress.id = :clientAddressId")
     void deleteAllCategoriesByClientAddressId(@Param("clientAddressId") Long clientAddressId);
+
+
+    @Query(value = """
+        WITH category_hierarchy AS (
+          SELECT 
+            c.id,
+            c.parent_id,
+            c.client_address_id
+          FROM product_category c
+          WHERE c.deleted = FALSE
+            AND c.client_address_id = :clientAddressId
+        ),
+        end_child_category AS (
+          SELECT 
+            c.id,
+            c.client_address_id
+          FROM category_hierarchy c
+          WHERE c.parent_id IS NOT NULL
+            AND NOT EXISTS (
+              SELECT 1 
+              FROM category_hierarchy child
+              WHERE child.parent_id = c.id
+            )
+        ),
+        end_child_without_product AS (
+          SELECT 
+            ecc.id AS category_id,
+            ecc.client_address_id
+          FROM end_child_category ecc
+          LEFT JOIN product p
+            ON p.category_id = ecc.id
+            AND p.deleted = FALSE
+            AND p.client_address_id = :clientAddressId
+          WHERE p.id IS NULL
+        )
+        SELECT 
+          c.client_address_id,
+          SUM(CASE WHEN c.parent_id IS NULL THEN 1 ELSE 0 END) AS total_top_parent,
+          (SELECT COUNT(*) FROM end_child_category ecc WHERE ecc.client_address_id = c.client_address_id) AS total_end_child,
+          (SELECT COUNT(*) FROM end_child_without_product ewp WHERE ewp.client_address_id = c.client_address_id) AS total_end_child_no_product
+        FROM category_hierarchy c
+        GROUP BY c.client_address_id
+        """, nativeQuery = true)
+    CategorySummaryProjection getCategorySummaryByClientAddressId(@Param("clientAddressId") Long clientAddressId);
+
 }

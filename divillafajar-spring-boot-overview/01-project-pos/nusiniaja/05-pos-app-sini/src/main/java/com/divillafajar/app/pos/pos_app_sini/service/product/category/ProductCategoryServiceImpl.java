@@ -9,6 +9,7 @@ import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryE
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientAddressEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductCategoryHierarchyProjection;
 import com.divillafajar.app.pos.pos_app_sini.model.product.CategorySearchResultModel;
+import com.divillafajar.app.pos.pos_app_sini.model.product.ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId;
 import com.divillafajar.app.pos.pos_app_sini.repo.client.ClientAddressRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.product.category.ProductCategoryRepo;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +37,6 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
     @Override
     public ProductCategoryDTO addNewProductCategory(String categoryName, String pAid) throws Exception {
         ProductCategoryDTO retVal = new ProductCategoryDTO();
-        System.out.println("addNewProductCategory="+categoryName+"~"+pAid);
         ClientAddressEntity targetLocation = addressRepo.findByPubId(pAid);
         if(targetLocation==null) {
             throw new NullPointerException("Location not found");
@@ -85,7 +85,6 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
             retVal.setIndentLevel(dto.getLevel());
         }
         catch (Exception e) {
-            System.out.println("service error ok");
             e.printStackTrace();
             throw new GenericCustomErrorException("Unexpected Error");
         }
@@ -101,7 +100,6 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
         if(targetCategory.isEmpty())
             throw new NullPointerException("Category not found");
         //cek target categorynya ada
-        System.out.println("pAids = "+pAid);
         ClientAddressEntity targetLocation = addressRepo.findByPubId(pAid);
         if(targetLocation==null)
             throw new NullPointerException("Location not found");
@@ -125,7 +123,6 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
 	public void deleteCategory(Long catId) {
 		//cek apakah catId ini memiliki sub category
 		List<ProductCategoryEntity> listSubCat = catRepo.findByParentId(catId);
-		System.out.println("deleteCategory==>"+messageSource.getMessage("err.categoryHasSubCategoryException", null, LocaleContextHolder.getLocale()));
 		if(listSubCat!=null && listSubCat.size()>0)
 			throw new CategoryHasSubCategoryException(messageSource.getMessage("err.categoryHasSubCategoryException", null, LocaleContextHolder.getLocale()));
 		//lanjut hapus
@@ -144,7 +141,6 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
     public List<ProductCategoryDTO> getCategoryAndSubCategoryByClientAddressPubId(String pAid) {
         List<ProductCategoryDTO> retVal = new ArrayList<>();
         ClientAddressEntity location = addressRepo.findByPubId(pAid);
-        System.out.println("client adddress id == "+location.getId());
         //List<ProductCategoryEntity> daftar = catRepo.findAllByClientAddressSorted(location.getId());
 		try {
 			List<ProductCategoryHierarchyProjection> daftar = catRepo.findAllByClientAddressHierarchical(location.getId());
@@ -158,86 +154,65 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
 			System.out.println("ADA ERROR");
 			e.printStackTrace();
 		}
-
-
-        /*
-        long indentLevel=0;
-        ProductCategoryEntity prevEntity = null;
-        List<Long> listCategory = new ArrayList<>();
-
-        for(int i=0;i<daftar.size();i++) {
-        //for (ProductCategoryEntity entity : daftar) {
-            // mapping otomatis dari entity ke DTO
-            ProductCategoryEntity currEntity = new ProductCategoryEntity();
-
-            ProductCategoryDTO dto = new ProductCategoryDTO();
-            currEntity = daftar.get(i);
-            dto = modelMapper.map(currEntity, ProductCategoryDTO.class);
-            System.out.println("PROCESS="+dto.getId()+"-> list size = "+listCategory.size());
-
-            if(i==0) {
-                //first
-                //add this top category
-                listCategory.add(daftar.get(i).getId());
-                dto.setIndentLevel((long) listCategory.size());
-                System.out.println(dto.getId()+" indent "+listCategory.size());
-                prevEntity = daftar.get(i);
-            }
-            else {
-
-                if(currEntity.getParent()!=null) {
-                    //current entity punya parent,
-                    //cari dimana parentya di listCategory
-                    boolean match = false;
-                    for(int j=1;j<= listCategory.size() && !match;j++) {
-                        System.out.println("listCategory.get(j-1)="+listCategory.get(j-1)+" vs "+currEntity.getParent().getId());
-                        if(listCategory.get(j-1)== currEntity.getParent().getId()) {
-                            //parent found
-                            match=true;
-                            dto.setIndentLevel((long) j);
-                            System.out.println(dto.getId()+" indent "+dto.getIndentLevel());
-                        }
-                        if(match) {
-                            //hapus dari belakang yg bukan daftar.get(i).getId()
-                            for(int k=listCategory.size()-1;k>0;k--) {
-                                if(listCategory.get(k)==daftar.get(i).getId()) {
-                                    break;
-                                }
-                                else {
-                                    listCategory.remove(k);
-                                }
-
-                            }
-                        }
-                        //add current obj, kali aj nextnya ini jadi parent
-                        listCategory.add(daftar.get(i).getId());
-                    }
-                }
-                else {
-                    //current = top category
-                    listCategory = new ArrayList<>();
-                    listCategory.add(daftar.get(i).getId());
-                    System.out.println(dto.getId()+" indent "+listCategory.size());
-                    dto.setIndentLevel((long) listCategory.size());
-                }
-                prevEntity = daftar.get(i-1);
-            }
-            System.out.println("========");
-            System.out.println(dto.getName()+"="+dto.getIndentLevel());
-            System.out.println("========");
-            retVal.add(dto);
-        }
-
-         */
         return retVal;
     }
 
     @Override
-    public List<String> getPathToEachEndChildCategoryByClientAddressPubId(String pAid) {
-        List<String> retVal = new ArrayList<>();
+    public List<ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId> getPathToEachEndChildCategoryByClientAddressPubId(String pAid) {
+
+        List<ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId> returnValue = new ArrayList<>();
         ClientAddressEntity location = addressRepo.findByPubId(pAid);
-        retVal = catRepo.findAllPathEndCategoryChildHierarchical(location.getId());
-        return retVal;
+        try {
+            returnValue = catRepo.findAllPathEndCategoryChildHierarchical(location.getId());
+            /*
+            if(pathAndTotItem!=null) {
+                for(ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId singleton : pathAndTotItem) {
+                    retVal.add(singleton.getFullPath());
+                }
+            }
+
+             */
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return returnValue;
+    }
+
+    @Override
+    public List<ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId> getPathToEachEndChildCategoryByClientAddressPubId(String pAid, String filter) {
+
+        List<ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId> returnValue = new ArrayList<>();
+        ClientAddressEntity location = addressRepo.findByPubId(pAid);
+        try {
+            if(filter.equalsIgnoreCase("noFilter"))
+                returnValue = getPathToEachEndChildCategoryByClientAddressPubId(pAid);
+            if(filter.equalsIgnoreCase("emptyCat"))
+                returnValue = catRepo.findAllPathEndCategoryChildHierarchicalHasNoItemOnly(location.getId());
+            if(filter.equalsIgnoreCase("noEmptyCat"))
+                returnValue = catRepo.findAllPathEndCategoryChildHierarchicalHasItemOnly(location.getId());
+            if(filter.equalsIgnoreCase("noImage"))
+                returnValue = catRepo.findAllPathEndCategoryChildHierarchicalHasItemOnlyButNoImage(location.getId());
+            if(filter.equalsIgnoreCase("noPrice"))
+                returnValue = catRepo.findAllPathEndCategoryChildHierarchicalHasItemOnlyButNoPrice(location.getId());
+            if(filter.equalsIgnoreCase("noDesc"))
+                returnValue = catRepo.findAllPathEndCategoryChildHierarchicalHasItemOnlyButNoDesc(location.getId());
+
+            /*
+            if(pathAndTotItem!=null) {
+                for(ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId singleton : pathAndTotItem) {
+                    retVal.add(singleton.getFullPath());
+                }
+            }
+
+             */
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return returnValue;
     }
 
 	@Override
@@ -247,12 +222,20 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
 		return retVal;
 	}
 
+    @Override
+    public boolean locationHasItemProduct(String pAid) {
+        boolean retVal=false;
+        ClientAddressEntity clientAddress = addressRepo.findByPubId(pAid);
+        retVal = catRepo.isItemExistsByClientAddressId(clientAddress.getId());
+        return retVal;
+    }
+
     @Transactional
 	@Override
 	public void createDefaultCategory(String lang, String clientAddressPubId) {
         ClientAddressEntity targetAddress = addressRepo.findByPubId(clientAddressPubId);
         long cAid = targetAddress.getId();
-        System.out.println("cAid = "+cAid+"-"+lang);
+
 		if(lang.equalsIgnoreCase("id")) {
             //insert top cat
             catRepo.insertDefaultIdCategories(cAid);
