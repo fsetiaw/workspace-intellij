@@ -7,6 +7,7 @@ import com.divillafajar.app.pos.pos_app_sini.io.projection.CategoryHierarchyProj
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientAddressEntity;
+import com.divillafajar.app.pos.pos_app_sini.io.projection.CategorySummaryProjection;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductCategoryHierarchyProjection;
 import com.divillafajar.app.pos.pos_app_sini.model.product.CategorySearchResultModel;
 import com.divillafajar.app.pos.pos_app_sini.model.product.ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId;
@@ -279,6 +280,15 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
         //reset sudah useDefaultCategory
         targetAddress.setUsedDefaultCategory(false);
         addressRepo.save(targetAddress);
+    }
+
+    @Override
+    public CategorySummaryProjection getSummaryProductCategory(String clientAddressPubId) {
+        ClientAddressEntity targetAddress = addressRepo.findByPubId(clientAddressPubId);
+        long cAid = targetAddress.getId();
+        CategorySummaryProjection retVal = null;
+        retVal = catRepo.getCategorySummaryByClientAddressId(cAid);
+        return retVal;
     }
 
 }

@@ -1,6 +1,7 @@
 package com.divillafajar.app.pos.pos_app_sini.service.product.category;
 
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryDTO;
+import com.divillafajar.app.pos.pos_app_sini.io.projection.CategorySummaryProjection;
 import com.divillafajar.app.pos.pos_app_sini.model.product.CategorySearchResultModel;
 import com.divillafajar.app.pos.pos_app_sini.model.product.ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId;
 
@@ -20,4 +21,5 @@ public interface ProductCategoryService {
     boolean locationHasItemProduct(String pAid);
 	void createDefaultCategory(String lang, String clientAddressPubId);
     void resetCategoryByClientAddress(String clientAddressPubId);
+    CategorySummaryProjection getSummaryProductCategory(String clientAddressPubId);
 }

@@ -75,8 +75,14 @@
                                             </div>
                                             <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
                                                 <h6 class="text-muted font-semibold" th:text="#{label.manager.setting.product.category}"></h6>
-                                                <small class="my-sub-text">
-                                                    Total: 12 [[#{label.manager.setting.product.category}]]
+                                                <small class="my-sub-text"
+                                                       th:utext="|#{label.main}: ${categorySummary != null && categorySummary.totalTopParent != null ? categorySummary.totalTopParent : 0}|">
+                                                </small>
+                                                <small class="my-sub-text"
+                                                       th:utext="|#{label.sub}: ${categorySummary != null && categorySummary.totalEndChild != null ? categorySummary.totalEndChild : 0}|">
+                                                </small>
+                                                <small class="my-sub-text"
+                                                       th:utext="|#{label.draft}: ${categorySummary != null && categorySummary.totalEndChildNoProduct != null ? categorySummary.totalEndChildNoProduct : 0}|">
                                                 </small>
                                             </div>
                                         </div>
