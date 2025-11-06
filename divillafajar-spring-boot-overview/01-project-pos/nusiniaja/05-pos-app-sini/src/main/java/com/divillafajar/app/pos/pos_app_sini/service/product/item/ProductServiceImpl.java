@@ -4,6 +4,7 @@ import com.divillafajar.app.pos.pos_app_sini.common.enums.ProductStatusEnum;
 import com.divillafajar.app.pos.pos_app_sini.exception.DuplicationErrorException;
 import com.divillafajar.app.pos.pos_app_sini.exception.GenericCustomErrorException;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryEntity;
+import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductItemSummaryProjectionDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductWithCategoryPathDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientAddressEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientAddressDTO;
@@ -122,6 +123,14 @@ public class ProductServiceImpl implements ProductService{
 			System.out.println("listItem="+listItem.size());
 			retVal = listItem;
 		}
+		return retVal;
+	}
+
+	@Override
+	public ProductItemSummaryProjectionDTO getSummaryProductItem(String clientAddressPubId) {
+		ProductItemSummaryProjectionDTO retVal = null;
+		ClientAddressEntity clientAddress = addressRepo.findByPubId(clientAddressPubId);
+		retVal = productRepo.getProductItemSummaryByClientAddressId(clientAddress.getId());
 		return retVal;
 	}
 }

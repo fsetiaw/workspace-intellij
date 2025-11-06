@@ -82,7 +82,7 @@
                 <span style="font-size:70%; display:block; line-height:1;"
                       th:text="|${#strings.toUpperCase(#messages.msg('label.setting'))}|">
                 </span>
-                <span th:text="|${#strings.toUpperCase(#messages.msg('label.manager.setting.product.item'))} / ${#strings.toUpperCase(#messages.msg('label.manager.setting.product.barang'))}|"></span>
+                <span th:text="|${#strings.toUpperCase(#messages.msg('label.manager.setting.product.item'))}|"></span>
 
             </h3>
         </div>
@@ -178,7 +178,7 @@
                                                                     <!-- bila item = o -->
                                                                     <a class="text-warning" th:if="${iterStat.last and listCategoryTotItem[loop.index]<1}"
                                                                        th:href="@{/v1/manager/manage/product/item/{id}(id=${id},path=${path},activePage=${activePage},activeSub=${activeSub})}"
-                                                                       th:utext="|${#strings.replace(name, '|', '/')} [${listCategoryTotItem[loop.index]} ${#strings.toLowerCase(#messages.msg('label.manager.setting.product.item'))}]|"></a>
+                                                                       th:utext="|${#strings.replace(name, '|', '/')} (+ ${#strings.toLowerCase(#messages.msg('label.add'))} ${#strings.toLowerCase(#messages.msg('label.manager.setting.product.item'))})|"></a>
                                                                     <!-- bila item > o -->
                                                                     <a th:if="${iterStat.last and listCategoryTotItem[loop.index]>0}"
                                                                        th:href="@{/v1/manager/manage/product/item/{id}(id=${id},path=${path},activePage=${activePage},activeSub=${activeSub})}"

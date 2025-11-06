@@ -76,14 +76,23 @@
                                             <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
                                                 <h6 class="text-muted font-semibold" th:text="#{label.manager.setting.product.category}"></h6>
                                                 <small class="my-sub-text"
-                                                       th:utext="|#{label.main}: ${categorySummary != null && categorySummary.totalTopParent != null ? categorySummary.totalTopParent : 0}|">
+                                                    <span th:if="${categorySummary == null or categorySummary.totalTopParent == null or categorySummary.totalTopParent < 1}"
+                                                        th:utext="|#{label.none}|">
+                                                    </span>
                                                 </small>
                                                 <small class="my-sub-text"
-                                                       th:utext="|#{label.sub}: ${categorySummary != null && categorySummary.totalEndChild != null ? categorySummary.totalEndChild : 0}|">
+                                                    <span th:if="${categorySummary != null and categorySummary.totalTopParent != null and categorySummary.totalTopParent > 0}"
+                                                          th:utext="|#{label.main}: ${categorySummary.totalTopParent}|">
+                                                    </span>
                                                 </small>
                                                 <small class="my-sub-text"
+                                                    <span th:if="${categorySummary != null and categorySummary.totalTopParent != null and categorySummary.totalTopParent > 0}"
+                                                       th:utext="|#{label.sub}: ${categorySummary != null && categorySummary.totalEndChild != null ? categorySummary.totalEndChild : '0'}|">
+                                                    </span>
+                                                </small>
+                                                <!--small class="my-sub-text"
                                                        th:utext="|#{label.draft}: ${categorySummary != null && categorySummary.totalEndChildNoProduct != null ? categorySummary.totalEndChildNoProduct : 0}|">
-                                                </small>
+                                                </small-->
                                             </div>
                                         </div>
                                     </div>
@@ -103,8 +112,21 @@
                                             </div>
                                             <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
                                                 <h6 class="text-muted font-semibold"
-                                                    th:utext="|#{label.manager.setting.product.item}/#{label.manager.setting.product.barang}|"></h6>
-                                                <h6 class="font-extrabold mb-0" th:text="${globals.get('toastShortTimeout')}">183.000</h6>
+                                                    th:utext="|#{label.manager.setting.product.item}|"></h6>
+                                                <h6 class="font-extrabold mb-0"></h6>
+                                                <small class="my-sub-text"
+                                                <span th:if="${productItemSummary == null or productItemSummary.totalProduct == null or productItemSummary.totalProduct < 1}"
+                                                      th:utext="|#{label.none}|">
+                                                    </span>
+                                                </small>
+                                                <span th:if="${productItemSummary != null and productItemSummary.totalProduct != null and productItemSummary.totalProduct > 0}"
+                                                      th:utext="|${productItemSummary.totalProduct} #{label.from} ${productItemSummary.totalCategory} #{label.manager.setting.product.category}|">
+                                                    </span>
+                                                </small>
+
+                                                <!--small class="my-sub-text"
+                                                       th:utext="|#{label.sub}: ${productItemSummary != null && productItemSummary.totalProduct != null && productItemSummary.totalProduct > 0? productItemSummary.totalProduct : ''}|">
+                                                </small-->
                                             </div>
                                         </div>
                                     </div>
@@ -121,8 +143,8 @@
                                             </div>
                                             <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
                                                 <h6 class="text-muted font-semibold"
-                                                    th:utext="|#{label.manager.setting.product.item}/#{label.manager.setting.product.barang}|"></h6>
-                                                <h6 class="font-extrabold mb-0" th:text="${globals.get('toastShortTimeout')}">183.000</h6>
+                                                    th:utext="|#{label.manager.setting.product.item}|"></h6>
+                                                <h6 class="font-extrabold mb-0" th:utext="|n/a|"></h6>
                                             </div>
                                         </div>
                                     </div>

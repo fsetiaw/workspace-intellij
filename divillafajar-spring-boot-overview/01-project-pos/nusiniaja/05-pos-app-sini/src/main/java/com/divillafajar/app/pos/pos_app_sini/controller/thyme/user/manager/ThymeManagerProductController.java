@@ -6,6 +6,7 @@ import com.divillafajar.app.pos.pos_app_sini.global.AppGlobals;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.product.ProductEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.CategorySummaryProjection;
+import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductItemSummaryProjectionDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductWithCategoryPathDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientAddressDTO;
 import com.divillafajar.app.pos.pos_app_sini.model.item.CreateItemRequestModel;
@@ -57,13 +58,15 @@ public class ThymeManagerProductController {
         if(hasCategory)
             hasItem = categoryService.locationHasItemProduct(dto.getPubId());
         CategorySummaryProjection categorySummary =  categoryService.getSummaryProductCategory(dto.getPubId());
-        System.out.println("categorySummary="+categorySummary.getTotalTopParent());
+	    ProductItemSummaryProjectionDTO productItemSummary = productService.getSummaryProductItem(dto.getPubId());
+		//System.out.println("categorySummary="+categorySummary.getTotalTopParent());
         model.addAttribute("hasCategory",hasCategory);
         model.addAttribute("hasItem",hasItem);
 	    model.addAttribute("globals", appGlobals.getAll());
 		model.addAttribute("activePage",activePage);
         model.addAttribute("activeSub",activeSub);
         model.addAttribute("categorySummary",categorySummary);
+	    model.addAttribute("productItemSummary",productItemSummary);
         return "pages/v1/manager/product/index-product";
     }
 

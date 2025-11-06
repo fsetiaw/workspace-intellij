@@ -1,5 +1,6 @@
 package com.divillafajar.app.pos.pos_app_sini.repo.product;
 
+import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductItemSummaryProjectionDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductWithCategoryPathDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.product.ProductEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -127,5 +128,17 @@ public interface ProductRepo extends JpaRepository<ProductEntity,Long> {
             @Param("categoryId") Long categoryId,
             @Param("keyword") String keyword
     );
+
+	@Query(
+		"""
+			SELECT 
+			    COUNT(p.id) AS totalProduct,
+			    COUNT(DISTINCT p.category.id) AS totalCategory
+			FROM ProductEntity p
+			WHERE p.clientAddress.id = :clientAddressId
+			  AND p.deleted = false
+		""")
+	ProductItemSummaryProjectionDTO getProductItemSummaryByClientAddressId(@Param("clientAddressId") Long clientAddressId);
+
 
 }
