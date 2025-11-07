@@ -265,18 +265,53 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
 	}
 
     @Transactional
-    public void deleteAllByClientAddressId(Long clientAddressId) {
+    public void forceDeleteAllCategoriesByClientAddressId(Long clientAddressId) {
         jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 0");
         jdbcTemplate.update("DELETE FROM product_category WHERE client_address_id = ?", clientAddressId);
         jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 1");
     }
 
-    @Transactional
+	@Transactional
+	public void deleteAllCategoryWithoutProductOnlyByClientAddressId(Long clientAddressId) {
+		// Nonaktifkan sementara foreign key check (opsional, tapi tetap aman)
+		jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 0");
+
+		// Hapus hanya kategori milik clientAddressId tertentu yang
+		// TIDAK dipakai oleh produk mana pun
+		String sql = """
+        WITH RECURSIVE category_with_product AS (
+            -- Ambil kategori yang punya produk
+            SELECT DISTINCT p.category_id AS id
+            FROM product p
+            WHERE p.client_address_id = ?
+              AND p.deleted = FALSE
+              AND p.category_id IS NOT NULL
+
+            UNION ALL
+
+            -- Ambil semua parent dari kategori yang punya produk
+            SELECT pc.parent_id AS id
+            FROM product_category pc
+            INNER JOIN category_with_product cwp ON pc.id = cwp.id
+            WHERE pc.parent_id IS NOT NULL
+        )
+        DELETE FROM product_category
+        WHERE client_address_id = ?
+          AND id NOT IN (SELECT id FROM category_with_product)
+    """;
+
+		jdbcTemplate.update(sql, clientAddressId, clientAddressId);
+
+		jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 1");
+	}
+
+
+	@Transactional
     @Override
     public void resetCategoryByClientAddress(String clientAddressPubId) {
         ClientAddressEntity targetAddress = addressRepo.findByPubId(clientAddressPubId);
         long cAid = targetAddress.getId();
-        deleteAllByClientAddressId(cAid);
+		deleteAllCategoryWithoutProductOnlyByClientAddressId(cAid);
         //reset sudah useDefaultCategory
         targetAddress.setUsedDefaultCategory(false);
         addressRepo.save(targetAddress);

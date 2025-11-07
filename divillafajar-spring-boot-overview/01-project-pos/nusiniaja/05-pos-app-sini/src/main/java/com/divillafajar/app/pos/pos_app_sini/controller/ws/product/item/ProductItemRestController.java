@@ -20,6 +20,9 @@ public class ProductItemRestController {
 	@PutMapping("/{itemId}")
 	public ResponseEntity<?> editItem(@PathVariable Long itemId, @RequestBody UpdateItemRequestModel dto) {
 		System.out.println("===REST EDIT ITEM CONTROLLER====");
+		System.out.println("Input Nama: " + dto.getName());
+		System.out.println("Input Deskripsi: " + dto.getDescription());
+		System.out.println("Input Harga: " + dto.getPrice());
 		UpdateItemRequestModel retVal = new UpdateItemRequestModel();
         ProductDTO updated = productService.updateProduct(itemId, dto);
 		System.out.println("ID: " + itemId);

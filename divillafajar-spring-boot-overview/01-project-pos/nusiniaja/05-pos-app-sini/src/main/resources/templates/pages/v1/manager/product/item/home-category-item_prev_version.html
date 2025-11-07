@@ -383,7 +383,7 @@
                                                             <!-- harga ada -->
                                                             <span th:id="'itemPriceFormatted' + ${item.id}" th:if="${item.price != null and item.price != '' and T(java.lang.Double).parseDouble(item.price) > 0}"
                                                                   class="text-secondary" style="font-size:125%"
-                                                                  th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')}">
+                                                                  th:text="${#numbers.formatDecimal(item.price, 0, 'POINT', 0, 'COMMA')}">
                                                             </span>
 
                                                             <!-- stok kosong -->
@@ -413,6 +413,12 @@
                                                                 <span class="text-danger" th:text="#{msg.priceNotSet}"></span>
                                                             </li>
                                                             <!-- description -->
+                                                            <!--li th:id="'desc-ok-' + ${item.id}"
+                                                                th:attr="style=${item.description != null and !#strings.isEmpty(item.description)} ? 'display:block;' : 'display:none;'">
+                                                                <i class="bi bi-check-circle text-success"></i>
+                                                                <span th:text="#{msg.descProvided}"></span>
+                                                            </li-->
+
                                                             <li th:id="'desc-no-' + ${item.id}"
                                                                 th:attr="style=${item.description == null or #strings.isEmpty(item.description)} ? 'display:block;' : 'display:none;'">
                                                                 <i class="bi bi-x-circle text-danger"></i>
@@ -444,6 +450,16 @@
                                                   aria-labelledby=${'flush-headingOne' + iterStat.count},
                                                   data-bs-parent=${'#accordionFlushExample' + iterStat.count}">
                                                 <div class="accordion-body">
+
+                                                    <!-- Tombol edit
+                                                    <div class="text-center my-2">
+                                                        <a class="btn btn-sm btn-outline-primary toggle-edit"
+                                                           th:attr="data-target-id=${'collapseExample' + item.id}"
+                                                           role="button" style="border-width: 2px;">
+                                                            <i class="bi bi-pencil-fill text-primary" style="font-size: 0.7rem;"></i>
+                                                        </a>
+                                                    </div>
+                                                    -->
                                                     <!-- Deskripsi -->
                                                     <section class="desc">
                                                         <div class="p-3 text-center">
@@ -451,6 +467,11 @@
                                                                  th:src="@{${item.thumbnailUrl}}"
                                                                  class="card-thumb img-fluid mb-2 rounded w-100"
                                                                  style="max-height: 200px; object-fit: cover;">
+                                                            <input type="file"
+                                                                   class="cardImage"
+                                                                   name="file"
+                                                                   accept="image/*"
+                                                                   th:attr="data-product-id=${item.id}, data-has-image=${item.imageUrl != null}">
                                                         </div>
                                                         <p class="card-text fw-bold fs-5 text-center text-info mt-3 mb-0" th:utext="|#{label.description}:|")></p>
                                                         <p class="card-text text-center"
@@ -463,13 +484,6 @@
                                                     <div class="collapse"
                                                          th:attr="id=${'collapseExample' + item.id}">
                                                         <h4 class="card-title">Edit Form</h4>
-                                                        <div class="p-3 text-center">
-                                                            <input type="file"
-                                                                   class="cardImage"
-                                                                   name="file"
-                                                                   accept="image/*"
-                                                                   th:attr="data-product-id=${item.id}, data-has-image=${item.imageUrl != null}">
-                                                        </div>
                                                         <form class="form edit-item-form" method="post"
                                                               th:attr="id=${'editForm' + iterStat.count}, data-item-id=${item.id}">
                                                             <div class="form-body">
@@ -478,6 +492,7 @@
                                                                     <input type="text" id="name" class="form-control" placeholder="Name"
                                                                            name="name" th:value="${item.name}" th:id="'formItemName' + ${item.id}">
                                                                 </div>
+
                                                                 <div class="form-group form-label-group">
                                                                     <label for="label-textarea" th:text="#{label.description}"></label>
                                                                     <textarea class="form-control" id="description" rows="3" name="description"
@@ -487,23 +502,15 @@
                                                                 </div>
 
                                                                 <div class="form-group">
-                                                                    <label class="sr-only" th:text="#{label.sellingPrice}"></label>
-                                                                    <input type="text"
-                                                                           class="form-control price-input"
+                                                                    <label for="price" class="sr-only" th:text="#{label.sellingPrice}"></label>
+                                                                    <input type="text" id="price" class="form-control"
                                                                            th:placeholder="#{label.price}"
-                                                                           th:value="${item.price != null ? #numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT') : ''}"
-                                                                           name="price"
-                                                                           inputmode="numeric"
-                                                                           autocomplete="off">
-
-                                                                    <input type="hidden"
-                                                                           class="price-raw"
-                                                                           name="priceRaw"
-                                                                           th:value="${item.price != null ? item.price : 0}">
+                                                                           th:value="${#numbers.formatDecimal(item.price, 0, 'POINT', 2, 'COMMA')}"
+                                                                           name="price" inputmode="decimal">
+                                                                    <!--input type="hidden" th:attr="id=${'itemPrice' + item.id}" th:value="${item.price}" /-->
+                                                                    <input type="hidden" id="priceRaw" name="priceRaw"
+                                                                           th:value="${item != null && item.price != null ? item.price : 0}">
                                                                 </div>
-
-
-
 
                                                                 <div class="form-group">
                                                                     <label for="stock" class="sr-only" th:text="#{label.stock}"></label>
@@ -720,67 +727,54 @@
 
         // Tombol toggle-edit
         document.querySelectorAll('.toggle-edit').forEach(btn => {
-          btn.addEventListener('click', function (e) {
-            e.preventDefault();
-          e.stopPropagation(); // 🔹 cegah event bubbling ke accordion parent
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                console.log("----icon edit called----");
+                const targetId = this.getAttribute('data-target-id');
+                const cardBody = this.closest('.card-body');
+                const desc = cardBody.querySelector('.desc');
+                const collapse = cardBody.querySelector(`#${targetId}`);
+                const form = collapse.querySelector('.edit-item-form');
+                const bsCollapse = new bootstrap.Collapse(collapse, { toggle: false });
 
-          console.log("----icon edit called----");
+                // Cek apakah collapse sedang terbuka
+                if (collapse.classList.contains('show')) {
+                    // ✅ 1. Tutup collapse
+                    bsCollapse.hide();
+                    desc.style.display = ''; // tampilkan kembali deskripsi
 
-          // 🔹 pastikan accordion terbuka dulu sebelum toggle form edit
-          const accordionItem = this.closest('.accordion-item');
-          if (accordionItem) {
-            const accordionBody = accordionItem.querySelector('.accordion-collapse');
-            if (accordionBody && !accordionBody.classList.contains('show')) {
-              const bsAccordion = new bootstrap.Collapse(accordionBody, { toggle: false });
-              bsAccordion.show();
-            }
-          }
+                    // ✅ 2. Kembalikan semua input ke nilai awal <why doublle clic?>
+                    if (form && form.dataset.initialData) {
+                        initialData = JSON.parse(form.dataset.initialData);
+                        form.querySelectorAll('input, textarea, select').forEach(input => {
+                            if (initialData.hasOwnProperty(input.name)) {
+                                input.value = initialData[input.name];
+                            }
+                        });
+                    }
 
-            const targetId = this.getAttribute('data-target-id');
-            const collapse = document.getElementById(targetId); // ✅ langsung ambil dari document
-            if (!collapse) {
-              console.warn(`Collapse target #${targetId} tidak ditemukan.`);
-              return;
-            }
 
-            const form = collapse.querySelector('.edit-item-form');
-            const card = this.closest('[data-item-id]');
-            const desc = card.querySelector('.desc');
-            const bsCollapse = new bootstrap.Collapse(collapse, { toggle: false });
+                    // ✅ 3. Hilangkan status aktif toggle
+                    this.classList.remove('active');
+                    this.setAttribute('aria-expanded', 'false');
 
-            // Cek apakah collapse sedang terbuka
-            if (collapse.classList.contains('show')) {
-              // ✅ Tutup collapse
-              bsCollapse.hide();
-              if (desc) desc.style.display = '';
 
-              // ✅ Kembalikan input ke nilai awal
-              if (form && form.dataset.initialData) {
-                const initialData = JSON.parse(form.dataset.initialData);
-                form.querySelectorAll('input, textarea, select').forEach(input => {
-                  if (initialData.hasOwnProperty(input.name)) {
-                    input.value = initialData[input.name];
-                  }
-                });
-              }
 
-              this.classList.remove('active');
-              this.setAttribute('aria-expanded', 'false');
-            } else {
-              // ✅ Buka collapse
-              bsCollapse.show();
-              if (desc) desc.style.display = 'none';
+                } else {
+                    // ✅ 4. Buka collapse
+                    bsCollapse.show();
+                    desc.style.display = 'none'; // sembunyikan section
 
-              this.classList.add('active');
-              this.setAttribute('aria-expanded', 'true');
+                    // ✅ 5. Tambahkan status aktif
+                    this.classList.add('active');
+                    this.setAttribute('aria-expanded', 'true');
 
-              // ✅ ubah tombol cancel jadi "Cancel"
-              const cancelBtn = form.querySelector('.cancel-collapse');
-              if (cancelBtn) cancelBtn.textContent = 'Cancel';
-            }
-          });
+                    // ✅ reset text tombol  jadi Cancel
+                    const cancelBtn = form.querySelector('.cancel-collapse');
+                    if (cancelBtn) cancelBtn.textContent = 'Cancel';
+                }
+            });
         });
-
 
         // Tombol Cancel di dalam form
         document.querySelectorAll('.cancel-collapse').forEach(btn => {
@@ -859,150 +853,39 @@
         });
     });
 </script>
-<!--script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const priceInput = document.getElementById("price");
-
-      const hiddenInput = document.getElementById("priceRaw");
-      console.log("priceRaw = "+hiddenInput);
-
-      // Format angka jadi currency (US locale)
-    function formatCurrency(value) {
-      if (!value) return "";
-      // Ubah semua karakter non-digit/dot/comma jadi kosong
-      const num = parseFloat(value.replace(/[^0-9.,]/g, "").replace(",", "."));
-      if (isNaN(num)) return "";
-      return new Intl.NumberFormat('en-US', {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 2
-      }).format(num);
-    }
-
-      // Saat load pertama kali
-      //priceInput.value = formatCurrency(priceInput.value);
-
-      // Event: setiap kali user ketik
-      // Pastikan elemen ada dulu sebelum tambah event listener
-if (priceInput) {
-  priceInput.addEventListener("input", function (e) {
-    console.log("detected");
-
-    const cleanValue = e.target.value.replace(/[^0-9]/g, "");
-
-    if (hiddenInput) {
-      hiddenInput.value = cleanValue; // nilai murni untuk dikirim ke server
-    } else {
-      console.warn("⚠️ hiddenInput tidak ditemukan untuk form ini:", form);
-    }
-
-    e.target.value = formatCurrency(cleanValue);
-  });
-} else {
-  console.warn("⚠️ priceInput tidak ditemukan, event listener tidak ditambahkan.");
-}
-
-
-      // Pastikan saat form disubmit, nilai yang dikirim adalah angka murni
-      if (priceInput && priceInput.form && hiddenInput) {
-  priceInput.form.addEventListener("submit", function () {
-    hiddenInput.value = priceInput.value.replace(/\D/g, "");
-  });
-} else {
-  console.warn("⚠️ priceInput, form, atau hiddenInput tidak ditemukan.");
-}
-    });
-</script-->
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-      // Ambil semua input harga
-      const priceInputs = document.querySelectorAll(".price-input");
-
-      // Format angka jadi currency (US locale)
-      function formatCurrency(value) {
-        if (!value) return "";
-        const num = parseFloat(value.replace(/[^0-9.,]/g, "").replace(",", "."));
-        if (isNaN(num)) return "";
-        return new Intl.NumberFormat('en-US', {
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 2
-        }).format(num);
-      }
-
-      priceInputs.forEach(priceInput => {
-        // Cari pasangan hidden input di container yang sama
-        const container = priceInput.closest(".form-group");
-        const hiddenInput = container?.querySelector(".price-raw");
-
-        if (!hiddenInput) {
-          console.warn("⚠️ Tidak menemukan hidden .price-raw untuk input:", priceInput);
-          return; // skip elemen ini
-        }
-
-        // Event: setiap kali user mengetik
-        priceInput.addEventListener("input", function(e) {
-          const cleanValue = e.target.value.replace(/[^0-9]/g, "");
-          hiddenInput.value = cleanValue;
-          e.target.value = formatCurrency(cleanValue);
-        });
-
-        // Event: saat form disubmit
-        const formEl = priceInput.form;
-        if (formEl) {
-          formEl.addEventListener("submit", function() {
-            hiddenInput.value = priceInput.value.replace(/\D/g, "");
-          });
-        } else {
-          console.warn("⚠️ Form belum terdeteksi untuk priceInput:", priceInput);
-        }
-      });
-    });
-</script>
-
 <script>
     document.addEventListener("DOMContentLoaded", function () {
       document.querySelectorAll(".edit-item-form").forEach(form => {
         const priceInput = form.querySelector(".price-input");
         const hiddenInput = form.querySelector(".price-raw");
 
-        if (!priceInput || !hiddenInput) {
-          console.warn("⚠️ priceInput atau hiddenInput tidak ditemukan dalam form:", form);
-          return;
-        }
+        if (!priceInput || !hiddenInput) return;
 
-        // Format angka ribuan (Indonesia)
+        // Format angka jadi currency (US locale)
         function formatCurrency(value) {
           if (!value) return "";
-          const num = parseInt(value, 10);
+          const num = parseFloat(value.replace(/[^0-9.,]/g, "").replace(",", "."));
           if (isNaN(num)) return "";
-          return num.toLocaleString("id-ID");
+          return new Intl.NumberFormat("en-US", {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2
+          }).format(num);
         }
 
-        // Bersihkan ke angka murni
-        function cleanValue(val) {
-          return val.replace(/[^\d]/g, "");
-        }
-
-        // Saat load awal
-        hiddenInput.value = cleanValue(hiddenInput.value);
-        priceInput.value = formatCurrency(hiddenInput.value);
-
-        // Saat user mengetik
-        priceInput.addEventListener("input", function(e) {
-          const clean = cleanValue(e.target.value);
-          hiddenInput.value = clean;
-          e.target.value = formatCurrency(clean);
+        // Saat user mengetik di input harga
+        priceInput.addEventListener("input", function (e) {
+          const cleanValue = e.target.value.replace(/[^0-9]/g, "");
+          hiddenInput.value = cleanValue; // update nilai murni untuk dikirim ke server
+          e.target.value = formatCurrency(cleanValue);
         });
 
-        // Sebelum submit
-        form.addEventListener("submit", () => {
-          const clean = cleanValue(priceInput.value);
-          hiddenInput.value = clean;
+        // Saat form disubmit, pastikan hidden value benar
+        form.addEventListener("submit", function () {
+          hiddenInput.value = priceInput.value.replace(/\D/g, "");
         });
       });
     });
 </script>
-
-
 
 <!-- send edit form -->
 <script>
@@ -1221,59 +1104,52 @@ if (priceInput) {
             ondata: (formData) => formData,
             onload: (response) => {
               try {
-                console.log("data.success");
-const data = JSON.parse(response); // ✅ tambahkan ini
-    console.log("Upload response:", data);
+                const data = JSON.parse(response);
+                if (data.success && data.url) {
+                  console.log("data.success");
 
-    if (data.success && data.url) {
-      // update thumbnail di form edit
-      if (cardThumb) {
-        let newSrc = (contextPath + data.url).replace(/([^:]\/)\/+/g, "$1");
-        newSrc += (newSrc.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
-        cardThumb.src = newSrc;
-      } else {
-        const img = document.createElement('img');
-        let safeUrl = (contextPath + data.url).replace(/([^:]\/)\/+/g, "$1");
-        safeUrl += (safeUrl.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
-        setTimeout(() => {
-          img.src = safeUrl;
-        }, 200);
-        img.className = 'card-thumb img-fluid mb-2 rounded';
-        img.style.maxHeight = '150px';
-        img.style.objectFit = 'cover';
-        pond.element.parentNode.insertBefore(img, pond.element);
-      }
+                  // update thumbnail image
+                  if (cardThumb) {
+                    cardThumb.src = (contextPath + data.url).replace(/([^:]\/)\/+/g, "$1");
+                    console.log("cardThumb.contextPath=="+contextPath);
+                    console.log("data.url=="+data.url);
+                  } else {
+                    console.log("BENER KESINI");
+                    const img = document.createElement('img');
+                    const safeUrl = (contextPath + data.url).replace(/([^:]\/)\/+/g, "$1");
+                    setTimeout(() => {
+                      img.src = safeUrl;
+                    }, 200);
+                    img.className = 'card-thumb img-fluid mb-2 rounded';
+                    img.style.maxHeight = '150px';
+                    img.style.objectFit = 'cover';
+                    pond.element.parentNode.insertBefore(img, pond.element);
+                  }
 
-      // ✅ Update thumbnail utama di area .desc
-      const descImg = document.querySelector(`#itemDesc${productId}`)
-        ?.closest('section.desc')
-        ?.querySelector('img');
-      if (descImg) {
-        let newSrc = (contextPath + data.url).replace(/([^:]\/)\/+/g, "$1");
-        newSrc += (newSrc.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
-        descImg.src = newSrc;
-        descImg.style.display = "block";
-      }
+                  // 🔹 Update status "image provided"
+                  const statusNoImage = document.querySelector(`#status-noimage-${productId}`);
+                  console.log("statusNoImage="+statusNoImage);
+                  const statusHasImage = document.querySelector(`#status-image-${productId}`);
 
-      // 🔹 Update status "image provided"
-      const statusNoImage = document.querySelector(`#status-noimage-${productId}`);
-      const statusHasImage = document.querySelector(`#status-image-${productId}`);
-      if (statusNoImage) statusNoImage.style.display = "none";
-      if (statusHasImage) {
-        statusHasImage.style.display = "none";
-      } else {
-        const ul = document.querySelector(`ul[data-product-id="${productId}"]`);
-        if (ul) {
-          const newLi = document.createElement("li");
-          newLi.id = `status-image-${productId}`;
-          newLi.innerHTML = `
-            <i class="bi bi-check-circle text-success"></i>
-            <span>${msgImageProvided}</span>
-          `;
-          ul.appendChild(newLi);
-        }
-      }
+                  // Sembunyikan li "no image"
+                  if (statusNoImage) statusNoImage.style.display = "none";
 
+                  // Tampilkan atau buat li "image provided"
+                  if (statusHasImage) {
+                    //statusHasImage.style.display = "list-item";
+                    statusHasImage.style.display = "none";
+                  } else {
+                    const ul = document.querySelector(`ul[data-product-id="${productId}"]`);
+                    if (ul) {
+                      const newLi = document.createElement("li");
+                      newLi.id = `status-image-${productId}`;
+                      newLi.innerHTML = `
+                        <i class="bi bi-check-circle text-success"></i>
+                        <span>${msgImageProvided}</span>
+                      `;
+                      ul.appendChild(newLi);
+                    }
+                  }
 
                   // 🔹 Toggle indikator harga
                     const priceNotSetLi = card.querySelector(`#price-notset-${itemId}`);
@@ -1319,33 +1195,7 @@ const data = JSON.parse(response); // ✅ tambahkan ini
       });
     });
 </script>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-      // Semua input file dengan class "cardImage"
-      document.querySelectorAll('.cardImage').forEach(input => {
-        input.addEventListener('change', function (e) {
-          const file = e.target.files[0];
-          if (!file) return;
-
-          const container = e.target.closest('.p-3.text-center');
-
-          // 🔹 Hapus dulu gambar lama (preview sebelumnya)
-          const oldPreview = container.querySelector('.preview-image');
-          if (oldPreview) oldPreview.remove();
-
-          // 🔹 Buat preview baru
-          const img = document.createElement('img');
-          img.className = 'preview-image card-thumb img-fluid mb-2 rounded w-100';
-          img.style.maxHeight = '200px';
-          img.style.objectFit = 'cover';
-          img.src = URL.createObjectURL(file);
-
-          // Sisipkan di atas input
-          container.insertBefore(img, e.target);
-        });
-      });
-    });
-</script>
 
     </body>
+
     </html>
