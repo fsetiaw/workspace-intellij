@@ -364,7 +364,13 @@
                                                            th:attr="data-target-id=${'collapseExample' + item.id}"
                                                            role="button" style="border-width: 2px;"
                                                            onclick="event.stopPropagation();">
-                                                            <i class="bi bi-pencil-fill text-primary" style="font-size: 0.7rem;"></i>
+                                                            <i class="bi bi-pencil-fill text-primary" style="font-size: 0.85rem;"></i>
+                                                        </a>
+                                                        <a href="#" class="btn btn-sm btn-outline-danger toggle-delete"
+                                                           th:attr="data-target-id=${'collapseDelete' + item.id}"
+                                                           role="button" style="border-width: 2px;"
+                                                           onclick="event.stopPropagation();">
+                                                            <i class="bi bi-trash3-fill text-danger" style="font-size: 0.85rem;"></i>
                                                         </a>
                                                         <h2 class="card-title mb-0 text-primary" th:utext="|${item.name}|"
                                                             th:id="'itemName' + ${item.id}"></h2>
@@ -434,10 +440,7 @@
                                                         </ul>
                                                     </div>
                                                 </div>
-
                                             </button>
-
-
                                             <!-- Isi Accordion -->
                                             <div class="accordion-collapse collapse"
                                                  th:attr="id=${'flush-collapseOne' + iterStat.count},
@@ -501,10 +504,6 @@
                                                                            name="priceRaw"
                                                                            th:value="${item.price != null ? item.price : 0}">
                                                                 </div>
-
-
-
-
                                                                 <div class="form-group">
                                                                     <label for="stock" class="sr-only" th:text="#{label.stock}"></label>
                                                                     <div class="d-flex align-items-center">
@@ -530,7 +529,27 @@
                                                             </div>
                                                         </form>
                                                     </div>
+                                                    <!-- Collapse delete -->
+                                                    <div class="collapse"
+                                                         th:attr="id=${'collapseDelete' + item.id}">
+                                                        <h4 class="card-title" th:text="#{title.deleteForm}"></h4>
 
+                                                        <form class="form edit-item-form" method="post"
+                                                              th:attr="id=${'editForm' + iterStat.count}, data-item-id=${item.id}">
+                                                            <div class="form-body">
+                                                                <p th:text="#{msg.continueDeleteItem}"></p>
+                                                            </div>
+
+                                                            <div class="form-actions d-flex justify-content-end">
+                                                                <button type="submit" class="btn btn-danger me-1" th:text="#{label.delete}"></button>
+                                                                <button type="button"
+                                                                        class="btn btn-light-secondary cancel-collapse"
+                                                                        th:attr="data-target-id=${'collapseDelete' + item.id}"
+                                                                        th:text="#{label.cancel}">
+                                                                </button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -703,7 +722,7 @@
     });
 </script>
 <!-- colapsable form --->
-<script>
+<!-- old script>
     //let initialData = {};
     document.addEventListener('DOMContentLoaded', function () {
 
@@ -719,7 +738,7 @@
         });
 
         // Tombol toggle-edit
-        document.querySelectorAll('.toggle-edit').forEach(btn => {
+        document.querySelectorAll('.toggle-edit).forEach(btn => {
           btn.addEventListener('click', function (e) {
             e.preventDefault();
           e.stopPropagation(); // 🔹 cegah event bubbling ke accordion parent
@@ -858,7 +877,216 @@
             });
         });
     });
+</script-->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const contextPath = document.querySelector("meta[name='contextPath']").content;
+      // 🔹 Simpan nilai awal form saat pertama kali dimuat
+      document.querySelectorAll('.edit-item-form').forEach(form => {
+        const initialData = {};
+        form.querySelectorAll('input, textarea, select').forEach(input => {
+          initialData[input.name] = input.value;
+        });
+        form.dataset.initialData = JSON.stringify(initialData);
+      });
+
+
+      // 🔹 Tombol toggle-edit DAN toggle-delete
+      document.querySelectorAll('.toggle-edit, .toggle-delete').forEach(btn => {
+        btn.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation(); // cegah trigger accordion
+
+          const isEdit = this.classList.contains('toggle-edit');
+          const isDelete = this.classList.contains('toggle-delete');
+          console.log("----icon " + (isEdit ? "edit" : "delete") + " called----");
+
+          // pastikan accordion terbuka dulu sebelum toggle collapse
+          const accordionItem = this.closest('.accordion-item');
+          if (accordionItem) {
+            const accordionBody = accordionItem.querySelector('.accordion-collapse');
+            if (accordionBody && !accordionBody.classList.contains('show')) {
+              const bsAccordion = new bootstrap.Collapse(accordionBody, { toggle: false });
+              bsAccordion.show();
+            }
+          }
+
+          const targetId = this.getAttribute('data-target-id');
+          const collapse = document.getElementById(targetId);
+          if (!collapse) {
+            console.warn(`Collapse target #${targetId} tidak ditemukan.`);
+            return;
+          }
+
+          const form = collapse.querySelector('.edit-item-form');
+          const card = this.closest('[data-item-id]');
+          const desc = card.querySelector('.desc');
+          const bsCollapse = new bootstrap.Collapse(collapse, { toggle: false });
+
+          // kalau collapse sedang terbuka → tutup
+          if (collapse.classList.contains('show')) {
+            bsCollapse.hide();
+            if (desc) desc.style.display = '';
+
+            // kembalikan input ke nilai awal
+            if (form && form.dataset.initialData) {
+              const initialData = JSON.parse(form.dataset.initialData);
+              form.querySelectorAll('input, textarea, select').forEach(input => {
+                if (initialData.hasOwnProperty(input.name)) {
+                  input.value = initialData[input.name];
+                }
+              });
+            }
+
+            this.classList.remove('active');
+            this.setAttribute('aria-expanded', 'false');
+
+          } else {
+            // kalau collapse belum terbuka → buka
+            bsCollapse.show();
+            if (desc) desc.style.display = 'none';
+
+            this.classList.add('active');
+            this.setAttribute('aria-expanded', 'true');
+
+            // ubah tombol cancel jadi "Cancel"
+            const cancelBtn = form.querySelector('.cancel-collapse');
+            if (cancelBtn) cancelBtn.textContent = 'Cancel';
+          }
+        });
+      });
+
+
+      // 🔹 Tombol Cancel (berlaku untuk form edit & delete)
+      document.querySelectorAll('.cancel-collapse').forEach(btn => {
+        btn.addEventListener('click', function (e) {
+          e.preventDefault();
+          console.log("----button cancel called----");
+
+          const targetId = this.getAttribute('data-target-id');
+          const targetCollapse = document.getElementById(targetId);
+          if (!targetCollapse) return;
+
+          const bsCollapse = bootstrap.Collapse.getInstance(targetCollapse)
+            || new bootstrap.Collapse(targetCollapse, { toggle: false });
+          bsCollapse.hide();
+
+          // kembalikan nilai awal form jika ada
+          const form = targetCollapse.querySelector('.edit-item-form');
+          if (form && form.dataset.initialData) {
+            const initialData = JSON.parse(form.dataset.initialData);
+            form.querySelectorAll('input, textarea, select').forEach(input => {
+              if (initialData.hasOwnProperty(input.name)) {
+                input.value = initialData[input.name];
+              }
+            });
+          }
+
+          // tampilkan kembali deskripsi
+          const cardBody = this.closest('.card-body');
+          const desc = cardBody.querySelector('.desc');
+          if (desc) desc.style.display = '';
+
+          // reset tombol toggle (baik edit maupun delete)
+          const toggleBtn = document.querySelector(`.toggle-edit[data-target-id='${targetId}'], .toggle-delete[data-target-id='${targetId}']`);
+          if (toggleBtn) {
+            toggleBtn.classList.remove('active');
+            toggleBtn.setAttribute('aria-expanded', 'false');
+          }
+        });
+      });
+
+
+      // 🔹 Tombol accordion utama → reset semua collapse di dalamnya
+      document.querySelectorAll('.accordion-button').forEach(btn => {
+        btn.addEventListener('click', function () {
+          console.log('Accordion diklik — reset semua collapse di dalam card ini.');
+
+          const cardBody = this.closest('.card-body');
+          if (!cardBody) return;
+
+          cardBody.querySelectorAll('.collapse.show').forEach(collapse => {
+            const bsCollapse = bootstrap.Collapse.getInstance(collapse)
+              || new bootstrap.Collapse(collapse, { toggle: false });
+            bsCollapse.hide();
+
+            const desc = cardBody.querySelector('.desc');
+            if (desc) desc.style.display = '';
+
+            const form = collapse.querySelector('.edit-item-form');
+            if (form && form.dataset.initialData) {
+              const initialData = JSON.parse(form.dataset.initialData);
+              form.querySelectorAll('input, textarea, select').forEach(input => {
+                if (initialData.hasOwnProperty(input.name)) {
+                  input.value = initialData[input.name];
+                }
+              });
+            }
+
+            // reset tombol aktif (edit & delete)
+            const targetId = collapse.id;
+            cardBody.querySelectorAll(`.toggle-edit[data-target-id='${targetId}'], .toggle-delete[data-target-id='${targetId}']`).forEach(btn => {
+              btn.classList.remove('active');
+              btn.setAttribute('aria-expanded', 'false');
+            });
+          });
+        });
+      });
+
+      // 🔹 Tangani submit form delete
+        document.querySelectorAll('.collapse form').forEach(form => {
+          // pastikan ini form delete (bukan edit)
+          const collapseParent = form.closest('.collapse');
+          if (collapseParent && collapseParent.id.startsWith('collapseDelete')) {
+            form.addEventListener('submit', async function (e) {
+              e.preventDefault();
+              e.stopPropagation();
+
+              const itemId = this.getAttribute('data-item-id');
+              if (!itemId) {
+                console.warn("Item ID tidak ditemukan di form delete.");
+                return;
+              }
+
+              // konfirmasi dulu
+              //if (!confirm('Yakin ingin menghapus item ini?')) return;
+
+              try {
+                const response = await fetch(`${contextPath}api/v1/manager/product/item/${itemId}`, {
+                  method: 'DELETE',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  }
+                });
+
+                if (response.ok) {
+                  console.log(`Item ${itemId} berhasil dihapus`);
+                  // 🔹 tampilkan notifikasi/toast (kalau sudah punya sistem toast)
+                  // showToast('Item berhasil dihapus', 'success');
+
+                  // 🔹 hapus card-nya dari DOM
+                  const card = this.closest('[data-item-id]');
+                  if (card) {
+                    card.classList.add('fade');
+                    setTimeout(() => card.remove(), 300);
+                  }
+
+                } else {
+                  console.error('Gagal menghapus item', response.status);
+                  // showToast('Gagal menghapus item', 'danger');
+                }
+              } catch (err) {
+                console.error('Error saat menghapus item:', err);
+                // showToast('Terjadi kesalahan saat menghapus item', 'danger');
+              }
+            });
+          }
+        });
+
+
+    });
 </script>
+
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {

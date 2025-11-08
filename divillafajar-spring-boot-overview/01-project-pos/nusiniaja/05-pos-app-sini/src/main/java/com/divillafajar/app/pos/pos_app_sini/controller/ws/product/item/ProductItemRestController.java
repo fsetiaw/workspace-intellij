@@ -37,6 +37,13 @@ public class ProductItemRestController {
 		//retVal = modelMapper.map(dto, UpdateItemRequestModel.class);
 		return ResponseEntity.ok(retVal);
 	}
+
+    @DeleteMapping("/{itemId}")
+    public ResponseEntity<?> deleteItem(@PathVariable Long itemId) {
+        System.out.println("===REST DELETE ITEM CONTROLLER====");
+        UpdateItemRequestModel retVal = new UpdateItemRequestModel();
+        return ResponseEntity.ok(retVal);
+    }
 }
 
 
