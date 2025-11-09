@@ -250,8 +250,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO createUser(String role, UserDTO userDTO, ClientDTO clientDTO) {
         UserDTO returnVal = new UserDTO();
-
-        System.out.println("Creating superadmin--"+userDTO.getUsername().length());
         /*
          ** cek if username to short
          */
@@ -292,11 +290,10 @@ public class UserServiceImpl implements UserService {
             throw new EmailAlreadyRegisterException(messageSource.getMessage("error.biznameAlreadyUsed", null, LocaleContextHolder.getLocale()));
 
         try {
-
             UserEntity userEntity = new UserEntity();
             BeanUtils.copyProperties(userDTO, userEntity);
+            //userEntity.setDeleted(false);
             UserEntity storedUser = userRepo.save(userEntity);
-
             NamePassEntity nape = new NamePassEntity();
             BeanUtils.copyProperties(userDTO, nape);
             nape.setPassword(passwordEncoder.encode(userDTO.getPwd()));
@@ -307,7 +304,6 @@ public class UserServiceImpl implements UserService {
             ClientEntity storedClient  = clientRepo.save(newuClient);
             nape.setClient(storedClient);
             BeanUtils.copyProperties(storedUser,returnVal);
-
 
             NamePassEntity storedNape = namePasRepo.save(nape);
 

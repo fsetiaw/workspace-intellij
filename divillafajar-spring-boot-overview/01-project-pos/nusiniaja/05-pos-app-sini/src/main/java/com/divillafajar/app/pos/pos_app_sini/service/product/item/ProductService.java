@@ -15,4 +15,5 @@ public interface ProductService {
     ProductDTO updateProduct(Long itemId, UpdateItemRequestModel updateItemRequestModel);
     List<ProductWithCategoryPathDTO> getListProduct(String clietnAddressPubId, Long categoryId, String keywordOptional);
 	ProductItemSummaryProjectionDTO getSummaryProductItem(String clietnAddressPubId);
+    void softDeleteProduct(Long itemId);
 }

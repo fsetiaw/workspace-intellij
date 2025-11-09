@@ -43,7 +43,7 @@ public class FeatureEntity implements Serializable {
     private Set<ScopeEntity> scopes = new HashSet<>();
 
     @Column(name = "active", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 1")
-    private Boolean active = false;
+    private Boolean active = true;
 
 	// === 🔹 Metadata ===
 	@Column(name = "created_at", insertable = false, updatable = false)
@@ -58,7 +58,7 @@ public class FeatureEntity implements Serializable {
 	@Column(name = "updated_by", length = 100)
 	private String updatedBy;
 
-	@Column(name = "deleted")
+	@Column(name = "deleted", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
 	private Boolean deleted = false;
 
 }

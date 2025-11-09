@@ -47,7 +47,7 @@ public class NamePassEntity implements Serializable {
     @Column(nullable = false, length = 100)
     private String password;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TINYINT(1) DEFAULT 1")
     private boolean enabled = true;
 
     @OneToMany(mappedBy = "namePass", cascade = CascadeType.ALL, orphanRemoval = true)

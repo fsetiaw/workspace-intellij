@@ -5,6 +5,7 @@ import com.divillafajar.app.pos.pos_app_sini.model.item.UpdateItemRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.service.product.item.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,9 +41,18 @@ public class ProductItemRestController {
 
     @DeleteMapping("/{itemId}")
     public ResponseEntity<?> deleteItem(@PathVariable Long itemId) {
-        System.out.println("===REST DELETE ITEM CONTROLLER====");
-        UpdateItemRequestModel retVal = new UpdateItemRequestModel();
-        return ResponseEntity.ok(retVal);
+        System.out.println("===REST DELETE ITEM CONTROLLER===="+itemId);
+        try {
+            productService.softDeleteProduct(itemId);
+            return ResponseEntity.ok("success");
+            //return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            //        .body("Gagal Hapus");
+        }
+        catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Unexpected error: " + e.getMessage());
+        }
+
     }
 }
 

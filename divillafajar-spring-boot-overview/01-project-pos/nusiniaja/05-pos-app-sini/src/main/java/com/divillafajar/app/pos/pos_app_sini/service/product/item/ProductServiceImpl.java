@@ -133,4 +133,14 @@ public class ProductServiceImpl implements ProductService{
 		retVal = productRepo.getProductItemSummaryByClientAddressId(clientAddress.getId());
 		return retVal;
 	}
+
+    @Override
+    @Transactional
+    public void softDeleteProduct(Long itemId) {
+        Optional<ProductEntity> savedProd = productRepo.findById(itemId);
+        if(savedProd.isEmpty())
+            throw new NullPointerException("item not found");
+        savedProd.get().setDeleted(true);
+        productRepo.save(savedProd.get());
+    }
 }

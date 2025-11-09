@@ -287,8 +287,7 @@
                                                 aria-controls="collapseOne">
                                             <!-- Ikon plus -->
                                             <i class="bi bi-plus d-inline-flex align-items-center justify-content-center me-2"
-                                               th:style="|background-color:${@appGlobals.get('colorPrimaryBlue')};
-                                                       color:white;
+                                               th:style="|color:${@appGlobals.get('colorPrimaryBlue')};
                                                        width:22px;
                                                        height:22px;
                                                        border-radius:50%;
@@ -625,7 +624,12 @@
 <script th:inline="javascript">
     const msgImageProvided = /*[[#{msg.imageProvided}]]*/ 'Image provided';
   const msgNoImageProvided = /*[[#{msg.noImageProvided}]]*/ 'No image provided';
-
+  const toastMediumTimeout = [[${toastMediumTimeout}]];
+    const toastShortTimeout = [[${toastShortTimeout}]];
+    const toastLongTimeout = [[${toastLongTimeout}]];
+    const colorDanger = [[${globals.get('colorDanger')}]];
+    const colorWhite = [[${globals.get('colorWhite')}]];
+    //const toastLongTimeout = [[${globals.get('toastLongTimeout')}]];
     document.addEventListener("DOMContentLoaded", function () {
         const addBtn = document.getElementById("add");
         const srcBtn = document.getElementById("src");
@@ -666,6 +670,24 @@
             if (searchInput) {
                 searchInput.value = ""; // kosongkan input
                 cards.forEach(card => card.style.display = ""); // tampilkan semua kartu
+            }
+
+            // 🔹 Force buka collapsible (accordion)
+            const collapseOne = document.getElementById("collapseOne");
+            const accordionBtn = document.querySelector("[data-bs-target='#collapseOne']");
+
+            if (collapseOne && accordionBtn) {
+                const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseOne);
+
+                // Tutup dulu semua biar fresh
+                bsCollapse.hide();
+
+                // Buka ulang (force expand)
+                bsCollapse.show();
+
+                // Pastikan tombol header tidak pakai class 'collapsed'
+                accordionBtn.classList.remove("collapsed");
+                accordionBtn.setAttribute("aria-expanded", "true");
             }
         });
 
@@ -899,7 +921,6 @@
 
           const isEdit = this.classList.contains('toggle-edit');
           const isDelete = this.classList.contains('toggle-delete');
-          console.log("----icon " + (isEdit ? "edit" : "delete") + " called----");
 
           // pastikan accordion terbuka dulu sebelum toggle collapse
           const accordionItem = this.closest('.accordion-item');
@@ -961,7 +982,6 @@
       document.querySelectorAll('.cancel-collapse').forEach(btn => {
         btn.addEventListener('click', function (e) {
           e.preventDefault();
-          console.log("----button cancel called----");
 
           const targetId = this.getAttribute('data-target-id');
           const targetCollapse = document.getElementById(targetId);
@@ -1000,7 +1020,6 @@
       // 🔹 Tombol accordion utama → reset semua collapse di dalamnya
       document.querySelectorAll('.accordion-button').forEach(btn => {
         btn.addEventListener('click', function () {
-          console.log('Accordion diklik — reset semua collapse di dalam card ini.');
 
           const cardBody = this.closest('.card-body');
           if (!cardBody) return;
@@ -1050,6 +1069,9 @@
 
               // konfirmasi dulu
               //if (!confirm('Yakin ingin menghapus item ini?')) return;
+            // Ambil card lebih awal sebelum async
+            const collapse = this.closest('.collapse');
+            const card = collapse?.closest('[data-item-id]') || collapse?.closest('.col-xl-4');
 
               try {
                 const response = await fetch(`${contextPath}api/v1/manager/product/item/${itemId}`, {
@@ -1060,20 +1082,25 @@
                 });
 
                 if (response.ok) {
-                  console.log(`Item ${itemId} berhasil dihapus`);
                   // 🔹 tampilkan notifikasi/toast (kalau sudah punya sistem toast)
                   // showToast('Item berhasil dihapus', 'success');
 
                   // 🔹 hapus card-nya dari DOM
-                  const card = this.closest('[data-item-id]');
+
+                  const card = this.closest('.col-xl-4[data-item-id]') || this.closest('[data-item-id]');
+                  //const card = this.closest('[data-item-id]') || this.closest('.col-xl-4');
+                  //const card = this.closest('[data-item-id]');
                   if (card) {
-                    card.classList.add('fade');
-                    setTimeout(() => card.remove(), 300);
-                  }
+                      card.style.transition = 'opacity 0.3s ease';
+                      card.style.opacity = '0';
+                      setTimeout(() => card.remove(), 300);
+                    } else {
+                      console.warn('Card element tidak ditemukan untuk item:', itemId);
+                    }
 
                 } else {
                   console.error('Gagal menghapus item', response.status);
-                  // showToast('Gagal menghapus item', 'danger');
+                  showToastText(response.status, toastLongTimeout, colorDanger, colorWhite);
                 }
               } catch (err) {
                 console.error('Error saat menghapus item:', err);
@@ -1139,7 +1166,6 @@
                 event.preventDefault();
 
                 const itemId = form.dataset.itemId;
-                console.log("desc payload"+form.querySelector("textarea[name='description']").value);
                 const payload = {
                     name: form.querySelector("input[name='name']").value,
                     description: form.querySelector("textarea[name='description']").value,
@@ -1147,7 +1173,6 @@
                 };
 
                 try {
-                console.log("c-path="+contextPath);
                     const res = await fetch(`${contextPath}api/v1/manager/product/item/${itemId}`, {
                         method: "PUT",
                         headers: { "Content-Type": "application/json" },
@@ -1155,15 +1180,10 @@
                     });
 
                     if (!res.ok) {
-                        console.error("res NOT OK");
                         throw new Error(`HTTP ${res.status}`);
                     }
                     else {
-                        console.log("res OK");
                         const data = await res.json();
-                        console.log("✅ Update success:", data.name);
-                        console.log("✅ Update success:", data.description);
-                        console.log("✅ Update success:", data.price);
                         //alert(`Item ${itemId} berhasil diperbarui!`);
                         showToastText("msgSuccessUpdate", toastShortTimeout, greenSuccess,"#fff");
                         const card = document.querySelector(`[data-item-id="${itemId}"]`);
@@ -1216,12 +1236,10 @@
                             price: data.price ?? 0
                         };
                         form.dataset.initialData = JSON.stringify(newInitialData);
-                        console.log("✅ initialData updated:", form.dataset.initialData);
 
                         // 🔹 Toggle indikator deskripsi
                         const descOkLi = card.querySelector(`#desc-ok-${itemId}`);
                         const descNoLi = card.querySelector(`#desc-no-${itemId}`);
-                        console.log("data desc="+data.description);
                         if (data.description && data.description.trim() !== "") {
                             if (descOkLi) descOkLi.style.display = 'none';
                             if (descNoLi) descNoLi.style.display = 'none';
@@ -1256,7 +1274,6 @@
 
 
                 } catch (err) {
-                    console.error("❌ Update failed:", err);
                     alert(`Gagal memperbarui item ${itemId}: ${err.message}`);
                 }
             });
@@ -1312,9 +1329,7 @@
           }
 </script>
 <script>
-    const toastMediumTimeout = [[${toastMediumTimeout}]];
-    const toastShortTimeout = [[${toastShortTimeout}]];
-    const toastLongTimeout = [[${toastLongTimeout}]];
+
     const redError = "#dc3545";
     const greenSuccess = "#198754";
 
@@ -1349,7 +1364,6 @@
             onload: (response) => {
               try {
                 const data = JSON.parse(response);
-                console.log("Upload response:", data);
 
                 if (data.success && data.url) {
                   // ✅ Hapus dulu thumbnail lama (kalau ada)
@@ -1399,8 +1413,6 @@
                       ul.appendChild(newLi);
                     }
                   }
-
-                  console.log(`✅ Thumbnail updated for productId=${productId}`);
                   return data.url;
                 }
               } catch (err) {
@@ -1589,6 +1601,6 @@
     });
 </script-->
 
-
+        <script th:src="@{/mine/js/toast-status-handler.js}"></script>
     </body>
-    </html>
+</html>

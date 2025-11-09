@@ -38,6 +38,9 @@ public class ClientEntity implements Serializable {
         if (pubId == null) {
             pubId = UUID.randomUUID().toString(); // UUID jadi string
         }
+
+        if(deleted==null)
+            deleted=false;
     }
 
     @Column(name = "client_name", length = 50, nullable = false)
@@ -59,7 +62,7 @@ public class ClientEntity implements Serializable {
     @Column(name = "client_type", length = 50, nullable = false)
     private String clientType;
 
-    @Column(name = "deleted", nullable = true, columnDefinition = "TINYINT(1)")
+    @Column(name = "deleted", nullable = true, columnDefinition = "TINYINT(1) DEFAULT 0")
     private Boolean deleted = false;
 
     //@Filters({

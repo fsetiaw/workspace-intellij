@@ -33,6 +33,9 @@ public class ClientContactEntity implements Serializable {
         if (pubId == null) {
             pubId = UUID.randomUUID().toString(); // UUID jadi string
         }
+
+        if(deleted==null)
+            deleted=false;
     }
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE,
@@ -52,7 +55,7 @@ public class ClientContactEntity implements Serializable {
     @Column(name = "contact_position")
     private String contactPosition;
 
-    @Column(name = "deleted", nullable = true, columnDefinition = "TINYINT(1)")
+    @Column(name = "deleted", nullable = true, columnDefinition = "TINYINT(1) DEFAULT 0")
     private Boolean deleted = false;
 
 	// === 🔹 Metadata ===

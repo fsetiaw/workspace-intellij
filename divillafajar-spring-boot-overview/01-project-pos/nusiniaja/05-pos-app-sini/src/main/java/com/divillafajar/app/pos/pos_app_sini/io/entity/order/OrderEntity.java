@@ -66,7 +66,7 @@ public class OrderEntity implements Serializable {
 	@Column(name = "updated_by", length = 100)
 	private String updatedBy;
 
-	@Column(name = "deleted")
+	@Column(name = "deleted", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
 	private Boolean deleted = false;
 
 }

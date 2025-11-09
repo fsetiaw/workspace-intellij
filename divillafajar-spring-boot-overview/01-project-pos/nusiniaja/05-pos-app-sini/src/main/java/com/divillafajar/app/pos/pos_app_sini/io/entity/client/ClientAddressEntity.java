@@ -98,7 +98,7 @@ public class ClientAddressEntity implements Serializable {
     @Column(name = "country", length = 50, nullable = true)
     private String country;
 
-    @Column(name = "active", nullable = false, columnDefinition = "TINYINT(1)")
+    @Column(name = "active", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 1")
     private Boolean active = true;
 
     @Column(name = "phone", nullable = true, length = 20)
@@ -126,9 +126,9 @@ public class ClientAddressEntity implements Serializable {
 	@Column(name = "updated_by", length = 100)
 	private String updatedBy;
 
-	@Column(name = "deleted", nullable = false, columnDefinition = "TINYINT(1)")
+	@Column(name = "deleted", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
 	private Boolean deleted = false;
 
-    @Column(name = "used_default_category", nullable = false, columnDefinition = "TINYINT(1)")
+    @Column(name = "used_default_category", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
     private Boolean usedDefaultCategory = false;
 }

@@ -40,6 +40,9 @@ public class UserEntity implements Serializable {
         if (pubId == null) {
             pubId = UUID.randomUUID().toString(); // UUID jadi string
         }
+        if (deleted == null)
+            deleted = false;
+
     }
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -48,8 +51,9 @@ public class UserEntity implements Serializable {
     @Column(name = "email_verification_token", nullable = true)
     private String emailVerificationToken;
 
-    @Column(name = "email_verification_status", nullable = true)
-    private boolean emailVerificationStatus = false;
+    /* buat true dulu aja */
+    @Column(name = "email_verification_status", nullable = true, columnDefinition = "TINYINT(1) DEFAULT 1")
+    private boolean emailVerificationStatus = true;
 
     @Column(name = "email_verified_timestamp", nullable = true)
     private LocalDateTime email_verified_timestamp;
@@ -104,7 +108,7 @@ public class UserEntity implements Serializable {
 	@Column(name = "updated_by", length = 100)
 	private String updatedBy;
 
-	@Column(name = "deleted")
+	@Column(name = "deleted", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
 	private Boolean deleted = false;
 
 

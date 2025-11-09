@@ -49,7 +49,6 @@ public class ThymeUserController {
             Model model,
             Locale locale
     ) {
-        System.out.println("processFormRegistrasi is CALLED");
         String labelUser = messageSource.getMessage("label.user", null, locale);
         String successMessage = messageSource.getMessage("label.addSuccessfully", null, locale);
         String failedMessage = messageSource.getMessage("label.addFailed", null, locale);
