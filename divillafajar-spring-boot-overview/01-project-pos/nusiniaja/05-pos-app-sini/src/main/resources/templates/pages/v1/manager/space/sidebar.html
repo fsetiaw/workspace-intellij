@@ -53,18 +53,18 @@
                     <li id="dashboardMenu" class="sidebar-item" th:classappend="${activePage == 'dashboard'} ? ' active'">
                         <a th:href="@{/v1/manager/manage/product(activePage='dashboard')}" class='sidebar-link'>
                             <i class="bi bi-grid-fill"></i>
-                            <span th:utext="${activeSub == 'subMenu1' || activeSub == 'subMenu2'} ? #{label.backToDashboard} : #{label.manager.setting.product}+ '<br>' +#{label.dashboard}"></span>
+                            <span th:utext="${activeSub == 'subMenu1' || activeSub == 'subMenu2'} ? #{label.backToDashboard} : #{label.spaceArea}+ '<br>' +#{label.dashboard}"></span>
                         </a>
                     </li>
                     <li id="sidebarMenu1" class="sidebar-item has-sub" th:classappend="${activePage == 'menu1'} ? ' active'">
                         <a href="#" class='sidebar-link'>
                             <i class="bi bi-briefcase-fill"></i>
-                            <span th:text="|#{label.productSetting}|"></span>
+                            <span th:utext="|#{label.spaceAreaSetting}|"></span>
                         </a>
                         <ul class="submenu">
                             <!-- category -->
                             <li id="subMenu1-1" class="submenu-item" th:classappend="${activeSub != null and activeSub=='subMenu1-1'} ? ' active'">
-                                <a th:href="@{/v1/manager/manage/product/cat(pid=${session.targetAddress.pubId},activePage='menu1',activeSub='subMenu1-1')}" class="submenu-link" th:text="#{label.manager.setting.product.category}"></a>
+                                <a th:href="@{/v1/manager/manage/product/cat(pid=${session.targetAddress.pubId},activePage='menu1',activeSub='subMenu1-1')}" class="submenu-link" th:text="#{label.mainAndSubArea}"></a>
                             </li>
                             <!-- item -->
                             <li id="subMenu1-2" class="submenu-item" th:classappend="${activeSub != null and activeSub=='subMenu1-2'} ? ' active'">

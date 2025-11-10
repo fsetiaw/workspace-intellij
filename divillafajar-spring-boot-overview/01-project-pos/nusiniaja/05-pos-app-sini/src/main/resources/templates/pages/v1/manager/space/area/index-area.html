@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- inject contextPath -->
+    <meta name="contextPath" th:content="@{/}">
+    <meta name="pAid" th:content="${targetAddress.pubId}">
+    <title>Admin Dashboard</title>
+    <link rel="shortcut icon" th:href="@{/assets/compiled/svg/favicon.svg}" type="image/x-icon}">
+    <link rel="shortcut icon"
+          href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACEAAAAiCAYAAADRcLDBAAAEs2lUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNS41LjAiPgogPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgeG1sbnM6ZXhpZj0iaHR0cDovL25zLmFkb2JlLmNvbS9leGlmLzEuMC8iCiAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyIKICAgIHhtbG5zOnBob3Rvc2hvcD0iaHR0cDovL25zLmFkb2JlLmNvbS9waG90b3Nob3AvMS4wLyIKICAgIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIKICAgIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIgogICAgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZUV2ZW50IyIKICAgZXhpZjpQaXhlbFhEaW1lbnNpb249IjMzIgogICBleGlmOlBpeGVsWURpbWVuc2lvbj0iMzQiCiAgIGV4aWY6Q29sb3JTcGFjZT0iMSIKICAgdGlmZjpJbWFnZVdpZHRoPSIzMyIKICAgdGlmZjpJbWFnZUxlbmd0aD0iMzQiCiAgIHRpZmY6UmVzb2x1dGlvblVuaXQ9IjIiCiAgIHRpZmY6WFJlc29sdXRpb249Ijk2LjAiCiAgIHRpZmY6WVJlc29sdXRpb249Ijk2LjAiCiAgIHBob3Rvc2hvcDpDb2xvck1vZGU9IjMiCiAgIHBob3Rvc2hvcDpJQ0NQcm9maWxlPSJzUkdCIElFQzYxOTY2LTIuMSIKICAgeG1wOk1vZGlmeURhdGU9IjIwMjItMDMtMzFUMTA6NTA6MjMrMDI6MDAiCiAgIHhtcDpNZXRhZGF0YURhdGU9IjIwMjItMDMtMzFUMTA6NTA6MjMrMDI6MDAiPgogICA8eG1wTU06SGlzdG9yeT4KICAgIDxyZGY6U2VxPgogICAgIDxyZGY6bGkKICAgICAgc3RFdnQ6YWN0aW9uPSJwcm9kdWNlZCIKICAgICAgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWZmaW5pdHkgRGVzaWduZXIgMS4xMC4xIgogICAgICBzdEV2dDp3aGVuPSIyMDIyLTAzLTMxVDEwOjUwOjIzKzAyOjAwIi8+CiAgICA8L3JkZjpTZXE+CiAgIDwveG1wTU06SGlzdG9yeT4KICA8L3JkZjpEZXNjcmlwdGlvbj4KIDwvcmRmOlJERj4KPC94OnhtcG1ldGE+Cjw/eHBhY2tldCBlbmQ9InIiPz5V57uAAAABgmlDQ1BzUkdCIElFQzYxOTY2LTIuMQAAKJF1kc8rRFEUxz9maORHo1hYKC9hISNGTWwsRn4VFmOUX5uZZ36oeTOv954kW2WrKLHxa8FfwFZZK0WkZClrYoOe87ypmWTO7dzzud97z+nec8ETzaiaWd4NWtYyIiNhZWZ2TvE946WZSjqoj6mmPjE1HKWkfdxR5sSbgFOr9Ll/rXoxYapQVik8oOqGJTwqPL5i6Q5vCzeo6dii8KlwpyEXFL519LjLLw6nXP5y2IhGBsFTJ6ykijhexGra0ITl5bRqmWU1fx/nJTWJ7PSUxBbxJkwijBBGYYwhBgnRQ7/MIQIE6ZIVJfK7f/MnyUmuKrPOKgZLpEhj0SnqslRPSEyKnpCRYdXp/9++msneoFu9JgwVT7b91ga+LfjetO3PQ9v+PgLvI1xkC/m5A+h7F32zoLXug38dzi4LWnwHzjeg8UGPGbFfySvuSSbh9QRqZ6H+Gqrm3Z7l9zm+h+iafNUV7O5Bu5z3L/wAdthn7QIme0YAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAJTSURBVFiF7Zi9axRBGIefEw2IdxFBRQsLWUTBaywSK4ubdSGVIY1Y6HZql8ZKCGIqwX/AYLmCgVQKfiDn7jZeEQMWfsSAHAiKqPiB5mIgELWYOW5vzc3O7niHhT/YZvY37/swM/vOzJbIqVq9uQ04CYwCI8AhYAlYAB4Dc7HnrOSJWcoJcBS4ARzQ2F4BZ2LPmTeNuykHwEWgkQGAet9QfiMZjUSt3hwD7psGTWgs9pwH1hC1enMYeA7sKwDxBqjGnvNdZzKZjqmCAKh+U1kmEwi3IEBbIsugnY5avTkEtIAtFhBrQCX2nLVehqyRqFoCAAwBh3WGLAhbgCRIYYinwLolwLqKUwwi9pxV4KUlxKKKUwxC6ZElRCPLYAJxGfhSEOCz6m8HEXvOB2CyIMSk6m8HoXQTmMkJcA2YNTHm3congOvATo3tE3A29pxbpnFzQSiQPcB55IFmFNgFfEQeahaAGZMpsIJIAZWAHcDX2HN+2cT6r39GxmvC9aPNwH5gO1BOPFuBVWAZue0vA9+A12EgjPadnhCuH1WAE8ivYAQ4ohKaagV4gvxi5oG7YSA2vApsCOH60WngKrA3R9IsvQUuhIGY00K4flQG7gHH/mLytB4C42EgfrQb0mV7us8AAMeBS8mGNMR4nwHamtBB7B4QRNdaS0M8GxDEog7iyoAguvJ0QYSBuAOcAt71Kfl7wA8DcTvZ2KtOlJEr+ByyQtqqhTyHTIeB+ONeqi3brh+VgIN0fohUgWGggizZFTplu12yW8iy/YLOGWMpDMTPXnl+Az9vj2HERYqPAAAAAElFTkSuQmCC"
+          type="image/png">
+    <link rel="stylesheet" th:href="@{/assets/compiled/css/app.css}">
+    <link rel="stylesheet" th:href="@{/assets/compiled/css/app-dark.css}">
+    <link rel="stylesheet" th:href="@{/assets/compiled/css/iconly.css}">
+    <link rel="stylesheet" th:href="@{/mine/js/css/toast.css}">
+    <link rel="stylesheet" th:href="@{/assets/vendors/toastify/toastify.css}">
+    <link rel="stylesheet" th:href="@{/mine/js/css/additional-index.css}">
+    <link rel="stylesheet" th:href="@{/mine/js/css/breadcrumbs.css}">
+    <!--link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"-->
+
+
+</head>
+<body>
+<div id="app">
+    <!-- Sidebar slot -->
+    <div layout:fragment="sidebar">
+        <div th:replace="~{/pages/v1/manager/product/sidebar.html :: sidebar(${activePage}, ${activeSub}, '${listActiveLocation}')}"></div>
+    </div>
+    <div id="main">
+        <!-- Notification hamburg slot -->
+        <div layout:fragment="left-header">
+            <div th:replace="~{/pages/v1/fragments/hamburger-header.html :: left-header}"></div>
+        </div>
+        <!-- Notification header slot
+        <div layout:fragment="left-header">
+            <div th:replace="~{/pages/v1/manager/fragments/notification-header.html :: right-header}"></div>
+        </div-->
+        <!-- Index header slot -->
+        <div layout:fragment="logout-and-other-hidden-form">
+            <div th:replace="~{/pages/v1/fragments/logout-and-other-hidden-form.html :: hidden-form(${clientName}, ${updatePath}, ${deletePath})}"></div>
+        </div>
+
+        <!-- Main content slot -->
+        <div class="page-heading">
+            <ol class="breadcrumb">
+                <!--li sec:authorize="hasRole('SUPERADMIN')" class="breadcrumb-item active">
+                    <a href="#" th:text="|${#messages.msg('label.dashboard')}|"></a>
+                </li>
+                <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN')" class="breadcrumb-item active">
+                    <a th:href="@{/v2/admin/home}" th:text="|${#messages.msg('label.dashboard')}|"></a>
+                </li>
+                <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN','MANAGER')" class="breadcrumb-item active">
+                    <a th:href="@{/v1/manager/home(pid=${targetAddress.pubId})}" th:text="|${#messages.msg('label.management')}|"></a>
+                </li>
+                <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN','MANAGER')" class="breadcrumb-item active">
+                    <a th:href="@{/v1/manager/manage/product(activePage='dashboard')}"
+                       th:text="|${#messages.msg('label.manager.setting.product')}|"></a>
+                </li-->
+
+                <th:block th:replace="~{/pages/v1/fragments/crumbs/manager-product-root-crumb.html :: manager-product-root-crumb}"></th:block>
+                <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN','MANAGER')" class="breadcrumb-item"
+                    aria-current="page" th:text="|${#messages.msg('label.area')}|">
+                </li>
+            </ol>
+            <h3>
+                <span style="font-size:70%; display:block; line-height:1;"
+                      th:utext="|${#strings.toUpperCase(#messages.msg('label.setting'))}|">
+                </span>
+                <span th:text="|${#strings.toUpperCase(#messages.msg('label.area'))}|"></span>
+
+            </h3>
+        </div>
+        <div layout:fragment="content">
+            <div class="page-content">
+                <!-- list group button & badge start-->
+                <section class="list-group-button-badge">
+                    <div class="row match-height">
+                        <div class="col-12">
+                            <div class="card">
+                                <!--div class="card-header">
+                                    <h4 class="card-title">HEADER</h4>
+                                </div-->
+                                <div class="card-content">
+                                    <div class="card-body">
+                                        <!-- Form input add item -->
+                                        <!--form id="addItemForm" class="mb-3" th:action="@{/v1/manager/product/category}" method="post"-->
+                                        <div class="input-group">
+                                            <!--span class="input-group-text bg-primary text-white"
+                                                    style="font-weight:bold;font-size:1.2rem"
+                                                    th:text="#{label.add}">
+                                            </span-->
+                                            <input type="text" id="newItemInput" class="form-control"
+                                                   th:placeholder="${(orderListCategoryAnsSub != null and orderListCategoryAnsSub.size() > 0)
+                                                   ? #strings.toLowerCase(#messages.msg('msg.enterCategoryNameToAddOrKword')) + ' . . .'
+                                                   : #strings.toLowerCase(#messages.msg('msg.enterCategoryName')) + ' . . .'}"
+                                                   required>
+                                            <button id="addItemBtn" class="btn btn-success" type="button" title="Add Category">
+                                                <i class="bi bi-plus"></i>
+                                            </button>
+                                            <button id="searchItemBtn"
+                                                    class="btn btn-outline-primary"
+                                                    type="button"
+                                                    th:if="${orderListCategoryAnsSub != null and orderListCategoryAnsSub.size() > 0}"
+                                                    title="Search Category">
+                                                <i class="bi bi-search"></i>
+                                            </button>
+
+                                        </div>
+                                        <!--/form-->
+                                        <div class="row">
+                                            <div class="col text-start" th:if="${orderListCategoryAnsSub != null and orderListCategoryAnsSub.size() > 0}">
+                                                <!--h3 th:if="${orderListCategoryAnsSub != null and orderListCategoryAnsSub.size() > 0}"-->
+                                                <h3>
+                                                    <span id="lblUrutan" th:text="#{label.listCategoryAtoZ}" style="font-size:60%;padding-top:20px"></span>
+                                                    <span id="lblNonUrutan"
+                                                          th:utext="#{label.listCategoryNonAtoZ} + ' <i class=&quot;bi bi-sort-alpha-down refresh-icon&quot; id=&quot;refresh-order&quot; onclick=&quot;location.reload();&quot;></i>'"
+                                                          style="font-size:60%;padding-top:20px; display:none">
+                                                    </span>
+                                                </h3>
+                                            </div>
+                                            <div class="col text-end" th:if="${targetAddress.usedDefaultCategory}">
+                                                <button type="button" class="btn btn-link p-0 border-0 bg-transparent text-decoration-none"
+                                                        data-bs-toggle="modal" data-bs-target="#inlineResetForm">
+                                                    <h3 class="text-danger" style="cursor:pointer; font-size:80%; padding-top:20px;">
+                                                        <i class="bi bi-bootstrap-reboot"></i>
+                                                        <span th:text="#{label.reset}"></span>
+                                                    </h3>
+                                                </button>
+
+                                                <!--login form Modal -->
+                                                <div class="modal fade text-left" id="inlineResetForm" tabindex="-1" role="dialog"
+                                                     aria-labelledby="myModalLabel32" aria-hidden="true">
+                                                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
+                                                         role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header position-relative bg-grey">
+                                                                <h3 class="modal-title position-absolute top-50 start-50 translate-middle text-danger" id="myModalLabel32">
+                                                                    <span th:utext="|${#strings.toUpperCase(#messages.msg('label.reset'))}-${#strings.toUpperCase(#messages.msg('label.manager.setting.product.category'))}|"></span>
+                                                                </h3>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <form th:action="@{/v1/manager/manage/product/cat/reset-categories(activePage=${activePage},activeSub=${activeSub})}" method="post">
+                                                                <div class="modal-body text-center">
+                                                                    <p th:utext="#{msg.proceedResetCategory}"></p>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-light-secondary"
+                                                                            data-bs-dismiss="modal">
+                                                                        <i class="bx bx-x d-block d-sm-none"></i>
+                                                                        <span class="d-none d-sm-block" th:text="#{label.cancel}"></span>
+                                                                    </button>
+                                                                    <button type="submit" class="btn btn-primary ms-1 bg-danger"
+                                                                            data-bs-dismiss="modal">
+                                                                        <i class="bx bx-check d-block d-sm-none"></i>
+                                                                        <span class="d-none d-sm-block" th:text="#{label.reset}"></span>
+                                                                    </button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col text-end" th:if="${!targetAddress.usedDefaultCategory}">
+                                                <button type="button" class="btn btn-link p-0 border-0 bg-transparent text-decoration-none"
+                                                        data-bs-toggle="modal" data-bs-target="#inlineForm">
+                                                    <h3 th:style="'cursor:pointer; font-size:80%; padding-top:20px; color:#ffc107;'"
+                                                        th:utext="|#{label.add}/#{msg.tryOurDefaultCategory}|">
+                                                    </h3>
+                                                </button>
+                                                <!--login form Modal -->
+                                                <div class="modal fade text-left" id="inlineForm" tabindex="-1" role="dialog"
+                                                     aria-labelledby="myModalLabel33" aria-hidden="true">
+                                                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
+                                                         role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h4 class="modal-title" id="myModalLabel33" th:text="#{modal.chooseCategoryLanguage}"></h4>
+                                                                <button type="button" class="close" data-bs-dismiss="modal"
+                                                                        aria-label="Close">
+                                                                    <i data-feather="x"></i>
+                                                                </button>
+                                                            </div>
+                                                            <form th:action="@{/v1/manager/manage/product/cat/use-default(activePage=${activePage},activeSub=${activeSub})}" method="post">
+                                                                <div class="modal-body">
+                                                                    <select name="lang" id="lang" class="form-control" style="width:100%">
+                                                                        <option value="id" th:selected="${#locale.language == 'id'}">🇮🇩 Indonesia</option>
+                                                                        <option value="en" th:selected="${#locale.language == 'en'}">🇬🇧 English</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-light-secondary"
+                                                                            data-bs-dismiss="modal">
+                                                                        <i class="bx bx-x d-block d-sm-none"></i>
+                                                                        <span class="d-none d-sm-block" th:text="#{label.close}"></span>
+                                                                    </button>
+                                                                    <button type="submit" class="btn btn-primary ms-1"
+                                                                            data-bs-dismiss="modal">
+                                                                        <i class="bx bx-check d-block d-sm-none"></i>
+                                                                        <span class="d-none d-sm-block" th:text="#{msg.proceedUseDefault}"></span>
+                                                                    </button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div th:replace="~{/pages/v1/manager/product/cat/category-item.html :: categoryList(${orderListCategoryAnsSub})}"></div>
+                                        <!--th:block th:replace="~{/pages/v1/manager/product/cat/category-item.html :: categoryList(${orderListCategoryAnsSub})}"></th:block-->
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- list group button & badge ends -->
+            </div>
+        </div>
+        <!-- Footer slot -->
+        <div layout:fragment="footer">
+            <div th:replace="~{/pages/v1/fragments/footer.html :: footer}"></div>
+        </div>
+    </div>
+</div>
+<!-- List of Toast Msg -->
+<div id="toast-msg-update-failed" th:data-msg="#{label.updateFailed}"></div>
+<div id="toast-msg-update-success" th:data-msg="#{label.updateSuccessfully}"></div>
+
+
+<!-- Toast status slot -->
+<div layout:fragment="toast-status">
+    <div th:replace="~{/pages/v1/fragments/toast/toast-status-process-result :: toast-messages(${successMessage}, ${errorMessage}, ${toastTimeout})}"></div>
+</div>
+<!-- Toast confirm slot -->
+<div layout:fragment="toast-confirm">
+    <!--div th:replace="~{/pages/v1/manager/fragments/toast-confirm.html :: toast-confirm('cancel', 'update', 'delete')}"></div-->
+    <div th:replace="~{/pages/v1/fragments/toast/toast-confirm.html :: toast-confirm('cancel', 'update', 'delete')}"></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!--script th:src="@{/assets/static/js/bootstrap.V5.3.8/bootstrap.bundle.min.js}"></script-->
+
+<script th:src="@{/assets/static/js/initTheme.js}"></script>
+<script th:src="@{/assets/static/js/components/dark.js}"></script>
+<script th:src="@{/assets/extensions/perfect-scrollbar/perfect-scrollbar.min.js}"></script>
+<script th:src="@{/assets/vendors/toastify/toastify.js}"></script>
+<script th:src="@{/assets/compiled/js/app.js}"></script>
+<script th:src="@{/assets/static/js/pages/dashboard.js}"></script>
+<script th:src="@{/mine/js/toast-handler.js}"></script>
+<!--script th:src="@{/mine/js/additional-index.js}"></script-->
+
+<div layout:fragment="modal-confirm-delete">
+    <!--div th:replace="~{/pages/v1/manager/fragments/toast-confirm.html :: toast-confirm('cancel', 'update', 'delete')}"></div-->
+    <div th:replace="~{/pages/v1/fragments/modal/modal-confirm-delete.html :: modal-confirm-delete(${#strings.toUpperCase(#messages.msg('modal.confirm.delete.title'))},
+    #{modal.confirm.delete.body},'itemNameReplaceByJs',#{label.cancel}, #{label.delete})}"></div>
+</div>
+<!--script th:src="@{/mine/js/modal/modal-confirm-edit-delete.js}"></script-->
+
+<script th:inline="javascript">
+    const toastMediumTimeout = [[${toastMediumTimeout}]];
+    const toastShortTimeout = [[${toastShortTimeout}]];
+    const toastLongTimeout = [[${toastLongTimeout}]];
+
+    document.addEventListener("DOMContentLoaded", function() {
+      try {
+          // tampilkan lblUrutan
+          //document.getElementById("lblUrutan").style.display = "block";
+          const lblUrutan = document.getElementById("lblUrutan");
+            if (lblUrutan) {
+                lblUrutan.style.display = "block";
+            }
+          // sembunyikan lblNonUrutan
+          //document.getElementById("lblNonUrutan").style.display = "none";
+          const lblNonUrutan = document.getElementById("lblNonUrutan");
+            if (lblNonUrutan) {
+                lblNonUrutan.style.display = "none";
+            }
+       } catch (err) {
+            console.error('❌ Terjadi kesalahan:', err);
+            //alert('Gagal menambahkan kategori default. Coba lagi nanti.');
+      }
+      const modalBody = document.getElementById('modalBody');
+      const itemList = document.getElementById("itemList");
+      let itemToDelete = null;
+      const deleteModal = new bootstrap.Modal(document.getElementById("danger"));
+      //const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+      const confirmDeleteBtn = document.getElementById("btnConfirmDelete");
+      const contextPath = document.querySelector("meta[name='contextPath']").content;
+      const pAid = document.querySelector("meta[name='pAid']").content;
+      const addItemBtn = document.getElementById("addItemBtn");
+      const newItemInput = document.getElementById("newItemInput");
+      const searchItemBtn = document.getElementById("searchItemBtn");
+      const redError = "#dc3545";
+      const greenSuccess = "#198754";
+
+      const msgFailedInsert = [[#{title.insertProcessFailed}]];
+      const msgFailedUpdate = [[#{title.updateProcessFailed}]];
+      const msgFailedDelete = [[#{title.deleteProcessFailed}]];
+      const msgSuccessInsert = [[#{title.insertProcessSuccess}]];
+      const msgSuccessUpdate = [[#{title.updateProcessSuccess}]];
+      const msgSuccessDelete = [[#{title.deleteProcessSuccess}]];
+      const msgEnterKword = [[#{msg.enterKword}]];
+      const msgNewCategory = [[#{msg.newCategory}]];
+      const lblSearch = [[#{label.search}]];
+      const lblSubCategory = [[#{label.subCategory}]];
+
+      // ✅ Fungsi bantu baru: disable/enable semua tombol aksi global
+      function setGlobalActionButtonsDisabled(disabled) {
+          document.querySelectorAll(".add-sub-btn, .edit-btn, .delete-btn").forEach(btn => {
+            btn.disabled = disabled;
+            if (disabled) {
+              btn.classList.add("disabled"); // optional, bisa untuk style visual
+            } else {
+              btn.classList.remove("disabled");
+            }
+          });
+      }
+
+      // ---------- Utility helpers ----------
+      function showToastHtml(html, duration = toastShortTimeout, bg = "#198754") {
+        Toastify({
+          text: html,
+          duration: duration,
+          close: true,
+          gravity: "bottom",
+          position: "center",
+          backgroundColor: bg
+        }).showToast();
+      }
+
+      function showToastText(text, duration = toastShortTimeout, bg = "#198754", warna = "#6c757d") {
+        showToastHtml(`<strong style="color:${warna}; text-transform:uppercase;">${text}</strong>`, duration, bg);
+      }
+
+      function delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+
+      function createTempLiWithSpinner(name, indent = 0) {
+        const tempLi = document.createElement("li");
+        tempLi.className = "list-group-item d-flex justify-content-between align-items-center opacity-75";
+        tempLi.style.paddingLeft = `${(indent+1) * 25}px`;
+        tempLi.innerHTML = `
+          <div class="d-flex align-items-center gap-2">
+            <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+            <span class="item-text fw-semibold">${name}</span>
+          </div>
+        `;
+        return tempLi;
+      }
+
+      // ---------- EDIT handler (kept mostly original, cleaned) ----------
+      document.addEventListener("click", function(e) {
+        const editBtn = e.target.closest(".edit-btn");
+
+        const deleteBtn = e.target.closest(".delete-btn");
+
+
+        if (editBtn) {
+  e.preventDefault();
+  const li = editBtn.closest("li");
+  const span = li.querySelector(".item-text");
+  const nameEl = span.querySelector(".item-name") || span;       // target yang boleh di-edit
+  const pathEl = span.querySelector(".item-path");              // optional, buat referensi
+  const oldName = nameEl.textContent.trim();
+  const parentIndent = parseInt(li.getAttribute("data-indent") || 0);
+    console.log("editBtn indent="+parentIndent);
+  // buat input + tombol save
+  const input = document.createElement("input");
+  input.type = "text";
+  input.className = "form-control form-control-sm flex-grow-1";
+  input.value = oldName;
+  input.style.width = "100%";
+  input.style.flex = "1";       // ✅ biar isi flex container penuh
+  input.style.minWidth = "0";   // ✅ cegah shrink bug di Bootstrap
+  input.style.paddingLeft = `${parentIndent * 25}px`;
+
+  const enterBtn = document.createElement("button");
+  enterBtn.className = "btn btn-sm btn-success ms-2 flex-shrink-0";
+  enterBtn.innerHTML = '<i class="bi bi-check"></i>';
+
+  const wrapper = document.createElement("div");
+  wrapper.className = "d-flex align-items-center w-100";
+  wrapper.appendChild(input);
+  wrapper.appendChild(enterBtn);
+
+  // sembunyikan tombol aksi yang berada di kanan li sementara
+  const buttons = li.querySelector(".buttons");
+  buttons.style.display = "none";
+
+  // Ganti hanya elemen name (bukan seluruh span)
+  nameEl.parentNode.replaceChild(wrapper, nameEl);
+
+  input.focus({ preventScroll: true });
+
+  let saved = false;
+
+  const restore = () => {
+    const restoreName = document.createElement("span");
+    restoreName.className = "item-name";
+    restoreName.textContent = oldName;
+    // kembalikan padding sesuai indent
+    restoreName.style.paddingLeft = `${parentIndent * 25}px`;
+    if (span.contains(wrapper)) span.replaceChild(restoreName, wrapper);
+    buttons.style.display = "block";
+  };
+
+  const onBlur = function() {
+    if (!saved) restore();
+  };
+  input.addEventListener("blur", onBlur);
+
+  const saveChange = () => {
+    const newName = input.value.trim() || oldName;
+    saved = true;
+    input.removeEventListener("blur", onBlur);
+
+    // 🟡 Jika tidak ada perubahan, langsung restore tanpa fetch
+    //if (newName === "" || newName.toLowerCase() === oldName.toLowerCase()) {
+    if (newName === "" || newName === oldName) {
+      restore();
+      return;
+    }
+    // show spinner di tempat input (opsional)
+    const savingSpan = document.createElement("span");
+    savingSpan.className = "item-name";
+    savingSpan.innerHTML = `${newName} <div class="spinner-border spinner-border-sm text-secondary ms-2" role="status"></div>`;
+    if (span.contains(wrapper)) span.replaceChild(savingSpan, wrapper);
+
+    // disable tombol global
+    buttons.querySelectorAll("a").forEach(btn => btn.disabled = true);
+
+    // panggil API PUT (sama seperti sebelumnya, sesuaikan itemId)
+    const itemId = li.getAttribute("data-id") || "";
+    delay(1500)
+      .then(() =>
+        fetch(`${contextPath}api/v1/manager/product/category/${itemId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: itemId,
+            indentLevel: parentIndent,
+            name: newName
+          })
+        })
+      )
+      .then(async res => {
+        if (res.status === 204) return { id: itemId, name: newName, indentLevel: parentIndent };
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          if (res.status === 409 && errData.message) throw new Error(errData.message);
+          throw new Error(errData.message);
+        }
+        setGlobalActionButtonsDisabled(false);
+        return res.json();
+      })
+      .then(data => {
+        // replace spinner dengan name final (hanya name)
+        const finalName = document.createElement("span");
+        finalName.className = "item-name";
+        finalName.textContent = data.name || newName;
+        //finalName.style.paddingLeft = `${(parseInt(data.indentLevel || parentIndent) * 25)}px`;
+        finalName.style.paddingLeft = `${(parentIndent) * 25}px`;
+        if (span.contains(savingSpan)) span.replaceChild(finalName, savingSpan);
+        buttons.style.display = "block";
+        buttons.querySelectorAll("a").forEach(btn => btn.disabled = false);
+        showToastText(msgSuccessUpdate, toastShortTimeout, greenSuccess,"#fff");
+      })
+      .catch(err => {
+        console.error(err);
+        setGlobalActionButtonsDisabled(false);
+        // rollback ke nilai lama
+        const restoreName = document.createElement("span");
+        restoreName.className = "item-name";
+        restoreName.textContent = oldName;
+        restoreName.style.paddingLeft = `${parentIndent * 25}px`;
+        if (span.contains(savingSpan)) span.replaceChild(restoreName, savingSpan);
+        buttons.style.display = "block";
+        buttons.querySelectorAll("a").forEach(btn => btn.disabled = false);
+        showToastHtml(`${msgFailedUpdate}<br>${err.message}`, toastMediumTimeout, redError);
+      });
+  };
+
+  input.addEventListener("keydown", function(evt) {
+    if (evt.key === "Enter") {
+      evt.preventDefault();
+      saveChange();
+    }
+  });
+
+  enterBtn.addEventListener("mousedown", function(evt) {
+    evt.preventDefault();
+    saveChange();
+  });
+}
+
+
+        // DELETE ICON BUTTON (BUKAN YG CONFIRM DELETE @MODAL)
+        if (deleteBtn) {
+          e.preventDefault();
+          itemToDelete = deleteBtn.closest("li");
+          const itemName = itemToDelete.querySelector(".item-text").textContent;
+          document.getElementById("deletedItemName").textContent = itemName;
+          deleteModal.show();
+        }
+
+      });
+
+      // ---------- ADD ITEM ----------
+      addItemBtn.addEventListener("click", function() {
+      // ⬅️ ADD THIS - jika sedang mode reload
+          if (addItemBtn.dataset.mode === "reload") {
+            location.reload();
+            return;
+          }
+        const newValue = newItemInput.value.trim();
+        if (!newValue) {
+            showToastText(`${msgNewCategory}`, toastShortTimeout, "#ffc107","#fff");
+            return;
+        }
+
+        addItemBtn.disabled = true;
+
+        // CHANGED: create temp li with spinner
+        const tempLi = createTempLiWithSpinner(newValue, 0);
+        itemList.prepend(tempLi);
+
+        // CHANGED: delay then keep fetch chain unchanged
+        //delay(1500)
+          //.then(() =>
+            fetch(`${contextPath}api/v1/manager/product/category/${pAid}`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                name: newValue,
+                id: 0
+              })
+            })
+          //)
+          .then(async res => {
+            if (!res.ok) {
+              console.error("resp not ok");
+              const errData = await res.json().catch(() => ({}));
+              if (res.status === 409 && errData.message) {
+                throw new Error(errData.message);
+              }
+              throw new Error(errData.message);
+            }
+            setGlobalActionButtonsDisabled(false); // ✅ aktifkan kembali semua tombol
+            return res.json();
+          })
+          .then(data => {
+            console.log("then1");
+            // CHANGED: remove spinner temp element
+            tempLi.remove();
+            newItemInput.value = "";
+
+            const li = document.createElement("li");
+            li.className = "list-group-item d-flex justify-content-between align-items-center";
+            li.setAttribute("data-id", data.id);
+            /*
+            const span = document.createElement("span");
+            span.className = "item-text";
+            span.textContent = data.name || newValue;
+            */
+            const span = document.createElement("span");
+            span.className = "item-text d-flex flex-column";
+
+            const nameSpan = document.createElement("span");
+            nameSpan.className = "item-name";
+            nameSpan.textContent = data.name || newValue;
+
+            span.appendChild(nameSpan);
+
+            const buttons = document.createElement("div");
+            buttons.className = "btn-group mb-0 btn-group-sm buttons";
+            buttons.innerHTML = `
+              <a href="#" class="btn btn-sm btn-primary edit-btn" style="margin:0; transform: scale(0.8); transform-origin: center;"><i class="bi bi-pencil"></i></a>
+              <a href="#" class="btn btn-sm btn-danger delete-btn" style="margin:0; transform: scale(0.8); transform-origin: center;"><i class="bi bi-trash"></i></a>
+              <a href="#" class="btn btn-sm btn-success add-sub-btn" style="margin:0; transform: scale(0.8); transform-origin: center;"><i class="bi bi-plus"></i></a>
+            `;
+
+            li.appendChild(span);
+            li.appendChild(buttons);
+            itemList.prepend(li);
+
+            // hide lblUrutan
+            //document.getElementById("lblUrutan").style.display = "none";
+            const lblUrutan = document.getElementById("lblUrutan");
+            if (lblUrutan) {
+                lblUrutan.style.display = "none";
+            }
+            // show lblNonUrutan
+            //document.getElementById("lblNonUrutan").style.display = "block";
+            const lblNonUrutan = document.getElementById("lblNonUrutan");
+            if (lblNonUrutan) {
+                lblNonUrutan.style.display = "block";
+            }
+
+            showToastText(newValue + " " + msgSuccessInsert, toastShortTimeout, greenSuccess,"#fff");
+          })
+          .catch(err => {
+          console.error("err="+err.message);
+          setGlobalActionButtonsDisabled(false); // ✅ aktifkan kembali semua tombol
+            // CHANGED: remove spinner on error
+            tempLi.remove();
+            const errorText = `
+              <strong style="color:#fff; text-transform:uppercase;">
+                ${msgFailedInsert}
+              </strong><br>
+              <span style="color:#ffb3b3; font-size:0.9em;">
+                ${err.message || ''}
+              </span>
+            `;
+            showToastHtml(`${newValue} ${msgFailedInsert}<br>${err.message}`, toastMediumTimeout, redError);
+            //showToastHtml(errorText, toastMediumTimeout, redError);
+          })
+          .finally(() => {
+            addItemBtn.disabled = false;
+          });
+      });
+
+      // ---------- SEARCH ITEM ----------
+    try {
+        const searchItemBtn = document.getElementById("searchItemBtn");
+        if (searchItemBtn) {
+            searchItemBtn.addEventListener("click", function() {
+                const query = newItemInput.value.trim();
+                if (!query) {
+                    showToastText(`${msgEnterKword}`, toastShortTimeout, "#ffc107","#fff");
+                    return;
+                }
+
+                searchItemBtn.disabled = true;
+                const originalHTML = searchItemBtn.innerHTML;
+                searchItemBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+
+                const url = `${contextPath}api/v1/manager/product/category/search/${encodeURIComponent(query)}`;
+
+                // timeout with AbortController (10s)
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+                fetch(url, { method: "GET", signal: controller.signal })
+                .then(res => {
+                    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+                        return res.json();
+                    })
+                .then(data => {
+                    console.log("Search result:", data);
+
+                    // Ambil elemen label kiri
+                    const inputGroupLabel = document.querySelector(".input-group-text.bg-primary.text-white");
+
+                    if (!data || data.length === 0) {
+                        showToastText(`Category "${query}" not found`, toastShortTimeout, "#ffc107","#fff");
+
+                        // 🔁 Balikkan label ke "Add" kalau hasil kosong
+                        if (inputGroupLabel) inputGroupLabel.textContent = lblSearch; //ngga jadi balikin deh
+                    } else {
+                        showToastText(`${data.length} result${data.length > 1 ? 's' : ''} found`, toastShortTimeout, greenSuccess);
+                        renderCategorySearchResult(data);
+
+                        // 🟢 Ubah label kiri jadi "Search"
+                        if (inputGroupLabel) inputGroupLabel.textContent = "Search";
+                    }
+
+                    // Ubah addItemBtn jadi mode reload
+                    addItemBtn.classList.remove("btn-success");
+                    addItemBtn.classList.add("btn-outline-secondary");
+                    addItemBtn.dataset.mode = "reload";
+                    addItemBtn.title = "Reload Page";
+                })
+                .catch(err => {
+                    if (err.name === "AbortError") {
+                        showToastText("Request timeout, please try again.", toastMediumTimeout, redError);
+                    } else {
+                        showToastText(`Error: ${err.message}`, toastMediumTimeout, redError);
+                    }
+                })
+                .finally(() => {
+                  clearTimeout(timeoutId);
+                  searchItemBtn.innerHTML = originalHTML;
+                  searchItemBtn.disabled = false;
+                });
+            });
+        }
+    } catch (err) {
+        console.error('❌ Terjadi kesalahan:', err);
+        ////alert('Gagal menambahkan kategori default. Coba lagi nanti.');
+    }
+    // ---------- ADD-SUB (refactor: keep original placement & markup but add spinner/disable) ----------
+    document.addEventListener("click", function(e) {
+        const addSubBtn = e.target.closest(".add-sub-btn");
+        if (addSubBtn) {
+            setGlobalActionButtonsDisabled(true); // ✅ nonaktifkan tombol lain
+          e.preventDefault();
+
+          const parentLi = addSubBtn.closest("li");
+          const parentId = parentLi.getAttribute("data-id");
+          const parentIndent = parseInt(parentLi.getAttribute("data-indent") || 0);
+            console.log("parentIndent=="+parentIndent);
+            console.log("parentId=="+parentId);
+          // Prevent duplicate input (CHANGED: check next sibling class)
+          if (parentLi.nextElementSibling?.classList.contains("sub-input-container")) return;
+
+          // hide add-sub btn while editing
+          addSubBtn.style.display = "none";
+
+          // create input container as LI so it visually aligns (kept original look)
+          const subInputContainer = document.createElement("li");
+          subInputContainer.className = "list-group-item d-flex align-items-center justify-content-between sub-input-container";
+            console.log("pit1 parentIndent="+parentIndent);
+          let leftPad = (parentIndent + 1) * 25;
+          leftPad=0; //bikin noll aja biar seragam ngga pake padding
+            subInputContainer.innerHTML = `
+              <div class="d-flex align-items-center" style="width:90%;">
+                <input type="text" class="form-control form-control-sm sub-input"
+                       placeholder="${lblSubCategory} . . ."
+                       style="flex:1; padding-left:${leftPad}px;"/>
+                <button class="btn btn-success btn-sm save-sub-btn ms-2" type="button" style="padding:2px 4px; font-size:0.75rem;">
+                  <i class="bi bi-check"></i>
+                </button>
+                <button class="btn btn-secondary btn-sm cancel-sub-btn ms-1" type="button" style="padding:2px 4px; font-size:0.75rem;">
+                  <i class="bi bi-x"></i>
+                </button>
+              </div>
+            `;
+
+          parentLi.insertAdjacentElement("afterend", subInputContainer);
+          subInputContainer.querySelector(".sub-input").focus();
+        }
+
+        // Save subcategory
+        if (e.target.closest(".save-sub-btn")) {
+          const container = e.target.closest(".sub-input-container");
+          const parentLi = container.previousElementSibling;
+          const parentId = parentLi.getAttribute("data-id");
+          //const parentId = parentLi.getAttribute("data-id");
+          const parentIndent = parseInt(parentLi.getAttribute("data-indent") || 0);
+            console.log("parentIndent1=="+parentIndent);
+            console.log("parentId1=="+parentId);
+          const input = container.querySelector(".sub-input");
+          const newValue = input.value.trim();
+          if (!newValue) return;
+
+          const saveBtn = e.target.closest(".save-sub-btn");
+          saveBtn.disabled = true;
+
+          // CHANGED: show spinner temp below parent while saving
+          const tempSubLi = createTempLiWithSpinner(newValue, parseInt(parentLi.getAttribute("data-indent") || 0) + 1);
+          parentLi.insertAdjacentElement("afterend", tempSubLi);
+
+          // hide the input container UI
+          container.remove();
+
+          // CHANGED: also disable the original add-sub button to prevent repeats
+          const hiddenAddSubBtn = parentLi.querySelector(".add-sub-btn");
+          if (hiddenAddSubBtn) hiddenAddSubBtn.style.display = "none";
+
+          // simulate delay then fetch (keeping fetch chain format)
+          delay(1500)
+            .then(() =>
+              fetch(`${contextPath}api/v1/manager/product/category/sub`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  name: newValue,
+                  parentId: parentId,
+                  clientAddressPubId: pAid
+                })
+              })
+            )
+            .then(async res => {
+              if (res.status === 201 || res.status === 200) return res.json();
+              throw new Error("Add failed");
+            })
+            .then(data => {
+              // remove spinner temp
+              tempSubLi.remove();
+
+              // create final sub li (kept original class)
+              const subLi = document.createElement("li");
+              subLi.className = "list-group-item d-flex justify-content-between align-items-center";
+              subLi.setAttribute("data-id", data.id);
+              subLi.setAttribute("prev-data-indent", (parseInt(parentLi.getAttribute("data-indent") || 0)).toString());
+              subLi.setAttribute("newlyAddCategory-data-indent", data.indentLevel);
+              console.log('PreviousIndentLevel='+parentLi.getAttribute("data-indent"));
+              console.log('newlyAddCategory-data-indent='+subLi.getAttribute("newlyAddCategory-data-indent"));
+              console.log('subLi.getAttribute(data-id)='+subLi.getAttribute("data-id"));
+
+              subLi.innerHTML = `
+                <span class="item-text d-flex flex-column">
+                  <span class="item-name">${data.name}</span>
+                </span>
+                <div class="btn-group mb-0 btn-group-sm buttons">
+                  <a href="#" class="btn btn-sm btn-primary edit-btn" style="margin:0; transform: scale(0.8); transform-origin: center;"><i class="bi bi-pencil"></i></a>
+                  <a href="#" class="btn btn-sm btn-danger delete-btn" style="margin:0; transform: scale(0.8); transform-origin: center;"><i class="bi bi-trash"></i></a>
+                  <a href="#" class="btn btn-sm btn-success add-sub-btn" style="margin:0; transform: scale(0.8); transform-origin: center;"><i class="bi bi-plus"></i></a>
+                </div>
+              `;
+
+               // ✅ Tambahkan padding sesuai indent level
+                const itemText = subLi.querySelector(".item-text");
+                if (itemText) {
+                  //itemText.style.paddingLeft = `${((data.indentLevel) * 25)}px`;
+                  //itemText.style.paddingLeft = `${((parseInt(subLi.getAttribute("prev-data-indent") || 0) + 1) * 25)}px`;
+                  itemText.style.paddingLeft = `${((subLi.getAttribute("newlyAddCategory-data-indent") || 0) * 25)}px`;
+                }
+              parentLi.insertAdjacentElement("afterend", subLi);
+
+              // show add-sub on parent again (if exists)
+              const parentAddSubBtn = parentLi.querySelector(".add-sub-btn");
+              if (parentAddSubBtn) parentAddSubBtn.style.display = "";
+                showToastText(`msgSuccessUpdate`, toastShortTimeout, greenSuccess,"#fff");
+              //showToastText(`${data.name} berhasil ditambahkan`, toastShortTimeout, "#198754");
+                // hide lblUrutan
+                document.getElementById("lblUrutan").style.display = "none";
+                // show lblNonUrutan
+                document.getElementById("lblNonUrutan").style.display = "block";
+            })
+            .catch(err => {
+              console.error(err);
+              setGlobalActionButtonsDisabled(false); // ✅ aktifkan kembali semua tombol
+              // remove spinner if present
+              if (tempSubLi && tempSubLi.parentNode) tempSubLi.remove();
+
+              // re-enable add-sub button on parent
+              const parentAddSubBtn = parentLi.querySelector(".add-sub-btn");
+              if (parentAddSubBtn) parentAddSubBtn.style.display = "";
+                //showToastText(`${data.name} msgFailedInsert`, toastMediumTimeout, redError);
+              showToastText(`msgFailedInsert`, toastMediumTimeout, redError,"#fff");
+            })
+            .finally(() => {
+              saveBtn.disabled = false;
+              setGlobalActionButtonsDisabled(false);
+            });
+        }
+
+        // Cancel subcategory input
+        if (e.target.closest(".cancel-sub-btn")) {
+          const container = e.target.closest(".sub-input-container");
+          // find parent li just before container
+          let parentLi = container.previousElementSibling;
+          while (parentLi && parentLi.tagName !== "LI") {
+            parentLi = parentLi.previousElementSibling;
+          }
+          if (parentLi) {
+            const hiddenBtn = parentLi.querySelector(".add-sub-btn");
+            if (hiddenBtn) hiddenBtn.style.display = "";
+          }
+          container.remove();
+          setGlobalActionButtonsDisabled(false); // ✅ aktifkan kembali semua tombol
+        }
+      });
+
+      /*********************************************************************************/
+      /***** Saat tombol "Delete" di modal ditekan → eksekusi hapus ******/
+      confirmDeleteBtn.addEventListener("click", function() {
+        if (!itemToDelete) return;
+
+        // Simpan referensi elemen body dan bagian yang ingin disembunyikan
+        const modalContent = modalBody.innerHTML;
+
+        // Buat elemen spinner overlay
+        const spinnerOverlay = document.createElement("div");
+        spinnerOverlay.className = "d-flex flex-column align-items-center justify-content-center";
+        spinnerOverlay.style.minHeight = "100px";
+        spinnerOverlay.innerHTML = `
+          <div class="spinner-border text-primary mb-2" role="status" aria-hidden="true"></div>
+          <span>Processing...</span>
+        `;
+
+        // Ganti sementara isi body
+        modalBody.appendChild(spinnerOverlay);
+        [...modalBody.children].forEach(el => {
+          if (el !== spinnerOverlay) el.style.display = "none";
+        });
+
+        const itemId = itemToDelete.getAttribute("data-id");
+        const itemName = itemToDelete.querySelector(".item-text").textContent;
+        confirmDeleteBtn.disabled = true;
+
+        delay(500).then(() =>
+          fetch(`${contextPath}api/v1/manager/product/category/${itemId}`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" }
+          })
+          )
+          .then(async res => {
+            if (!res.ok) {
+              const errData = await res.json().catch(() => ({}));
+              /******* kalo ada multiple type error *****************
+              if (res.status === 409 && errData.message) {
+                throw new Error(errData.message);
+              }
+              ******************************************************/
+              throw new Error(errData.message);
+            }
+            setGlobalActionButtonsDisabled(false); // ✅ aktifkan kembali semua tombol
+            return res.json();
+          })
+          .then(() => {
+              // hapus dari list category di UI
+              const li = document.querySelector(`#itemList li[data-id='${itemId}']`);
+              if (li) {
+                li.remove();
+                console.log(`Kategori dengan ID ${itemId} dihapus dari UI`);
+              } else {
+                console.warn(`Tidak ditemukan elemen li dengan data-id=${itemId}`);
+              }
+              showToastText(msgSuccessDelete, toastShortTimeout, greenSuccess,"#fff");
+          })
+          .catch(err => {
+            console.error(err);
+            //showToastHtml(`${itemName} ${msgFailedDelete}`, toastMediumTimeout, redError);
+            showToastHtml(`${msgFailedDelete}<br>${err.message}`, toastMediumTimeout, redError);
+          })
+          .finally(() => {
+          [...modalBody.children].forEach(el => {
+            if (el !== spinnerOverlay) el.style.display = "";
+          });
+          spinnerOverlay.remove();
+          confirmDeleteBtn.disabled = false;
+          setGlobalActionButtonsDisabled(false); // ✅ aktifkan kembali semua tombol
+          deleteModal.hide();
+        });
+    });
+});
+
+
+
+function renderCategorySearchResult(data) {
+  const itemList = document.getElementById("itemList");
+  if (!itemList) return;
+
+  // 🔹 Mulai efek fade-out
+  itemList.style.transition = "opacity 0.2s ease";
+  itemList.style.opacity = "0";
+
+  setTimeout(() => {
+    // 🔹 Kosongkan list lama
+    itemList.innerHTML = "";
+
+    // 🔹 Jika tidak ada hasil
+    if (!data || data.length === 0) {
+      const li = document.createElement("li");
+      li.className = "list-group-item text-muted text-center";
+      li.textContent = "Tidak ditemukan hasil.";
+      itemList.appendChild(li);
+    } else {
+      // 🔹 Render hasil baru
+      data.forEach(cat => {
+        const li = document.createElement("li");
+        li.className = "list-group-item d-flex justify-content-between align-items-center";
+        li.setAttribute("data-id", cat.id);
+        li.setAttribute("data-indent", cat.indentLevel ?? 0);
+
+        const span = document.createElement("span");
+        span.className = "item-text d-flex flex-column";
+        span.style.paddingLeft = `${(parseInt(cat.indentLevel ?? 0) * 25)}px`;
+
+        const pathSpan = document.createElement("small");
+        pathSpan.className = "text-muted";
+        pathSpan.textContent = cat.path || "";
+
+        const nameSpan = document.createElement("span");
+        nameSpan.className = "item-name";
+        nameSpan.textContent = cat.name || "";
+
+        const pathText = (pathSpan.textContent || "").trim();
+        const nameText = (nameSpan.textContent || "").trim();
+
+        // hilangkan bagian setelah '>' terakhir
+        const trimmedPath = pathText.includes(">")
+          ? pathText.substring(0, pathText.lastIndexOf(">")).trim()
+          : pathText;
+
+        // hanya append kalau sisa path (tanpa last child) masih beda dari nama
+        if (trimmedPath && trimmedPath !== nameText) {
+          span.appendChild(pathSpan);
+        }
+        span.appendChild(nameSpan);
+
+        // padding sesuai indent
+        const pad = parseInt(cat.indentLevel ?? 0) * 25;
+        span.style.paddingLeft = `${pad}px`;
+
+        const buttons = document.createElement("div");
+        buttons.className = "btn-group mb-0 btn-group-sm buttons";
+        buttons.innerHTML = `
+          <a href="#" class="btn btn-sm btn-primary edit-btn" style="margin:0; transform: scale(0.8); transform-origin: center;"><i class="bi bi-pencil"></i></a>
+          <a href="#" class="btn btn-sm btn-danger delete-btn" style="margin:0; transform: scale(0.8); transform-origin: center;"><i class="bi bi-trash"></i></a>
+          <a href="#" class="btn btn-sm btn-success add-sub-btn" style="margin:0; transform: scale(0.8); transform-origin: center;"><i class="bi bi-plus"></i></a>
+        `;
+
+        li.appendChild(span);
+        li.appendChild(buttons);
+        itemList.appendChild(li);
+      });
+    }
+
+    // 🔹 Kembalikan fade-in
+    itemList.style.opacity = "1";
+
+    // 🔁 🔹 Ganti ikon tombol "Add" menjadi "Refresh"
+    const addItemBtn = document.getElementById("addItemBtn");
+    if (addItemBtn) {
+      addItemBtn.classList.add("btn-success");
+      addItemBtn.classList.remove("btn-outline-secondary");
+      addItemBtn.dataset.mode = "reload";
+      addItemBtn.title = "Reload Page";
+      const icon = addItemBtn.querySelector("i");
+      if (icon) icon.className = "bi bi-arrow-clockwise"; // ⬅️ ganti ikon jadi refresh
+    }
+
+  }, 200); // tunggu sedikit sebelum render ulang
+}
+
+
+</script>
+
+</body>
+
+</html>

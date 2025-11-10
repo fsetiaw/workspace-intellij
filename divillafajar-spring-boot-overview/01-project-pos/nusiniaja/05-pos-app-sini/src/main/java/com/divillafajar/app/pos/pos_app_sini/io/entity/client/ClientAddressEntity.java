@@ -4,6 +4,7 @@ import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryE
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.area.ClientAreaEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.employee.EmploymentEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.scope.ScopeEntity;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.space.SpaceAreaEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -66,6 +67,10 @@ public class ClientAddressEntity implements Serializable {
 
     @OneToMany(mappedBy = "clientAddress", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductCategoryEntity> categories = new ArrayList<>();
+
+    // 🔹 Relasi ke SpaceArea (satu alamat bisa punya banyak area)
+    @OneToMany(mappedBy = "clientAddress", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SpaceAreaEntity> spaceAreas = new ArrayList<>();
 
 
     @Column(name = "address_name", length = 99, nullable = true)

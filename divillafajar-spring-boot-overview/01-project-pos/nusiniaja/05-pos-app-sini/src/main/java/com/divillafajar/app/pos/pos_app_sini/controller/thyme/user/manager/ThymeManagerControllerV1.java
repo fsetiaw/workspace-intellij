@@ -43,6 +43,7 @@ public class ThymeManagerControllerV1 {
     ) {
         ClientAddressDTO addressInfo = clientAddressService.getStore(pid);
         System.out.println("STARTING MANAGER HOME = "+addressInfo.getAddressName());
+        System.out.println("STARTING MANAGER HOME = "+addressInfo.getId());
         model.addAttribute("targetAddress", addressInfo);
         model.addAttribute("toastShortTimeout", props.getToastShortTimeout());
         model.addAttribute("toastMediumTimeout", props.getToastMediumTimeout());

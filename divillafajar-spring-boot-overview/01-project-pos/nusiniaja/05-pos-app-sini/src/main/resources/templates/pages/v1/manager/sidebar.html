@@ -68,7 +68,7 @@
                             </li>
                             <!-- Employee -->
                             <li id="subMenu1-2" class="submenu-item" th:classappend="${activeSub != null and activeSub.startsWith('subMenu1-2')} ? ' active'">
-                                <a href="#" class="submenu-link" th:text="#{label.spaceArea}"></a>
+                                <a th:href="@{/v1/manager/manage/area(activePage='dashboard')}" class="submenu-link" th:text="#{label.spaceArea}"></a>
                             </li>
 
 
