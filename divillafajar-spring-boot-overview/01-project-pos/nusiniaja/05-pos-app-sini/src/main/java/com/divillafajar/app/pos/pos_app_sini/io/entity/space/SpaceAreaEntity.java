@@ -18,7 +18,20 @@ import java.util.List;
 @Table(name = "space_area")
 public class SpaceAreaEntity {
 
-    @Id
+	@PrePersist
+	protected void onCreate() {
+		if (this.updatedAt == null)
+			this.updatedAt = LocalDateTime.now();
+		if (this.deleted == null)
+			this.deleted = false;
+	}
+
+	@PreUpdate
+	protected void onUpdate() {
+		this.updatedAt = LocalDateTime.now();
+	}
+
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -48,10 +61,10 @@ public class SpaceAreaEntity {
     private List<GuestAreaEntity> guestAreas;
 
     // === 🔹 Metadata ===
-    @Column(name = "created_at", insertable = false, updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", insertable = false, updatable = false)
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @Column(name = "created_by", length = 100)

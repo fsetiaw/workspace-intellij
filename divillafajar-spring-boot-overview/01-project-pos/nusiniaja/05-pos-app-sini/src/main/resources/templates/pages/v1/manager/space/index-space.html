@@ -75,23 +75,35 @@
                                             </div>
                                             <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
                                                 <h6 class="text-muted font-semibold" th:text="#{label.mainAndSubArea}"></h6>
-                                                <small class="my-sub-text"
-                                                    <span th:if="${categorySummary == null or categorySummary.totalTopParent == null or categorySummary.totalTopParent < 1}"
+                                                <h6 th:if="${areaSummary == null or areaSummary.totalTopParent == null or areaSummary.totalTopParent < 1}"
+                                                    class="font-extrabold mb-0" th:utext="|#{label.none}|" style="font-size:80%"></h6>
+                                                <!--h6 class="font-extrabold mb-0"
+                                                    <span th:if="${areaSummary == null or areaSummary.totalTopParent == null or areaSummary.totalTopParent < 1}"
                                                         th:utext="|#{label.none}|">
                                                     </span>
-                                                </small>
-                                                <small class="my-sub-text"
-                                                    <span th:if="${categorySummary != null and categorySummary.totalTopParent != null and categorySummary.totalTopParent > 0}"
-                                                          th:utext="|#{label.main}: ${categorySummary.totalTopParent}|">
-                                                    </span>
-                                                </small>
-                                                <small class="my-sub-text"
-                                                    <span th:if="${categorySummary != null and categorySummary.totalTopParent != null and categorySummary.totalTopParent > 0}"
-                                                       th:utext="|#{label.sub}: ${categorySummary != null && categorySummary.totalEndChild != null ? categorySummary.totalEndChild : '0'}|">
-                                                    </span>
-                                                </small>
+                                                </h6-->
                                                 <!--small class="my-sub-text"
-                                                       th:utext="|#{label.draft}: ${categorySummary != null && categorySummary.totalEndChildNoProduct != null ? categorySummary.totalEndChildNoProduct : 0}|">
+                                                    <span th:if="${areaSummary == null or areaSummary.totalTopParent == null or areaSummary.totalTopParent < 1}"
+                                                        th:utext="|#{label.none}|">
+                                                    </span>
+                                                </small-->
+                                                <h6 th:if="${areaSummary != null and areaSummary.totalTopParent != null and areaSummary.totalTopParent > 0}"
+                                                    class="font-extrabold mb-0" th:utext="|#{label.main}: ${areaSummary.totalTopParent}|" style="font-size:80%"></h6>
+                                                <!--small class="my-sub-text"
+                                                    <span th:if="${areaSummary != null and areaSummary.totalTopParent != null and areaSummary.totalTopParent > 0}"
+                                                          th:utext="|#{label.main}: ${areaSummary.totalTopParent}|">
+                                                    </span>
+                                                </small-->
+                                                <h6 th:if="${areaSummary != null and areaSummary.totalTopParent != null and areaSummary.totalTopParent > 0}"
+                                                    class="font-extrabold mb-0" th:utext="|#{label.sub}: ${areaSummary != null && areaSummary.totalEndChild != null ? areaSummary.totalEndChild : '0'}|"
+                                                    style="font-size:80%"></h6>
+                                                <!--small class="my-sub-text"
+                                                    <span th:if="${areaSummary != null and areaSummary.totalTopParent != null and areaSummary.totalTopParent > 0}"
+                                                       th:utext="|#{label.sub}: ${areaSummary != null && areaSummary.totalEndChild != null ? areaSummary.totalEndChild : '0'}|">
+                                                    </span>
+                                                </small-->
+                                                <!--small class="my-sub-text"
+                                                       th:utext="|#{label.draft}: ${areaSummary != null && areaSummary.totalEndChildNoProduct != null ? areaSummary.totalEndChildNoProduct : 0}|">
                                                 </small-->
                                             </div>
                                         </div>
@@ -101,24 +113,25 @@
                         </div>
                         <div class="col-6 col-lg-3 col-md-6">
                             <div class="card">
-                                <a th:if="${hasCategory}"
+                                <a th:if="${hasArea}"
                                    th:href="@{/v1/manager/manage/product/item(pid=${targetAddress.pubId},activePage='menu1',activeSub='subMenu1-2')}">
                                     <div class="card-body px-4 py-4-5">
                                         <div class="row">
                                             <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
-                                                <div class="stats-icon blue mb-2">
-                                                    <i class="iconly-boldBag"></i>
+                                                <div class="stats-icon blue mb-2" style="padding:0 10px 25px 0">
+                                                    <i class="bi bi-person-bounding-box"></i>
                                                 </div>
                                             </div>
                                             <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
                                                 <h6 class="text-muted font-semibold"
-                                                    th:utext="|#{label.manager.setting.product.item}|"></h6>
-                                                <h6 class="font-extrabold mb-0"></h6>
-                                                <small class="my-sub-text"
+                                                    th:utext="|#{label.guestArea}|"></h6>
+                                                <h6 th:if="${productItemSummary == null or productItemSummary.totalProduct == null or productItemSummary.totalProduct < 1}"
+                                                    class="font-extrabold mb-0" th:utext="|#{label.none}|" style="font-size:80%"></h6>
+                                                <!--small class="my-sub-text"
                                                 <span th:if="${productItemSummary == null or productItemSummary.totalProduct == null or productItemSummary.totalProduct < 1}"
                                                       th:utext="|#{label.none}|">
                                                     </span>
-                                                </small>
+                                                </small-->
                                                 <span th:if="${productItemSummary != null and productItemSummary.totalProduct != null and productItemSummary.totalProduct > 0}"
                                                       th:utext="|${productItemSummary.totalProduct} #{label.from} ${productItemSummary.totalCategory} #{label.manager.setting.product.category}|">
                                                     </span>
@@ -131,20 +144,20 @@
                                         </div>
                                     </div>
                                 </a>
-                                <a th:if="${!hasCategory}"
+                                <a th:if="${!hasArea}"
                                    href="#"
-                                   th:onclick='showToastText([[#{modal.createCategoryFirest}]], [[${globals.get("toastLongTimeout")}]], [[${globals.get("colorDanger")}]], [[${globals.get("colorWhite")}]]); return false;'>
+                                   th:onclick='showToastText([[#{modal.createAreaFirest}]], [[${globals.get("toastLongTimeout")}]], [[${globals.get("colorDanger")}]], [[${globals.get("colorWhite")}]]); return false;'>
                                     <div class="card-body px-4 py-4-5">
                                         <div class="row">
                                             <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
-                                                <div class="stats-icon blue mb-2">
-                                                    <i class="iconly-boldBag"></i>
+                                                <div class="stats-icon blue mb-2" style="padding:0 10px 25px 0">
+                                                    <i class="bi bi-person-bounding-box"></i>
                                                 </div>
                                             </div>
                                             <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
                                                 <h6 class="text-muted font-semibold"
-                                                    th:utext="|#{label.manager.setting.product.item}|"></h6>
-                                                <h6 class="font-extrabold mb-0" th:utext="|n/a|"></h6>
+                                                    th:utext="|#{label.guestArea}|"></h6>
+                                                <h6 class="font-extrabold mb-0" th:utext="|#{label.none}|" style="font-size:80%"></h6>
                                             </div>
                                         </div>
                                     </div>
@@ -153,7 +166,7 @@
                         </div>
                         <div class="col-6 col-lg-3 col-md-6">
                             <div class="card">
-                                <a th:if="${hasItem}"
+                                <a th:if="${hasGuestArea}"
                                    th:href="@{/v1/manager/manage/product/stock(pid=${targetAddress.pubId},activePage='menu1',activeSub='subMenu1-2')}">
                                     <div class="card-body px-4 py-4-5">
                                         <div class="row">
@@ -170,7 +183,7 @@
                                         </div>
                                     </div>
                                 </a>
-                                <a th:if="${!hasItem}"
+                                <a th:if="${!hasGuestArea}"
                                    href="#"
                                    th:onclick='showToastText([[#{modal.createItemFirst}]], [[${globals.get("toastLongTimeout")}]], [[${globals.get("colorDanger")}]], [[${globals.get("colorWhite")}]]); return false;'>
                                     <div class="card-body px-4 py-4-5">

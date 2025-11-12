@@ -5,11 +5,14 @@ import com.divillafajar.app.pos.pos_app_sini.exception.DuplicationErrorException
 import com.divillafajar.app.pos.pos_app_sini.global.AppGlobals;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientAddressDTO;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.space.SpaceAreaEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.CategorySummaryProjection;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductItemSummaryProjectionDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductWithCategoryPathDTO;
+import com.divillafajar.app.pos.pos_app_sini.io.projection.area.AreaSummaryProjection;
 import com.divillafajar.app.pos.pos_app_sini.model.item.CreateItemRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.model.product.ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId;
+import com.divillafajar.app.pos.pos_app_sini.service.area.AreaService;
 import com.divillafajar.app.pos.pos_app_sini.service.image.ImageStorageService;
 import com.divillafajar.app.pos.pos_app_sini.service.product.category.ProductCategoryService;
 import com.divillafajar.app.pos.pos_app_sini.service.product.item.ProductService;
@@ -35,7 +38,8 @@ import java.util.*;
 @SessionAttributes({"targetAddress","globals","filter"})
 public class ThymeManagerAreaController {
 
-    private final ProductCategoryService categoryService;
+    private final AreaService areaService;
+	private final ProductCategoryService categoryService;
     private final CustomDefaultProperties props;
 	private final ProductService productService;
 	private final MessageSource messageSource;
@@ -50,19 +54,23 @@ public class ThymeManagerAreaController {
             Model model, HttpSession session
     ) {
 	    ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
-		boolean hasCategory = categoryService.locationHasCategoryProduct(dto.getPubId());
-        boolean hasItem=false;
-        if(hasCategory)
-            hasItem = categoryService.locationHasItemProduct(dto.getPubId());
-        CategorySummaryProjection categorySummary =  categoryService.getSummaryProductCategory(dto.getPubId());
+		boolean hasArea = areaService.locationHasArea(dto.getPubId());
+        boolean hasGuestArea=false, hasSubArea=false;
+	    AreaSummaryProjection areaSumamry=null;
+        if(hasArea)
+	        areaSumamry = areaService.getAreaAndSubAreaByClientAddressPubId(dto.getPubId());
+		if(areaSumamry!=null && areaSumamry.getTotalEndChild()>0)
+			hasSubArea=true;
+	        //hasGuestArea = areaService.locationHasItemProduct(dto.getPubId());
+        //AreaSummaryProjection categorySummary =  areaService.get(dto.getPubId());
 	    ProductItemSummaryProjectionDTO productItemSummary = productService.getSummaryProductItem(dto.getPubId());
 		//System.out.println("categorySummary="+categorySummary.getTotalTopParent());
-        model.addAttribute("hasCategory",hasCategory);
-        model.addAttribute("hasItem",hasItem);
+        model.addAttribute("hasArea",hasArea);
+        model.addAttribute("hasGuestArea",hasGuestArea);
 	    model.addAttribute("globals", appGlobals.getAll());
 		model.addAttribute("activePage",activePage);
         model.addAttribute("activeSub",activeSub);
-        model.addAttribute("categorySummary",categorySummary);
+        model.addAttribute("areaSumamry",areaSumamry);
 	    model.addAttribute("productItemSummary",productItemSummary);
         return "pages/v1/manager/space/index-space";
     }
@@ -75,6 +83,7 @@ public class ThymeManagerAreaController {
     ) {
         List<ProductCategoryDTO> orderList = new ArrayList<>();
         ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
+		List<SpaceAreaEntityDTO> orderListAreaAndSubArea = areaService.getAreaAndSubAreaByClientAddressPubId(dto.getPubId());
         List<ProductCategoryDTO> orderListCategoryAnsSub = categoryService.getCategoryAndSubCategoryByClientAddressPubId(dto.getPubId());
         model.addAttribute("orderListCategoryAnsSub",orderListCategoryAnsSub);
         model.addAttribute("activePage",activePage);

@@ -72,6 +72,9 @@ public class GuestAreaEntity {
     @Column(name = "deleted", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
     private Boolean deleted = false;
 
+	@Column(columnDefinition = "JSON")
+	private String operationHours;
+
     // === Helper ===
     @Transient
     public String getDescription() {
