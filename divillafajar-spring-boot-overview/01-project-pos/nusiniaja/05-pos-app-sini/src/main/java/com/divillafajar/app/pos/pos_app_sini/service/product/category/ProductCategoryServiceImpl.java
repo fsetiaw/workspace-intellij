@@ -3,6 +3,7 @@ package com.divillafajar.app.pos.pos_app_sini.service.product.category;
 import com.divillafajar.app.pos.pos_app_sini.exception.DuplicationErrorException;
 import com.divillafajar.app.pos.pos_app_sini.exception.GenericCustomErrorException;
 import com.divillafajar.app.pos.pos_app_sini.exception.category.CategoryHasSubCategoryException;
+import com.divillafajar.app.pos.pos_app_sini.exception.category.CategoryNotEmptyException;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.CategoryHierarchyProjectionDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryEntity;
@@ -13,6 +14,7 @@ import com.divillafajar.app.pos.pos_app_sini.model.product.CategorySearchResultM
 import com.divillafajar.app.pos.pos_app_sini.model.product.ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId;
 import com.divillafajar.app.pos.pos_app_sini.repo.client.ClientAddressRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.product.category.ProductCategoryRepo;
+import com.divillafajar.app.pos.pos_app_sini.utils.MyConverter;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -42,7 +44,8 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
         if(targetLocation==null) {
             throw new NullPointerException("Location not found");
         }
-        Optional<ProductCategoryEntity> existed = catRepo.findByNameIgnoreCaseAndClientAddress_Id(categoryName, targetLocation.getId());
+        //Optional<ProductCategoryEntity> existed = catRepo.findByNameIgnoreCaseAndClientAddress_Id(categoryName, targetLocation.getId());
+	    Optional<ProductCategoryEntity> existed = catRepo.findByNameIgnoreCaseAndClientAddress_IdAndDeletedFalse(categoryName, targetLocation.getId());
         if(existed.isPresent()) {
             throw new DuplicationErrorException(messageSource.getMessage("label.manager.setting.product.category", null, LocaleContextHolder.getLocale())+": "+categoryName+", "+messageSource.getMessage("msg.isUsed", null, LocaleContextHolder.getLocale()));
         }
@@ -67,23 +70,31 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
         if(targetLocation==null)
             throw new NullPointerException("Location not found");
 
-        Optional<ProductCategoryEntity> existed = catRepo.findByNameIgnoreCaseAndClientAddress_Id(categoryName, targetLocation.getId());
-        if(existed.isPresent())
+        //Optional<ProductCategoryEntity> existed = catRepo.findByNameIgnoreCaseAndClientAddress_Id(categoryName, targetLocation.getId());
+	    Optional<ProductCategoryEntity> existed = catRepo.findByNameIgnoreCaseAndClientAddress_IdAndDeletedFalse(categoryName, targetLocation.getId());
+        System.out.println("errroe ini");
+		if(existed.isPresent())
             throw new DuplicationErrorException(messageSource.getMessage("label.manager.setting.product.category", null, LocaleContextHolder.getLocale())+": "+categoryName+", "+messageSource.getMessage("msg.isUsed", null, LocaleContextHolder.getLocale()));
+	    System.out.println("errroe ono");
 
         Optional<ProductCategoryEntity> parentEntity = catRepo.findById(parentId);
         if(parentEntity.isEmpty())
             throw new NullPointerException("Parent Category Not Found");
-
+	    System.out.println("lanjut 1");
         ProductCategoryEntity newCat = new ProductCategoryEntity();
         newCat.setName(categoryName);
         newCat.setClientAddress(targetLocation);
         newCat.setParent(parentEntity.get());
         try {
+	        System.out.println("lanjut 2");
             ProductCategoryEntity saved = catRepo.save(newCat);
+	        System.out.println("lanjut 3");
             BeanUtils.copyProperties(saved,retVal);
+	        System.out.println("lanjut 4");
             CategoryHierarchyProjectionDTO dto =catRepo.findCategoryHierarchyLevelById(saved.getId());
+	        System.out.println("lanjut 5");
             retVal.setIndentLevel(dto.getLevel());
+	        System.out.println("lanjut 6");
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -105,7 +116,8 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
         if(targetLocation==null)
             throw new NullPointerException("Location not found");
         ClientAddressEntity location = addressRepo.findByPubId(pAid);
-        Optional<ProductCategoryEntity> existedCategory = catRepo.findByNameIgnoreCaseAndClientAddress_Id(categoryName, location.getId());
+        //Optional<ProductCategoryEntity> existedCategory = catRepo.findByNameIgnoreCaseAndClientAddress_Id(categoryName, location.getId());
+	    Optional<ProductCategoryEntity> existedCategory = catRepo.findByNameIgnoreCaseAndClientAddress_IdAndDeletedFalse(categoryName, location.getId());
         if(existedCategory.isPresent()) {
 			//jika existed categoryid  ==  categoryId dibolehkan karena mungkin mo betulin huruf besar
 	        //jika bukan item itu sendiri throw error sudah ada
@@ -121,13 +133,25 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
     }
 
 	@Override
+	@Transactional
 	public void deleteCategory(Long catId) {
 		//cek apakah catId ini memiliki sub category
-		List<ProductCategoryEntity> listSubCat = catRepo.findByParentId(catId);
-		if(listSubCat!=null && listSubCat.size()>0)
+		System.out.println("pit 1 "+catRepo.existsChildCategory(catId));
+
+		//List<ProductCategoryEntity> listSubCat = catRepo.findByParentId(catId);
+		//if(listSubCat!=null && listSubCat.size()>0)
+		if(MyConverter.longToBoolean(catRepo.existsChildCategory(catId)))
 			throw new CategoryHasSubCategoryException(messageSource.getMessage("err.categoryHasSubCategoryException", null, LocaleContextHolder.getLocale()));
+		//cek apa masih memiliki item
+		System.out.println("pit 2");
+		System.out.println("ini = "+(catId));
+		System.out.println("ini = "+catRepo.existsProductInCategory(catId));
+		if(MyConverter.longToBoolean(catRepo.existsProductInCategory(catId)))
+			throw new CategoryNotEmptyException(messageSource.getMessage("modal.errorCategoryNotEmpty", null, LocaleContextHolder.getLocale()));
 		//lanjut hapus
-		catRepo.deleteById(catId);
+		//catRepo.deleteById(catId);
+		System.out.println("pit 3");
+		catRepo.softDeleteByCategoryId(catId);
 	}
 
 	@Override
@@ -317,7 +341,15 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
         addressRepo.save(targetAddress);
     }
 
-    @Override
+	@Override
+	public Boolean isCategoryHasAnItemProduct(long catId) {
+		Boolean retVal=false;
+		Long exist = catRepo.existsProductInCategory(catId);
+		retVal = MyConverter.longToBoolean(exist);
+		return retVal;
+	}
+
+	@Override
     public CategorySummaryProjection getSummaryProductCategory(String clientAddressPubId) {
         ClientAddressEntity targetAddress = addressRepo.findByPubId(clientAddressPubId);
         long cAid = targetAddress.getId();

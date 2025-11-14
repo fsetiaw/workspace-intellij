@@ -21,5 +21,6 @@ public interface ProductCategoryService {
     boolean locationHasItemProduct(String pAid);
 	void createDefaultCategory(String lang, String clientAddressPubId);
     void resetCategoryByClientAddress(String clientAddressPubId);
+	Boolean isCategoryHasAnItemProduct(long catId);
     CategorySummaryProjection getSummaryProductCategory(String clientAddressPubId);
 }

@@ -16,9 +16,22 @@ import java.util.Map;
 import java.util.Optional;
 
 public interface ProductCategoryRepo extends JpaRepository<ProductCategoryEntity,Long> {
-    Optional<ProductCategoryEntity> findByNameIgnoreCaseAndClientAddress_Id(String name, Long clientAddressId);
+    //Optional<ProductCategoryEntity> findByNameIgnoreCaseAndClientAddress_Id(String name, Long clientAddressId);
+    Optional<ProductCategoryEntity> findByNameIgnoreCaseAndClientAddress_IdAndDeletedFalse(
+		    String name,
+		    Long clientAddressId
+    );
 
 	List<ProductCategoryEntity> findByParentId(Long id);
+
+	@Query(
+			value = """
+    SELECT CASE WHEN COUNT(c.id) > 0 THEN TRUE ELSE FALSE END
+    FROM product_category c
+    WHERE c.parent_id = :categoryId
+      AND c.deleted = FALSE
+	""", nativeQuery = true)
+	Long existsChildCategory(@Param("categoryId") Long categoryId);
 
     @Query("""
         SELECT c FROM ProductCategoryEntity c
@@ -85,7 +98,7 @@ public interface ProductCategoryRepo extends JpaRepository<ProductCategoryEntity
     @Query(
             value = """
                 WITH RECURSIVE category_hierarchy AS (
-                SELECT\s
+                SELECT 
                     id,
                     name,
                     client_address_id,
@@ -94,11 +107,13 @@ public interface ProductCategoryRepo extends JpaRepository<ProductCategoryEntity
                     0 AS indent_level,
                     CAST(LOWER(name) AS CHAR(255)) AS path
                 FROM product_category
-                WHERE client_address_id = :clientAddressId AND parent_id IS NULL
+                WHERE client_address_id = :clientAddressId 
+                AND parent_id IS NULL 
+                AND deleted = FALSE
     
                 UNION ALL
     
-                SELECT\s
+                SELECT 
                     c.id,
                     c.name,
                     c.client_address_id,
@@ -108,15 +123,16 @@ public interface ProductCategoryRepo extends JpaRepository<ProductCategoryEntity
                     CONCAT(ch.path, '>', LOWER(c.name)) AS path
                 FROM product_category c
                 INNER JOIN category_hierarchy ch ON c.parent_id = ch.id
+                WHERE c.deleted = FALSE
             )
-            SELECT\s
+            SELECT 
                 id,
                 name,
                 client_address_id,
                 parent_id,
                 indent_level
             FROM category_hierarchy
-            ORDER BY\s
+            ORDER BY 
                 SUBSTRING_INDEX(path, '>', 1),
                 path
             """,
@@ -998,4 +1014,19 @@ public interface ProductCategoryRepo extends JpaRepository<ProductCategoryEntity
         """, nativeQuery = true)
     CategorySummaryProjection getCategorySummaryByClientAddressId(@Param("clientAddressId") Long clientAddressId);
 
+	@Query(
+			value = """
+        SELECT 
+            CASE WHEN COUNT(p.id) > 0 THEN TRUE ELSE FALSE END
+        FROM product p
+        WHERE p.category_id = :categoryId
+          AND p.deleted = FALSE
+        """,
+			nativeQuery = true
+	)
+	Long existsProductInCategory(@Param("categoryId") Long categoryId);
+
+	@Modifying
+	@Query(value = "UPDATE product_category SET deleted = TRUE WHERE id = :categoryId", nativeQuery = true)
+	void softDeleteByCategoryId(@Param("categoryId") Long categoryId);
 }

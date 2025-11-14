@@ -22,7 +22,11 @@
     <!--link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"-->
 
-
+    <style>
+        .toast-message {
+          white-space: pre-line;
+        }
+    </style>
 </head>
 <body>
 <div id="app">
@@ -764,8 +768,8 @@
           if (hiddenAddSubBtn) hiddenAddSubBtn.style.display = "none";
 
           // simulate delay then fetch (keeping fetch chain format)
-          delay(1500)
-            .then(() =>
+          //delay(1500)
+            //.then(() =>
               fetch(`${contextPath}api/v1/manager/product/category/sub`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -775,12 +779,24 @@
                   clientAddressPubId: pAid
                 })
               })
-            )
+            //)
             .then(async res => {
-              if (res.status === 201 || res.status === 200) return res.json();
-              throw new Error("Add failed");
+                console.log("res status="+res.status);
+                  //if (res.status === 201 || res.status === 200) return res.json();
+                  //throw new Error("Add failed");
+                  const json = await res.json().catch(() => ({}));
+                if (!res.ok) {
+                  console.error("resp not ok");
+                  const errData = await res.json().catch(() => ({}));
+                  //if (res.status === 409 && errData.message) {
+                  //  throw new Error(errData.message);
+                  //}
+                  throw new Error(errData.message);
+                }
+                return json;  // ← wajib
             })
             .then(data => {
+            //console.log("response data:", data);  // cek dulu
               // remove spinner temp
               tempSubLi.remove();
 
@@ -790,9 +806,7 @@
               subLi.setAttribute("data-id", data.id);
               subLi.setAttribute("prev-data-indent", (parseInt(parentLi.getAttribute("data-indent") || 0)).toString());
               subLi.setAttribute("newlyAddCategory-data-indent", data.indentLevel);
-              console.log('PreviousIndentLevel='+parentLi.getAttribute("data-indent"));
-              console.log('newlyAddCategory-data-indent='+subLi.getAttribute("newlyAddCategory-data-indent"));
-              console.log('subLi.getAttribute(data-id)='+subLi.getAttribute("data-id"));
+
 
               subLi.innerHTML = `
                 <span class="item-text d-flex flex-column">
@@ -817,7 +831,7 @@
               // show add-sub on parent again (if exists)
               const parentAddSubBtn = parentLi.querySelector(".add-sub-btn");
               if (parentAddSubBtn) parentAddSubBtn.style.display = "";
-                showToastText(`msgSuccessUpdate`, toastShortTimeout, greenSuccess,"#fff");
+               // showToastText(`msgSuccessUpdate`, toastShortTimeout, greenSuccess,"#fff");
               //showToastText(`${data.name} berhasil ditambahkan`, toastShortTimeout, "#198754");
                 // hide lblUrutan
                 document.getElementById("lblUrutan").style.display = "none";
@@ -825,7 +839,7 @@
                 document.getElementById("lblNonUrutan").style.display = "block";
             })
             .catch(err => {
-              console.error(err);
+              console.error("error ono="+err.message);
               setGlobalActionButtonsDisabled(false); // ✅ aktifkan kembali semua tombol
               // remove spinner if present
               if (tempSubLi && tempSubLi.parentNode) tempSubLi.remove();
@@ -834,7 +848,8 @@
               const parentAddSubBtn = parentLi.querySelector(".add-sub-btn");
               if (parentAddSubBtn) parentAddSubBtn.style.display = "";
                 //showToastText(`${data.name} msgFailedInsert`, toastMediumTimeout, redError);
-              showToastText(`msgFailedInsert`, toastMediumTimeout, redError,"#fff");
+              showToastText(`${msgFailedInsert}<br>${err.message}`, toastMediumTimeout, redError,"#fff");
+              //showToastHtml(`${msgFailedDelete}<br>${err.message}`, toastMediumTimeout, redError);
             })
             .finally(() => {
               saveBtn.disabled = false;

@@ -3,6 +3,7 @@ package com.divillafajar.app.pos.pos_app_sini.controller.ws.product.category;
 import com.divillafajar.app.pos.pos_app_sini.exception.DuplicationErrorException;
 import com.divillafajar.app.pos.pos_app_sini.exception.GenericCustomErrorException;
 import com.divillafajar.app.pos.pos_app_sini.exception.category.CategoryHasSubCategoryException;
+import com.divillafajar.app.pos.pos_app_sini.exception.category.CategoryNotEmptyException;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientAddressDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductWithCategoryPathDTO;
@@ -17,6 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -31,7 +33,7 @@ import java.util.*;
 public class CategoryRestController {
 
     private final ProductCategoryService categoryService;
-    private MessageSource messageSource;
+    private final MessageSource messageSource;
     private final ClientAddressService clientAddressService;
     private final ProductService productService;
 
@@ -68,6 +70,7 @@ public class CategoryRestController {
         ClientAddressDTO address = (ClientAddressDTO) session.getAttribute("targetAddress");
         CreateSubCategoryProductRespModel retVal = new CreateSubCategoryProductRespModel();
 		try {
+			System.out.println("pit deleteCategory");
 			categoryService.deleteCategory(id);
 		} catch (CategoryHasSubCategoryException e) {
 			Map<String, Object> body = new HashMap<>();
@@ -75,9 +78,15 @@ public class CategoryRestController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 					.body(body);
 		}
+		catch (CategoryNotEmptyException e) {
+			Map<String, Object> body = new HashMap<>();
+			body.put("message", messageSource.getMessage("modal.errorCategoryNotEmpty", null, LocaleContextHolder.getLocale()));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(body);
+		}
 		catch (Exception e) {
 			Map<String, Object> body = new HashMap<>();
-			body.put("message", messageSource.getMessage("modal.errorUnexpected", null, Locale.getDefault()));
+			body.put("message", messageSource.getMessage("modal.errorUnexpected", null, LocaleContextHolder.getLocale()));
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body(body);
 		}
@@ -119,6 +128,7 @@ public class CategoryRestController {
     public ResponseEntity<CreateSubCategoryProductRespModel> addSubCategory(
             HttpSession session,
             @RequestBody RequestItemSubItemModel dto) {
+		System.out.println("add sub rest");
         ClientAddressDTO address = (ClientAddressDTO) session.getAttribute("targetAddress");
 
         CreateSubCategoryProductRespModel retVal = new CreateSubCategoryProductRespModel();
@@ -131,6 +141,7 @@ public class CategoryRestController {
             retVal.setClientAddressPubId(address.getPubId());
 
         } catch(DuplicationErrorException e) {
+			System.out.println("e = "+e.getMessage());
             retVal.setMessage(e.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(retVal);

@@ -7,11 +7,16 @@ import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryE
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientAddressEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.session.UserSessionLog;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.space.SpaceAreaEntity;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.space.dto.SpaceAreaDTO;
+import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductCategoryHierarchyProjection;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.area.AreaSummaryProjection;
+import com.divillafajar.app.pos.pos_app_sini.io.projection.area.SpaceAreaHierarchyProjection;
 import com.divillafajar.app.pos.pos_app_sini.model.user.UserSessionDTO;
 import com.divillafajar.app.pos.pos_app_sini.repo.area.AreaRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.client.ClientAddressRepo;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -21,6 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -37,7 +44,7 @@ public class AreaServiceImpl implements AreaService{
 	}
 
 	@Override
-	public AreaSummaryProjection getAreaAndSubAreaByClientAddressPubId(String clientAddressPubId) {
+	public AreaSummaryProjection getAreaSummary(String clientAddressPubId) {
 		AreaSummaryProjection retVal= null;
 		retVal = areaRepo.getSpaceAreaSummaryByClientAddressPubId(clientAddressPubId);
 		return retVal;
@@ -77,6 +84,27 @@ public class AreaServiceImpl implements AreaService{
 		}
 		catch (Exception e) {
 			throw new GenericCustomErrorException("Unexpected Error");
+		}
+		return retVal;
+	}
+
+	@Override
+	public List<SpaceAreaDTO> getAreaAndSubAreaByClientAddressPubId(String pAid) {
+		List<SpaceAreaDTO> retVal = new ArrayList<>();
+		ClientAddressEntity location = addressRepo.findByPubId(pAid);
+		//List<ProductCategoryEntity> daftar = catRepo.findAllByClientAddressSorted(location.getId());
+		try {
+			System.out.println("getAreaAndSubAreaByClientAddressPubId == "+location.getId());
+			List<SpaceAreaHierarchyProjection> daftar = areaRepo.findAllByClientAddressHierarchical(location.getId());
+			ModelMapper modelMapper = new ModelMapper();
+			retVal = modelMapper.map(
+					daftar,
+					new TypeToken<List<SpaceAreaDTO>>() {}.getType()
+			);
+		}
+		catch(Exception e) {
+			System.out.println("ADA ERROR");
+			e.printStackTrace();
 		}
 		return retVal;
 	}

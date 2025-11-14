@@ -20,7 +20,7 @@ public class SpaceAreaMapper {
 								.toList() : null)
 				.clientAddressId(entity.getClientAddress() != null ? entity.getClientAddress().getId() : null)
 				.clientAddressPubId(entity.getClientAddress() != null ? entity.getClientAddress().getPubId() : null)
-				.clientAddressName(entity.getClientAddress() != null ? entity.getClientAddress().getName() : null)
+				.clientAddressName(entity.getClientAddress() != null ? entity.getClientAddress().getAddressName() : null)
 				.createdAt(entity.getCreatedAt())
 				.updatedAt(entity.getUpdatedAt())
 				.createdBy(entity.getCreatedBy())
