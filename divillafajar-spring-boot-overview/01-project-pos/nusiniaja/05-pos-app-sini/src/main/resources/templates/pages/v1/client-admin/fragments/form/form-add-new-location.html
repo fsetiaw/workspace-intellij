@@ -1,4 +1,4 @@
-<div th:fragment="add-location(pid)" xmlns:th="http://www.w3.org/1999/xhtml">
+<div th:fragment="add-location(pid,lobList)" xmlns:th="http://www.w3.org/1999/xhtml">
     <!-- // Basic multiple Column Form section start -->
     <section id="multiple-column-form">
         <div class="row match-height">
@@ -9,7 +9,7 @@
                     </div>
                     <div class="card-content">
                         <div class="card-body">
-                            <h5 class="card-title" style="padding:0 0 15px 0;color:#3460bb"><span th:text="#{label.locationInfo}"></span></h5>
+                            <h5 class="card-title" style="padding:0 0 15px 0;color:#3460bb"><span th:utext="#{label.locationInfo}???"></span></h5>
                             <form class="form" th:action="@{/v1/admin/client/location/add(pid=${pid})}" method="post" id="myform" target="_self">
                                 <div class="row">
                                     <div class="col-md-6 col-12">

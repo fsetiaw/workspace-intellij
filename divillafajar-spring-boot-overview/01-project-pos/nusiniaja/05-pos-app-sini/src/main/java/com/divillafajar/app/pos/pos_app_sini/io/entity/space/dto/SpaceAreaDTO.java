@@ -41,5 +41,5 @@ public class SpaceAreaDTO {
 	private Boolean deleted;
 
 	// Opsional helper (bisa diisi di mapping layer)
-	private String fullPathName;
+	private String path;
 }

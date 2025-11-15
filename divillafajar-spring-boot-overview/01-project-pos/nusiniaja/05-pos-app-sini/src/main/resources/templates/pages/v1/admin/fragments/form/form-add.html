@@ -1,4 +1,4 @@
-<div th:fragment="add-form" xmlns:th="http://www.w3.org/1999/xhtml"
+<div th:fragment="add-form(lobList)" xmlns:th="http://www.w3.org/1999/xhtml"
      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <!-- // Basic multiple Column Form section start -->
     <section id="multiple-column-form">
@@ -33,19 +33,20 @@
                                             <label for="locationCategory"><span th:text="#{label.FBLocationCategory}"></span></label>
                                             <div class="input-group mb-3">
                                                 <label class="input-group-text" for="locationCategory">Options</label>
+                                                <!--select class="form-select" id="locationCategory" name="locationCategory" required>
+                                                    <option value="" disabled selected th:text="#{label.choose} + '...'"></option>
+                                                    <option value="Accomodation" th:text="#{label.FBLocationCategory.fb}"></option>
+                                                    <option value="F&B" th:text="#{label.FBLocationCategory.accomodation}"></option>
+                                                </select-->
                                                 <select class="form-select" id="locationCategory" name="locationCategory" required>
                                                     <option value="" disabled selected th:text="#{label.choose} + '...'"></option>
-                                                    <option value="pkl" th:text="#{label.FBLocationCategory.pkl}"></option>
-                                                    <option value="warteg" th:text="#{label.FBLocationCategory.warteg}"></option>
-                                                    <option value="warkop" th:text="#{label.FBLocationCategory.warkop}"></option>
-                                                    <option value="cafe" th:text="#{label.FBLocationCategory.cafe}"></option>
-                                                    <option value="restaurant" th:text="#{label.FBLocationCategory.restaurant}"></option>
-                                                    <option value="ruko" th:text="#{label.FBLocationCategory.ruko}"></option>
-                                                    <option value="canteen" th:text="#{label.FBLocationCategory.canteen}"></option>
-                                                    <option value="fastfood" th:text="#{label.FBLocationCategory.fastfood}"></option>
-                                                    <option value="foodcourt" th:text="#{label.FBLocationCategory.foodcourt}"></option>
-                                                    <option value="bar" th:text="#{label.FBLocationCategory.bar}"></option>
+
+                                                    <option th:each="lob : ${lobList}"
+                                                            th:value="${lob.name()}"
+                                                            th:text="${#messages.msg(lob.i18nKey)}">
+                                                    </option>
                                                 </select>
+
                                             </div>
                                         </div>
                                     </div>

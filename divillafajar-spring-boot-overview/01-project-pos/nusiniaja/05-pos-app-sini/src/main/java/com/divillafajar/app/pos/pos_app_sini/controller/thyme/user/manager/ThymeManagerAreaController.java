@@ -91,7 +91,7 @@ public class ThymeManagerAreaController {
         ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
 		List<SpaceAreaDTO> orderListAreaAndSubArea = areaService.getAreaAndSubAreaByClientAddressPubId(dto.getPubId());
         //List<ProductCategoryDTO> orderListCategoryAnsSub = categoryService.getCategoryAndSubCategoryByClientAddressPubId(dto.getPubId());
-        model.addAttribute("orderListCategoryAnsSub",orderListAreaAndSubArea);
+        model.addAttribute("orderListAreaAndSubArea",orderListAreaAndSubArea);
         model.addAttribute("activePage",activePage);
         model.addAttribute("activeSub",activeSub);
         return "pages/v1/manager/space/area/index-area";

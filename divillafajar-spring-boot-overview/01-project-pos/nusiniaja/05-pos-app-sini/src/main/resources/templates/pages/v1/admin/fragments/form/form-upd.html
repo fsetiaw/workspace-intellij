@@ -35,7 +35,7 @@
                                             <label for="locationCategory"><span th:text="#{label.FBLocationCategory}"></span></label>
                                             <div class="input-group mb-3">
                                                 <label class="input-group-text" for="locationCategory">Options</label>
-                                                <select class="form-select" id="locationCategory" name="locationCategory"
+                                                <!--select class="form-select" id="locationCategory" name="locationCategory"
                                                         th:field="*{locationCategory}" required>
                                                     <option value="" disabled th:text="#{label.choose} + '...'"></option>
                                                     <option value="pkl" th:text="#{label.FBLocationCategory.pkl}"></option>
@@ -48,6 +48,15 @@
                                                     <option value="fastfood" th:text="#{label.FBLocationCategory.fastfood}"></option>
                                                     <option value="foodcourt" th:text="#{label.FBLocationCategory.foodcourt}"></option>
                                                     <option value="bar" th:text="#{label.FBLocationCategory.bar}"></option>
+                                                </select-->
+                                                <select class="form-select" id="locationCategory" name="locationCategory"
+                                                        th:field="*{locationCategory}" required>
+                                                    <option value="" disabled selected th:text="#{label.choose} + '...'"></option>
+
+                                                    <option th:each="lob : ${lobList}"
+                                                            th:value="${lob.name()}"
+                                                            th:text="${#messages.msg(lob.i18nKey)}">
+                                                    </option>
                                                 </select>
                                             </div>
                                         </div>

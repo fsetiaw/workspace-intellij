@@ -179,6 +179,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
 			System.out.println("ADA ERROR");
 			e.printStackTrace();
 		}
+        System.out.println("size cate="+retVal.size());
         return retVal;
     }
 
@@ -289,7 +290,18 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
 	}
 
     @Transactional
-    public void forceDeleteAllCategoriesByClientAddressId(Long clientAddressId) {
+    @Override
+    public void resetCategoryByClientAddress(String clientAddressPubId) {
+        ClientAddressEntity targetAddress = addressRepo.findByPubId(clientAddressPubId);
+        long cAid = targetAddress.getId();
+        softDeleteAllCategoryWithoutProductOnlyByClientAddressId(cAid);
+        //reset sudah useDefaultCategory
+        targetAddress.setUsedDefaultCategory(false);
+        addressRepo.save(targetAddress);
+    }
+
+    @Transactional
+    public void hardDeleteAllCategoriesByClientAddressId(Long clientAddressId) {
         jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 0");
         jdbcTemplate.update("DELETE FROM product_category WHERE client_address_id = ?", clientAddressId);
         jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 1");
@@ -329,17 +341,41 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
 		jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 1");
 	}
 
+    @Transactional
+    public void softDeleteAllCategoryWithoutProductOnlyByClientAddressId(Long clientAddressId) {
 
-	@Transactional
-    @Override
-    public void resetCategoryByClientAddress(String clientAddressPubId) {
-        ClientAddressEntity targetAddress = addressRepo.findByPubId(clientAddressPubId);
-        long cAid = targetAddress.getId();
-		deleteAllCategoryWithoutProductOnlyByClientAddressId(cAid);
-        //reset sudah useDefaultCategory
-        targetAddress.setUsedDefaultCategory(false);
-        addressRepo.save(targetAddress);
+        String sql = """
+        WITH RECURSIVE category_with_product AS (
+
+            -- Ambil kategori yang punya produk
+            SELECT DISTINCT p.category_id AS id
+            FROM product p
+            WHERE p.client_address_id = ?
+              AND p.deleted = FALSE
+              AND p.category_id IS NOT NULL
+
+            UNION ALL
+
+            -- Ambil semua parent dari kategori yang punya produk
+            SELECT pc.parent_id AS id
+            FROM product_category pc
+            INNER JOIN category_with_product cwp ON pc.id = cwp.id
+            WHERE pc.parent_id IS NOT NULL
+        )
+
+        UPDATE product_category
+        SET deleted = TRUE
+        WHERE client_address_id = ?
+          AND deleted = FALSE     -- hanya yang belum soft delete
+          AND id NOT IN (SELECT id FROM category_with_product)
+    """;
+
+        jdbcTemplate.update(sql, clientAddressId, clientAddressId);
     }
+
+
+
+
 
 	@Override
 	public Boolean isCategoryHasAnItemProduct(long catId) {

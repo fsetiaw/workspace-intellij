@@ -1,7 +1,7 @@
 package com.divillafajar.app.pos.pos_app_sini.repo.product.category;
 
-import com.divillafajar.app.pos.pos_app_sini.io.projection.CategoryHierarchyProjectionDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryEntity;
+import com.divillafajar.app.pos.pos_app_sini.io.projection.CategoryHierarchyProjectionDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.CategorySummaryProjection;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductCategoryHierarchyProjection;
 import com.divillafajar.app.pos.pos_app_sini.model.product.CategorySearchResultModel;
@@ -12,10 +12,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
-public interface ProductCategoryRepo extends JpaRepository<ProductCategoryEntity,Long> {
+public interface ProductCategoryRepo_vPrev01 extends JpaRepository<ProductCategoryEntity,Long> {
     //Optional<ProductCategoryEntity> findByNameIgnoreCaseAndClientAddress_Id(String name, Long clientAddressId);
     Optional<ProductCategoryEntity> findByNameIgnoreCaseAndClientAddress_IdAndDeletedFalse(
 		    String name,
@@ -768,17 +767,7 @@ public interface ProductCategoryRepo extends JpaRepository<ProductCategoryEntity
     @Modifying
 	@Query(value = """
         INSERT INTO product_category (name, indent_level, parent_id, client_address_id, created_by, deleted)
-       SELECT tmp.name, tmp.indent_level, 
-        -- Ambil parent_id yang masih aktif (deleted = FALSE)
-        (
-            SELECT pc2.id 
-            FROM product_category pc2
-            WHERE pc2.client_address_id = :clientAddressId
-              AND pc2.deleted = FALSE 
-              AND LOWER(pc2.name) = LOWER(tmp.name)
-            LIMIT 1
-        ) AS parent_id,
-        tmp.client_address_id, tmp.created_by, tmp.deleted
+       SELECT tmp.name, tmp.indent_level, tmp.parent_id, tmp.client_address_id, tmp.created_by, tmp.deleted
        FROM (
            SELECT 'Makanan' AS name, NULL AS indent_level, NULL AS parent_id, :clientAddressId AS client_address_id, 'system' AS created_by, 0 AS deleted
            UNION ALL SELECT 'Minuman', NULL, NULL, :clientAddressId, 'system', 0
@@ -798,298 +787,197 @@ public interface ProductCategoryRepo extends JpaRepository<ProductCategoryEntity
     @Modifying
 	@Query(value = """
       INSERT INTO product_category (name, indent_level, parent_id, client_address_id, created_by, deleted)
-          SELECT * FROM (
-              SELECT 'Camilan' AS name, 1 AS indent_level,
-                     (
-                         SELECT id FROM product_category 
-                         WHERE LOWER(name) = 'makanan'
-                           AND client_address_id = :clientAddressId
-                           AND deleted = FALSE                   -- hanya parent aktif
-                         LIMIT 1
-                     ) AS parent_id,
-                     :clientAddressId AS client_address_id,
-                     'system' AS created_by,
-                     0 AS deleted
-
-              UNION ALL
-              SELECT 'Sup & Salad', 1,
-                     (SELECT id FROM product_category WHERE LOWER(name) = 'makanan'
-                                                         AND client_address_id = :clientAddressId
-                                                         AND deleted = FALSE LIMIT 1),
-                     :clientAddressId, 'system', 0
-
-              UNION ALL
-              SELECT 'Hidangan Utama', 1,
-                     (SELECT id FROM product_category WHERE LOWER(name) = 'makanan'
-                                                         AND client_address_id = :clientAddressId
-                                                         AND deleted = FALSE LIMIT 1),
-                     :clientAddressId, 'system', 0
-
-              UNION ALL
-              SELECT 'Pendamping', 1,
-                     (SELECT id FROM product_category WHERE LOWER(name) = 'makanan'
-                                                         AND client_address_id = :clientAddressId
-                                                         AND deleted = FALSE LIMIT 1),
-                     :clientAddressId, 'system', 0
-
-              UNION ALL
-              SELECT 'Penutup', 1,
-                     (SELECT id FROM product_category WHERE LOWER(name) = 'makanan'
-                                                         AND client_address_id = :clientAddressId
-                                                         AND deleted = FALSE LIMIT 1),
-                     :clientAddressId, 'system', 0
-          ) AS tmp
-          WHERE NOT EXISTS (
-              SELECT 1 
-              FROM product_category pc
-              WHERE LOWER(pc.name) = LOWER(tmp.name)
-                AND pc.client_address_id = :clientAddressId
-                AND pc.deleted = FALSE       -- hanya kategori aktif yang dianggap exist
-          );
-            
+      SELECT * FROM (
+          SELECT 'Camilan' AS name, 1 AS indent_level,
+                 (SELECT id FROM product_category WHERE LOWER(name) = 'makanan' AND client_address_id = :clientAddressId LIMIT 1) AS parent_id,
+                 :clientAddressId AS client_address_id, 'system' AS created_by, 0 AS deleted
+          UNION ALL
+          SELECT 'Sup & Salad', 1,
+                 (SELECT id FROM product_category WHERE LOWER(name) = 'makanan' AND client_address_id = :clientAddressId LIMIT 1),
+                 :clientAddressId, 'system', 0
+          UNION ALL
+          SELECT 'Hidangan Utama', 1,
+                 (SELECT id FROM product_category WHERE LOWER(name) = 'makanan' AND client_address_id = :clientAddressId LIMIT 1),
+                 :clientAddressId, 'system', 0
+          UNION ALL
+          SELECT 'Pendamping', 1,
+                 (SELECT id FROM product_category WHERE LOWER(name) = 'makanan' AND client_address_id = :clientAddressId LIMIT 1),
+                 :clientAddressId, 'system', 0
+          UNION ALL
+          SELECT 'Penutup', 1,
+                 (SELECT id FROM product_category WHERE LOWER(name) = 'makanan' AND client_address_id = :clientAddressId LIMIT 1),
+                 :clientAddressId, 'system', 0
+      ) AS tmp
+      WHERE NOT EXISTS (
+          SELECT 1 FROM product_category pc
+          WHERE LOWER(pc.name) = LOWER(tmp.name)
+          AND pc.client_address_id = :clientAddressId
+          AND pc.deleted = FALSE -- hanya cek yang aktif
+      )
     """, nativeQuery = true)
 	void insertDefaultIdSubFoodCategories(@Param("clientAddressId") Long clientAddressId);
 
     @Modifying
 	@Query(value = """
       INSERT INTO product_category (name, indent_level, parent_id, client_address_id, created_by, deleted)
-          SELECT * FROM (
-              SELECT 'Kopi' AS name, 1 AS indent_level,
-                     (
-                         SELECT id 
-                         FROM product_category 
-                         WHERE LOWER(name) = 'minuman'
-                           AND client_address_id = :clientAddressId
-                           AND deleted = FALSE        -- hanya parent aktif
-                         LIMIT 1
-                     ) AS parent_id,
-                     :clientAddressId AS client_address_id, 'system' AS created_by, 0 AS deleted
-
-              UNION ALL
-              SELECT 'Non-Kopi', 1,
-                     (SELECT id FROM product_category WHERE LOWER(name) = 'minuman'
-                                                         AND client_address_id = :clientAddressId
-                                                         AND deleted = FALSE LIMIT 1),
-                     :clientAddressId, 'system', 0
-
-              UNION ALL
-              SELECT 'Teh', 1,
-                     (SELECT id FROM product_category WHERE LOWER(name) = 'minuman'
-                                                         AND client_address_id = :clientAddressId
-                                                         AND deleted = FALSE LIMIT 1),
-                     :clientAddressId, 'system', 0
-
-              UNION ALL
-              SELECT 'Jus & Minuman Segar', 1,
-                     (SELECT id FROM product_category WHERE LOWER(name) = 'minuman'
-                                                         AND client_address_id = :clientAddressId
-                                                         AND deleted = FALSE LIMIT 1),
-                     :clientAddressId, 'system', 0
-
-              UNION ALL
-              SELECT 'Mocktail', 1,
-                     (SELECT id FROM product_category WHERE LOWER(name) = 'minuman'
-                                                         AND client_address_id = :clientAddressId
-                                                         AND deleted = FALSE LIMIT 1),
-                     :clientAddressId, 'system', 0
-
-              UNION ALL
-              SELECT 'Air Mineral', 1,
-                     (SELECT id FROM product_category WHERE LOWER(name) = 'minuman'
-                                                         AND client_address_id = :clientAddressId
-                                                         AND deleted = FALSE LIMIT 1),
-                     :clientAddressId, 'system', 0
-          ) AS tmp
-          WHERE NOT EXISTS (
-              SELECT 1\s
-              FROM product_category pc
-              WHERE LOWER(pc.name) = LOWER(tmp.name)
-                AND pc.client_address_id = :clientAddressId
-                AND pc.deleted = FALSE        -- hanya yang aktif dianggap exist
-          );
+      SELECT * FROM (
+          SELECT 'Kopi' AS name, 1 AS indent_level,
+                 (SELECT id FROM product_category WHERE LOWER(name) = 'Minuman' AND client_address_id = :clientAddressId LIMIT 1) AS parent_id,
+                 :clientAddressId AS client_address_id, 'system' AS created_by, 0 AS deleted
+          UNION ALL
+          SELECT 'Non-Kopi', 1,
+                 (SELECT id FROM product_category WHERE LOWER(name) = 'Minuman' AND client_address_id = :clientAddressId LIMIT 1),
+                 :clientAddressId, 'system', 0
+          UNION ALL
+          SELECT 'Teh', 1,
+                 (SELECT id FROM product_category WHERE LOWER(name) = 'Minuman' AND client_address_id = :clientAddressId LIMIT 1),
+                 :clientAddressId, 'system', 0
+          UNION ALL
+          SELECT 'Jus & Minuman Segar', 1,
+                 (SELECT id FROM product_category WHERE LOWER(name) = 'Minuman' AND client_address_id = :clientAddressId LIMIT 1),
+                 :clientAddressId, 'system', 0
+          UNION ALL
+          SELECT 'Mocktail', 1,
+                 (SELECT id FROM product_category WHERE LOWER(name) = 'Minuman' AND client_address_id = :clientAddressId LIMIT 1),
+                 :clientAddressId, 'system', 0
+          UNION ALL
+          SELECT 'Air Mineral', 1,
+                 (SELECT id FROM product_category WHERE LOWER(name) = 'Minuman' AND client_address_id = :clientAddressId LIMIT 1),
+                 :clientAddressId, 'system', 0
+      ) AS tmp
+      WHERE NOT EXISTS (
+          SELECT 1 FROM product_category pc
+          WHERE LOWER(pc.name) = LOWER(tmp.name)
+          AND pc.client_address_id = :clientAddressId
+          AND pc.deleted = FALSE -- hanya cek yang aktif
+      );
     """, nativeQuery = true)
 	void insertDefaultIdSubBeverageCategories(@Param("clientAddressId") Long clientAddressId);
 
     @Modifying
     @Query(value = """
       INSERT INTO product_category (name, indent_level, parent_id, client_address_id, created_by, deleted)
-          SELECT * FROM (
-              SELECT 'Kue & Pastry' AS name, 2 AS indent_level,
-                     (
-                         SELECT id\s
-                         FROM product_category\s
-                         WHERE LOWER(name) = 'penutup'
-                           AND client_address_id = :clientAddressId
-                           AND deleted = FALSE        -- hanya parent aktif
-                         LIMIT 1
-                     ) AS parent_id,
-                     :clientAddressId AS client_address_id, 'system' AS created_by, 0 AS deleted
-
-              UNION ALL
-              SELECT 'Dingin / Es', 2,
-                     (
-                         SELECT id\s
-                         FROM product_category\s
-                         WHERE LOWER(name) = 'penutup'
-                           AND client_address_id = :clientAddressId
-                           AND deleted = FALSE
-                         LIMIT 1
-                     ),
-                     :clientAddressId, 'system', 0
-
-              UNION ALL
-              SELECT 'Tradisional', 2,
-                     (
-                         SELECT id\s
-                         FROM product_category\s
-                         WHERE LOWER(name) = 'penutup'
-                           AND client_address_id = :clientAddressId
-                           AND deleted = FALSE
-                         LIMIT 1
-                     ),
-                     :clientAddressId, 'system', 0
-          ) AS tmp
-          WHERE NOT EXISTS (
-              SELECT 1\s
-              FROM product_category pc
-              WHERE LOWER(pc.name) = LOWER(tmp.name)
-                AND pc.client_address_id = :clientAddressId
-                AND pc.deleted = FALSE     -- hanya kategori aktif yang dianggap exist
-          );
+      SELECT * FROM (
+          SELECT 'Kue & Pastry' AS name, 2 AS indent_level,\s
+                 (SELECT id FROM product_category WHERE LOWER(name) = 'penutup' AND client_address_id = :clientAddressId LIMIT 1) AS parent_id,
+                 :clientAddressId AS client_address_id, 'system' AS created_by, 0 AS deleted
+          UNION ALL
+          SELECT 'Dingin / Es', 2,
+                 (SELECT id FROM product_category WHERE LOWER(name) = 'penutup' AND client_address_id = :clientAddressId LIMIT 1),
+                 :clientAddressId, 'system', 0
+          UNION ALL
+          SELECT 'Tradisional', 2,
+                 (SELECT id FROM product_category WHERE LOWER(name) = 'penutup' AND client_address_id = :clientAddressId LIMIT 1),
+                 :clientAddressId, 'system', 0
+      ) AS tmp
+      WHERE NOT EXISTS (
+          SELECT 1 FROM product_category pc
+          WHERE LOWER(pc.name) = LOWER(tmp.name)
+          AND pc.client_address_id = :clientAddressId
+          AND pc.deleted = FALSE -- hanya cek yang aktif
+      )
     """, nativeQuery = true)
     void insertDefaultIdSubDessertCategories(@Param("clientAddressId") Long clientAddressId);
 
     @Modifying
     @Query(value = """
           INSERT INTO product_category (name, indent_level, parent_id, client_address_id, created_by, deleted)
-              SELECT * FROM (
-                  SELECT 'Makanan Anak' AS name, 1 AS indent_level,
-                         (
-                             SELECT id FROM product_category
-                             WHERE LOWER(name) = LOWER('paket / combo')
-                               AND client_address_id = :clientAddressId
-                               AND deleted = FALSE              -- hanya parent aktif
-                             LIMIT 1
-                         ) AS parent_id,
-                         :clientAddressId AS client_address_id, 'system' AS created_by, 0 AS deleted
-
-                  UNION ALL
-                  SELECT 'Paket Berdua', 1,
-                         (
-                             SELECT id FROM product_category
-                             WHERE LOWER(name) = LOWER('paket / combo')
-                               AND client_address_id = :clientAddressId
-                               AND deleted = FALSE
-                             LIMIT 1
-                         ),
-                         :clientAddressId, 'system', 0
-
-                  UNION ALL
-                  SELECT 'Paket Keluarga', 1,
-                         (
-                             SELECT id FROM product_category
-                             WHERE LOWER(name) = LOWER('paket / combo')
-                               AND client_address_id = :clientAddressId
-                               AND deleted = FALSE
-                             LIMIT 1
-                         ),
-                         :clientAddressId, 'system', 0
-
-                  UNION ALL
-                  SELECT 'Paket Promo', 1,
-                         (
-                             SELECT id FROM product_category
-                             WHERE LOWER(name) = LOWER('paket / combo')
-                               AND client_address_id = :clientAddressId
-                               AND deleted = FALSE
-                             LIMIT 1
-                         ),
-                         :clientAddressId, 'system', 0
-              ) AS tmp
-              WHERE NOT EXISTS (
-                  SELECT 1\s
-                  FROM product_category pc
-                  WHERE LOWER(pc.name) = LOWER(tmp.name)
-                    AND pc.client_address_id = :clientAddressId
-                    AND pc.deleted = FALSE      -- hanya kategori aktif yang dianggap exist
-              );
+          SELECT * FROM (
+              SELECT 'Makanan Anak' AS name, 1 AS indent_level,
+                     (SELECT id FROM product_category
+                      WHERE LOWER(name) = LOWER('Paket / Combo')
+                      AND client_address_id = :clientAddressId
+                      LIMIT 1) AS parent_id,
+                     :clientAddressId AS client_address_id, 'system' AS created_by, 0 AS deleted
+              UNION ALL
+              SELECT 'Paket Berdua', 1,
+                     (SELECT id FROM product_category
+                      WHERE LOWER(name) = LOWER('Paket / Combo')
+                      AND client_address_id = :clientAddressId
+                      LIMIT 1),
+                     :clientAddressId, 'system', 0
+              UNION ALL
+              SELECT 'Paket Keluarga', 1,
+                     (SELECT id FROM product_category
+                      WHERE LOWER(name) = LOWER('Paket / Combo')
+                      AND client_address_id = :clientAddressId
+                      LIMIT 1),
+                     :clientAddressId, 'system', 0
+              UNION ALL
+              SELECT 'Paket Promo', 1,
+                     (SELECT id FROM product_category
+                      WHERE LOWER(name) = LOWER('Paket / Combo')
+                      AND client_address_id = :clientAddressId
+                      LIMIT 1),
+                     :clientAddressId, 'system', 0
+          ) AS tmp
+          WHERE NOT EXISTS (
+              SELECT 1 FROM product_category pc
+              WHERE LOWER(pc.name) = LOWER(tmp.name)
+              AND pc.client_address_id = :clientAddressId
+              AND pc.deleted = FALSE -- hanya cek yang aktif
+          )
     """, nativeQuery = true)
     void insertDefaultIdSubComboCategories(@Param("clientAddressId") Long clientAddressId);
 
     @Modifying
     @Query(value = """
                INSERT INTO product_category (name, indent_level, parent_id, client_address_id, created_by, deleted)
-                      SELECT * FROM (
-                          SELECT 'Topping' AS name, 1 AS indent_level,
-                                 (
-                                     SELECT id FROM product_category
-                                     WHERE LOWER(name) = LOWER('tambahan')
-                                       AND client_address_id = :clientAddressId
-                                       AND deleted = FALSE        -- hanya parent aktif
-                                     LIMIT 1
-                                 ) AS parent_id,
-                                 :clientAddressId AS client_address_id, 'system' AS created_by, 0 AS deleted
-
-                          UNION ALL
-                          SELECT 'Saus', 1,
-                                 (
-                                     SELECT id FROM product_category
-                                     WHERE LOWER(name) = LOWER('tambahan')
-                                       AND client_address_id = :clientAddressId
-                                       AND deleted = FALSE
-                                     LIMIT 1
-                                 ),
-                                 :clientAddressId, 'system', 0
-
-                          UNION ALL
-                          SELECT 'Porsi Tambahan', 1,
-                                 (
-                                     SELECT id FROM product_category
-                                     WHERE LOWER(name) = LOWER('tambahan')
-                                       AND client_address_id = :clientAddressId
-                                       AND deleted = FALSE
-                                     LIMIT 1
-                                 ),
-                                 :clientAddressId, 'system', 0
-                      ) AS tmp
-                      WHERE NOT EXISTS (
-                          SELECT 1\s
-                          FROM product_category pc
-                          WHERE LOWER(pc.name) = LOWER(tmp.name)
-                            AND pc.client_address_id = :clientAddressId
-                            AND pc.deleted = FALSE       -- hanya kategori aktif yang dianggap exist
-                      );
+      SELECT * FROM (
+          SELECT 'Topping' AS name, 1 AS indent_level,
+                 (SELECT id FROM product_category
+                  WHERE LOWER(name) = LOWER('tambahan')
+                  AND client_address_id = :clientAddressId
+                  LIMIT 1) AS parent_id,
+                 :clientAddressId AS client_address_id, 'system' AS created_by, 0 AS deleted
+          UNION ALL
+          SELECT 'Saus', 1,
+                 (SELECT id FROM product_category
+                  WHERE LOWER(name) = LOWER('tambahan')
+                  AND client_address_id = :clientAddressId
+                  LIMIT 1),
+                 :clientAddressId, 'system', 0
+          UNION ALL
+          SELECT 'Porsi Tambahan', 1,
+                 (SELECT id FROM product_category
+                  WHERE LOWER(name) = LOWER('tambahan')
+                  AND client_address_id = :clientAddressId
+                  LIMIT 1),
+                 :clientAddressId, 'system', 0
+      ) AS tmp
+      WHERE NOT EXISTS (
+          SELECT 1 FROM product_category pc
+          WHERE LOWER(pc.name) = LOWER(tmp.name)
+          AND pc.client_address_id = :clientAddressId
+          AND pc.deleted = FALSE -- hanya cek yang aktif
+      )
     """, nativeQuery = true)
     void insertDefaultIdSubAddOnsCategories(@Param("clientAddressId") Long clientAddressId);
 
     @Modifying
     @Query(value = """
        INSERT INTO product_category (name, indent_level, parent_id, client_address_id, created_by, deleted)
-           SELECT * FROM (
-               SELECT 'Souvenir' AS name, 1 AS indent_level,
-                      (SELECT id FROM product_category
-                       WHERE LOWER(name) = LOWER('Oleh-2')
-                         AND client_address_id = :clientAddressId
-                         AND deleted = FALSE            -- parent harus non-deleted
-                       LIMIT 1) AS parent_id,
-                      :clientAddressId AS client_address_id, 'system' AS created_by, 0 AS deleted
-
-               UNION ALL
-
-               SELECT 'Produk Kemasan', 1,
-                      (SELECT id FROM product_category
-                       WHERE LOWER(name) = LOWER('Oleh-2')
-                         AND client_address_id = :clientAddressId
-                         AND deleted = FALSE            -- parent harus non-deleted
-                       LIMIT 1),
-                      :clientAddressId, 'system', 0
-           ) AS tmp
-           WHERE NOT EXISTS (
-               SELECT 1 FROM product_category pc
-               WHERE LOWER(pc.name) = LOWER(tmp.name)
-                 AND pc.client_address_id = :clientAddressId
-                 AND pc.deleted = FALSE                 -- hanya hindari duplikat aktif
-           );
+       SELECT * FROM (
+           SELECT 'Souvenir' AS name, 1 AS indent_level,
+                  (SELECT id FROM product_category
+                   WHERE LOWER(name) = LOWER('Oleh-2')
+                   AND client_address_id = :clientAddressId
+                   LIMIT 1) AS parent_id,
+                  :clientAddressId AS client_address_id, 'system' AS created_by, 0 AS deleted
+           UNION ALL
+           SELECT 'Produk Kemasan', 1,
+                  (SELECT id FROM product_category
+                   WHERE LOWER(name) = LOWER('Oleh-2')
+                   AND client_address_id = :clientAddressId
+                   LIMIT 1),
+                  :clientAddressId, 'system', 0
+       ) AS tmp
+       WHERE NOT EXISTS (
+           SELECT 1 FROM product_category pc
+           WHERE LOWER(pc.name) = LOWER(tmp.name)
+           AND pc.client_address_id = :clientAddressId
+           AND pc.deleted = FALSE -- hanya cek yang aktif
+       )
     """, nativeQuery = true)
     void insertDefaultIdSubMerchandiseCategories(@Param("clientAddressId") Long clientAddressId);
 

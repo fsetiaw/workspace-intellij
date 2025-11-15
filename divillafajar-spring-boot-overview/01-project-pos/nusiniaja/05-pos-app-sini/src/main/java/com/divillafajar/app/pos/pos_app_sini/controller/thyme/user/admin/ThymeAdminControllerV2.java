@@ -1,5 +1,6 @@
 package com.divillafajar.app.pos.pos_app_sini.controller.thyme.user.admin;
 
+import com.divillafajar.app.pos.pos_app_sini.common.enums.LineOfBusinessEnum;
 import com.divillafajar.app.pos.pos_app_sini.config.properties.CustomDefaultProperties;
 import com.divillafajar.app.pos.pos_app_sini.exception.DuplicationErrorException;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientAddressEntity;
@@ -109,6 +110,8 @@ public class ThymeAdminControllerV2 {
         if (listActiveLocation != null && !listActiveLocation.isEmpty()) {
             model.addAttribute("listActiveLocation", listActiveLocation);
         }
+        model.addAttribute("lobList", LineOfBusinessEnum.values());
+        System.out.println("lobList size = "+LineOfBusinessEnum.values().length);
         model.addAttribute("pid", pid);
         model.addAttribute("clientName", clientName);
         model.addAttribute("isAdd", add);
@@ -215,6 +218,7 @@ public class ThymeAdminControllerV2 {
         if (listActiveLocation != null && !listActiveLocation.isEmpty()) {
             model.addAttribute("listActiveLocation", listActiveLocation);
         }
+        model.addAttribute("lobList", LineOfBusinessEnum.values());
         model.addAttribute("pid", clientAddressPubId);
         model.addAttribute("clientName", client.getClientName());
         model.addAttribute("clientAddress", clientAddress);

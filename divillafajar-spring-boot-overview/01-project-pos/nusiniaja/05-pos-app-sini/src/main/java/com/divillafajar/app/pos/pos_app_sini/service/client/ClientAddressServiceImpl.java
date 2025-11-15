@@ -14,6 +14,7 @@ import com.divillafajar.app.pos.pos_app_sini.repo.client.ClientAddressRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.client.ClientContactRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.client.ClientRepo;
 import com.divillafajar.app.pos.pos_app_sini.utils.EntityMapper;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -140,8 +141,16 @@ public class ClientAddressServiceImpl implements ClientAddressService{
         ClientAddressDTO retVal = new ClientAddressDTO();
         try {
             ClientAddressEntity storedData = clientAddressRepo.findByPubId(storeDataUpdated.getPubId());
-            BeanUtils.copyProperties(storeDataUpdated,storedData);
-            storedData.setActive(true);
+            System.out.println("useDefaultCategory="+storedData.getUsedDefaultCategory());
+            System.out.println("storeDataUpdated useDefaultCategory="+storeDataUpdated.getUsedDefaultCategory());
+            //BeanUtils.copyProperties(storeDataUpdated,storedData);
+            ModelMapper mapper = new ModelMapper();
+            mapper.getConfiguration().setSkipNullEnabled(true);
+            mapper.map(storeDataUpdated, storedData);
+            System.out.println("useDefaultCategory2="+storedData.getUsedDefaultCategory());
+            //storedData.setActive(true);
+            //storedData.setDeleted(false);
+            System.out.println("useDefaultCategory="+storedData.getUsedDefaultCategory());
             clientAddressRepo.save(storedData);
         }
         catch (Exception e) {

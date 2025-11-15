@@ -26,7 +26,7 @@ public class SpaceAreaMapper {
 				.createdBy(entity.getCreatedBy())
 				.updatedBy(entity.getUpdatedBy())
 				.deleted(entity.getDeleted())
-				.fullPathName(entity.getFullPathName())
+				.path(entity.getFullPathName())
 				.build();
 	}
 }

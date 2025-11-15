@@ -1,15 +1,11 @@
-package com.divillafajar.app.pos.pos_app_sini.controller.thyme.user.admin;
+package com.divillafajar.app.pos.pos_app_sini.controller.thyme.user.bin;
 
+import com.divillafajar.app.pos.pos_app_sini.common.enums.LineOfBusinessEnum;
 import com.divillafajar.app.pos.pos_app_sini.exception.DuplicationErrorException;
-import com.divillafajar.app.pos.pos_app_sini.exception.client.ClientAlreadyExistException;
-import com.divillafajar.app.pos.pos_app_sini.exception.user.CreateUserException;
-import com.divillafajar.app.pos.pos_app_sini.io.entity.address.dto.AddressDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientAddressEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientAddressDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientContactDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientDTO;
-import com.divillafajar.app.pos.pos_app_sini.model.client.ClientDetailsResponseModel;
-import com.divillafajar.app.pos.pos_app_sini.model.client.CreateClientRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.model.client.location.CreateClientLocationRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.service.client.ClientAddressService;
 import com.divillafajar.app.pos.pos_app_sini.service.client.ClientService;
@@ -94,6 +90,14 @@ public class ThymeAdminControllerV1 {
             @RequestParam(name = "clientName", required = true) String clientName,
           @RequestParam(name = "add", required = false) Boolean add, Model model) {
         System.out.println("showAddLocationForm CALLED = "+clientName+pid);
+        LineOfBusinessEnum[] lobList = LineOfBusinessEnum.values();
+        System.out.println("lob size = "+lobList.length);
+        // 👉 Cara print satu per satu
+        for (LineOfBusinessEnum lob : lobList) {
+            System.out.println("LOB = " + lob.name() + " | key = " + lob.getI18nKey());
+        }
+
+        model.addAttribute("lobList", lobList);
         model.addAttribute("pid", pid);
         model.addAttribute("clientName", clientName);
         model.addAttribute("isAdd", add);
