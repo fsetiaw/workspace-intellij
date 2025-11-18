@@ -96,4 +96,139 @@ public class ThymeManagerAreaController {
         model.addAttribute("activeSub",activeSub);
         return "pages/v1/manager/space/area/index-area";
     }
+
+    @GetMapping("/item")
+    public String showAreaItemHome(
+            @RequestParam(name = "activePage", required = true) String activePage,
+            @RequestParam(name = "activeSub", required = true) String activeSub,
+            @RequestParam(name = "filter", required = false) String filter,
+            Model model, HttpSession session
+    ) {
+        System.out.println("---showAreaItemHome---");
+        ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
+
+        List<ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId> listRecord = new ArrayList<>();
+        //pettama kali sampi laman
+        if(filter==null) {
+            model.addAttribute("filter","noFilter");
+            listRecord = areaService.getPathToEachEndChildCategoryByClientAddressPubId(dto.getPubId());
+        }
+        else {
+            model.addAttribute("filter",filter);
+            listRecord = areaService.getPathToEachEndChildCategoryByClientAddressPubId(dto.getPubId(), filter);
+        }
+        List<String> listEndChildPath = new ArrayList<>();
+        List<Long> listTotItem = new ArrayList<>();
+        if(listRecord!=null) {
+
+            for(ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId singleton : listRecord) {
+                listEndChildPath.add(singleton.getFullPath());
+                listTotItem.add(singleton.getTotalProducts());
+            }
+        }
+        /*
+        listEndChildPath.forEach(cat -> {
+            System.out.println(cat);
+        });
+        listTotItem.forEach(cat -> {
+            System.out.println(cat);
+        });
+
+         */
+        model.addAttribute("listEndChildPath",listEndChildPath);
+        model.addAttribute("listTotItem",listTotItem);
+        model.addAttribute("activePage",activePage);
+        model.addAttribute("activeSub",activeSub);
+        return "pages/v1/manager/space/item/index-item";
+    }
+
+    @GetMapping("/item/{areaId}")
+    public String showAreaItemHome(
+            @RequestParam(name = "activePage", required = true) String activePage,
+            @RequestParam(name = "activeSub", required = true) String activeSub,
+            @RequestParam(name = "path", required = true) String path,
+            @PathVariable Long areaId,
+            Model model, HttpSession session
+    ) {
+        System.out.println("-------showAreaItemHome-----------");
+        String trimPath = "";
+        StringTokenizer st = new StringTokenizer(path,"/");
+        while(st.hasMoreTokens()) {
+            String tkn = st.nextToken();
+            StringTokenizer st1 = new StringTokenizer(tkn,"~");
+            trimPath = trimPath+st1.nextToken();
+            if(st.hasMoreTokens()) {
+                trimPath=trimPath+" / ";
+            }
+        }
+        String pathCategory = "";
+        String targetCategoryName = "";
+        if(!StringUtils.isBlank(trimPath)) {
+            st = new StringTokenizer(trimPath,"/");
+            while(st.hasMoreTokens()) {
+                String tkn = st.nextToken().trim();
+                pathCategory = pathCategory + tkn;
+                if(st.hasMoreTokens()) {
+                    pathCategory=pathCategory+"/";
+                }
+                else {
+                    //last token
+                    targetCategoryName=tkn.trim();
+                }
+            }
+        }
+        ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
+        List<ProductWithCategoryPathDTO> listItem = productService.getListProduct(dto.getPubId(),areaId, null);
+        model.addAttribute("pathCategory",pathCategory);
+        model.addAttribute("path",path);
+        model.addAttribute("targetCategoryName",targetCategoryName);
+        model.addAttribute("trimPath",trimPath);
+        model.addAttribute("activePage",activePage);
+        model.addAttribute("activeSub",activeSub);
+        model.addAttribute("categoryId",areaId);
+        model.addAttribute("adrPubId",dto.getPubId());
+        model.addAttribute("toastShortTimeout",appGlobals.get("toastShortTimeout"));
+        model.addAttribute("toastMediumTimeout",appGlobals.get("toastMediumTimeout"));
+        model.addAttribute("toastLongTimeout",appGlobals.get("toastLongTimeout"));
+        //"","",""
+        if(listItem!=null) {
+            model.addAttribute("listItem",listItem);
+        }
+        else {
+            model.addAttribute("listItem",new ArrayList<>());
+        }
+        return "pages/v1/manager/space/item/home-area-item";
+    }
+
+    @PostMapping("/item/{categoryId}")
+    public String addNewItemCategory(
+            @RequestParam(name = "activePage", required = true) String activePage,
+            @RequestParam(name = "activeSub", required = true) String activeSub,
+            //@RequestParam(name = "path", required = true) String path,
+            @ModelAttribute CreateItemRequestModel createItemRequestModel,
+            @PathVariable Long categoryId,
+            Locale locale,
+            RedirectAttributes redirectAttributes,
+            Model model, HttpSession session
+    ) {
+        try {
+            ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
+            //productService.addNewProduct(categoryId, dto, createItemRequestModel);
+            //String successMessage = messageSource.getMessage("label.item", null, locale)+" "+messageSource.getMessage("label.addSuccessfully", null, locale);
+            //redirectAttributes.addFlashAttribute("successMessage", successMessage);
+
+        } catch (DuplicationErrorException e) {
+            String errorMessage = messageSource.getMessage("err.itemAlreadyExistUnderCategory", null, locale)+" "+e.getMessage();
+            redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
+        }
+        catch (Exception e) {
+            String errorMessage = messageSource.getMessage("modal.errorUnexpected", null, locale);
+            redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
+        }
+        redirectAttributes.addAttribute("activePage",activePage);
+        redirectAttributes.addAttribute("activeSub",activeSub);
+        redirectAttributes.addAttribute("path",createItemRequestModel.getPath());
+        return "redirect:/v1/manager/manage/area/item/"+categoryId;
+
+    }
 }

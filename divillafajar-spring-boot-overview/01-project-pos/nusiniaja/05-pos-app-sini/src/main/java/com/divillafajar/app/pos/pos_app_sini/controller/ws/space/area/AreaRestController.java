@@ -1,27 +1,21 @@
 package com.divillafajar.app.pos.pos_app_sini.controller.ws.space.area;
 
 import com.divillafajar.app.pos.pos_app_sini.exception.DuplicationErrorException;
-import com.divillafajar.app.pos.pos_app_sini.exception.category.CategoryHasSubCategoryException;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientAddressDTO;
-import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductWithCategoryPathDTO;
-import com.divillafajar.app.pos.pos_app_sini.model.product.CategorySearchResultModel;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.space.dto.SpaceAreaDTO;
+import com.divillafajar.app.pos.pos_app_sini.model.area.CreateSubAreaRespModel;
 import com.divillafajar.app.pos.pos_app_sini.model.product.CreateSubCategoryProductRespModel;
 import com.divillafajar.app.pos.pos_app_sini.model.product.RequestItemSubItemModel;
-import com.divillafajar.app.pos.pos_app_sini.model.product.UpdateCategoryProductRespModel;
 import com.divillafajar.app.pos.pos_app_sini.service.area.AreaService;
 import com.divillafajar.app.pos.pos_app_sini.service.client.ClientAddressService;
-import com.divillafajar.app.pos.pos_app_sini.service.product.category.ProductCategoryService;
 import com.divillafajar.app.pos.pos_app_sini.service.product.item.ProductService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.*;
 
@@ -58,13 +52,44 @@ public class AreaRestController {
                     .body(null);
         }
         return ResponseEntity.ok(retVal);
+    }
+
+    @PostMapping("/main/sub")
+    public ResponseEntity<CreateSubAreaRespModel> addSubArea(
+            HttpSession session,
+            @RequestBody RequestItemSubItemModel dto) {
+        System.out.println("----addSubArea---");
+        ClientAddressDTO address = (ClientAddressDTO) session.getAttribute("targetAddress");
+
+        CreateSubAreaRespModel retVal = new CreateSubAreaRespModel();
+        try {
+            SpaceAreaDTO added =  areaService.addSubMainArea(dto.getParentId(), dto.getName(), address.getPubId());
+            retVal.setId(added.getId());
+            retVal.setName(added.getName());
+            retVal.setParentId(added.getParent().getId());
+            retVal.setIndentLevel(added.getIndentLevel());
+            retVal.setClientAddressPubId(address.getPubId());
+
+        } catch(DuplicationErrorException e) {
+            retVal.setMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(retVal);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+        //ProductCategoryDTO updated = categoryService.update(id, dto);
+        return ResponseEntity.ok(retVal);
 
     }
-/*
-    @DeleteMapping("/category/{id}")
+
+    /*
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCategory( //defaultnya <CreateSubCategoryProductRespModel>
-                                             HttpSession session,
-                                             @PathVariable Long id) {
+             HttpSession session,
+             @PathVariable Long id
+    ) {
         ClientAddressDTO address = (ClientAddressDTO) session.getAttribute("targetAddress");
         CreateSubCategoryProductRespModel retVal = new CreateSubCategoryProductRespModel();
 		try {
@@ -85,6 +110,8 @@ public class AreaRestController {
 
     }
 
+     */
+/*
 	@GetMapping("/category/search/{kword}")
 	public ResponseEntity<?> showSearchCategoryResult(
 			@RequestParam(name = "activePage", required = false) String activePage,
@@ -115,34 +142,7 @@ public class AreaRestController {
 		return ResponseEntity.ok(retVal);
 	}
 
-    @PostMapping("/category/sub")
-    public ResponseEntity<CreateSubCategoryProductRespModel> addSubCategory(
-            HttpSession session,
-            @RequestBody RequestItemSubItemModel dto) {
-        ClientAddressDTO address = (ClientAddressDTO) session.getAttribute("targetAddress");
 
-        CreateSubCategoryProductRespModel retVal = new CreateSubCategoryProductRespModel();
-        try {
-            ProductCategoryDTO added =  categoryService.addSubProductCategory(dto.getParentId(), dto.getName(), address.getPubId());
-            retVal.setId(added.getId());
-            retVal.setName(added.getName());
-            retVal.setParentId(added.getParent().getId());
-            retVal.setIndentLevel(added.getIndentLevel());
-            retVal.setClientAddressPubId(address.getPubId());
-
-        } catch(DuplicationErrorException e) {
-            retVal.setMessage(e.getMessage());
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(retVal);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(null);
-        }
-        //ProductCategoryDTO updated = categoryService.update(id, dto);
-        return ResponseEntity.ok(retVal);
-
-    }
 
     // Update category pakai session-based auth
     @PutMapping("/category/{id}")

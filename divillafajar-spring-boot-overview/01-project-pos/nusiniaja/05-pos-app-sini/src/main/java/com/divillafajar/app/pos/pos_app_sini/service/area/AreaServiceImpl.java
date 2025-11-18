@@ -8,9 +8,12 @@ import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientAddressEntit
 import com.divillafajar.app.pos.pos_app_sini.io.entity.session.UserSessionLog;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.space.SpaceAreaEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.space.dto.SpaceAreaDTO;
+import com.divillafajar.app.pos.pos_app_sini.io.projection.CategoryHierarchyProjectionDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductCategoryHierarchyProjection;
+import com.divillafajar.app.pos.pos_app_sini.io.projection.area.AreaHierarchyProjectionDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.area.AreaSummaryProjection;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.area.SpaceAreaHierarchyProjection;
+import com.divillafajar.app.pos.pos_app_sini.model.product.ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId;
 import com.divillafajar.app.pos.pos_app_sini.model.user.UserSessionDTO;
 import com.divillafajar.app.pos.pos_app_sini.repo.area.AreaRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.client.ClientAddressRepo;
@@ -36,6 +39,7 @@ public class AreaServiceImpl implements AreaService{
 	private final AreaRepo areaRepo;
 	private final ClientAddressRepo addressRepo;
 	private final MessageSource messageSource;
+    private final ModelMapper modelMapper;
 
 	@Override
 	public boolean locationHasArea(String pAid) {
@@ -58,7 +62,7 @@ public class AreaServiceImpl implements AreaService{
 		if(targetLocation==null) {
 			throw new NullPointerException("Location not found");
 		}
-		//Optional<ProductCategoryEntity> existed = catRepo.findByNameIgnoreCaseAndClientAddress_Id(areaName, targetLocation.getId());
+		//Optional<ProductCategoryEntity> existed = areaRepo.findByNameIgnoreCaseAndClientAddress_Id(areaName, targetLocation.getId());
 
 		if(areaRepo.existsByNameInAnyArea(pAid,areaName)==1) {
 			throw new DuplicationErrorException(messageSource.getMessage("label.areaName", null, LocaleContextHolder.getLocale())+": "+areaName+", "+messageSource.getMessage("msg.isUsed", null, LocaleContextHolder.getLocale()));
@@ -92,7 +96,7 @@ public class AreaServiceImpl implements AreaService{
 	public List<SpaceAreaDTO> getAreaAndSubAreaByClientAddressPubId(String pAid) {
 		List<SpaceAreaDTO> retVal = new ArrayList<>();
 		ClientAddressEntity location = addressRepo.findByPubId(pAid);
-		//List<ProductCategoryEntity> daftar = catRepo.findAllByClientAddressSorted(location.getId());
+		//List<ProductCategoryEntity> daftar = areaRepo.findAllByClientAddressSorted(location.getId());
 		try {
 			System.out.println("getAreaAndSubAreaByClientAddressPubId == "+location.getId());
 			List<SpaceAreaHierarchyProjection> daftar = areaRepo.findAllByClientAddressHierarchical(location.getId());
@@ -108,4 +112,95 @@ public class AreaServiceImpl implements AreaService{
 		}
 		return retVal;
 	}
+
+    @Override
+    @Transactional
+    public SpaceAreaDTO addSubMainArea(Long parentId, String areaName, String pAid) {
+        System.out.println("ADDsUBmAINaREA");
+        SpaceAreaDTO retVal = new SpaceAreaDTO();
+        ClientAddressEntity targetLocation = addressRepo.findByPubId(pAid);
+        if(targetLocation==null)
+            throw new NullPointerException("Location not found");
+        if(areaRepo.existsByNameIgnoreCaseAndClientAddress_IdAndDeletedFalse(areaName, targetLocation.getId()))
+            throw new DuplicationErrorException(messageSource.getMessage("areaName", null, LocaleContextHolder.getLocale())+": "+areaName+", "+messageSource.getMessage("msg.isUsed", null, LocaleContextHolder.getLocale()));
+
+        Optional<SpaceAreaEntity> parentEntity = areaRepo.findById(parentId);
+        if(parentEntity.isEmpty())
+            throw new NullPointerException("Parent area Not Found");
+        SpaceAreaEntity newArea = new SpaceAreaEntity();
+        newArea.setName(areaName.trim());
+        newArea.setClientAddress(targetLocation);
+        newArea.setParent(parentEntity.get());
+        try {
+            SpaceAreaEntity saved = areaRepo.save(newArea);
+            modelMapper.getConfiguration()
+                    .setSkipNullEnabled(true);
+            modelMapper.map(saved,retVal);
+            AreaHierarchyProjectionDTO dto =areaRepo.findCategoryHierarchyLevelById(saved.getId());
+            retVal.setIndentLevel(dto.getLevel());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new GenericCustomErrorException("Unexpected Error");
+        }
+        return retVal;
+    }
+
+    @Override
+    public List<ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId> getPathToEachEndChildCategoryByClientAddressPubId(String pAid) {
+
+        List<ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId> returnValue = new ArrayList<>();
+        ClientAddressEntity location = addressRepo.findByPubId(pAid);
+        try {
+            returnValue = areaRepo.findAllPathEndCategoryChildHierarchical(location.getId());
+            /*
+            if(pathAndTotItem!=null) {
+                for(ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId singleton : pathAndTotItem) {
+                    retVal.add(singleton.getFullPath());
+                }
+            }
+
+             */
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return returnValue;
+    }
+
+    @Override
+    public List<ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId> getPathToEachEndChildCategoryByClientAddressPubId(String pAid, String filter) {
+
+        List<ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId> returnValue = new ArrayList<>();
+        ClientAddressEntity location = addressRepo.findByPubId(pAid);
+        try {
+            if(filter.equalsIgnoreCase("noFilter"))
+                returnValue = getPathToEachEndChildCategoryByClientAddressPubId(pAid);
+            if(filter.equalsIgnoreCase("emptyCat"))
+                returnValue = areaRepo.findAllPathEndCategoryChildHierarchicalHasNoItemOnly(location.getId());
+            if(filter.equalsIgnoreCase("noEmptyCat"))
+                returnValue = areaRepo.findAllPathEndCategoryChildHierarchicalHasItemOnly(location.getId());
+            if(filter.equalsIgnoreCase("noImage"))
+                returnValue = areaRepo.findAllPathEndCategoryChildHierarchicalHasItemOnlyButNoImage(location.getId());
+            if(filter.equalsIgnoreCase("noPrice"))
+                returnValue = areaRepo.findAllPathEndCategoryChildHierarchicalHasItemOnlyButNoPrice(location.getId());
+            if(filter.equalsIgnoreCase("noDesc"))
+                returnValue = areaRepo.findAllPathEndCategoryChildHierarchicalHasItemOnlyButNoDesc(location.getId());
+
+            /*
+            if(pathAndTotItem!=null) {
+                for(ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId singleton : pathAndTotItem) {
+                    retVal.add(singleton.getFullPath());
+                }
+            }
+
+             */
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return returnValue;
+    }
 }

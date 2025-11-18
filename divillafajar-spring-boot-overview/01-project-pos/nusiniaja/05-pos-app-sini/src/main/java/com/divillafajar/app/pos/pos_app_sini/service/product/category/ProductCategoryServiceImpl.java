@@ -1,5 +1,6 @@
 package com.divillafajar.app.pos.pos_app_sini.service.product.category;
 
+import com.divillafajar.app.pos.pos_app_sini.common.enums.LineOfBusinessEnum;
 import com.divillafajar.app.pos.pos_app_sini.exception.DuplicationErrorException;
 import com.divillafajar.app.pos.pos_app_sini.exception.GenericCustomErrorException;
 import com.divillafajar.app.pos.pos_app_sini.exception.category.CategoryHasSubCategoryException;
@@ -63,6 +64,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
     }
 
     @Override
+    @Transactional
     public ProductCategoryDTO addSubProductCategory(Long parentId, String categoryName, String pAid) {
         ProductCategoryDTO retVal = new ProductCategoryDTO();
 
@@ -86,15 +88,10 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
         newCat.setClientAddress(targetLocation);
         newCat.setParent(parentEntity.get());
         try {
-	        System.out.println("lanjut 2");
-            ProductCategoryEntity saved = catRepo.save(newCat);
-	        System.out.println("lanjut 3");
-            BeanUtils.copyProperties(saved,retVal);
-	        System.out.println("lanjut 4");
-            CategoryHierarchyProjectionDTO dto =catRepo.findCategoryHierarchyLevelById(saved.getId());
-	        System.out.println("lanjut 5");
-            retVal.setIndentLevel(dto.getLevel());
-	        System.out.println("lanjut 6");
+	        ProductCategoryEntity saved = catRepo.save(newCat);
+	        BeanUtils.copyProperties(saved,retVal);
+	        CategoryHierarchyProjectionDTO dto =catRepo.findCategoryHierarchyLevelById(saved.getId());
+	        retVal.setIndentLevel(dto.getLevel());
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -262,30 +259,35 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
         ClientAddressEntity targetAddress = addressRepo.findByPubId(clientAddressPubId);
         long cAid = targetAddress.getId();
 
-		if(lang.equalsIgnoreCase("id")) {
-            //insert top cat
-            catRepo.insertDefaultIdCategories(cAid);
-            //insert sub
-            catRepo.insertDefaultIdSubFoodCategories(cAid);
-            catRepo.insertDefaultIdSubBeverageCategories(cAid);
-            catRepo.insertDefaultIdSubComboCategories(cAid);
-            catRepo.insertDefaultIdSubDessertCategories(cAid);
-            catRepo.insertDefaultIdSubAddOnsCategories(cAid);
-            catRepo.insertDefaultIdSubMerchandiseCategories(cAid);
-
-		} else if(lang.equalsIgnoreCase("en")) {
-            //insert top cat
-            catRepo.insertDefaultEnCategories(cAid);
-            //insert sub
-            catRepo.insertDefaultEnSubFoodCategories(cAid);
-            catRepo.insertDefaultEnSubBeverageCategories(cAid);
-            catRepo.insertDefaultEnSubComboCategories(cAid);
-            catRepo.insertDefaultEnSubDessertCategories(cAid);
-            catRepo.insertDefaultEnSubAddOnsCategories(cAid);
-            catRepo.insertDefaultEnSubMerchandiseCategories(cAid);
+        if(targetAddress.getLocationCategory().equalsIgnoreCase(LineOfBusinessEnum.ACCOMODATION.name())) {
+            System.out.println("!!! HARUS UPDATE DI ProductCategoryServiceImpl.createDefaultCategory dulu !!!!!");
         }
-        //set sudah useDefaultCategory
-        targetAddress.setUsedDefaultCategory(true);
+        else if(targetAddress.getLocationCategory().equalsIgnoreCase(LineOfBusinessEnum.FOODBAVERAGES.name())) {
+            if(lang.equalsIgnoreCase("id")) {
+                //insert top cat
+                catRepo.insertDefaultIdCategories(cAid);
+                //insert sub
+                catRepo.insertDefaultIdSubFoodCategories(cAid);
+                catRepo.insertDefaultIdSubBeverageCategories(cAid);
+                catRepo.insertDefaultIdSubComboCategories(cAid);
+                catRepo.insertDefaultIdSubDessertCategories(cAid);
+                catRepo.insertDefaultIdSubAddOnsCategories(cAid);
+                catRepo.insertDefaultIdSubMerchandiseCategories(cAid);
+
+            } else if(lang.equalsIgnoreCase("en")) {
+                //insert top cat
+                catRepo.insertDefaultEnCategories(cAid);
+                //insert sub
+                catRepo.insertDefaultEnSubFoodCategories(cAid);
+                catRepo.insertDefaultEnSubBeverageCategories(cAid);
+                catRepo.insertDefaultEnSubComboCategories(cAid);
+                catRepo.insertDefaultEnSubDessertCategories(cAid);
+                catRepo.insertDefaultEnSubAddOnsCategories(cAid);
+                catRepo.insertDefaultEnSubMerchandiseCategories(cAid);
+            }
+            //set sudah useDefaultCategory
+            targetAddress.setUsedDefaultCategory(true);
+        }
         addressRepo.save(targetAddress);
 	}
 

@@ -1,19 +1,19 @@
-<th:block th:fragment="areaList(categories)" xmlns:th="http://www.w3.org/1999/xhtml">
+<th:block th:fragment="areaList(items)" xmlns:th="http://www.w3.org/1999/xhtml">
     <ul class="list-group" id="itemList">
-        <li th:each="cat, stat : ${categories}"
+        <li th:each="item, stat : ${items}"
             class="list-group-item d-flex justify-content-between align-items-center"
-            th:attr="data-id=${cat.id}, data-indent=${cat.indentLevel}">
+            th:attr="data-id=${item.id}, data-indent=${item.indentLevel}">
 
         <span class="item-text">
           <!-- tampilkan path hanya bila ada -->
-          <small th:if="${cat.path != null and #strings.isNotEmpty(cat.path)}"
+          <small th:if="${item.path != null and #strings.isNotEmpty(item.path)}"
                  class="item-path text-muted d-block"
-                 th:text="${cat.path}"></small>
+                 th:text="${item.path}"></small>
 
             <!-- name (editable) — padding diterapkan pada name agar indent tetap benar) -->
           <span class="item-name"
-                th:style="${cat.parent != null} ? 'padding-left:' + (${cat.indentLevel} * 25) + 'px;'"
-                th:text="${cat.name}"></span>
+                th:style="${item.parent != null} ? 'padding-left:' + (${item.indentLevel} * 25) + 'px;'"
+                th:text="${item.name}"></span>
         </span>
 
             <div class="btn-group mb-0 btn-group-sm buttons">

@@ -14,9 +14,9 @@
                     </button>
                 </div>
                 <div class="modal-body" id="modalBody">
-                    <span th:text="${textBody}"></span>
-                    <strong id="deletedItemName" th:utext="|${deletedItemName}"></strong>
-                    <span>?</span>
+                    <span class="d-block text-center" th:utext="${textBody}"></span>
+                    <strong class="d-block text-center" id="deletedItemName" th:utext="|${deletedItemName}|"></strong>
+                    <span class="d-block text-center">?</span>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light-secondary"

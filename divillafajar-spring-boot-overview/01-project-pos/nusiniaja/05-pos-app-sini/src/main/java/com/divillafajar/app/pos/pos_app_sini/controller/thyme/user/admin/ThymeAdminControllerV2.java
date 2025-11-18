@@ -218,6 +218,7 @@ public class ThymeAdminControllerV2 {
         if (listActiveLocation != null && !listActiveLocation.isEmpty()) {
             model.addAttribute("listActiveLocation", listActiveLocation);
         }
+
         model.addAttribute("lobList", LineOfBusinessEnum.values());
         model.addAttribute("pid", clientAddressPubId);
         model.addAttribute("clientName", client.getClientName());

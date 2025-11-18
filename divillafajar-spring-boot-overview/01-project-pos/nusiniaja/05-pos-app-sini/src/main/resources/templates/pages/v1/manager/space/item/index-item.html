@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- inject contextPath -->
+    <meta name="contextPath" th:content="@{/}">
+    <meta name="pAid" th:content="${session.targetAddress.pubId}">
+    <title th:text="#{label.itemSetting}"></title>
+    <link rel="shortcut icon" th:href="@{/assets/compiled/svg/favicon.svg}" type="image/x-icon}">
+    <link rel="shortcut icon"
+          href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACEAAAAiCAYAAADRcLDBAAAEs2lUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNS41LjAiPgogPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgeG1sbnM6ZXhpZj0iaHR0cDovL25zLmFkb2JlLmNvbS9leGlmLzEuMC8iCiAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyIKICAgIHhtbG5zOnBob3Rvc2hvcD0iaHR0cDovL25zLmFkb2JlLmNvbS9waG90b3Nob3AvMS4wLyIKICAgIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIKICAgIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIgogICAgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZUV2ZW50IyIKICAgZXhpZjpQaXhlbFhEaW1lbnNpb249IjMzIgogICBleGlmOlBpeGVsWURpbWVuc2lvbj0iMzQiCiAgIGV4aWY6Q29sb3JTcGFjZT0iMSIKICAgdGlmZjpJbWFnZVdpZHRoPSIzMyIKICAgdGlmZjpJbWFnZUxlbmd0aD0iMzQiCiAgIHRpZmY6UmVzb2x1dGlvblVuaXQ9IjIiCiAgIHRpZmY6WFJlc29sdXRpb249Ijk2LjAiCiAgIHRpZmY6WVJlc29sdXRpb249Ijk2LjAiCiAgIHBob3Rvc2hvcDpDb2xvck1vZGU9IjMiCiAgIHBob3Rvc2hvcDpJQ0NQcm9maWxlPSJzUkdCIElFQzYxOTY2LTIuMSIKICAgeG1wOk1vZGlmeURhdGU9IjIwMjItMDMtMzFUMTA6NTA6MjMrMDI6MDAiCiAgIHhtcDpNZXRhZGF0YURhdGU9IjIwMjItMDMtMzFUMTA6NTA6MjMrMDI6MDAiPgogICA8eG1wTU06SGlzdG9yeT4KICAgIDxyZGY6U2VxPgogICAgIDxyZGY6bGkKICAgICAgc3RFdnQ6YWN0aW9uPSJwcm9kdWNlZCIKICAgICAgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWZmaW5pdHkgRGVzaWduZXIgMS4xMC4xIgogICAgICBzdEV2dDp3aGVuPSIyMDIyLTAzLTMxVDEwOjUwOjIzKzAyOjAwIi8+CiAgICA8L3JkZjpTZXE+CiAgIDwveG1wTU06SGlzdG9yeT4KICA8L3JkZjpEZXNjcmlwdGlvbj4KIDwvcmRmOlJERj4KPC94OnhtcG1ldGE+Cjw/eHBhY2tldCBlbmQ9InIiPz5V57uAAAABgmlDQ1BzUkdCIElFQzYxOTY2LTIuMQAAKJF1kc8rRFEUxz9maORHo1hYKC9hISNGTWwsRn4VFmOUX5uZZ36oeTOv954kW2WrKLHxa8FfwFZZK0WkZClrYoOe87ypmWTO7dzzud97z+nec8ETzaiaWd4NWtYyIiNhZWZ2TvE946WZSjqoj6mmPjE1HKWkfdxR5sSbgFOr9Ll/rXoxYapQVik8oOqGJTwqPL5i6Q5vCzeo6dii8KlwpyEXFL519LjLLw6nXP5y2IhGBsFTJ6ykijhexGra0ITl5bRqmWU1fx/nJTWJ7PSUxBbxJkwijBBGYYwhBgnRQ7/MIQIE6ZIVJfK7f/MnyUmuKrPOKgZLpEhj0SnqslRPSEyKnpCRYdXp/9++msneoFu9JgwVT7b91ga+LfjetO3PQ9v+PgLvI1xkC/m5A+h7F32zoLXug38dzi4LWnwHzjeg8UGPGbFfySvuSSbh9QRqZ6H+Gqrm3Z7l9zm+h+iafNUV7O5Bu5z3L/wAdthn7QIme0YAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAJTSURBVFiF7Zi9axRBGIefEw2IdxFBRQsLWUTBaywSK4ubdSGVIY1Y6HZql8ZKCGIqwX/AYLmCgVQKfiDn7jZeEQMWfsSAHAiKqPiB5mIgELWYOW5vzc3O7niHhT/YZvY37/swM/vOzJbIqVq9uQ04CYwCI8AhYAlYAB4Dc7HnrOSJWcoJcBS4ARzQ2F4BZ2LPmTeNuykHwEWgkQGAet9QfiMZjUSt3hwD7psGTWgs9pwH1hC1enMYeA7sKwDxBqjGnvNdZzKZjqmCAKh+U1kmEwi3IEBbIsugnY5avTkEtIAtFhBrQCX2nLVehqyRqFoCAAwBh3WGLAhbgCRIYYinwLolwLqKUwwi9pxV4KUlxKKKUwxC6ZElRCPLYAJxGfhSEOCz6m8HEXvOB2CyIMSk6m8HoXQTmMkJcA2YNTHm3congOvATo3tE3A29pxbpnFzQSiQPcB55IFmFNgFfEQeahaAGZMpsIJIAZWAHcDX2HN+2cT6r39GxmvC9aPNwH5gO1BOPFuBVWAZue0vA9+A12EgjPadnhCuH1WAE8ivYAQ4ohKaagV4gvxi5oG7YSA2vApsCOH60WngKrA3R9IsvQUuhIGY00K4flQG7gHH/mLytB4C42EgfrQb0mV7us8AAMeBS8mGNMR4nwHamtBB7B4QRNdaS0M8GxDEog7iyoAguvJ0QYSBuAOcAt71Kfl7wA8DcTvZ2KtOlJEr+ByyQtqqhTyHTIeB+ONeqi3brh+VgIN0fohUgWGggizZFTplu12yW8iy/YLOGWMpDMTPXnl+Az9vj2HERYqPAAAAAElFTkSuQmCC"
+          type="image/png">
+    <link rel="stylesheet" th:href="@{/assets/compiled/css/app.css}">
+    <link rel="stylesheet" th:href="@{/assets/compiled/css/app-dark.css}">
+    <link rel="stylesheet" th:href="@{/assets/v0/css/bootstrap.css}">
+    <link rel="stylesheet" th:href="@{/assets/compiled/css/iconly.css}">
+    <link rel="stylesheet" th:href="@{/mine/js/css/toast.css}">
+    <link rel="stylesheet" th:href="@{/assets/vendors/toastify/toastify.css}">
+    <link rel="stylesheet" th:href="@{/mine/js/css/additional-index.css}">
+    <!--link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"-->
+    <link rel="stylesheet" th:href="@{/mine/js/css/breadcrumbs.css}">
+    <style>
+        .card-circle {
+            width: 80px;        /* kecilkan ukuran */
+            height: 80px;
+            padding-top: 5px; /* turunin vertical alignnya */
+            line-height: 20px; /* ini penting supaya icon vertikalnya pas di tengah */
+            border-radius: 50%;
+            text-align: center;
+            top: 0px;
+            display: inline-block;
+        }
+        .card-box {
+            width: 80px;        /* kecilkan ukuran */
+            height: 80px;
+            padding-top: 5px; /* turunin vertical alignnya */
+            line-height: 20px; /* ini penting supaya icon vertikalnya pas di tengah */
+            text-align: center;
+            top: 0px;
+            display: inline-block;
+        }
+        #my-card {
+          height: 50px; /* ubah sesuai kebutuhan */
+        }
+        #my-card .card-body {
+          padding: 0.1rem; /* kecilkan padding */
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <!-- Sidebar slot -->
+    <div layout:fragment="sidebar">
+        <div th:replace="~{/pages/v1/manager/product/sidebar.html :: sidebar(${activePage}, ${activeSub}, '${listActiveLocation}')}"></div>
+    </div>
+    <div id="main">
+        <!-- Notification hamburg slot -->
+        <div layout:fragment="left-header">
+            <div th:replace="~{/pages/v1/fragments/hamburger-header.html :: left-header}"></div>
+        </div>
+        <!-- Notification header slot
+        <div layout:fragment="left-header">
+            <div th:replace="~{/pages/v1/manager/fragments/notification-header.html :: right-header}"></div>
+        </div-->
+        <!-- Index header slot -->
+        <div layout:fragment="logout-and-other-hidden-form">
+            <div th:replace="~{/pages/v1/fragments/logout-and-other-hidden-form.html :: hidden-form(${clientName}, ${updatePath}, ${deletePath})}"></div>
+        </div>
+
+        <!-- Main content slot -->
+        <div class="page-heading">
+            <ol class="breadcrumb">
+                <th:block th:replace="~{/pages/v1/fragments/crumbs/manager-area-root-crumb.html :: manager-product-root-crumb}"></th:block>
+                <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN','MANAGER')" class="breadcrumb-item"
+                    aria-current="page" th:text="|${#messages.msg('label.manager.setting.product.item')}|">
+                </li>
+            </ol>
+            <h3>
+                <span style="font-size:70%; display:block; line-height:1;"
+                      th:text="|${#strings.toUpperCase(#messages.msg('label.setting'))}|">
+                </span>
+                <span th:text="|${#strings.toUpperCase(#messages.msg('label.manager.setting.product.item'))}|"></span>
+
+            </h3>
+        </div>
+        <div layout:fragment="content">
+            <div class="page-content">
+                <!-- list group button & badge start-->
+                <section class="list-group-button-badge">
+                    <div class="row match-height">
+                        <div class="col-12">
+                            <div class="card">
+                                <!--div class="card-header">
+                                    <h4 class="card-title">HEADER</h4>
+                                </div-->
+                                <div class="card-content">
+                                    <div class="card-body">
+                                        <!-- Form input add item -->
+                                        <!--form id="addItemForm" class="mb-3" th:action="@{/v1/manager/product/category}" method="post"-->
+                                        <div class="input-group">
+                                            <!--span class="input-group-text bg-primary text-white"
+                                                    style="font-weight:bold;font-size:1.2rem"
+                                                    th:text="#{label.search}">
+                                            </span-->
+                                            <div class="btn-group me-1 mb-1">
+                                                <div class="dropdown">
+                                                    <button type="button" class="btn btn-primary dropdown-toggle"
+                                                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        <i class="bi bi-search me-1"></i>
+                                                        <span th:switch="${filter}">
+                                                        <span th:case="'emptyCat'" th:text="#{msg.showEmptyCategories}"></span>
+                                                        <span th:case="'noPrice'" th:text="#{msg.itemNoPrice}"></span>
+                                                        <span th:case="'noImage'" th:text="#{msg.itemNoImage}"></span>
+                                                        <span th:case="'noDesc'" th:text="#{msg.itemNoDesc}"></span>
+                                                        <span th:case="'noFilter'" th:text="#{label.noFilter}"></span>
+                                                            <span th:case="*" th:text="#{label.noFilter}"></span>
+                                                    </span>
+                                                    </button>
+
+                                                    <div class="dropdown-menu">
+                                                        <a class="dropdown-item"
+                                                           th:classappend="(${filter} == null or ${filter} == 'nofilter') ? ' active' : ''"
+                                                           th:href="@{/v1/manager/manage/product/item(pid=${targetAddress.pubId},activePage='menu1',activeSub='subMenu1-2',filter='nofilter')}"
+                                                           th:utext="|#{label.noFilter}|"></a>
+
+                                                        <a class="dropdown-item"
+                                                           th:classappend="${filter} == 'noEmptyCat' ? ' active' : ''"
+                                                           th:href="@{/v1/manager/manage/product/item(pid=${targetAddress.pubId},activePage='menu1',activeSub='subMenu1-2',filter='emptyCat')}"
+                                                           th:utext="|#{msg.showEmptyCategories}|"></a>
+
+                                                        <a class="dropdown-item"
+                                                           th:classappend="${filter} == 'noPrice' ? ' active' : ''"
+                                                           th:href="@{/v1/manager/manage/product/item(pid=${targetAddress.pubId},activePage='menu1',activeSub='subMenu1-2',filter='noPrice')}"
+                                                           th:utext="|#{msg.itemNoPrice}|"></a>
+
+                                                        <a class="dropdown-item"
+                                                           th:classappend="${filter} == 'noImage' ? ' active' : ''"
+                                                           th:href="@{/v1/manager/manage/product/item(pid=${targetAddress.pubId},activePage='menu1',activeSub='subMenu1-2',filter='noImage')}"
+                                                           th:utext="|#{msg.itemNoImage}|"></a>
+
+                                                        <a class="dropdown-item"
+                                                           th:classappend="${filter} == 'noDesc' ? ' active' : ''"
+                                                           th:href="@{/v1/manager/manage/product/item(pid=${targetAddress.pubId},activePage='menu1',activeSub='subMenu1-2',filter='noDesc')}"
+                                                           th:utext="|#{msg.itemNoDesc}|"></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <input type="text" id="newItemInput" class="form-control"
+                                                   th:placeholder="|${#strings.toLowerCase(#messages.msg('msg.enterKword'))} . . .|"
+                                                   required>
+                                            <button id="addItemBtn" class="btn btn-success" type="button" title="Add">
+                                                <i class="bi bi-search"></i>
+                                            </button>
+                                            <!-- Tombol Reset -->
+                                            <button id="resetBtn" class="btn bg-primary text-white" type="button" title="Reset Filter"
+                                                    style="font-weight:bold;">
+                                                <i class="bi bi-arrow-counterclockwise"></i>
+                                            </button>
+                                        </div>
+                                        <!--/form-->
+                                        <h3>
+                                            <span id="lblUrutan" th:text="#{label.listAreaAtoZ}" style="font-size:60%;padding-top:20px"></span>
+                                            <span id="lblSearchResult"
+                                                  th:utext="#{label.searchResult} + ' :'"
+                                                  style="font-size:60%;padding-top:20px; display:none">
+                                            </span>
+                                        </h3>
+                                        <div th:if="${listEndChildPath != null and !listEndChildPath.isEmpty()}">
+                                            <div th:each="path, loop : ${listEndChildPath}">
+                                                <nav aria-label="breadcrumb" class="breadcrumb-row mb-2">
+                                                    <ol class="breadcrumb mb-0">
+                                                        <th:block th:each="segment, iterStat : ${#strings.arraySplit(path, '/')}">
+                                                            <th:block th:with="part=${#strings.trim(segment)}, pair=${#strings.arraySplit(part, '~')}, name=${pair[0]}, id=${pair[1]}">
+                                                                <li class="breadcrumb-item" th:classappend="${iterStat.last} ? 'active'">
+                                                                    <!-- bila item = o -->
+                                                                    <a class="text-warning" th:if="${iterStat.last and listTotItem[loop.index]<1}"
+                                                                       th:href="@{/v1/manager/manage/area/item/{id}(id=${id},path=${path},activePage=${activePage},activeSub=${activeSub})}"
+                                                                       th:utext="|${#strings.replace(name, '|', '/')} (+ ${#strings.toLowerCase(#messages.msg('label.add'))} ${#strings.toLowerCase(#messages.msg('label.manager.setting.product.item'))})|"></a>
+                                                                    <!-- bila item > o -->
+                                                                    <a th:if="${iterStat.last and listTotItem[loop.index]>0}"
+                                                                       th:href="@{/v1/manager/manage/area/item/{id}(id=${id},path=${path},activePage=${activePage},activeSub=${activeSub})}"
+                                                                       th:utext="|${#strings.replace(name, '|', '/')} [${listTotItem[loop.index]}]|"></a>
+                                                                    <span th:if="${!iterStat.last}"
+                                                                          th:utext="${name}"></span>
+                                                                </li>
+                                                            </th:block>
+                                                        </th:block>
+                                                    </ol>
+                                                </nav>
+                                            </div>
+                                        </div>
+
+                                        <!-- 🟡 Kalau kosong -->
+                                        <div id="noResultMsg"
+                                             class="text-center text-muted mt-3">
+                                            <strong>0 Found</strong>
+                                        </div>
+
+                                        <!--div th:replace="~{/pages/v1/manager/product/item/category-item.html :: categoryList(${orderlistAreaAnsSub})}"></div-->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- list group button & badge ends -->
+            </div>
+        </div>
+        <!-- Footer slot -->
+        <div layout:fragment="footer">
+            <div th:replace="~{/pages/v1/fragments/footer.html :: footer}"></div>
+        </div>
+    </div>
+</div>
+<!-- List of Toast Msg -->
+<div id="toast-msg-update-failed" th:data-msg="#{label.updateFailed}"></div>
+<div id="toast-msg-update-success" th:data-msg="#{label.updateSuccessfully}"></div>
+
+
+<!-- Toast status slot -->
+<div layout:fragment="toast-status">
+    <div th:replace="~{/pages/v1/fragments/toast/toast-status-process-result :: toast-messages(${successMessage}, ${errorMessage}, ${session.toastTimeout})}"></div>
+</div>
+<!-- Toast confirm slot -->
+<div layout:fragment="toast-confirm">
+    <!--div th:replace="~{/pages/v1/manager/fragments/toast-confirm.html :: toast-confirm('cancel', 'update', 'delete')}"></div-->
+    <div th:replace="~{/pages/v1/fragments/toast/toast-confirm.html :: toast-confirm('cancel', 'update', 'delete')}"></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!--script th:src="@{/assets/static/js/bootstrap.V5.3.8/bootstrap.bundle.min.js}"></script-->
+
+<script th:src="@{/assets/static/js/initTheme.js}"></script>
+<script th:src="@{/assets/static/js/components/dark.js}"></script>
+<script th:src="@{/assets/extensions/perfect-scrollbar/perfect-scrollbar.min.js}"></script>
+<script th:src="@{/assets/vendors/toastify/toastify.js}"></script>
+<!--
+<script th:src="@{/assets/compiled/js/app.js}"></script>
+-->
+<script th:src="@{/assets/static/js/pages/dashboard.js}"></script>
+<script th:src="@{/mine/js/toast-handler.js}"></script>
+
+<script th:src="@{/assets/v0/js/main.js}"></script>
+<!--script th:src="@{/mine/js/additional-index.js}"></script-->
+
+<div layout:fragment="modal-confirm-delete">
+    <!--div th:replace="~{/pages/v1/manager/fragments/toast-confirm.html :: toast-confirm('cancel', 'update', 'delete')}"></div-->
+    <div th:replace="~{/pages/v1/fragments/modal/modal-confirm-delete.html :: modal-confirm-delete(${#strings.toUpperCase(#messages.msg('modal.confirm.delete.title'))},
+    #{modal.confirm.delete.body},'itemNameReplaceByJs',#{label.cancel}, #{label.delete})}"></div>
+</div>
+<!--script th:src="@{/mine/js/modal/modal-confirm-edit-delete.js}"></script-->
+
+<script th:inline="javascript">
+
+    const toastMediumTimeout = [[${toastMediumTimeout}]];
+    const toastShortTimeout = [[${toastShortTimeout}]];
+    const toastLongTimeout = [[${toastLongTimeout}]];
+
+    document.addEventListener("DOMContentLoaded", function() {
+      const searchInput = document.getElementById("newItemInput");
+      const searchBtn = document.getElementById("addItemBtn");
+      const resetBtn = document.getElementById("resetBtn");
+      const breadcrumbRows = document.querySelectorAll(".breadcrumb-row");
+
+      // ✅ elemen label
+      const lblUrutan = document.getElementById("lblUrutan");
+      const lblSearchResult = document.getElementById("lblSearchResult");
+      const noResultMsg = document.getElementById("noResultMsg");
+
+      // 🟢 Saat load pertama kali, sembunyikan "0 Found" jika listEndChildPath tidak kosong
+      if (breadcrumbRows.length > 0) {
+        noResultMsg.style.display = "none";
+      }
+
+      function filterBreadcrumbs() {
+          const keyword = searchInput.value.trim().toLowerCase();
+          const noResultMsg = document.getElementById("noResultMsg");
+          const breadcrumbRows = document.querySelectorAll(".breadcrumb-row");
+
+          let visibleCount = 0;
+
+          breadcrumbRows.forEach(nav => {
+            const text = nav.innerText.toLowerCase();
+            if (keyword === "" || text.includes(keyword)) {
+              nav.style.display = "";
+              visibleCount++;
+            } else {
+              nav.style.display = "none";
+            }
+          });
+
+          // 🔄 Toggle label
+          if (keyword !== "") {
+            lblUrutan.style.display = "none";
+            lblSearchResult.style.display = "inline";
+          } else {
+            lblUrutan.style.display = "inline";
+            lblSearchResult.style.display = "none";
+          }
+
+          // 🟡 Tampilkan “0 Found” hanya saat keyword ada & tidak ada hasil
+          console.error("visibleCount="+visibleCount);
+          if (keyword !== "" && visibleCount === 0) {
+            noResultMsg.style.display = "block";
+          } else {
+            noResultMsg.style.display = "none";
+          }
+      }
+
+
+
+      // Klik tombol Search
+      searchBtn.addEventListener("click", filterBreadcrumbs);
+
+      // Tekan Enter
+      searchInput.addEventListener("keypress", function(e) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          filterBreadcrumbs();
+        }
+      });
+
+      // Klik tombol Reset → tampilkan semua lagi
+      resetBtn.addEventListener("click", function() {
+        searchInput.value = ""; // kosongkan input
+        breadcrumbRows.forEach(nav => nav.style.display = ""); // tampilkan semua
+        searchInput.focus(); // fokus kembali ke input
+
+        // ✅ balikkan label
+        lblUrutan.style.display = "inline";
+        lblSearchResult.style.display = "none";
+
+        // 🔁 sembunyikan pesan "0 Found"
+        document.getElementById("noResultMsg").style.display = "none";
+      });
+    });
+</script>
+
+
+
+</body>
+
+</html>

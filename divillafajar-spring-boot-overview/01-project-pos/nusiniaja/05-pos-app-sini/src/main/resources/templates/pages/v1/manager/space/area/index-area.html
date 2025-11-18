@@ -115,9 +115,9 @@
                                             <div class="col text-start" th:if="${orderListAreaAndSubArea != null and orderListAreaAndSubArea.size() > 0}">
                                                 <!--h3 th:if="${orderListAreaAndSubArea != null and orderListAreaAndSubArea.size() > 0}"-->
                                                 <h3>
-                                                    <span id="lblUrutan" th:text="#{label.listCategoryAtoZ}" style="font-size:60%;padding-top:20px"></span>
+                                                    <span id="lblUrutan" th:text="#{label.listAreaAtoZ}" style="font-size:60%;padding-top:20px"></span>
                                                     <span id="lblNonUrutan"
-                                                          th:utext="#{label.listCategoryNonAtoZ} + ' <i class=&quot;bi bi-sort-alpha-down refresh-icon&quot; id=&quot;refresh-order&quot; onclick=&quot;location.reload();&quot;></i>'"
+                                                          th:utext="#{label.listAreaNonAtoZ} + ' <i class=&quot;bi bi-sort-alpha-down refresh-icon&quot; id=&quot;refresh-order&quot; onclick=&quot;location.reload();&quot;></i>'"
                                                           style="font-size:60%;padding-top:20px; display:none">
                                                     </span>
                                                 </h3>
@@ -257,7 +257,7 @@
 <div layout:fragment="modal-confirm-delete">
     <!--div th:replace="~{/pages/v1/manager/fragments/toast-confirm.html :: toast-confirm('cancel', 'update', 'delete')}"></div-->
     <div th:replace="~{/pages/v1/fragments/modal/modal-confirm-delete.html :: modal-confirm-delete(${#strings.toUpperCase(#messages.msg('modal.confirm.delete.title'))},
-    #{modal.confirm.delete.body},'itemNameReplaceByJs',#{label.cancel}, #{label.delete})}"></div>
+    #{modal.confirm.delete.area.body},'itemNameReplaceByJs',#{label.cancel}, #{label.delete})}"></div>
 </div>
 <!--script th:src="@{/mine/js/modal/modal-confirm-edit-delete.js}"></script-->
 
@@ -761,9 +761,9 @@
           if (hiddenAddSubBtn) hiddenAddSubBtn.style.display = "none";
 
           // simulate delay then fetch (keeping fetch chain format)
-          delay(1500)
-            .then(() =>
-              fetch(`${contextPath}api/v1/manager/product/category/sub`, {
+          //delay(1500)
+          //  .then(() =>
+              fetch(`${contextPath}api/v1/manager/area/main/sub`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -772,7 +772,7 @@
                   clientAddressPubId: pAid
                 })
               })
-            )
+        //    )
             .then(async res => {
               if (res.status === 201 || res.status === 200) return res.json();
               throw new Error("Add failed");

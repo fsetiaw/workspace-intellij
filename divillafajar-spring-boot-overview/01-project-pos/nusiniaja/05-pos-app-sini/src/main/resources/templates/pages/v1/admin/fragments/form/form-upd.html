@@ -55,6 +55,7 @@
 
                                                     <option th:each="lob : ${lobList}"
                                                             th:value="${lob.name()}"
+                                                            th:selected="${lob.name() == clientAddress.locationCategory}"
                                                             th:text="${#messages.msg(lob.i18nKey)}">
                                                     </option>
                                                 </select>
