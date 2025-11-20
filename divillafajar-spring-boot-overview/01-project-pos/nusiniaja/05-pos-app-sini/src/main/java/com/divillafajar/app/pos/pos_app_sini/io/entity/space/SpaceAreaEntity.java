@@ -1,6 +1,7 @@
 package com.divillafajar.app.pos.pos_app_sini.io.entity.space;
 
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientAddressEntity;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.space.unit.AreaUnitEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,8 +21,8 @@ public class SpaceAreaEntity {
 
 	@PrePersist
 	protected void onCreate() {
-		if (this.updatedAt == null)
-			this.updatedAt = LocalDateTime.now();
+		if (this.createdAt == null)
+			this.createdAt = LocalDateTime.now();
 		if (this.deleted == null)
 			this.deleted = false;
 	}
@@ -59,6 +60,9 @@ public class SpaceAreaEntity {
 
     @OneToMany(mappedBy = "spaceArea", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GuestAreaEntity> guestAreas;
+
+	@OneToMany(mappedBy = "spaceArea", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<AreaUnitEntity> units;
 
     // === 🔹 Metadata ===
     @Column(name = "created_at", updatable = false)

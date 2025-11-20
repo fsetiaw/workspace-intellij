@@ -1,10 +1,15 @@
 package com.divillafajar.app.pos.pos_app_sini.service.area;
 
+import com.divillafajar.app.pos.pos_app_sini.common.enums.LineOfBusinessEnum;
+import com.divillafajar.app.pos.pos_app_sini.common.enums.ProductStatusEnum;
 import com.divillafajar.app.pos.pos_app_sini.exception.DuplicationErrorException;
 import com.divillafajar.app.pos.pos_app_sini.exception.GenericCustomErrorException;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.ClientAddressEntity;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientAddressDTO;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.product.ProductDTO;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.product.ProductEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.session.UserSessionLog;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.space.SpaceAreaEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.space.dto.SpaceAreaDTO;
@@ -13,6 +18,7 @@ import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductCategoryHierar
 import com.divillafajar.app.pos.pos_app_sini.io.projection.area.AreaHierarchyProjectionDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.area.AreaSummaryProjection;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.area.SpaceAreaHierarchyProjection;
+import com.divillafajar.app.pos.pos_app_sini.model.item.CreateItemRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.model.product.ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId;
 import com.divillafajar.app.pos.pos_app_sini.model.user.UserSessionDTO;
 import com.divillafajar.app.pos.pos_app_sini.repo.area.AreaRepo;
@@ -23,6 +29,7 @@ import org.modelmapper.TypeToken;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +47,7 @@ public class AreaServiceImpl implements AreaService{
 	private final ClientAddressRepo addressRepo;
 	private final MessageSource messageSource;
     private final ModelMapper modelMapper;
+	private final JdbcTemplate jdbcTemplate;
 
 	@Override
 	public boolean locationHasArea(String pAid) {
@@ -56,7 +64,7 @@ public class AreaServiceImpl implements AreaService{
 
 	@Override
 	@Transactional
-	public ProductCategoryDTO addNewMainArea(String areaName, String pAid) throws Exception {
+	public ProductCategoryDTO addNewMainArea(String areaName, String pAid, String username) throws Exception {
 		ProductCategoryDTO retVal = new ProductCategoryDTO();
 		ClientAddressEntity targetLocation = addressRepo.findByPubId(pAid);
 		if(targetLocation==null) {
@@ -71,6 +79,7 @@ public class AreaServiceImpl implements AreaService{
 		newArea.setName(areaName);
 		newArea.setClientAddress(targetLocation);
 		newArea.setIndentLevel(0L);
+		newArea.setCreatedBy(username);
 		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 		if (attr != null) {
 			HttpSession session = attr.getRequest().getSession(false); // false = jangan buat baru
@@ -115,7 +124,7 @@ public class AreaServiceImpl implements AreaService{
 
     @Override
     @Transactional
-    public SpaceAreaDTO addSubMainArea(Long parentId, String areaName, String pAid) {
+    public SpaceAreaDTO addSubMainArea(Long parentId, String areaName, String pAid, String username) {
         System.out.println("ADDsUBmAINaREA");
         SpaceAreaDTO retVal = new SpaceAreaDTO();
         ClientAddressEntity targetLocation = addressRepo.findByPubId(pAid);
@@ -131,6 +140,7 @@ public class AreaServiceImpl implements AreaService{
         newArea.setName(areaName.trim());
         newArea.setClientAddress(targetLocation);
         newArea.setParent(parentEntity.get());
+		newArea.setCreatedBy(username);
         try {
             SpaceAreaEntity saved = areaRepo.save(newArea);
             modelMapper.getConfiguration()
@@ -203,4 +213,138 @@ public class AreaServiceImpl implements AreaService{
 
         return returnValue;
     }
+
+	@Override
+	public void createDefaultArea(String lang, String clientAddressPubId) {
+		ClientAddressEntity targetAddress = addressRepo.findByPubId(clientAddressPubId);
+		long cAid = targetAddress.getId();
+
+		if(targetAddress.getLocationCategory().equalsIgnoreCase(LineOfBusinessEnum.ACCOMODATION.name())) {
+			if(lang.equalsIgnoreCase("id")) {
+				//insert top cat
+				areaRepo.insertDefaultIdArea(cAid);
+				//insert sub
+
+				areaRepo.insertDefaultIdSubAccomodation(cAid);
+				areaRepo.insertDefaultIdSubPublicArea(cAid);
+				areaRepo.insertDefaultIdSubSecurity(cAid);
+				areaRepo.insertDefaultIdSubFB(cAid);
+				areaRepo.insertDefaultIdSubPark(cAid);
+				/*
+
+				areaRepo.insertDefaultIdSubAddOnsCategories(cAid);
+				areaRepo.insertDefaultIdSubMerchandiseCategories(cAid);
+				*/
+
+
+			} else if(lang.equalsIgnoreCase("en")) {
+				/*insert top cat
+				areaRepo.insertDefaultEnCategories(cAid);
+				//insert sub
+				areaRepo.insertDefaultEnSubFoodCategories(cAid);
+				areaRepo.insertDefaultEnSubBeverageCategories(cAid);
+				areaRepo.insertDefaultEnSubComboCategories(cAid);
+				areaRepo.insertDefaultEnSubDessertCategories(cAid);
+				areaRepo.insertDefaultEnSubAddOnsCategories(cAid);
+				areaRepo.insertDefaultEnSubMerchandiseCategories(cAid);
+
+				 */
+			}
+			//set sudah useDefaultCategory
+			targetAddress.setUsedDefaultArea(true);
+
+		}
+		else if(targetAddress.getLocationCategory().equalsIgnoreCase(LineOfBusinessEnum.FOODBAVERAGES.name())) {
+
+			System.out.println("!!! HARUS UPDATE DI AreaServiceImpl.createDefault dulu !!!!!");
+		}
+		addressRepo.save(targetAddress);
+	}
+
+	@Transactional
+	@Override
+	public void resetAreaByClientAddress(String clientAddressPubId) {
+		ClientAddressEntity targetAddress = addressRepo.findByPubId(clientAddressPubId);
+		long cAid = targetAddress.getId();
+		softDeleteAllAreaWithoutProductOnlyByClientAddressId(cAid);
+		//reset sudah useDefaultCategory
+		targetAddress.setUsedDefaultArea(false);
+		addressRepo.save(targetAddress);
+	}
+
+	@Transactional
+	public void softDeleteAllAreaWithoutProductOnlyByClientAddressId(Long clientAddressId) {
+
+		String sql = """
+        WITH RECURSIVE category_with_product AS (
+
+            -- Ambil kategori yang punya produk
+            SELECT DISTINCT p.category_id AS id
+            FROM product p
+            WHERE p.client_address_id = ?
+              AND p.deleted = FALSE
+              AND p.category_id IS NOT NULL
+
+            UNION ALL
+
+            -- Ambil semua parent dari kategori yang punya produk
+            SELECT pc.parent_id AS id
+            FROM product_category pc
+            INNER JOIN category_with_product cwp ON pc.id = cwp.id
+            WHERE pc.parent_id IS NOT NULL
+        )
+
+        UPDATE product_category
+        SET deleted = TRUE
+        WHERE client_address_id = ?
+          AND deleted = FALSE     -- hanya yang belum soft delete
+          AND id NOT IN (SELECT id FROM category_with_product)
+    """;
+
+		jdbcTemplate.update(sql, clientAddressId, clientAddressId);
+	}
+
+	@Override
+	@Transactional
+	public ProductDTO addNewUnit(Long catId, ClientAddressDTO dto, CreateItemRequestModel createItemRequestModel) {
+		ProductDTO retVal = new ProductDTO();
+		System.out.println("===== addNewProduct =======");
+		System.out.println("===== "+dto.getPubId()+" =======");
+/*
+		//check apa nama sudah digunakan di lokasi tersebut
+		ProductEntity exist =  productRepo.searchProductsByClientAddressPubIdAndName(dto.getPubId(), createItemRequestModel.getName());
+		if(exist!=null) {
+			Optional<ProductCategoryEntity> pce = categoryRepo.findById(exist.getCategory().getId());
+			System.out.println("--"+pce.get().getName());
+			throw new DuplicationErrorException(pce.get().getName());
+		}
+
+		Optional<ProductCategoryEntity> categoryEntity = categoryRepo.findById(catId);
+		if(categoryEntity.isEmpty())
+			throw new NullPointerException("category Not Found");
+
+		try {
+
+			ProductEntity newItem = new ProductEntity();
+			newItem.setName(createItemRequestModel.getName());
+			newItem.setStatus(ProductStatusEnum.DRAFT);
+			newItem.setCategory(categoryEntity.get());
+			newItem.setDescription(createItemRequestModel.getDescription());
+			System.out.println("pit1");
+			ClientAddressEntity targetLocatiopn = addressRepo.findByPubId(dto.getPubId());
+			System.out.println("pit2");
+			newItem.setClientAddress(targetLocatiopn);
+			System.out.println("pit3");
+			ProductEntity savedProduct = productRepo.save(newItem);
+			System.out.println("pit4");
+			retVal = modelMapper.map(savedProduct,ProductDTO.class);
+			System.out.println("pit5");
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new GenericCustomErrorException(e.getMessage());
+		}
+
+ */
+		return retVal;
+	}
 }

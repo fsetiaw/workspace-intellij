@@ -136,4 +136,7 @@ public class ClientAddressEntity implements Serializable {
 
     @Column(name = "used_default_category", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
     private Boolean usedDefaultCategory = false;
+
+	@Column(name = "used_default_area", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
+	private Boolean usedDefaultArea = false;
 }

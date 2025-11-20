@@ -8,6 +8,7 @@ import com.divillafajar.app.pos.pos_app_sini.io.projection.area.AreaHierarchyPro
 import com.divillafajar.app.pos.pos_app_sini.io.projection.area.AreaSummaryProjection;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.area.SpaceAreaHierarchyProjection;
 import com.divillafajar.app.pos.pos_app_sini.model.product.ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -452,4 +453,283 @@ public interface AreaRepo extends CrudRepository<SpaceAreaEntity, Long> {
     )
     List<ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId> findAllPathEndCategoryChildHierarchicalHasItemOnlyButNoDesc(@Param("clientAddressId") Long clientAddressId);
 
+	/******************************ID***************************************/
+	@Modifying
+	@Query(value = """
+        INSERT INTO space_area (name, indent_level, parent_id, client_address_id, created_by, deleted, created_at)
+       SELECT tmp.name, tmp.indent_level, 
+        -- Ambil parent_id yang masih aktif (deleted = FALSE)
+        (
+            SELECT pc2.id 
+            FROM space_area pc2
+            WHERE pc2.client_address_id = :clientAddressId
+              AND pc2.deleted = FALSE 
+              AND LOWER(pc2.name) = LOWER(tmp.name)
+            LIMIT 1
+        ) AS parent_id,
+        tmp.client_address_id, tmp.created_by, tmp.deleted, NOW()
+       FROM (
+           SELECT 'Akomodasi' AS name, NULL AS indent_level, NULL AS parent_id, :clientAddressId AS client_address_id, 'system' AS created_by, 0 AS deleted, NOW() as created_at
+           UNION ALL SELECT 'Area Parkir', NULL, NULL, :clientAddressId, 'system', 0, NOW()
+           UNION ALL SELECT 'Food & Beverages Area', NULL, NULL, :clientAddressId, 'system', 0, NOW()
+           UNION ALL SELECT 'Fasilitas Publik', NULL, NULL, :clientAddressId, 'system', 0, NOW()
+           UNION ALL SELECT 'Security Area', NULL, NULL, :clientAddressId, 'system', 0, NOW()
+       ) AS tmp
+       WHERE NOT EXISTS (
+           SELECT 1 FROM space_area pc
+           WHERE LOWER(pc.name) = LOWER(tmp.name)
+           AND pc.client_address_id = :clientAddressId 
+           AND pc.deleted = FALSE -- hanya cek yang aktif
+       );
+    """, nativeQuery = true)
+	void insertDefaultIdArea(@Param("clientAddressId") Long clientAddressId);
+
+	@Modifying
+	@Query(value = """
+      INSERT INTO space_area (name, indent_level, parent_id, client_address_id, created_by, deleted, created_at)
+          SELECT * FROM (
+              SELECT 'Outdoor' AS name, 1 AS indent_level,
+                     (
+                         SELECT id FROM space_area 
+                         WHERE LOWER(name) = 'Area Parkir'
+                           AND client_address_id = :clientAddressId
+                           AND deleted = FALSE                   -- hanya parent aktif
+                         LIMIT 1
+                     ) AS parent_id,
+                     :clientAddressId AS client_address_id,
+                     'system' AS created_by,
+                     0 AS deleted, NOW() AS created_at
+
+              UNION ALL
+              SELECT 'Carport', 1,
+                     (SELECT id FROM space_area WHERE LOWER(name) = 'Area Parkir'
+                                                         AND client_address_id = :clientAddressId
+                                                         AND deleted = FALSE LIMIT 1),
+                     :clientAddressId, 'system', 0, NOW()
+            
+              UNION ALL
+              SELECT 'Basement', 1,
+                     (SELECT id FROM space_area WHERE LOWER(name) = 'Area Parkir'
+                                                         AND client_address_id = :clientAddressId
+                                                         AND deleted = FALSE LIMIT 1),
+                     :clientAddressId, 'system', 0, NOW()
+          ) AS tmp
+          WHERE NOT EXISTS (
+              SELECT 1 
+              FROM space_area pc
+              WHERE LOWER(pc.name) = LOWER(tmp.name)
+                AND pc.client_address_id = :clientAddressId
+                AND pc.deleted = FALSE       -- hanya kategori aktif yang dianggap exist
+          );
+            
+    """, nativeQuery = true)
+	void insertDefaultIdSubPark(@Param("clientAddressId") Long clientAddressId);
+
+	@Modifying
+	@Query(value = """
+      INSERT INTO space_area (name, indent_level, parent_id, client_address_id, created_by, deleted, created_at)
+          SELECT * FROM (
+              SELECT 'Resto' AS name, 1 AS indent_level,
+                     (
+                         SELECT id FROM space_area 
+                         WHERE LOWER(name) = 'Food & Beverages Area'
+                           AND client_address_id = :clientAddressId
+                           AND deleted = FALSE                   -- hanya parent aktif
+                         LIMIT 1
+                     ) AS parent_id,
+                     :clientAddressId AS client_address_id,
+                     'system' AS created_by,
+                     0 AS deleted, NOW() AS created_at
+
+              UNION ALL
+              SELECT 'Cafe', 1,
+                     (SELECT id FROM space_area WHERE LOWER(name) = 'Food & Beverages Area'
+                                                         AND client_address_id = :clientAddressId
+                                                         AND deleted = FALSE LIMIT 1),
+                     :clientAddressId, 'system', 0, NOW()
+                     
+              UNION ALL
+              SELECT 'Mart', 1,
+                     (SELECT id FROM space_area WHERE LOWER(name) = 'Food & Beverages Area'
+                                                         AND client_address_id = :clientAddressId
+                                                         AND deleted = FALSE LIMIT 1),
+                     :clientAddressId, 'system', 0, NOW()
+          ) AS tmp
+          WHERE NOT EXISTS (
+              SELECT 1 
+              FROM space_area pc
+              WHERE LOWER(pc.name) = LOWER(tmp.name)
+                AND pc.client_address_id = :clientAddressId
+                AND pc.deleted = FALSE       -- hanya kategori aktif yang dianggap exist
+          );
+            
+    """, nativeQuery = true)
+	void insertDefaultIdSubFB(@Param("clientAddressId") Long clientAddressId);
+
+
+
+	@Modifying
+	@Query(value = """
+      INSERT INTO space_area (name, indent_level, parent_id, client_address_id, created_by, deleted, created_at)
+          SELECT * FROM (
+              SELECT 'Pos Jaga' AS name, 1 AS indent_level,
+                     (
+                         SELECT id FROM space_area 
+                         WHERE LOWER(name) = 'Security Area'
+                           AND client_address_id = :clientAddressId
+                           AND deleted = FALSE                   -- hanya parent aktif
+                         LIMIT 1
+                     ) AS parent_id,
+                     :clientAddressId AS client_address_id,
+                     'system' AS created_by,
+                     0 AS deleted, NOW() AS created_at
+
+              UNION ALL
+              SELECT 'CCTV', 1,
+                     (SELECT id FROM space_area WHERE LOWER(name) = 'Security Area'
+                                                         AND client_address_id = :clientAddressId
+                                                         AND deleted = FALSE LIMIT 1),
+                     :clientAddressId, 'system', 0, NOW()
+          ) AS tmp
+          WHERE NOT EXISTS (
+              SELECT 1 
+              FROM space_area pc
+              WHERE LOWER(pc.name) = LOWER(tmp.name)
+                AND pc.client_address_id = :clientAddressId
+                AND pc.deleted = FALSE       -- hanya kategori aktif yang dianggap exist
+          );
+            
+    """, nativeQuery = true)
+	void insertDefaultIdSubSecurity(@Param("clientAddressId") Long clientAddressId);
+
+	@Modifying
+	@Query(value = """
+      INSERT INTO space_area (name, indent_level, parent_id, client_address_id, created_by, deleted, created_at)
+          SELECT * FROM (
+              SELECT 'Campground' AS name, 1 AS indent_level,
+                     (
+                         SELECT id FROM space_area 
+                         WHERE LOWER(name) = 'Akomodasi'
+                           AND client_address_id = :clientAddressId
+                           AND deleted = FALSE                   -- hanya parent aktif
+                         LIMIT 1
+                     ) AS parent_id,
+                     :clientAddressId AS client_address_id,
+                     'system' AS created_by,
+                     0 AS deleted, NOW() AS created_at
+
+              UNION ALL
+              SELECT 'Villa', 1,
+                     (SELECT id FROM space_area WHERE LOWER(name) = 'Akomodasi'
+                                                         AND client_address_id = :clientAddressId
+                                                         AND deleted = FALSE LIMIT 1),
+                     :clientAddressId, 'system', 0, NOW()
+
+              UNION ALL
+              SELECT 'Cabin', 1,
+                     (SELECT id FROM space_area WHERE LOWER(name) = 'Akomodasi'
+                                                         AND client_address_id = :clientAddressId
+                                                         AND deleted = FALSE LIMIT 1),
+                     :clientAddressId, 'system', 0, NOW()
+
+              UNION ALL
+              SELECT 'Bungalow / Cottage', 1,
+                     (SELECT id FROM space_area WHERE LOWER(name) = 'Akomodasi'
+                                                         AND client_address_id = :clientAddressId
+                                                         AND deleted = FALSE LIMIT 1),
+                     :clientAddressId, 'system', 0, NOW()
+                     
+             UNION ALL
+             SELECT 'Glamping', 1,
+                     (SELECT id FROM space_area WHERE LOWER(name) = 'Akomodasi'
+                                                         AND client_address_id = :clientAddressId
+                                                         AND deleted = FALSE LIMIT 1),
+                     :clientAddressId, 'system', 0, NOW()
+                     
+             UNION ALL
+             SELECT 'Hostel / Homestay', 1,
+                     (SELECT id FROM space_area WHERE LOWER(name) = 'Akomodasi'
+                                                         AND client_address_id = :clientAddressId
+                                                         AND deleted = FALSE LIMIT 1),
+                     :clientAddressId, 'system', 0, NOW()
+          ) AS tmp
+          WHERE NOT EXISTS (
+              SELECT 1 
+              FROM space_area pc
+              WHERE LOWER(pc.name) = LOWER(tmp.name)
+                AND pc.client_address_id = :clientAddressId
+                AND pc.deleted = FALSE       -- hanya kategori aktif yang dianggap exist
+          );
+            
+    """, nativeQuery = true)
+	void insertDefaultIdSubAccomodation(@Param("clientAddressId") Long clientAddressId);
+
+	@Modifying
+	@Query(value = """
+      INSERT INTO space_area (name, indent_level, parent_id, client_address_id, created_by, deleted, created_at)
+          SELECT * FROM (
+              SELECT 'Lobby / Front Desk' AS name, 1 AS indent_level,
+                     (
+                         SELECT id FROM space_area 
+                         WHERE LOWER(name) = 'Fasilitas Publik'
+                           AND client_address_id = :clientAddressId
+                           AND deleted = FALSE                   -- hanya parent aktif
+                         LIMIT 1
+                     ) AS parent_id,
+                     :clientAddressId AS client_address_id,
+                     'system' AS created_by, 
+                     0 AS deleted, NOW() AS created_at
+
+              UNION ALL
+              SELECT 'Restroom', 1,
+                     (SELECT id FROM space_area WHERE LOWER(name) = 'Fasilitas Publik'
+                                                         AND client_address_id = :clientAddressId
+                                                         AND deleted = FALSE LIMIT 1),
+                     :clientAddressId, 'system', 0, NOW()
+
+              UNION ALL
+              SELECT 'Prayer Room', 1,
+                     (SELECT id FROM space_area WHERE LOWER(name) = 'Fasilitas Publik'
+                                                         AND client_address_id = :clientAddressId
+                                                         AND deleted = FALSE LIMIT 1),
+                     :clientAddressId, 'system', 0, NOW()
+
+              UNION ALL
+              SELECT 'Garden', 1,
+                     (SELECT id FROM space_area WHERE LOWER(name) = 'Fasilitas Publik'
+                                                         AND client_address_id = :clientAddressId
+                                                         AND deleted = FALSE LIMIT 1),
+                     :clientAddressId, 'system', 0, NOW()
+                     
+             UNION ALL
+             SELECT 'Playground Area', 1,
+                     (SELECT id FROM space_area WHERE LOWER(name) = 'Fasilitas Publik'
+                                                         AND client_address_id = :clientAddressId
+                                                         AND deleted = FALSE LIMIT 1),
+                     :clientAddressId, 'system', 0, NOW()
+                     
+             UNION ALL
+             SELECT 'Sport Area', 1,
+                     (SELECT id FROM space_area WHERE LOWER(name) = 'Fasilitas Publik'
+                                                         AND client_address_id = :clientAddressId
+                                                         AND deleted = FALSE LIMIT 1),
+                     :clientAddressId, 'system', 0, NOW()
+                     
+             UNION ALL
+             SELECT 'Dapur Umum', 1,
+                     (SELECT id FROM space_area WHERE LOWER(name) = 'Fasilitas Publik'
+                                                         AND client_address_id = :clientAddressId
+                                                         AND deleted = FALSE LIMIT 1),
+                     :clientAddressId, 'system', 0, NOW()
+          ) AS tmp
+          WHERE NOT EXISTS (
+              SELECT 1 
+              FROM space_area pc
+              WHERE LOWER(pc.name) = LOWER(tmp.name)
+                AND pc.client_address_id = :clientAddressId
+                AND pc.deleted = FALSE       -- hanya kategori aktif yang dianggap exist
+          );
+            
+    """, nativeQuery = true)
+	void insertDefaultIdSubPublicArea(@Param("clientAddressId") Long clientAddressId);
 }

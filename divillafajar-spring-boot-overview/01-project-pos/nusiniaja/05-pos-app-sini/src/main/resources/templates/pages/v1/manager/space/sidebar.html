@@ -68,7 +68,7 @@
                             </li>
                             <!-- item -->
                             <li id="subMenu1-2" class="submenu-item" th:classappend="${activeSub != null and activeSub=='subMenu1-2'} ? ' active'">
-                                <a th:href="@{/v1/manager/manage/area/item(pid=${session.targetAddress.pubId},activePage='menu1',activeSub='subMenu1-2')}" class="submenu-link" th:utext="|#{label.manager.setting.product.item} / #{label.manager.setting.product.barang}|"></a>
+                                <a th:href="@{/v1/manager/manage/area/item(activePage='menu1',activeSub='subMenu1-2')}" class="submenu-link" th:utext="|#{label.unitArea}|"></a>
                             </li>
 
                             <!-- Product -->

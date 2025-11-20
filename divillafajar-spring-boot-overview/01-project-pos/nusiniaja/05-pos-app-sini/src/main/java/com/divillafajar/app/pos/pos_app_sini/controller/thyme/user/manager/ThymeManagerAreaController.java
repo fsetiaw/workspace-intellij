@@ -5,6 +5,7 @@ import com.divillafajar.app.pos.pos_app_sini.exception.DuplicationErrorException
 import com.divillafajar.app.pos.pos_app_sini.global.AppGlobals;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientAddressDTO;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.session.UserSessionLog;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.space.SpaceAreaEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.space.dto.SpaceAreaDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.CategorySummaryProjection;
@@ -13,6 +14,7 @@ import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductWithCategoryPa
 import com.divillafajar.app.pos.pos_app_sini.io.projection.area.AreaSummaryProjection;
 import com.divillafajar.app.pos.pos_app_sini.model.item.CreateItemRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.model.product.ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId;
+import com.divillafajar.app.pos.pos_app_sini.model.user.UserSessionDTO;
 import com.divillafajar.app.pos.pos_app_sini.service.area.AreaService;
 import com.divillafajar.app.pos.pos_app_sini.service.image.ImageStorageService;
 import com.divillafajar.app.pos.pos_app_sini.service.product.category.ProductCategoryService;
@@ -88,12 +90,14 @@ public class ThymeManagerAreaController {
             Model model, HttpSession session
     ) {
         List<ProductCategoryDTO> orderList = new ArrayList<>();
+	    UserSessionDTO userLog = (UserSessionDTO) session.getAttribute("userLogInfo");
         ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
 		List<SpaceAreaDTO> orderListAreaAndSubArea = areaService.getAreaAndSubAreaByClientAddressPubId(dto.getPubId());
         //List<ProductCategoryDTO> orderListCategoryAnsSub = categoryService.getCategoryAndSubCategoryByClientAddressPubId(dto.getPubId());
         model.addAttribute("orderListAreaAndSubArea",orderListAreaAndSubArea);
         model.addAttribute("activePage",activePage);
         model.addAttribute("activeSub",activeSub);
+	    model.addAttribute("userLog",userLog);
         return "pages/v1/manager/space/area/index-area";
     }
 
@@ -231,4 +235,53 @@ public class ThymeManagerAreaController {
         return "redirect:/v1/manager/manage/area/item/"+categoryId;
 
     }
+
+	@Transactional
+	@PostMapping("/use-default")
+	public String createDefault(
+			@RequestParam(required = false) String lang,
+			@RequestParam(name = "activePage", required = true) String activePage,
+			@RequestParam(name = "activeSub", required = true) String activeSub,
+			RedirectAttributes redirectAttributes,
+			Model model, HttpSession session
+	) {
+		System.out.println("create Default");
+		List<ProductCategoryDTO> orderList = new ArrayList<>();
+		ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
+		areaService.createDefaultArea(lang, dto.getPubId());
+		dto.setUsedDefaultCategory(true);
+		List<SpaceAreaDTO> orderListAreaAndSubArea = areaService.getAreaAndSubAreaByClientAddressPubId(dto.getPubId());
+		model.addAttribute("orderListAreaAndSubArea",orderListAreaAndSubArea);
+		redirectAttributes.addAttribute("activePage",activePage);
+		redirectAttributes.addAttribute("activeSub",activeSub);
+		model.addAttribute("globals", appGlobals.getAll());
+		model.addAttribute("targetAddress", dto);
+		//return "pages/v1/manager/product/cat/index-category";
+		return "redirect:/v1/manager/manage/area/space";
+	}
+
+	@Transactional
+	@PostMapping("/reset-categories")
+	public String resetClientAddressArea(
+			@RequestParam(required = false) String lang,
+			@RequestParam(name = "activePage", required = true) String activePage,
+			@RequestParam(name = "activeSub", required = true) String activeSub,
+			RedirectAttributes redirectAttributes,
+			Model model, HttpSession session
+	) {
+		List<SpaceAreaDTO> orderList = new ArrayList<>();
+		ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
+		categoryService.resetCategoryByClientAddress(dto.getPubId());
+		dto.setUsedDefaultCategory(false);
+		List<ProductCategoryDTO> orderListCategoryAnsSub = categoryService.getCategoryAndSubCategoryByClientAddressPubId(dto.getPubId());
+		model.addAttribute("orderListCategoryAnsSub",orderListCategoryAnsSub);
+		redirectAttributes.addAttribute("activePage",activePage);
+		redirectAttributes.addAttribute("activeSub",activeSub);
+		model.addAttribute("globals", appGlobals.getAll());
+		model.addAttribute("targetAddress", dto);
+		//return "pages/v1/manager/product/cat/index-category";
+		return "redirect:/v1/manager/manage/product/cat";
+	}
+
+
 }

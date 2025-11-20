@@ -36,7 +36,7 @@ public class AreaRestController {
             @RequestBody RequestItemSubItemModel dto) {
         CreateSubCategoryProductRespModel retVal = new CreateSubCategoryProductRespModel();
         try {
-            ProductCategoryDTO added =  areaService.addNewMainArea(dto.getName(), pubAid);
+            ProductCategoryDTO added =  areaService.addNewMainArea(dto.getName(), pubAid, dto.getUsername());
             retVal.setId(added.getId());
             retVal.setName(added.getName());
             retVal.setParentId(null);
@@ -63,7 +63,7 @@ public class AreaRestController {
 
         CreateSubAreaRespModel retVal = new CreateSubAreaRespModel();
         try {
-            SpaceAreaDTO added =  areaService.addSubMainArea(dto.getParentId(), dto.getName(), address.getPubId());
+            SpaceAreaDTO added =  areaService.addSubMainArea(dto.getParentId(), dto.getName(), address.getPubId(), dto.getUsername());
             retVal.setId(added.getId());
             retVal.setName(added.getName());
             retVal.setParentId(added.getParent().getId());

@@ -14,5 +14,5 @@ public class CreateItemRequestModel {
 	String description;
 	String path;
 	String clientAddressPubId;
-
+	String username;
 }

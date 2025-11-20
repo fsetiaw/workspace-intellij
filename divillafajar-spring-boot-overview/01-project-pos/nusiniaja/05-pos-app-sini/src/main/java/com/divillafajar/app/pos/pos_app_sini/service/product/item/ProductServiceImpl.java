@@ -73,15 +73,10 @@ public class ProductServiceImpl implements ProductService{
             newItem.setStatus(ProductStatusEnum.DRAFT);
 			newItem.setCategory(categoryEntity.get());
 			newItem.setDescription(createItemRequestModel.getDescription());
-			System.out.println("pit1");
 			ClientAddressEntity targetLocatiopn = addressRepo.findByPubId(dto.getPubId());
-			System.out.println("pit2");
 			newItem.setClientAddress(targetLocatiopn);
-			System.out.println("pit3");
 			ProductEntity savedProduct = productRepo.save(newItem);
-			System.out.println("pit4");
 			retVal = modelMapper.map(savedProduct,ProductDTO.class);
-			System.out.println("pit5");
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new GenericCustomErrorException(e.getMessage());

@@ -20,6 +20,7 @@ public class RequestItemSubItemModel {
     private String name;
     private ProductCategoryEntity parent;
     private String pubAid;
+	private String username;
     //private List<ProductCategoryEntity> children;
     //private ClientAddressEntity clientAddress;
 }

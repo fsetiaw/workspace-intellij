@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- inject contextPath -->
     <meta name="contextPath" th:content="@{/}">
-    <meta name="pAid" th:content="${session.targetAddress.pubId}">
+    <meta name="pAid" th:content="${targetAddress.pubId}">
     <title th:text="#{label.itemSetting}"></title>
     <link rel="shortcut icon" th:href="@{/assets/compiled/svg/favicon.svg}" type="image/x-icon}">
     <link rel="shortcut icon"
@@ -14,7 +14,7 @@
           type="image/png">
     <link rel="stylesheet" th:href="@{/assets/compiled/css/app.css}">
     <link rel="stylesheet" th:href="@{/assets/compiled/css/app-dark.css}">
-    <link rel="stylesheet" th:href="@{/assets/v0/css/bootstrap.css}">
+    <!--link rel="stylesheet" th:href="@{/assets/v0/css/bootstrap.css}"-->
     <link rel="stylesheet" th:href="@{/assets/compiled/css/iconly.css}">
     <link rel="stylesheet" th:href="@{/mine/js/css/toast.css}">
     <link rel="stylesheet" th:href="@{/assets/vendors/toastify/toastify.css}">
@@ -23,38 +23,39 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"-->
     <link rel="stylesheet" th:href="@{/mine/js/css/breadcrumbs.css}">
     <style>
-        .card-circle {
-            width: 80px;        /* kecilkan ukuran */
-            height: 80px;
-            padding-top: 5px; /* turunin vertical alignnya */
-            line-height: 20px; /* ini penting supaya icon vertikalnya pas di tengah */
-            border-radius: 50%;
-            text-align: center;
-            top: 0px;
-            display: inline-block;
+        .breadcrumb {
+            flex-wrap: nowrap !important;
         }
-        .card-box {
-            width: 80px;        /* kecilkan ukuran */
-            height: 80px;
-            padding-top: 5px; /* turunin vertical alignnya */
-            line-height: 20px; /* ini penting supaya icon vertikalnya pas di tengah */
-            text-align: center;
-            top: 0px;
-            display: inline-block;
+
+        .breadcrumb .breadcrumb-item.full-click-row {
+            white-space: nowrap !important;
+            display: inline-block !important;
         }
-        #my-card {
-          height: 50px; /* ubah sesuai kebutuhan */
+
+        .full-click-row:hover {
+            background: rgba(0,0,0,0.05);
+            cursor: pointer;
         }
-        #my-card .card-body {
-          padding: 0.1rem; /* kecilkan padding */
+
+        .crumb-link {
+            display: block;       /* full width clickable */
+            padding: 4px 6px;     /* biar area klik nyaman */
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .breadcrumb-item.full-click-row > a.crumb-link {
+            display: block !important;
+            width: 100% !important;
         }
     </style>
+
 </head>
 <body>
 <div id="app">
     <!-- Sidebar slot -->
     <div layout:fragment="sidebar">
-        <div th:replace="~{/pages/v1/manager/product/sidebar.html :: sidebar(${activePage}, ${activeSub}, '${listActiveLocation}')}"></div>
+        <div th:replace="~{/pages/v1/manager/space/sidebar.html :: sidebar(${activePage}, ${activeSub}, '${listActiveLocation}')}"></div>
     </div>
     <div id="main">
         <!-- Notification hamburg slot -->
@@ -75,14 +76,14 @@
             <ol class="breadcrumb">
                 <th:block th:replace="~{/pages/v1/fragments/crumbs/manager-area-root-crumb.html :: manager-product-root-crumb}"></th:block>
                 <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN','MANAGER')" class="breadcrumb-item"
-                    aria-current="page" th:text="|${#messages.msg('label.manager.setting.product.item')}|">
+                    aria-current="page" th:text="|${#messages.msg('label.unitArea')}|">
                 </li>
             </ol>
             <h3>
                 <span style="font-size:70%; display:block; line-height:1;"
                       th:text="|${#strings.toUpperCase(#messages.msg('label.setting'))}|">
                 </span>
-                <span th:text="|${#strings.toUpperCase(#messages.msg('label.manager.setting.product.item'))}|"></span>
+                <span th:text="|${#strings.toUpperCase(#messages.msg('label.unitArea'))}|"></span>
 
             </h3>
         </div>
@@ -174,17 +175,23 @@
                                                     <ol class="breadcrumb mb-0">
                                                         <th:block th:each="segment, iterStat : ${#strings.arraySplit(path, '/')}">
                                                             <th:block th:with="part=${#strings.trim(segment)}, pair=${#strings.arraySplit(part, '~')}, name=${pair[0]}, id=${pair[1]}">
-                                                                <li class="breadcrumb-item" th:classappend="${iterStat.last} ? 'active'">
-                                                                    <!-- bila item = o -->
-                                                                    <a class="text-warning" th:if="${iterStat.last and listTotItem[loop.index]<1}"
-                                                                       th:href="@{/v1/manager/manage/area/item/{id}(id=${id},path=${path},activePage=${activePage},activeSub=${activeSub})}"
-                                                                       th:utext="|${#strings.replace(name, '|', '/')} (+ ${#strings.toLowerCase(#messages.msg('label.add'))} ${#strings.toLowerCase(#messages.msg('label.manager.setting.product.item'))})|"></a>
-                                                                    <!-- bila item > o -->
-                                                                    <a th:if="${iterStat.last and listTotItem[loop.index]>0}"
-                                                                       th:href="@{/v1/manager/manage/area/item/{id}(id=${id},path=${path},activePage=${activePage},activeSub=${activeSub})}"
-                                                                       th:utext="|${#strings.replace(name, '|', '/')} [${listTotItem[loop.index]}]|"></a>
-                                                                    <span th:if="${!iterStat.last}"
-                                                                          th:utext="${name}"></span>
+                                                                <li class="breadcrumb-item breadcrumb-row clickable-bc full-click-row"
+                                                                    th:classappend="${iterStat.last} ? 'active'"
+                                                                    th:data-href="@{/v1/manager/manage/area/item/{id}(id=${id},path=${path},activePage=${activePage},activeSub=${activeSub})}"
+                                                                    style="cursor:pointer">
+                                                                    <a class="crumb-link">
+
+                                                                        <span th:if="${listTotItem[loop.index] > 0}"
+                                                                              th:utext="|${#strings.replace(name, '|', '/')} [${listTotItem[loop.index]}]|">
+                                                                        </span>
+
+                                                                        <span th:if="${listTotItem[loop.index] < 1}"
+                                                                              th:utext="|${name}|">
+                                                                        </span>
+                                                                        <span th:if="${iterStat.last and listTotItem[loop.index]<1}" style='color:#0dcaf0; padding:2px 6px; border-radius:4px; font-size:16px;'>
+                                                                            <i class='bi bi-tools'></i>
+                                                                        </span>
+                                                                    </a>
                                                                 </li>
                                                             </th:block>
                                                         </th:block>
@@ -236,13 +243,11 @@
 <script th:src="@{/assets/static/js/components/dark.js}"></script>
 <script th:src="@{/assets/extensions/perfect-scrollbar/perfect-scrollbar.min.js}"></script>
 <script th:src="@{/assets/vendors/toastify/toastify.js}"></script>
-<!--
 <script th:src="@{/assets/compiled/js/app.js}"></script>
--->
 <script th:src="@{/assets/static/js/pages/dashboard.js}"></script>
 <script th:src="@{/mine/js/toast-handler.js}"></script>
 
-<script th:src="@{/assets/v0/js/main.js}"></script>
+<!--script th:src="@{/assets/v0/js/main.js}"></script-->
 <!--script th:src="@{/mine/js/additional-index.js}"></script-->
 
 <div layout:fragment="modal-confirm-delete">
@@ -259,84 +264,80 @@
     const toastLongTimeout = [[${toastLongTimeout}]];
 
     document.addEventListener("DOMContentLoaded", function() {
-      const searchInput = document.getElementById("newItemInput");
-      const searchBtn = document.getElementById("addItemBtn");
-      const resetBtn = document.getElementById("resetBtn");
-      const breadcrumbRows = document.querySelectorAll(".breadcrumb-row");
+        const searchInput = document.getElementById("newItemInput");
+        const searchBtn = document.getElementById("addItemBtn");
+        const resetBtn = document.getElementById("resetBtn");
+        const breadcrumbRows = document.querySelectorAll(".breadcrumb-row");
 
-      // ✅ elemen label
-      const lblUrutan = document.getElementById("lblUrutan");
-      const lblSearchResult = document.getElementById("lblSearchResult");
-      const noResultMsg = document.getElementById("noResultMsg");
+        const lblUrutan = document.getElementById("lblUrutan");
+        const lblSearchResult = document.getElementById("lblSearchResult");
+        const noResultMsg = document.getElementById("noResultMsg");
 
-      // 🟢 Saat load pertama kali, sembunyikan "0 Found" jika listEndChildPath tidak kosong
-      if (breadcrumbRows.length > 0) {
-        noResultMsg.style.display = "none";
-      }
+        if (breadcrumbRows.length > 0) {
+            noResultMsg.style.display = "none";
+        }
 
-      function filterBreadcrumbs() {
-          const keyword = searchInput.value.trim().toLowerCase();
-          const noResultMsg = document.getElementById("noResultMsg");
-          const breadcrumbRows = document.querySelectorAll(".breadcrumb-row");
+        function filterBreadcrumbs() {
+            const keyword = searchInput.value.trim().toLowerCase();
+            const breadcrumbRows = document.querySelectorAll(".breadcrumb-row");
 
-          let visibleCount = 0;
+            let visibleCount = 0;
 
-          breadcrumbRows.forEach(nav => {
-            const text = nav.innerText.toLowerCase();
-            if (keyword === "" || text.includes(keyword)) {
-              nav.style.display = "";
-              visibleCount++;
+            breadcrumbRows.forEach(nav => {
+                const text = nav.innerText.toLowerCase();
+                if (keyword === "" || text.includes(keyword)) {
+                    nav.style.display = "";
+                    visibleCount++;
+                } else {
+                    nav.style.display = "none";
+                }
+            });
+
+            if (keyword !== "") {
+                lblUrutan.style.display = "none";
+                lblSearchResult.style.display = "inline";
             } else {
-              nav.style.display = "none";
+                lblUrutan.style.display = "inline";
+                lblSearchResult.style.display = "none";
             }
-          });
 
-          // 🔄 Toggle label
-          if (keyword !== "") {
-            lblUrutan.style.display = "none";
-            lblSearchResult.style.display = "inline";
-          } else {
+            if (keyword !== "" && visibleCount === 0) {
+                noResultMsg.style.display = "block";
+            } else {
+                noResultMsg.style.display = "none";
+            }
+        }
+
+        searchBtn.addEventListener("click", filterBreadcrumbs);
+
+        searchInput.addEventListener("keypress", function(e) {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                filterBreadcrumbs();
+            }
+        });
+
+        resetBtn.addEventListener("click", function() {
+            searchInput.value = "";
+            breadcrumbRows.forEach(nav => nav.style.display = "");
+            searchInput.focus();
+
             lblUrutan.style.display = "inline";
             lblSearchResult.style.display = "none";
-          }
-
-          // 🟡 Tampilkan “0 Found” hanya saat keyword ada & tidak ada hasil
-          console.error("visibleCount="+visibleCount);
-          if (keyword !== "" && visibleCount === 0) {
-            noResultMsg.style.display = "block";
-          } else {
             noResultMsg.style.display = "none";
-          }
-      }
+        });
 
+        document.querySelectorAll(".clickable-bc").forEach(el => {
+            el.addEventListener("click", function() {
+                const url = this.dataset.href;
+                console.log("url==" + url);
+                if (url) window.location = url;
+            });
+        });
 
-
-      // Klik tombol Search
-      searchBtn.addEventListener("click", filterBreadcrumbs);
-
-      // Tekan Enter
-      searchInput.addEventListener("keypress", function(e) {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          filterBreadcrumbs();
-        }
-      });
-
-      // Klik tombol Reset → tampilkan semua lagi
-      resetBtn.addEventListener("click", function() {
-        searchInput.value = ""; // kosongkan input
-        breadcrumbRows.forEach(nav => nav.style.display = ""); // tampilkan semua
-        searchInput.focus(); // fokus kembali ke input
-
-        // ✅ balikkan label
-        lblUrutan.style.display = "inline";
-        lblSearchResult.style.display = "none";
-
-        // 🔁 sembunyikan pesan "0 Found"
-        document.getElementById("noResultMsg").style.display = "none";
-      });
-    });
+    }); // <-- sudah benar, tidak ada penutup ekstra lagi
 </script>
+
 
 
 

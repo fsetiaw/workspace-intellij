@@ -183,7 +183,7 @@
                 </li-->
                 <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN','MANAGER')" class="breadcrumb-item active">
                     <a th:href="@{/v1/manager/manage/area/item(pid=${targetAddress.pubId},activePage='menu1',activeSub='subMenu1-2')}"
-                    th:text="|${#messages.msg('label.manager.setting.product.item')}|"></a>
+                    th:text="|${#messages.msg('label.unitArea')}|"></a>
                 </li>
                 <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN','MANAGER')" class="breadcrumb-item"
                     aria-current="page"><!-- th:text="|${#messages.msg('label.itemList')}|"-->
@@ -297,7 +297,7 @@
                                                        border-radius:50%;
                                                        font-size:150%;|">
                                             </i>
-                                            <span th:utext="|#{label.item}|"
+                                            <span th:utext="|#{label.unit}|"
                                                   style="color: gray;font-size:95%"></span>
                                             <span th:text="${targetCategoryName}"
                                                   style="font-weight: 600;font-size:120%; margin-left:4px" class="category-label"></span>
@@ -307,12 +307,12 @@
                                     <div id="collapseOne" class="accordion-collapse collapse "
                                          aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                         <div class="accordion-body" id="addSearch">
-                                            <form class="form" method="post" th:action="@{/v1/manager/manage/product/item/{categoryId}(categoryId=${categoryId},activePage=${activePage},activeSub=${activeSub})}">
+                                            <form class="form" method="post" th:action="@{/v1/manager/manage/area/item/{categoryId}(categoryId=${categoryId},activePage=${activePage},activeSub=${activeSub})}">
                                                 <div class="form-body">
                                                     <div class="form-group">
-                                                        <!--label for="feedback1" class="sr-only" th:text="#{label.itemName}"></label-->
+                                                        <!--label for="feedback1" class="sr-only" th:text="#{label.unitName}"></label-->
                                                         <input type="hidden" name="path" th:value="${path}">
-                                                        <input type="text" id="feedback1" class="form-control" th:placeholder="#{label.itemName}"
+                                                        <input type="text" id="feedback1" class="form-control" th:placeholder="#{label.unitName}"
                                                                name="name">
                                                     </div>
                                                     <div class="form-group form-label-group">
