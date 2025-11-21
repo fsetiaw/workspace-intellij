@@ -54,11 +54,11 @@ public class AreaUnitEntity {
 	@Column(nullable = false, length = 255)
 	private String area_type; //contoh room, balkon, kamar mandi
 
-	@Column(length = 100)
+	@Column(nullable = true,length = 100)
 	private String code;  // optional unique code
 
 	@Column(length = 25)
-	private String capacity_unit;  // optional unique code
+	private String capacity_unit;  // satuan : orang / meja / kursi
 
 	@Column
 	private Integer capacity; // kapasitas: tamu/meja/orang
@@ -73,10 +73,10 @@ public class AreaUnitEntity {
 	// 🔹 Operational Status
 	// ============================
 	@Column(name = "is_active", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
-	private Boolean isActive = true;
+	private Boolean isActive;
 
 	@Column(name = "is_available", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
-	private Boolean isAvailable = true;
+	private Boolean isAvailable;
 
 	@Column(name = "blocked_from")
 	private LocalDateTime blockedFrom;

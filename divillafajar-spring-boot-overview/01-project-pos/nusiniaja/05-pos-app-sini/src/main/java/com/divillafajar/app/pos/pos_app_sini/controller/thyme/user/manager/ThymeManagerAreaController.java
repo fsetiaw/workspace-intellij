@@ -12,6 +12,7 @@ import com.divillafajar.app.pos.pos_app_sini.io.projection.CategorySummaryProjec
 import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductItemSummaryProjectionDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductWithCategoryPathDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.area.AreaSummaryProjection;
+import com.divillafajar.app.pos.pos_app_sini.model.area.unit.CreateUnitAreaRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.model.item.CreateItemRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.model.product.ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId;
 import com.divillafajar.app.pos.pos_app_sini.model.user.UserSessionDTO;
@@ -184,7 +185,9 @@ public class ThymeManagerAreaController {
         ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
         List<ProductWithCategoryPathDTO> listItem = productService.getListProduct(dto.getPubId(),areaId, null);
         model.addAttribute("pathCategory",pathCategory);
+		System.out.println("pathCategory="+pathCategory);
         model.addAttribute("path",path);
+	    System.out.println("path="+path);
         model.addAttribute("targetCategoryName",targetCategoryName);
         model.addAttribute("trimPath",trimPath);
         model.addAttribute("activePage",activePage);
@@ -204,20 +207,22 @@ public class ThymeManagerAreaController {
         return "pages/v1/manager/space/item/home-area-item";
     }
 
-    @PostMapping("/item/{categoryId}")
-    public String addNewItemCategory(
+    @PostMapping("/item/{areaId}")
+    public String addNewItemUnitArea(
             @RequestParam(name = "activePage", required = true) String activePage,
             @RequestParam(name = "activeSub", required = true) String activeSub,
-            //@RequestParam(name = "path", required = true) String path,
-            @ModelAttribute CreateItemRequestModel createItemRequestModel,
-            @PathVariable Long categoryId,
+            //@RequestParam(name = "path", required = false) String path,
+            @ModelAttribute CreateUnitAreaRequestModel createUnitAreaRequestModel,
+            @PathVariable Long areaId,
             Locale locale,
             RedirectAttributes redirectAttributes,
             Model model, HttpSession session
     ) {
         try {
             ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
-            //productService.addNewProduct(categoryId, dto, createItemRequestModel);
+			System.out.println("addNewItemUnitArea=="+areaId);
+	        System.out.println("CreateUnitAreaRequestModel=="+createUnitAreaRequestModel.getName());
+            areaService.addNewUnit(areaId, dto, createUnitAreaRequestModel);
             //String successMessage = messageSource.getMessage("label.item", null, locale)+" "+messageSource.getMessage("label.addSuccessfully", null, locale);
             //redirectAttributes.addFlashAttribute("successMessage", successMessage);
 
@@ -231,8 +236,8 @@ public class ThymeManagerAreaController {
         }
         redirectAttributes.addAttribute("activePage",activePage);
         redirectAttributes.addAttribute("activeSub",activeSub);
-        redirectAttributes.addAttribute("path",createItemRequestModel.getPath());
-        return "redirect:/v1/manager/manage/area/item/"+categoryId;
+        redirectAttributes.addAttribute("path",createUnitAreaRequestModel.getPath());
+        return "redirect:/v1/manager/manage/area/item/"+areaId;
 
     }
 

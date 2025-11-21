@@ -139,7 +139,10 @@
 
 
     </style>
-
+    <script th:inline="javascript">
+        const path = [[${path}]];
+        console.log("path = " + path);
+    </script>
 </head>
 <body>
 <div id="app">
@@ -307,7 +310,7 @@
                                     <div id="collapseOne" class="accordion-collapse collapse "
                                          aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                         <div class="accordion-body" id="addSearch">
-                                            <form class="form" method="post" th:action="@{/v1/manager/manage/area/item/{categoryId}(categoryId=${categoryId},activePage=${activePage},activeSub=${activeSub})}">
+                                            <form class="form" method="post" th:action="@{/v1/manager/manage/area/item/{areaId}(areaId=${categoryId},activePage=${activePage},activeSub=${activeSub})}">
                                                 <div class="form-body">
                                                     <div class="form-group">
                                                         <!--label for="feedback1" class="sr-only" th:text="#{label.unitName}"></label-->
@@ -321,6 +324,16 @@
                                                         <label for="label-textarea"></label>
                                                     </div>
                                                 </div>
+                                                <!-- Section tambahan: tampil hanya jika path mulai dengan 'accomodation' -->
+                                                <div th:if="${path != null and (#strings.toLowerCase(path).startsWith('accomodation'.toLowerCase()) or #strings.toLowerCase(path).startsWith('akomodasi.toLowerCase()'))}">
+                                                    <hr>
+                                                    <div class="form-group">
+                                                        <label>Extra Info for Accomodation</label>
+                                                        <input type="text" class="form-control" name="extraInfo"
+                                                               placeholder="Isi tambahan hanya untuk accomodation">
+                                                    </div>
+                                                </div>
+                                                <!-- END conditional section -->
                                                 <div class="form-actions d-flex justify-content-end">
                                                     <button type="submit" class="btn btn-primary me-1" th:text="#{label.add}"></button>
                                                     <button type="reset" class="btn btn-light-primary" th:text="#{label.cancel}"></button>

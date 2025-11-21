@@ -7,6 +7,7 @@ import com.divillafajar.app.pos.pos_app_sini.io.entity.product.ProductDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.space.dto.SpaceAreaDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.CategorySummaryProjection;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.area.AreaSummaryProjection;
+import com.divillafajar.app.pos.pos_app_sini.model.area.unit.CreateUnitAreaRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.model.item.CreateItemRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.model.product.ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId;
 
@@ -23,5 +24,5 @@ public interface AreaService {
     List<ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId> getPathToEachEndChildCategoryByClientAddressPubId(String pAid, String filter);
 	void createDefaultArea(String lang, String clientAddressPubId);
 	void resetAreaByClientAddress(String clientAddressPubId);
-	ProductDTO addNewUnit(Long catId, ClientAddressDTO dto, CreateItemRequestModel createItemRequestModel);
+	ProductDTO addNewUnit(Long catId, ClientAddressDTO dto, CreateUnitAreaRequestModel createUnitAreaRequestModel);
 }

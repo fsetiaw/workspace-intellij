@@ -18,6 +18,7 @@ import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductCategoryHierar
 import com.divillafajar.app.pos.pos_app_sini.io.projection.area.AreaHierarchyProjectionDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.area.AreaSummaryProjection;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.area.SpaceAreaHierarchyProjection;
+import com.divillafajar.app.pos.pos_app_sini.model.area.unit.CreateUnitAreaRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.model.item.CreateItemRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.model.product.ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId;
 import com.divillafajar.app.pos.pos_app_sini.model.user.UserSessionDTO;
@@ -306,7 +307,7 @@ public class AreaServiceImpl implements AreaService{
 
 	@Override
 	@Transactional
-	public ProductDTO addNewUnit(Long catId, ClientAddressDTO dto, CreateItemRequestModel createItemRequestModel) {
+	public ProductDTO addNewUnit(Long catId, ClientAddressDTO dto, CreateUnitAreaRequestModel createItemRequestModel) {
 		ProductDTO retVal = new ProductDTO();
 		System.out.println("===== addNewProduct =======");
 		System.out.println("===== "+dto.getPubId()+" =======");
