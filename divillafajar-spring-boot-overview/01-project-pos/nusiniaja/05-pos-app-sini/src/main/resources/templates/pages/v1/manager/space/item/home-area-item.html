@@ -141,7 +141,7 @@
     </style>
     <script th:inline="javascript">
         const path = [[${path}]];
-        console.log("path = " + path);
+        console.log("path => " + path);
     </script>
 </head>
 <body>
@@ -168,22 +168,6 @@
         <div class="page-heading">
             <ol class="breadcrumb">
                 <th:block th:replace="~{/pages/v1/fragments/crumbs/manager-area-root-crumb.html :: manager-product-root-crumb}"></th:block>
-                <!--li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN','MANAGER')" class="breadcrumb-item"
-                    aria-current="page" th:text="|${#messages.msg('label.manager.setting.product.item')}|">
-                </li-->
-                <!--li sec:authorize="hasRole('SUPERADMIN')" class="breadcrumb-item active">
-                    <a href="#" th:text="|${#messages.msg('label.dashboard')}|"></a>
-                </li>
-                <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN')" class="breadcrumb-item active">
-                    <a th:href="@{/v2/admin/home}" th:text="|${#messages.msg('label.dashboard')}|"></a>
-                </li>
-                <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN','MANAGER')" class="breadcrumb-item active">
-                    <a th:href="@{/v1/manager/home(pid=${targetAddress.pubId})}" th:text="|${#messages.msg('label.management')}|"></a>
-                </li>
-                <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN','MANAGER')" class="breadcrumb-item active">
-                    <a th:href="@{/v1/manager/manage/area(activePage='dashboard')}"
-                       th:text="|${#messages.msg('label.manager.setting.product')}|"></a>
-                </li-->
                 <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN','MANAGER')" class="breadcrumb-item active">
                     <a th:href="@{/v1/manager/manage/area/item(pid=${targetAddress.pubId},activePage='menu1',activeSub='subMenu1-2')}"
                     th:text="|${#messages.msg('label.unitArea')}|"></a>
@@ -325,13 +309,132 @@
                                                     </div>
                                                 </div>
                                                 <!-- Section tambahan: tampil hanya jika path mulai dengan 'accomodation' -->
-                                                <div th:if="${path != null and (#strings.toLowerCase(path).startsWith('accomodation'.toLowerCase()) or #strings.toLowerCase(path).startsWith('akomodasi.toLowerCase()'))}">
+                                                <div th:if="${path != null and (#strings.toLowerCase(path).startsWith('accomodation'.toLowerCase()) or #strings.toLowerCase(path).startsWith('akomodasi'.toLowerCase()))}">
                                                     <hr>
                                                     <div class="form-group">
                                                         <label>Extra Info for Accomodation</label>
-                                                        <input type="text" class="form-control" name="extraInfo"
-                                                               placeholder="Isi tambahan hanya untuk accomodation">
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div class="form-group row align-items-center">
+                                                                    <div class="col-lg-2 col-3">
+                                                                        <label class="col-form-label" for="troom"># Room</label>
+                                                                    </div>
+                                                                    <div class="col-lg-10 col-9">
+                                                                        <input type="text" id="troom" class="form-control" name="troom"
+                                                                               placeholder="Jumlah Kamar">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="form-group row align-items-center">
+                                                                    <div class="col-lg-2 col-3">
+                                                                        <label class="col-form-label" for="tfloor"># Floor</label>
+                                                                    </div>
+                                                                    <div class="col-lg-10 col-9">
+                                                                        <input type="text" id="tfloor" class="form-control" name="tfloor"
+                                                                               placeholder="Last Name">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div class="form-group row align-items-center">
+                                                                    <div class="col-lg-2 col-3">
+                                                                        <label class="col-form-label" for="tbath"># bathroom</label>
+                                                                    </div>
+                                                                    <div class="col-lg-10 col-9">
+                                                                        <input type="text" id="tbath" class="form-control" name="tbath"
+                                                                               placeholder="Jumlah Kamar Mandi">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="form-group row align-items-center">
+                                                                    <div class="col-lg-2 col-3">
+                                                                        <label class="col-form-label" for="tliving"># Living room</label>
+                                                                    </div>
+                                                                    <div class="col-lg-10 col-9">
+                                                                        <input type="text" id="tliving" class="form-control" name="tliving"
+                                                                               placeholder="Jumlah Bathroom">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div class="form-group row align-items-center">
+                                                                    <div class="col-lg-2 col-3">
+                                                                        <label class="col-form-label" for="tkitchen"># bathroom</label>
+                                                                    </div>
+                                                                    <div class="col-lg-10 col-9">
+                                                                        <input type="text" id="tkitchen" class="form-control" name="tkitchen"
+                                                                               placeholder="Jumlah Kamar Mandi">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="form-group row align-items-center">
+                                                                    <div class="col-lg-2 col-3">
+                                                                        <label class="col-form-label" for="tliving"># Living room</label>
+                                                                    </div>
+                                                                    <div class="col-lg-10 col-9">
+                                                                        <input type="text" id="tliving" class="form-control" name="tliving"
+                                                                               placeholder="Jumlah Bathroom">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <label>Extra Info for Accomodation</label>
+                                                        <div class="row">
+                                                            <div class="col-6 mb-2">
+                                                                <div class="form-check">
+                                                                    <input type="checkbox" class="form-check-input form-check-primary form-check-glow" checked
+                                                                           name="customCheck" id="checkboxGlow1">
+                                                                    <label class="form-check-label" for="checkboxGlow1">Primary</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-6 mb-2">
+                                                                <div class="form-check">
+                                                                    <input type="checkbox" class="form-check-input form-check-secondary form-check-glow" checked
+                                                                           name="customCheck" id="checkboxGlow2">
+                                                                    <label class="form-check-label" for="checkboxGlow2">Secondary</label>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-6 mb-2">
+                                                                <div class="form-check">
+                                                                    <input type="checkbox" class="form-check-input form-check-success form-check-glow" checked
+                                                                           name="customCheck" id="checkboxGlow3">
+                                                                    <label class="form-check-label" for="checkboxGlow3">Success</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-6 mb-2">
+                                                                <div class="form-check">
+                                                                    <input type="checkbox" class="form-check-input form-check-danger form-check-glow" checked
+                                                                           name="customCheck" id="checkboxGlow4">
+                                                                    <label class="form-check-label" for="checkboxGlow4">Danger</label>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-6 mb-2">
+                                                                <div class="form-check">
+                                                                    <input type="checkbox" class="form-check-input form-check-info form-check-glow" checked
+                                                                           name="customCheck" id="checkboxGlow5">
+                                                                    <label class="form-check-label" for="checkboxGlow5">Info</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-6 mb-2">
+                                                                <div class="form-check">
+                                                                    <input type="checkbox" class="form-check-input form-check-warning form-check-glow" checked
+                                                                           name="customCheck" id="checkboxGlow6">
+                                                                    <label class="form-check-label" for="checkboxGlow6">Warning</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
                                                     </div>
+
                                                 </div>
                                                 <!-- END conditional section -->
                                                 <div class="form-actions d-flex justify-content-end">
