@@ -40,6 +40,9 @@ public class ClientAddressEntity implements Serializable {
         if(usedDefaultCategory==null)
             usedDefaultCategory=false;
 
+        if(usedDefaultArea==null)
+            usedDefaultArea=false;
+
         if(deleted==null)
             deleted=false;
 
