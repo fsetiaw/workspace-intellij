@@ -1,10 +1,12 @@
 package com.divillafajar.app.pos.pos_app_sini.utils;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
 public class EntityMapper {
     /**
      * Mapping list dari Entity ke DTO

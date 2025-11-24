@@ -39,6 +39,9 @@ public class SpaceAreaDTO {
 	private String updatedBy;
 
 	private Boolean deleted;
+	private Boolean editable;
+
+
 
 	// Opsional helper (bisa diisi di mapping layer)
 	private String path;

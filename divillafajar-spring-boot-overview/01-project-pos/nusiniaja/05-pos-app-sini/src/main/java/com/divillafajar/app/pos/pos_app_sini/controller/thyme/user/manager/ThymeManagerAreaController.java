@@ -1,5 +1,6 @@
 package com.divillafajar.app.pos.pos_app_sini.controller.thyme.user.manager;
 
+import com.divillafajar.app.pos.pos_app_sini.common.enums.LineOfBusinessEnum;
 import com.divillafajar.app.pos.pos_app_sini.config.properties.CustomDefaultProperties;
 import com.divillafajar.app.pos.pos_app_sini.exception.DuplicationErrorException;
 import com.divillafajar.app.pos.pos_app_sini.global.AppGlobals;
@@ -20,6 +21,7 @@ import com.divillafajar.app.pos.pos_app_sini.service.area.AreaService;
 import com.divillafajar.app.pos.pos_app_sini.service.image.ImageStorageService;
 import com.divillafajar.app.pos.pos_app_sini.service.product.category.ProductCategoryService;
 import com.divillafajar.app.pos.pos_app_sini.service.product.item.ProductService;
+import com.divillafajar.app.pos.pos_app_sini.utils.EnumTranslator;
 import com.divillafajar.app.pos.pos_app_sini.utils.TelegramNotifier;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -50,6 +52,7 @@ public class ThymeManagerAreaController {
     private final ImageStorageService imageService;
     private final TelegramNotifier telegramNotifier;
 	private final AppGlobals appGlobals;
+	private final EnumTranslator enumTranslator;
 
     @GetMapping
     public String showSpaceHome(
@@ -94,8 +97,24 @@ public class ThymeManagerAreaController {
 	    UserSessionDTO userLog = (UserSessionDTO) session.getAttribute("userLogInfo");
         ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
 		List<SpaceAreaDTO> orderListAreaAndSubArea = areaService.getAreaAndSubAreaByClientAddressPubId(dto.getPubId());
+	    System.out.println("enum= "+ enumTranslator.getTranslated(LineOfBusinessEnum.ACCOMODATION, Locale.getDefault()));
         //List<ProductCategoryDTO> orderListCategoryAnsSub = categoryService.getCategoryAndSubCategoryByClientAddressPubId(dto.getPubId());
-        model.addAttribute("orderListAreaAndSubArea",orderListAreaAndSubArea);
+        if(orderListAreaAndSubArea!=null && orderListAreaAndSubArea.size()>0) {
+			for(int i=0;i<orderListAreaAndSubArea.size();i++) {
+				orderListAreaAndSubArea.get(i).setEditable(true);
+				System.out.println(i+". "+orderListAreaAndSubArea.get(i).getPath());
+				if(orderListAreaAndSubArea.get(i)!=null) {
+					if(orderListAreaAndSubArea.get(i).getParent()!=null &&
+							orderListAreaAndSubArea.get(i).getParent().getName().equalsIgnoreCase(LineOfBusinessEnum.ACCOMODATION.name())
+					) {
+						System.out.println(i+". "+orderListAreaAndSubArea.get(i).getParent().getName());
+					}
+				}
+				System.out.println(i+". "+orderListAreaAndSubArea.get(i).getName());
+			}
+
+        }
+	    model.addAttribute("orderListAreaAndSubArea",orderListAreaAndSubArea);
         model.addAttribute("activePage",activePage);
         model.addAttribute("activeSub",activeSub);
 	    model.addAttribute("userLog",userLog);
