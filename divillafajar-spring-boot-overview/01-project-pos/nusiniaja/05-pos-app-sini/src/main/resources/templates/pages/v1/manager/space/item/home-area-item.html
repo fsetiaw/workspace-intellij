@@ -389,49 +389,20 @@
                                                             <span th:text="#{label.facilities}"
                                                                   style="font-weight: 600;font-size:120%; margin-left:0px; padding-bottom:15px" class="category-label text-primary mb-4"></span>
                                                             <!--label class="form-label text-primary">Extra Info for Accomodation</label-->
-                                                            <div class="row">
-                                                                <div class="col-6 mb-2">
+                                                            <div class="row row-cols-2">
+                                                                <div class="col mb-2" th:each="facility : ${generalFacilities}">
                                                                     <div class="form-check">
-                                                                        <input type="checkbox" class="form-check-input form-check-primary form-check-glow" checked
-                                                                               name="customCheck" id="checkboxGlow11">
-                                                                        <label class="form-check-label" for="checkboxGlow1">Primary</label>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-6 mb-2">
-                                                                    <div class="form-check">
-                                                                        <input type="checkbox" class="form-check-input form-check-secondary form-check-glow" checked
-                                                                               name="customCheck" id="checkboxGlow21">
-                                                                        <label class="form-check-label" for="checkboxGlow2">Secondary</label>
-                                                                    </div>
-                                                                </div>
+                                                                        <input class="form-check-input form-check-primary form-check-glow"
+                                                                               type="checkbox"
+                                                                               th:id="${'gen_' + facility.name()}"
+                                                                               th:name="generalFacilities"
+                                                                               th:value="${facility.name()}"
+                                                                               th:checked="${selectedGeneralFacilities != null and selectedGeneralFacilities.contains(facility)}">
 
-                                                                <div class="col-6 mb-2">
-                                                                    <div class="form-check">
-                                                                        <input type="checkbox" class="form-check-input form-check-success form-check-glow" checked
-                                                                               name="customCheck" id="checkboxGlow31">
-                                                                        <label class="form-check-label" for="checkboxGlow3">Success</label>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-6 mb-2">
-                                                                    <div class="form-check">
-                                                                        <input type="checkbox" class="form-check-input form-check-danger form-check-glow" checked
-                                                                               name="customCheck" id="checkboxGlow41">
-                                                                        <label class="form-check-label" for="checkboxGlow4">Danger</label>
-                                                                    </div>
-                                                                </div>
-
-                                                                <div class="col-6 mb-2">
-                                                                    <div class="form-check">
-                                                                        <input type="checkbox" class="form-check-input form-check-info form-check-glow" checked
-                                                                               name="customCheck" id="checkboxGlow51">
-                                                                        <label class="form-check-label" for="checkboxGlow5">Info</label>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-6 mb-2">
-                                                                    <div class="form-check">
-                                                                        <input type="checkbox" class="form-check-input form-check-warning form-check-glow" checked
-                                                                               name="customCheck" id="checkboxGlow61">
-                                                                        <label class="form-check-label" for="checkboxGlow6">Warning</label>
+                                                                        <label class="form-check-label"
+                                                                               th:for="${'gen_' + facility.name()}"
+                                                                               th:text="${@enumTranslator.translate(facility)}">
+                                                                        </label>
                                                                     </div>
                                                                 </div>
                                                             </div>

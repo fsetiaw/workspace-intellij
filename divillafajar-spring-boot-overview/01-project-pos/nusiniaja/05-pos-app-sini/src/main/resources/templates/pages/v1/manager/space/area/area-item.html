@@ -3,7 +3,7 @@
         <li th:each="item, stat : ${items}"
             class="list-group-item d-flex justify-content-between align-items-center"
             th:attr="data-id=${item.id}, data-indent=${item.indentLevel}"
-            onclick="console.log(this.dataset.path, this.dataset.parent)">
+            onclick="console.log(this.dataset.editable, this.dataset.name)">
 
         <span class="item-text">
           <!-- tampilkan path hanya bila ada -->
@@ -18,8 +18,8 @@
         </span>
 
             <div class="btn-group mb-0 btn-group-sm buttons">
-                <a th:if="${item.path != null and #strings.isNotEmpty(item.path) and (!#strings.toLowerCase(item.path).startsWith('accomodation'.toLowerCase()) and !#strings.toLowerCase(item.path).startsWith('akomodasi'.toLowerCase()))}" href="#" class="btn btn-sm btn-primary edit-btn" style="margin:0; transform: scale(0.8); transform-origin: center;"><i class="bi bi-pencil"></i></a>
-                <a th:if="${item.path != null and (!#strings.toLowerCase(item.path).startsWith('accomodation'.toLowerCase()) and !#strings.toLowerCase(item.path).startsWith('akomodasi'.toLowerCase()))}" href="#" class="btn btn-sm btn-danger delete-btn" style="margin:0; transform: scale(0.8); transform-origin: center;"><i class="bi bi-trash"></i></a>
+                <a th:if="${item.editable}" href="#" class="btn btn-sm btn-primary edit-btn" style="margin:0; transform: scale(0.8); transform-origin: center;"><i class="bi bi-pencil"></i></a>
+                <a th:if="${item.editable}" href="#" class="btn btn-sm btn-danger delete-btn" style="margin:0; transform: scale(0.8); transform-origin: center;"><i class="bi bi-trash"></i></a>
                 <a th:if="${item.indentLevel == 0}"
                     href="#" class="btn btn-sm btn-success add-sub-btn"
                    style="margin:0; transform: scale(0.8); transform-origin: center;"><i class="bi bi-plus"></i></a>

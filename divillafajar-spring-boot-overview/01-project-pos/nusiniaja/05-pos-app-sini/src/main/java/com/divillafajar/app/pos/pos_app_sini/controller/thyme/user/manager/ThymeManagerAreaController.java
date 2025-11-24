@@ -1,20 +1,17 @@
 package com.divillafajar.app.pos.pos_app_sini.controller.thyme.user.manager;
 
+import com.divillafajar.app.pos.pos_app_sini.common.enums.GeneralAccommodationFacilities;
 import com.divillafajar.app.pos.pos_app_sini.common.enums.LineOfBusinessEnum;
 import com.divillafajar.app.pos.pos_app_sini.config.properties.CustomDefaultProperties;
 import com.divillafajar.app.pos.pos_app_sini.exception.DuplicationErrorException;
 import com.divillafajar.app.pos.pos_app_sini.global.AppGlobals;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientAddressDTO;
-import com.divillafajar.app.pos.pos_app_sini.io.entity.session.UserSessionLog;
-import com.divillafajar.app.pos.pos_app_sini.io.entity.space.SpaceAreaEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.space.dto.SpaceAreaDTO;
-import com.divillafajar.app.pos.pos_app_sini.io.projection.CategorySummaryProjection;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductItemSummaryProjectionDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductWithCategoryPathDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.area.AreaSummaryProjection;
 import com.divillafajar.app.pos.pos_app_sini.model.area.unit.CreateUnitAreaRequestModel;
-import com.divillafajar.app.pos.pos_app_sini.model.item.CreateItemRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.model.product.ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId;
 import com.divillafajar.app.pos.pos_app_sini.model.user.UserSessionDTO;
 import com.divillafajar.app.pos.pos_app_sini.service.area.AreaService;
@@ -27,13 +24,10 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.MessageSource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.*;
@@ -97,22 +91,30 @@ public class ThymeManagerAreaController {
 	    UserSessionDTO userLog = (UserSessionDTO) session.getAttribute("userLogInfo");
         ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
 		List<SpaceAreaDTO> orderListAreaAndSubArea = areaService.getAreaAndSubAreaByClientAddressPubId(dto.getPubId());
-	    System.out.println("enum= "+ enumTranslator.getTranslated(LineOfBusinessEnum.ACCOMODATION, Locale.getDefault()));
-        //List<ProductCategoryDTO> orderListCategoryAnsSub = categoryService.getCategoryAndSubCategoryByClientAddressPubId(dto.getPubId());
+        String prevTopLevelArea=null;
+        String currTopLevelArea=null;
         if(orderListAreaAndSubArea!=null && orderListAreaAndSubArea.size()>0) {
 			for(int i=0;i<orderListAreaAndSubArea.size();i++) {
 				orderListAreaAndSubArea.get(i).setEditable(true);
-				System.out.println(i+". "+orderListAreaAndSubArea.get(i).getPath());
 				if(orderListAreaAndSubArea.get(i)!=null) {
-					if(orderListAreaAndSubArea.get(i).getParent()!=null &&
-							orderListAreaAndSubArea.get(i).getParent().getName().equalsIgnoreCase(LineOfBusinessEnum.ACCOMODATION.name())
-					) {
-						System.out.println(i+". "+orderListAreaAndSubArea.get(i).getParent().getName());
+                    if(orderListAreaAndSubArea.get(i).getParent()==null) {
+						/*Jika ini null = top level*/
+                        if(prevTopLevelArea==null) {
+                            //record pertama
+                            prevTopLevelArea=new String(orderListAreaAndSubArea.get(i).getName());
+                            currTopLevelArea=prevTopLevelArea;
+                        }
+                        else {
+                            //pergantian top level
+                            prevTopLevelArea=currTopLevelArea;
+                            currTopLevelArea=(orderListAreaAndSubArea.get(i).getName());
+                        }
+                        if(currTopLevelArea.equalsIgnoreCase(enumTranslator.translate(LineOfBusinessEnum.ACCOMODATION))) {
+                            orderListAreaAndSubArea.get(i).setEditable(false);
+                        }
 					}
 				}
-				System.out.println(i+". "+orderListAreaAndSubArea.get(i).getName());
 			}
-
         }
 	    model.addAttribute("orderListAreaAndSubArea",orderListAreaAndSubArea);
         model.addAttribute("activePage",activePage);
@@ -159,6 +161,7 @@ public class ThymeManagerAreaController {
         });
 
          */
+
         model.addAttribute("listEndChildPath",listEndChildPath);
         model.addAttribute("listTotItem",listTotItem);
         model.addAttribute("activePage",activePage);
@@ -216,6 +219,7 @@ public class ThymeManagerAreaController {
         model.addAttribute("toastShortTimeout",appGlobals.get("toastShortTimeout"));
         model.addAttribute("toastMediumTimeout",appGlobals.get("toastMediumTimeout"));
         model.addAttribute("toastLongTimeout",appGlobals.get("toastLongTimeout"));
+        model.addAttribute("generalFacilities", GeneralAccommodationFacilities.values());
         //"","",""
         if(listItem!=null) {
             model.addAttribute("listItem",listItem);
