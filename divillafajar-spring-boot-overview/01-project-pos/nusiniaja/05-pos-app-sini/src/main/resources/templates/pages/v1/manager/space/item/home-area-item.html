@@ -317,23 +317,23 @@
                                                             <div class="row">
                                                                 <div class="col-md-6">
                                                                     <div class="form-group row align-items-center">
-                                                                        <div class="col-lg-2 col-3">
-                                                                            <label class="col-form-label text-black-50" for="troom"># Room</label>
+                                                                        <div class="col-lg-8 col-9">
+                                                                            <label class="col-form-label text-black-50" for="tfloor" th:utext="|#{label.total} #{label.floor}|"></label>
                                                                         </div>
-                                                                        <div class="col-lg-10 col-9">
-                                                                            <input type="text" id="troom" class="form-control" name="troom"
-                                                                                   placeholder="Jumlah Kamar">
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-md-6">
-                                                                    <div class="form-group row align-items-center">
-                                                                        <div class="col-lg-2 col-3">
-                                                                            <label class="col-form-label text-black-50" for="tfloor"># Floor</label>
-                                                                        </div>
-                                                                        <div class="col-lg-10 col-9">
+                                                                        <div class="col-lg-4 col-3">
                                                                             <input type="text" id="tfloor" class="form-control" name="tfloor"
-                                                                                   placeholder="Last Name">
+                                                                                   placeholder="1">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group row align-items-center">
+                                                                        <div class="col-lg-8 col-9">
+                                                                            <label class="col-form-label text-black-50" for="troom" th:utext="|#{label.total} #{label.bedroom}|"></label>
+                                                                        </div>
+                                                                        <div class="col-lg-4 col-3">
+                                                                            <input type="text" id="troom" class="form-control" name="troom"
+                                                                                   placeholder="0">
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -341,57 +341,71 @@
                                                             <div class="row">
                                                                 <div class="col-md-6">
                                                                     <div class="form-group row align-items-center">
-                                                                        <div class="col-lg-2 col-3">
-                                                                            <label class="col-form-label text-black-50" for="tbath"># bathroom</label>
+                                                                        <div class="col-lg-8 col-9">
+                                                                            <label class="col-form-label text-black-50" for="tliving" th:utext="|#{label.total} #{label.livingRoom}|"></label>
                                                                         </div>
-                                                                        <div class="col-lg-10 col-9">
-                                                                            <input type="text" id="tbath" class="form-control" name="tbath"
-                                                                                   placeholder="Jumlah Kamar Mandi">
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-md-6">
-                                                                    <div class="form-group row align-items-center">
-                                                                        <div class="col-lg-2 col-3">
-                                                                            <label class="col-form-label  text-black-50" for="tliving"># Living room</label>
-                                                                        </div>
-                                                                        <div class="col-lg-10 col-9">
-                                                                            <input type="text" id="tliving1" class="form-control" name="tliving"
-                                                                                   placeholder="Jumlah Bathroom">
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row">
-                                                                <div class="col-md-6">
-                                                                    <div class="form-group row align-items-center">
-                                                                        <div class="col-lg-2 col-3">
-                                                                            <label class="col-form-label text-black-50" for="tkitchen"># bathroom</label>
-                                                                        </div>
-                                                                        <div class="col-lg-10 col-9">
-                                                                            <input type="text" id="tkitchen" class="form-control" name="tkitchen"
-                                                                                   placeholder="Jumlah Kamar Mandi">
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-md-6">
-                                                                    <div class="form-group row align-items-center">
-                                                                        <div class="col-lg-2 col-3">
-                                                                            <label class="col-form-label text-black-50" for="tliving"># Living room</label>
-                                                                        </div>
-                                                                        <div class="col-lg-10 col-9">
+                                                                        <div class="col-lg-4 col-3">
                                                                             <input type="text" id="tliving" class="form-control" name="tliving"
-                                                                                   placeholder="Jumlah Bathroom">
+                                                                                   placeholder="0">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group row align-items-center">
+                                                                        <div class="col-lg-8 col-9">
+                                                                            <label class="col-form-label text-black-50" for="tbath" th:utext="|#{label.total} #{label.bathroom}|"></label>
+                                                                        </div>
+                                                                        <div class="col-lg-4 col-3">
+                                                                            <input type="text" id="tbath" class="form-control" name="tbath"
+                                                                                   placeholder="0">
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
+                                                            <!--div class="row">
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group row align-items-center">
+                                                                        <div class="col-lg-8 col-9">
+                                                                            <label class="col-form-label text-black-50" for="tact" th:utext="|#{label.total} #{label.activityRoom}|"></label>
+                                                                        </div>
+                                                                        <div class="col-lg-4 col-3">
+                                                                            <input type="text" id="tact" class="form-control" name="tact"
+                                                                                   placeholder="0">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div-->
+                                                            <hr>
+
                                                             <span th:text="#{label.facilities}"
-                                                                  style="font-weight: 600;font-size:120%; margin-left:0px; padding-bottom:15px" class="category-label text-primary mb-4"></span>
+                                                                  style="font-weight: 600;font-size:120%; margin-left:0px; margin-bottom:0" class="category-label text-primary mb-4"></span>
+                                                            <br>
+                                                            <span th:text="#{label.feature}"
+                                                                  style="font-weight: 600;font-size:100%; margin-left:10px; margin-bottom:0" class="category-label text-primary mb-4">
+                                                            </span>
+                                                            <div class="row row-cols-2">
+                                                                <div class="col mb-2" th:each="feature : ${featureAccommodationFacilities}">
+                                                                    <div class="form-check" style="margin-left:15px">
+                                                                        <input class="form-check-input form-check-primary form-check-glow"
+                                                                               type="checkbox"
+                                                                               th:id="${'feat_' + feature.name()}"
+                                                                               th:name="featureFacilities"
+                                                                               th:value="${feature.name()}"
+                                                                               th:checked="${selectedGeneralFacilities != null and selectedGeneralFacilities.contains(feature)}">
+
+                                                                        <label class="form-check-label"
+                                                                               th:for="${'feat_' + feature.name()}"
+                                                                               th:text="${@enumTranslator.translate(feature)}">
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <span th:text="#{label.manager.setting.general}"
+                                                                  style="font-weight: 600;font-size:100%; margin-left:10px; margin-bottom:0" class="category-label text-primary mb-4"></span>
                                                             <!--label class="form-label text-primary">Extra Info for Accomodation</label-->
                                                             <div class="row row-cols-2">
                                                                 <div class="col mb-2" th:each="facility : ${generalFacilities}">
-                                                                    <div class="form-check">
+                                                                    <div class="form-check" style="margin-left:15px">
                                                                         <input class="form-check-input form-check-primary form-check-glow"
                                                                                type="checkbox"
                                                                                th:id="${'gen_' + facility.name()}"
@@ -406,52 +420,23 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <span th:text="#{label.addOnService}"
-                                                                  style="font-weight: 600;font-size:120%; margin-left:0px; margin-bottom:15px" class="category-label text-primary mb-4"></span>
-                                                            <!--label class="form-label text-primary">Extra Info for Accomodation</label-->
-                                                            <div class="row">
-                                                                <div class="col-6 mb-2">
-                                                                    <div class="form-check">
-                                                                        <input type="checkbox" class="form-check-input form-check-primary form-check-glow" checked
-                                                                               name="customCheck" id="checkboxGlow1">
-                                                                        <label class="form-check-label" for="checkboxGlow1">Primary</label>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-6 mb-2">
-                                                                    <div class="form-check">
-                                                                        <input type="checkbox" class="form-check-input form-check-secondary form-check-glow" checked
-                                                                               name="customCheck" id="checkboxGlow2">
-                                                                        <label class="form-check-label" for="checkboxGlow2">Secondary</label>
-                                                                    </div>
-                                                                </div>
+                                                            <span th:text="#{label.entertainment}"
+                                                                  style="font-weight: 600;font-size:100%; margin-left:10px; margin-bottom:0" class="category-label text-primary mb-4">
+                                                            </span>
+                                                            <div class="row row-cols-2">
+                                                                <div class="col mb-2" th:each="entertain : ${accommodationEntertainmentFacilities}">
+                                                                    <div class="form-check" style="margin-left:15px">
+                                                                        <input class="form-check-input form-check-primary form-check-glow"
+                                                                               type="checkbox"
+                                                                               th:id="${'ent_' + entertain.name()}"
+                                                                               th:name="entertainFacilities"
+                                                                               th:value="${entertain.name()}"
+                                                                               th:checked="${selectedGeneralFacilities != null and selectedGeneralFacilities.contains(entertain)}">
 
-                                                                <div class="col-6 mb-2">
-                                                                    <div class="form-check">
-                                                                        <input type="checkbox" class="form-check-input form-check-success form-check-glow" checked
-                                                                               name="customCheck" id="checkboxGlow3">
-                                                                        <label class="form-check-label" for="checkboxGlow3">Success</label>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-6 mb-2">
-                                                                    <div class="form-check">
-                                                                        <input type="checkbox" class="form-check-input form-check-danger form-check-glow" checked
-                                                                               name="customCheck" id="checkboxGlow4">
-                                                                        <label class="form-check-label" for="checkboxGlow4">Danger</label>
-                                                                    </div>
-                                                                </div>
-
-                                                                <div class="col-6 mb-2">
-                                                                    <div class="form-check">
-                                                                        <input type="checkbox" class="form-check-input form-check-info form-check-glow" checked
-                                                                               name="customCheck" id="checkboxGlow5">
-                                                                        <label class="form-check-label" for="checkboxGlow5">Info</label>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-6 mb-2">
-                                                                    <div class="form-check">
-                                                                        <input type="checkbox" class="form-check-input form-check-warning form-check-glow" checked
-                                                                               name="customCheck" id="checkboxGlow6">
-                                                                        <label class="form-check-label" for="checkboxGlow6">Warning</label>
+                                                                        <label class="form-check-label"
+                                                                               th:for="${'ent_' + entertain.name()}"
+                                                                               th:text="${@enumTranslator.translate(entertain)}">
+                                                                        </label>
                                                                     </div>
                                                                 </div>
                                                             </div>

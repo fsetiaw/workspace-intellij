@@ -1,5 +1,7 @@
 package com.divillafajar.app.pos.pos_app_sini.controller.thyme.user.manager;
 
+import com.divillafajar.app.pos.pos_app_sini.common.enums.AccommodationEntertainmentFacilities;
+import com.divillafajar.app.pos.pos_app_sini.common.enums.FeatureAccommodationFacilities;
 import com.divillafajar.app.pos.pos_app_sini.common.enums.GeneralAccommodationFacilities;
 import com.divillafajar.app.pos.pos_app_sini.common.enums.LineOfBusinessEnum;
 import com.divillafajar.app.pos.pos_app_sini.config.properties.CustomDefaultProperties;
@@ -220,6 +222,8 @@ public class ThymeManagerAreaController {
         model.addAttribute("toastMediumTimeout",appGlobals.get("toastMediumTimeout"));
         model.addAttribute("toastLongTimeout",appGlobals.get("toastLongTimeout"));
         model.addAttribute("generalFacilities", GeneralAccommodationFacilities.values());
+        model.addAttribute("accommodationEntertainmentFacilities", AccommodationEntertainmentFacilities.values());
+        model.addAttribute("featureAccommodationFacilities", FeatureAccommodationFacilities.values());
         //"","",""
         if(listItem!=null) {
             model.addAttribute("listItem",listItem);
