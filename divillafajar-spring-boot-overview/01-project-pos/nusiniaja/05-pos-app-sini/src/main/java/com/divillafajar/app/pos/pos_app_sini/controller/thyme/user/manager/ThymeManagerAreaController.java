@@ -1,9 +1,6 @@
 package com.divillafajar.app.pos.pos_app_sini.controller.thyme.user.manager;
 
-import com.divillafajar.app.pos.pos_app_sini.common.enums.AccommodationEntertainmentFacilities;
-import com.divillafajar.app.pos.pos_app_sini.common.enums.FeatureAccommodationFacilities;
-import com.divillafajar.app.pos.pos_app_sini.common.enums.GeneralAccommodationFacilities;
-import com.divillafajar.app.pos.pos_app_sini.common.enums.LineOfBusinessEnum;
+import com.divillafajar.app.pos.pos_app_sini.common.enums.*;
 import com.divillafajar.app.pos.pos_app_sini.config.properties.CustomDefaultProperties;
 import com.divillafajar.app.pos.pos_app_sini.exception.DuplicationErrorException;
 import com.divillafajar.app.pos.pos_app_sini.global.AppGlobals;
@@ -224,6 +221,8 @@ public class ThymeManagerAreaController {
         model.addAttribute("generalFacilities", GeneralAccommodationFacilities.values());
         model.addAttribute("accommodationEntertainmentFacilities", AccommodationEntertainmentFacilities.values());
         model.addAttribute("featureAccommodationFacilities", FeatureAccommodationFacilities.values());
+	    model.addAttribute("onDemandAccommodationFacilities", OnDemandAccommodationFacilities.values());
+	    model.addAttribute("addOnAccommodationService", AddOnAccommodationService.values());
         //"","",""
         if(listItem!=null) {
             model.addAttribute("listItem",listItem);

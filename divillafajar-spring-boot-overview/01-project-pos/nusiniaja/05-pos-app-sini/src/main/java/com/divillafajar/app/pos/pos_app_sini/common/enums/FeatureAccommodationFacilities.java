@@ -8,7 +8,8 @@ public enum FeatureAccommodationFacilities implements TranslatableEnum {
     KARAOKE("label.facility.accommodation.general.karaoke"),
     BALCONY("label.facility.accommodation.general.balcony"),
     ROOFTOP("label.facility.accommodation.feature.roofTop"),
-    PRIVATEPOOL("label.facility.accommodation.bathroom.whirlpool.private");
+	PRIVATEPOOL("label.facility.accommodation.entertainment.pool.private"),
+    PRIVATEWHIRLPOOL("label.facility.accommodation.bathroom.whirlpool.private");
 
     private final String i18nKey;
 

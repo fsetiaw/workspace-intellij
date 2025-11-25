@@ -8,9 +8,7 @@ public enum GeneralAccommodationFacilities implements TranslatableEnum {
     SAFETYBOX("label.facility.accommodation.general.safetyBox"),
     KETTLE("label.facility.accommodation.general.kettle"),
     CLOSET("label.facility.accommodation.general.closet"),
-    HAIRDRYER("label.facility.accommodation.general.hairdryer"),
-    HAIRDRYERONDEMAND("label.facility.accommodation.general.onDemand.hairdryer"),
-    PRIVATEPOOL("label.facility.accommodation.entertainment.pool.private"),
+	TV("label.facility.accommodation.general.tv"),
     WORKAREA("label.facility.accommodation.general.workArea");
 
     private final String i18nKey;
