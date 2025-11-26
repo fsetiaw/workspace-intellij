@@ -13,6 +13,8 @@ import com.divillafajar.app.pos.pos_app_sini.io.entity.product.ProductEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.session.UserSessionLog;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.space.SpaceAreaEntity;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.space.dto.SpaceAreaDTO;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.space.unit.AreaUnitEntity;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.space.unit.dto.UnitAccomodationDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.CategoryHierarchyProjectionDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductCategoryHierarchyProjection;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.area.AreaHierarchyProjectionDTO;
@@ -23,6 +25,7 @@ import com.divillafajar.app.pos.pos_app_sini.model.item.CreateItemRequestModel;
 import com.divillafajar.app.pos.pos_app_sini.model.product.ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId;
 import com.divillafajar.app.pos.pos_app_sini.model.user.UserSessionDTO;
 import com.divillafajar.app.pos.pos_app_sini.repo.area.AreaRepo;
+import com.divillafajar.app.pos.pos_app_sini.repo.area.UnitAreaRepo;
 import com.divillafajar.app.pos.pos_app_sini.repo.client.ClientAddressRepo;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -45,6 +48,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AreaServiceImpl implements AreaService{
 	private final AreaRepo areaRepo;
+	private final UnitAreaRepo unitAreaRepo;
 	private final ClientAddressRepo addressRepo;
 	private final MessageSource messageSource;
     private final ModelMapper modelMapper;
@@ -307,10 +311,37 @@ public class AreaServiceImpl implements AreaService{
 
 	@Override
 	@Transactional
-	public ProductDTO addNewUnit(Long catId, ClientAddressDTO dto, CreateUnitAreaRequestModel createItemRequestModel) {
-		ProductDTO retVal = new ProductDTO();
-		System.out.println("===== addNewProduct =======");
-		System.out.println("===== "+dto.getPubId()+" =======");
+	public ProductDTO addNewUnit(Long areaId, ClientAddressDTO dto, CreateUnitAreaRequestModel createItemRequestModel, String username) {
+		try {
+			ProductDTO retVal = new ProductDTO();
+			System.out.println("===== addNewProduct =======");
+			System.out.println("===== "+dto.getPubId()+" =======");
+			AreaUnitEntity newUnit = new AreaUnitEntity();
+			newUnit =  modelMapper.map(createItemRequestModel, AreaUnitEntity.class);
+
+			newUnit.setCreatedBy(username);
+			Optional<SpaceAreaEntity> area =  areaRepo.findById(areaId);
+			if(area.isEmpty())
+				throw new NullPointerException("Area Not Found");
+
+			newUnit.setSpaceArea(area.get());
+			newUnit.setAreaType(newUnit.getSpaceArea().getName());
+			/*
+			System.out.println("newUnit = "+newUnit.getSpaceArea().getName());
+			System.out.println("newUnit = "+newUnit.getName());
+			System.out.println("newUnit = "+newUnit.getCreatedBy());
+			System.out.println("newUnit = "+newUnit.getFeatureFacilities().getFirst());
+			System.out.println("newUnit = "+newUnit.getGeneralFacilities().getFirst());
+			System.out.println("newUnit = "+newUnit.getOnDemandFacilities().getFirst());
+			System.out.println("newUnit = "+newUnit.getOtherFeature());
+
+			 */
+			unitAreaRepo.save(newUnit);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+
 /*
 		//check apa nama sudah digunakan di lokasi tersebut
 		ProductEntity exist =  productRepo.searchProductsByClientAddressPubIdAndName(dto.getPubId(), createItemRequestModel.getName());
@@ -346,6 +377,6 @@ public class AreaServiceImpl implements AreaService{
 		}
 
  */
-		return retVal;
+		return null;
 	}
 }

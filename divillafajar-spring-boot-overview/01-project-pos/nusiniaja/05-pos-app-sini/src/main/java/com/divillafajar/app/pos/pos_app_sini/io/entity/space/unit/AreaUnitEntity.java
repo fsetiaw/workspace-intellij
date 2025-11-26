@@ -7,8 +7,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -24,6 +27,10 @@ public class AreaUnitEntity {
 			this.createdAt = LocalDateTime.now();
 		if (this.deleted == null)
 			this.deleted = false;
+		if (this.isActive == null)
+			this.isActive = false;
+		if (this.isAvailable == null)
+			this.isAvailable = false;
 	}
 
 	@PreUpdate
@@ -42,32 +49,83 @@ public class AreaUnitEntity {
 	@JoinColumn(name = "space_area_id", nullable = false)
 	private SpaceAreaEntity spaceArea;
 
-	// ============================
-	// 🔹 Unit Basic Info
-	// ============================
-	@Column(nullable = false, length = 255)
-	private String name;  // contoh: "Cabin A", "Room 1", "Table 12"
 
-	@Column(columnDefinition = "TEXT")
+
+	// ============================
+	// 🔹 Accommodation Unit Info
+	// ============================
+
+	// Basic
+	@Column(name = "path")
+	private String path;
+
+	@Column(name = "area_type")
+	private String areaType;
+
+	@Column(name = "name")
+	private String name;
+
+	@Column(name = "description", columnDefinition = "TEXT")
 	private String description;
 
-	@Column(nullable = false, length = 255)
-	private String area_type; //contoh room, balkon, kamar mandi
+	// Accommodation details
+	@Column(name = "tfloor")
+	private String tfloor;
 
-	@Column(nullable = true,length = 100)
-	private String code;  // optional unique code
+	@Column(name = "troom")
+	private String troom;
+
+	@Column(name = "tliving")
+	private String tliving;
+
+	@Column(name = "tbath")
+	private String tbath;
+
+	@Column(name = "tarea")
+	private String tArea;
+
+	// Feature Facilities (List<String> as JSON)
+	@JdbcTypeCode(SqlTypes.JSON)
+	@Column(columnDefinition = "json")
+	private List<String> featureFacilities;
+
+	@Column(name = "other_feature")
+	private String otherFeature;
+
+	// General/Standard Facilities
+	@JdbcTypeCode(SqlTypes.JSON)
+	@Column(columnDefinition = "json")
+	private List<String> generalFacilities;
+
+	@Column(name = "other_standard")
+	private String otherStandard;
+
+	// On Demand Facilities
+	@JdbcTypeCode(SqlTypes.JSON)
+	@Column(columnDefinition = "json")
+	private List<String> onDemandFacilities;
+
+	@Column(name = "other_on_demand")
+	private String otherOnDemand;
+
+	// Add-on Service
+	@JdbcTypeCode(SqlTypes.JSON)
+	@Column(columnDefinition = "json")
+	private List<String> addOnService;
+
+	@Column(name = "other_add_on")
+	private String otherAddOn;
 
 	@Column(length = 25)
 	private String capacity_unit;  // satuan : orang / meja / kursi
 
+	// kapasitas: tamu/meja/orang
 	@Column
-	private Integer capacity; // kapasitas: tamu/meja/orang
+	private Integer capacity; //adult capacity kalo untuk akomodasi
 
-	@Column(name = "size_m2")
-	private Double sizeM2; // luas (optional)
+	@Column(name = "child_age_restriction")
+	private Integer chileAgeRestriction;
 
-	@Column
-	private Integer floor;   // optional: lantai/unit level
 
 	// ============================
 	// 🔹 Operational Status

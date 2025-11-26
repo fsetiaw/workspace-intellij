@@ -24,5 +24,5 @@ public interface AreaService {
     List<ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId> getPathToEachEndChildCategoryByClientAddressPubId(String pAid, String filter);
 	void createDefaultArea(String lang, String clientAddressPubId);
 	void resetAreaByClientAddress(String clientAddressPubId);
-	ProductDTO addNewUnit(Long catId, ClientAddressDTO dto, CreateUnitAreaRequestModel createUnitAreaRequestModel);
+	ProductDTO addNewUnit(Long catId, ClientAddressDTO dto, CreateUnitAreaRequestModel createUnitAreaRequestModel, String username);
 }

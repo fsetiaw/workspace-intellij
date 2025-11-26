@@ -6,6 +6,7 @@ import com.divillafajar.app.pos.pos_app_sini.exception.DuplicationErrorException
 import com.divillafajar.app.pos.pos_app_sini.global.AppGlobals;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientAddressDTO;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.session.UserSessionLog;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.space.dto.SpaceAreaDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductItemSummaryProjectionDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductWithCategoryPathDTO;
@@ -23,6 +24,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -245,19 +247,62 @@ public class ThymeManagerAreaController {
             Model model, HttpSession session
     ) {
         try {
+			System.out.println("-------addNewItemUnitArea--------");
             ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
+	        UserSessionDTO userLog = (UserSessionDTO) session.getAttribute("userLogInfo");
 			System.out.println("addNewItemUnitArea=="+areaId);
+	        System.out.println("CreateUnitAreaRequestModel=="+areaId);
+	        System.out.println("CreateUnitAreaRequestModel=="+dto.getPubId());
+	        System.out.println("CreateUnitAreaRequestModel=="+userLog.getUsername());
+	        System.out.println("CreateUnitAreaRequestModel=="+createUnitAreaRequestModel.getPath());
 	        System.out.println("CreateUnitAreaRequestModel=="+createUnitAreaRequestModel.getName());
-            areaService.addNewUnit(areaId, dto, createUnitAreaRequestModel);
+	        System.out.println("CreateUnitAreaRequestModel=="+createUnitAreaRequestModel.getDescription());
+	        System.out.println("CreateUnitAreaRequestModel=="+createUnitAreaRequestModel.getTbath());
+	        System.out.println("CreateUnitAreaRequestModel=="+createUnitAreaRequestModel.getTArea());
+	        System.out.println("CreateUnitAreaRequestModel=="+createUnitAreaRequestModel.getTroom());
+	        System.out.println("CreateUnitAreaRequestModel=="+createUnitAreaRequestModel.getTfloor());
+	        System.out.println("CreateUnitAreaRequestModel=="+createUnitAreaRequestModel.getTliving());
+	        /*
+			List<String> feature = createUnitAreaRequestModel.getFeatureFacilities();
+			if(!feature.isEmpty()) {
+				for(String item : feature) {
+					System.out.println(item);
+				}
+			}
+	        List<String> standard = createUnitAreaRequestModel.getGeneralFacilities();
+	        if(!feature.isEmpty()) {
+		        for(String item : standard) {
+			        System.out.println(item);
+		        }
+	        }
+
+	        List<String> onDemand = createUnitAreaRequestModel.getOnDemandFacilities();
+	        if(!feature.isEmpty()) {
+		        for(String item : onDemand) {
+			        System.out.println(item);
+		        }
+	        }
+
+	        List<String> services = createUnitAreaRequestModel.getAddOnService();
+	        if(!feature.isEmpty()) {
+		        for(String item : services) {
+			        System.out.println(item);
+		        }
+	        }
+
+	         */
+	        areaService.addNewUnit(areaId, dto, createUnitAreaRequestModel,userLog.getUsername());
             //String successMessage = messageSource.getMessage("label.item", null, locale)+" "+messageSource.getMessage("label.addSuccessfully", null, locale);
             //redirectAttributes.addFlashAttribute("successMessage", successMessage);
 
         } catch (DuplicationErrorException e) {
+			e.printStackTrace();
             String errorMessage = messageSource.getMessage("err.itemAlreadyExistUnderCategory", null, locale)+" "+e.getMessage();
             redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
         }
         catch (Exception e) {
-            String errorMessage = messageSource.getMessage("modal.errorUnexpected", null, locale);
+			e.printStackTrace();
+            String errorMessage = messageSource.getMessage("modal.errorUnexpected", null, LocaleContextHolder.getLocale());
             redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
         }
         redirectAttributes.addAttribute("activePage",activePage);
