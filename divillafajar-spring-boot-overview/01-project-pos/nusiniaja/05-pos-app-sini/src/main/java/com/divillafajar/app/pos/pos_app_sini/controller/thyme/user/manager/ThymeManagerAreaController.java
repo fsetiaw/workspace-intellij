@@ -147,7 +147,6 @@ public class ThymeManagerAreaController {
         List<String> listEndChildPath = new ArrayList<>();
         List<Long> listTotItem = new ArrayList<>();
         if(listRecord!=null) {
-
             for(ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId singleton : listRecord) {
                 listEndChildPath.add(singleton.getFullPath());
                 listTotItem.add(singleton.getTotalProducts());
@@ -160,7 +159,6 @@ public class ThymeManagerAreaController {
         listTotItem.forEach(cat -> {
             System.out.println(cat);
         });
-
          */
 
         model.addAttribute("listEndChildPath",listEndChildPath);
@@ -235,6 +233,7 @@ public class ThymeManagerAreaController {
         return "pages/v1/manager/space/item/home-area-item";
     }
 
+
     @PostMapping("/item/{areaId}")
     public String addNewItemUnitArea(
             @RequestParam(name = "activePage", required = true) String activePage,
@@ -291,7 +290,7 @@ public class ThymeManagerAreaController {
 	        }
 
 	         */
-	        areaService.addNewUnit(areaId, dto, createUnitAreaRequestModel,userLog.getUsername());
+	        //areaService.addNewUnit(areaId, dto, createUnitAreaRequestModel,userLog.getUsername());
             //String successMessage = messageSource.getMessage("label.item", null, locale)+" "+messageSource.getMessage("label.addSuccessfully", null, locale);
             //redirectAttributes.addFlashAttribute("successMessage", successMessage);
 
@@ -308,8 +307,39 @@ public class ThymeManagerAreaController {
         redirectAttributes.addAttribute("activePage",activePage);
         redirectAttributes.addAttribute("activeSub",activeSub);
         redirectAttributes.addAttribute("path",createUnitAreaRequestModel.getPath());
-        return "redirect:/v1/manager/manage/area/item/"+areaId;
-
+        //return "redirect:/v1/manager/manage/area/item/"+areaId;
+	    String trimPath = "";
+	    String path = createUnitAreaRequestModel.getPath();
+	    StringTokenizer st = new StringTokenizer(path,"/");
+	    while(st.hasMoreTokens()) {
+		    String tkn = st.nextToken();
+		    StringTokenizer st1 = new StringTokenizer(tkn,"~");
+		    trimPath = trimPath+st1.nextToken();
+		    if(st.hasMoreTokens()) {
+			    trimPath=trimPath+" / ";
+		    }
+	    }
+	    String pathCategory = "";
+	    String targetCategoryName = "";
+	    if(!StringUtils.isBlank(trimPath)) {
+		    st = new StringTokenizer(trimPath,"/");
+		    while(st.hasMoreTokens()) {
+			    String tkn = st.nextToken().trim();
+			    pathCategory = pathCategory + tkn;
+			    if(st.hasMoreTokens()) {
+				    pathCategory=pathCategory+"/";
+			    }
+			    else {
+				    //last token
+				    targetCategoryName=tkn.trim();
+			    }
+		    }
+	    }
+	    model.addAttribute("activePage",activePage);
+	    model.addAttribute("activeSub",activeSub);
+	    model.addAttribute("path",createUnitAreaRequestModel.getPath());
+	    model.addAttribute("trimPath",trimPath);
+		return "pages/v1/manager/space/item/step2-accommodation-form";
     }
 
 	@Transactional
