@@ -299,7 +299,7 @@
                                                        border-radius:50%;
                                                        font-size:150%;|">
                                             </i>
-                                            <span th:utext="|#{label.unit}|"
+                                            <span th:utext="|#{label.type}|"
                                                   style="color: gray;font-size:95%"></span>
                                             <span th:text="${targetCategoryName}"
                                                   style="font-weight: 600;font-size:120%; margin-left:4px" class="category-label"></span>
@@ -317,6 +317,19 @@
                                                         <input type="hidden" name="path" th:value="${path}">
                                                         <input type="text" id="feedback1" class="form-control" th:placeholder="#{label.unitName}"
                                                                name="name" required>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-12">
+                                                            <div class="form-group row align-items-center">
+                                                                <div class="col-lg-8 col-9">
+                                                                    <label class="col-form-label text-black-50" for="tUnit" th:utext="|#{label.totalUnitAvail}|"></label>
+                                                                </div>
+                                                                <div class="col-lg-4 col-3">
+                                                                    <input type="text" id="tUnit" class="form-control" name="tUnit"
+                                                                           placeholder="0" step="1" min="0" required>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                     <!--div class="form-group form-label-group">
                                                         <textarea class="form-control" name="description" id="label-textarea" rows="3"
@@ -349,7 +362,7 @@
                                                                         </div>
                                                                         <div class="col-lg-4 col-3">
                                                                             <input type="text" id="tfloor" class="form-control" name="tfloor"
-                                                                                   placeholder="0" step="1" min="0" required>
+                                                                                   placeholder="0" step="1" min="1" required>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -362,7 +375,7 @@
                                                                         </div>
                                                                         <div class="col-lg-4 col-3">
                                                                             <input type="text" id="troom" class="form-control" name="troom"
-                                                                                   placeholder="0" step="1" min="0" required>
+                                                                                   placeholder="0" step="1" min="1" required>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -386,7 +399,7 @@
                                                                         </div>
                                                                         <div class="col-lg-4 col-3">
                                                                             <input type="text" id="tbath" class="form-control" name="tbath"
-                                                                                   placeholder="0" step="1" min="0" required>
+                                                                                   placeholder="0" step="1" min="1" required>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -397,7 +410,7 @@
                                                                         </div>
                                                                         <div class="col-lg-4 col-3">
                                                                             <input type="text" id="tcapacity" class="form-control" name="tcapacity"
-                                                                                   placeholder="0" step="1" min="0" required>
+                                                                                   placeholder="0" step="1" min="1" required>
                                                                         </div>
                                                                     </div>
                                                                 </div>

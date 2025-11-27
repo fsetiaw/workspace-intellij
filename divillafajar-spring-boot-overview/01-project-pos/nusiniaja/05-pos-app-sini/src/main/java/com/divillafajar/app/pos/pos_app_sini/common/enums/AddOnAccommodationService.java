@@ -6,6 +6,9 @@ public enum AddOnAccommodationService implements TranslatableEnum {
 	BF("label.facility.accommodation.addOnService.bf"),
 	BONEFIRE("label.facility.accommodation.addOnService.bonFireWood"),
 	CHARCOALGRILL("label.facility.accommodation.addOnService.charcoalGrill"),
+	EXTRABED("label.facility.accommodation.addOnService.extraBed"),
+	HAIRDRYER("label.facility.accommodation.general.hairdryer"),
+	WATERREFILL("label.facility.accommodation.ondemand.waterRefill"),
     GRILLSET("label.facility.accommodation.addOnService.charcoalGrill");
 
     private final String i18nKey;

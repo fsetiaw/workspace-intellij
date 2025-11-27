@@ -234,6 +234,9 @@ public class ThymeManagerAreaController {
     }
 
 
+	/*
+	INSERT ACCOMODATION UNIT BARU
+	 */
     @PostMapping("/item/{areaId}")
     public String addNewItemUnitArea(
             @RequestParam(name = "activePage", required = true) String activePage,
@@ -241,10 +244,12 @@ public class ThymeManagerAreaController {
             //@RequestParam(name = "path", required = false) String path,
             @ModelAttribute CreateUnitAreaRequestModel createUnitAreaRequestModel,
             @PathVariable Long areaId,
-            Locale locale,
+			//LocaleContextHolder.getLocale() LocaleContextHolder.getLocale(),
             RedirectAttributes redirectAttributes,
             Model model, HttpSession session
     ) {
+	    String trimPath = "";
+	    String targetCategoryName = "";
         try {
 			System.out.println("-------addNewItemUnitArea--------");
             ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
@@ -290,56 +295,74 @@ public class ThymeManagerAreaController {
 	        }
 
 	         */
-	        //areaService.addNewUnit(areaId, dto, createUnitAreaRequestModel,userLog.getUsername());
-            //String successMessage = messageSource.getMessage("label.item", null, locale)+" "+messageSource.getMessage("label.addSuccessfully", null, locale);
+
+	        String path = createUnitAreaRequestModel.getPath();
+	        StringTokenizer st = new StringTokenizer(path,"/");
+	        while(st.hasMoreTokens()) {
+		        String tkn = st.nextToken();
+		        StringTokenizer st1 = new StringTokenizer(tkn,"~");
+		        trimPath = trimPath+st1.nextToken();
+		        if(st.hasMoreTokens()) {
+			        trimPath=trimPath+" / ";
+		        }
+	        }
+	        String pathCategory = "";
+
+	        if(!StringUtils.isBlank(trimPath)) {
+		        st = new StringTokenizer(trimPath,"/");
+		        while(st.hasMoreTokens()) {
+			        String tkn = st.nextToken().trim();
+			        pathCategory = pathCategory + tkn;
+			        if(st.hasMoreTokens()) {
+				        pathCategory=pathCategory+"/";
+			        }
+			        else {
+				        //last token
+				        targetCategoryName=tkn.trim();
+			        }
+		        }
+	        }
+	        areaService.addNewUnit(areaId, dto, createUnitAreaRequestModel,userLog.getUsername());
+            String successMessage = messageSource.getMessage("label.unit", null, LocaleContextHolder.getLocale())+" "+targetCategoryName+" "+messageSource.getMessage("label.addSuccessfully", null, LocaleContextHolder.getLocale());
+	        //success pass ke form bedroom
+			model.addAttribute("successMessage", successMessage);
             //redirectAttributes.addFlashAttribute("successMessage", successMessage);
 
         } catch (DuplicationErrorException e) {
 			e.printStackTrace();
-            String errorMessage = messageSource.getMessage("err.itemAlreadyExistUnderCategory", null, locale)+" "+e.getMessage();
-            redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
+	        redirectAttributes.addAttribute("activePage",activePage);
+	        redirectAttributes.addAttribute("activeSub",activeSub);
+	        redirectAttributes.addAttribute("path",createUnitAreaRequestModel.getPath());
+	        String errorMessage =
+			        messageSource.getMessage("label.type", null, LocaleContextHolder.getLocale()) + " " +
+					        targetCategoryName + " " +
+					        messageSource.getMessage("label.alreadyExist", null, LocaleContextHolder.getLocale()) + "/" +
+					        messageSource.getMessage("label.used", null, LocaleContextHolder.getLocale()) + " " +
+					        e.getMessage();
+
+			System.out.println("error msg = "+errorMessage);
+
+	        redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
+	        return "redirect:/v1/manager/manage/area/item/"+areaId;
         }
         catch (Exception e) {
 			e.printStackTrace();
+	        redirectAttributes.addAttribute("activePage",activePage);
+	        redirectAttributes.addAttribute("activeSub",activeSub);
+	        redirectAttributes.addAttribute("path",createUnitAreaRequestModel.getPath());
             String errorMessage = messageSource.getMessage("modal.errorUnexpected", null, LocaleContextHolder.getLocale());
             redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
+	        return "redirect:/v1/manager/manage/area/item/"+areaId;
         }
-        redirectAttributes.addAttribute("activePage",activePage);
-        redirectAttributes.addAttribute("activeSub",activeSub);
-        redirectAttributes.addAttribute("path",createUnitAreaRequestModel.getPath());
+
         //return "redirect:/v1/manager/manage/area/item/"+areaId;
-	    String trimPath = "";
-	    String path = createUnitAreaRequestModel.getPath();
-	    StringTokenizer st = new StringTokenizer(path,"/");
-	    while(st.hasMoreTokens()) {
-		    String tkn = st.nextToken();
-		    StringTokenizer st1 = new StringTokenizer(tkn,"~");
-		    trimPath = trimPath+st1.nextToken();
-		    if(st.hasMoreTokens()) {
-			    trimPath=trimPath+" / ";
-		    }
-	    }
-	    String pathCategory = "";
-	    String targetCategoryName = "";
-	    if(!StringUtils.isBlank(trimPath)) {
-		    st = new StringTokenizer(trimPath,"/");
-		    while(st.hasMoreTokens()) {
-			    String tkn = st.nextToken().trim();
-			    pathCategory = pathCategory + tkn;
-			    if(st.hasMoreTokens()) {
-				    pathCategory=pathCategory+"/";
-			    }
-			    else {
-				    //last token
-				    targetCategoryName=tkn.trim();
-			    }
-		    }
-	    }
+
 	    model.addAttribute("activePage",activePage);
 	    model.addAttribute("activeSub",activeSub);
 	    model.addAttribute("path",createUnitAreaRequestModel.getPath());
 	    model.addAttribute("trimPath",trimPath);
-		return "pages/v1/manager/space/item/step2-accommodation-form";
+	    model.addAttribute("bedroomFacilities", BedroomFacilities.values());
+		return "pages/v1/manager/space/item/accommodation-bedroom-form";
     }
 
 	@Transactional

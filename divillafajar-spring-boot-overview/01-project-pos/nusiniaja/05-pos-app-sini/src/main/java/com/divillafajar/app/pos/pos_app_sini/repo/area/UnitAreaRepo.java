@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UnitAreaRepo extends CrudRepository<AreaUnitEntity, Long> {
+	AreaUnitEntity findByName(String name);
+	boolean existsByName(String name);
 }

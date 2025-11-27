@@ -70,19 +70,22 @@ public class AreaUnitEntity {
 
 	// Accommodation details
 	@Column(name = "tfloor")
-	private String tfloor;
+	private int tfloor;
 
 	@Column(name = "troom")
-	private String troom;
+	private int troom;
 
 	@Column(name = "tliving")
-	private String tliving;
+	private int tliving;
 
 	@Column(name = "tbath")
-	private String tbath;
+	private int tbath;
 
 	@Column(name = "tarea")
-	private String tArea;
+	private int tArea;
+
+	@Column(name = "tunit")
+	private int tUnit;
 
 	// Feature Facilities (List<String> as JSON)
 	@JdbcTypeCode(SqlTypes.JSON)

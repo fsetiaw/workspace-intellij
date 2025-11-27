@@ -312,10 +312,17 @@ public class AreaServiceImpl implements AreaService{
 	@Override
 	@Transactional
 	public ProductDTO addNewUnit(Long areaId, ClientAddressDTO dto, CreateUnitAreaRequestModel createItemRequestModel, String username) {
+
+		ProductDTO retVal = new ProductDTO();
+		System.out.println("===== addNewProduct =======");
+		System.out.println("===== "+dto.getPubId()+" =======");
+		/*
+		cek nama tipe sudah digunakan
+		 */
+		if(unitAreaRepo.existsByName(createItemRequestModel.getName()))
+			throw new DuplicationErrorException("");
+
 		try {
-			ProductDTO retVal = new ProductDTO();
-			System.out.println("===== addNewProduct =======");
-			System.out.println("===== "+dto.getPubId()+" =======");
 			AreaUnitEntity newUnit = new AreaUnitEntity();
 			newUnit =  modelMapper.map(createItemRequestModel, AreaUnitEntity.class);
 

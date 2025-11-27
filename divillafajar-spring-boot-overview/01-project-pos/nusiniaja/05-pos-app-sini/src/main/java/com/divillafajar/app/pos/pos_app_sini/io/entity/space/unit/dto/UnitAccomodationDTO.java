@@ -28,11 +28,12 @@ public class UnitAccomodationDTO {
 	// ============================
 	// 🔹 Accommodation details
 	// ============================
-	private String tfloor;
-	private String troom;
-	private String tliving;
-	private String tbath;
-	private String tArea;
+	private int tfloor;
+	private int troom;
+	private int tliving;
+	private int tbath;
+	private int tArea;
+	private int tUnit;
 
 	// ============================
 	// 🔹 Facilities (JSON List<String>)

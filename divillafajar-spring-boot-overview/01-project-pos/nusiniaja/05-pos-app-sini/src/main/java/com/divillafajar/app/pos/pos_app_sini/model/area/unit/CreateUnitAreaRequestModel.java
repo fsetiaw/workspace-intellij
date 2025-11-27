@@ -17,11 +17,12 @@ public class CreateUnitAreaRequestModel {
 	private String description;
 
 	// --- Accommodation only fields ---
-	private String tfloor;      // total floor
-	private String troom;       // total bedroom
-	private String tliving;     // total living room
-	private String tbath;       // total bathroom
-	private String tArea;       // total area
+	private int tUnit;      // total Unit
+	private int tfloor;      // total floor
+	private int troom;       // total bedroom
+	private int tliving;     // total living room
+	private int tbath;       // total bathroom
+	private int tArea;       // total area
 
 	// --- Amenities: feature facilities ---
 	private List<String> featureFacilities;
