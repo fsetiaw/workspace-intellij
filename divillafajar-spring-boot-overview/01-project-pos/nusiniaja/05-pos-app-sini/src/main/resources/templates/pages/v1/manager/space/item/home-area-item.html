@@ -163,7 +163,7 @@
 <div id="app">
     <!-- Sidebar slot -->
     <div layout:fragment="sidebar">
-        <div th:replace="~{/pages/v1/manager/product/sidebar.html :: sidebar(${activePage}, ${activeSub}, '${listActiveLocation}')}"></div>
+        <div th:replace="~{/pages/v1/manager/space/sidebar.html :: sidebar(${activePage}, ${activeSub}, '${listActiveLocation}')}"></div>
     </div>
     <div id="main">
         <!-- Notification hamburg slot -->
@@ -310,7 +310,7 @@
                                          aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                         <div class="accordion-body" id="addSearch">
                                             <form class="form needs-validation" novalidate method="post"
-                                                  th:action="@{/v1/manager/manage/area/item/{areaId}(areaId=${categoryId},activePage=${activePage},activeSub=${activeSub})}">
+                                                  th:action="@{/v1/manager/manage/area/item/{areaId}(areaId=${areaId},activePage=${activePage},activeSub=${activeSub})}">
                                                 <div class="form-body">
                                                     <div class="form-group">
                                                         <!--label for="feedback1" class="sr-only" th:text="#{label.unitName}"></label-->
@@ -534,20 +534,7 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <!--div class="row">
-                                                                <div class="col-12">
-                                                                    <div class="form-group row align-items-center">
-                                                                        <div class="col-lg-4 col-3">
-                                                                            <label class="col-form-label text-black-50" style="margin-left:15px;"
-                                                                                   for="otherOnDemand" th:utext="|#{label.other}|"></label>
-                                                                        </div>
-                                                                        <div class="col-lg-8 col-9">
-                                                                            <input type="text" id="otherOnDemand" class="form-control" name="otherOnDemand"
-                                                                                   placeholder="0">
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div-->
+
                                                             <span th:text="#{label.addOnService}"
                                                                   style="font-weight: 600;font-size:100%; margin-left:10px; margin-bottom:0" class="category-label text-primary mb-4">
                                                             </span>
@@ -644,49 +631,49 @@
                                                         <h2 class="card-title mb-0 text-primary" th:utext="|${item.name}|"
                                                             th:id="'itemName' + ${item.id}"></h2>
                                                         <!-- 🔹 Harga tampil -->
-                                                        <h4 class="price" th:id="'price-display-' + ${item.id}"
+                                                        <!--h4 class="price" th:id="'price-display-' + ${item.id}"
                                                             th:attr="style=${item.price == null or item.price == 0} ? 'display:block;' : 'display:block;'">
 
-                                                            <!--span th:id="'itemPriceFormatted' + ${item.id}"
+                                                            <--span th:id="'itemPriceFormatted' + ${item.id}"
                                                                   th:text="${#numbers.formatDecimal(item.price, 0, 'POINT', 0, 'COMMA')}"></span-->
-                                                            <!-- harga null/kosong -->
+                                                            <!-- harga null/kosong ->
                                                             <span th:id="'itemPriceFormatted' + ${item.id}" th:if="${item.price == null or item.price == '' and T(java.lang.Double).parseDouble(item.price) > 0}"
                                                                   class="text-danger" style="font-size:90%"
                                                                   th:text="${#numbers.formatDecimal(0, 0, 'POINT', 0, 'COMMA')}">
                                                             </span>
 
-                                                            <!-- harga ada -->
+                                                            <-- harga ada ->
                                                             <span th:id="'itemPriceFormatted' + ${item.id}" th:if="${item.price != null and item.price != '' and T(java.lang.Double).parseDouble(item.price) > 0}"
                                                                   class="text-secondary" style="font-size:125%"
                                                                   th:text="${#numbers.formatDecimal(item.price, 0, 'POINT', 0, 'COMMA')}">
                                                             </span>
 
-                                                            <!-- stok kosong -->
+                                                            <-- stok kosong ->
                                                             <span th:if="${item.stockQuantity == null || item.stockQuantity < 1}"
                                                                   class="text-danger" style="font-size:45%"
                                                                   th:text="${#strings.toLowerCase(#messages.msg('label.stock') + ': ' + (item.stockQuantity == null ? 0 : item.stockQuantity))}">
                                                             </span>
 
-                                                            <!-- stok di bawah alert -->
+                                                            <-- stok di bawah alert ->
                                                             <span th:if="${item.stockQuantity >= 1 and item.stockQuantity < item.minStockAlert}"
                                                                   class="text-warning" style="font-size:45%"
                                                                   th:text="${#strings.toLowerCase(#messages.msg('label.stock') + ': ' + (item.stockQuantity == null ? 0 : item.stockQuantity))}">
                                                             </span>
 
-                                                            <!-- stok aman -->
+                                                            <-- stok aman ->
                                                             <span th:if="${item.stockQuantity != null and item.stockQuantity >= item.minStockAlert}"
                                                                   class="text-info"
                                                                   style="font-size:45%"
                                                                   th:text="${#strings.toLowerCase(#messages.msg('label.stock') + ': ' + (item.stockQuantity == null ? 0 : item.stockQuantity))}">
                                                             </span>
-                                                        </h4>
+                                                        </h4-->
                                                         <ul class="list-unstyled" th:attr="data-product-id=${item.id}">
                                                             <!-- 🔹 Indikator harga belum diatur -->
-                                                            <li th:id="'price-notset-' + ${item.id}"
+                                                            <!--li th:id="'price-notset-' + ${item.id}"
                                                                 th:attr="style=${item.price == null or item.price == 0} ? 'display:block;' : 'display:none;'">
                                                                 <i class="bi bi-x-circle text-danger"></i>
                                                                 <span class="text-danger" th:text="#{msg.priceNotSet}"></span>
-                                                            </li>
+                                                            </li-->
                                                             <!-- description -->
                                                             <li th:id="'desc-no-' + ${item.id}"
                                                                 th:attr="style=${item.description == null or #strings.isEmpty(item.description)} ? 'display:block;' : 'display:none;'">
@@ -694,7 +681,7 @@
                                                                 <span class="text-danger" th:text="#{msg.noDescProvided}"></span>
                                                             </li>
                                                             <!-- image -->
-                                                            <li th:id="'status-image-' + ${item.id}"
+                                                            <!--li th:id="'status-image-' + ${item.id}"
                                                                 th:if="${item.thumbnailUrl != null and !#strings.isEmpty(item.thumbnailUrl)}"
                                                                 style="display: none;">
                                                                 <i class="bi bi-check-circle text-success"></i>
@@ -705,7 +692,7 @@
                                                                 th:if="${item.thumbnailUrl == null or #strings.isEmpty(item.thumbnailUrl)}">
                                                                 <i class="bi bi-x-circle text-danger"></i>
                                                                 <span class="text-danger" th:text="#{msg.noImageProvided}"></span>
-                                                            </li>
+                                                            </li-->
                                                         </ul>
                                                     </div>
                                                 </div>
@@ -719,10 +706,10 @@
                                                     <!-- Deskripsi -->
                                                     <section class="desc">
                                                         <div class="p-3 text-center">
-                                                            <img th:if="${item.imageUrl != null}"
+                                                            <!--img th:if="${item.imageUrl != null}"
                                                                  th:src="@{${item.thumbnailUrl}"
                                                                  class="card-thumb img-fluid mb-2 rounded w-100"
-                                                                 style="max-height: 200px; object-fit: cover;">
+                                                                 style="max-height: 200px; object-fit: cover;"-->
                                                         </div>
                                                         <p class="card-text fw-bold fs-5 text-center text-info mt-3 mb-0" th:utext="|#{label.description}:|")></p>
                                                         <p class="card-text text-center"
@@ -735,56 +722,24 @@
                                                     <div class="collapse"
                                                          th:attr="id=${'collapseExample' + item.id}">
                                                         <h4 class="card-title">Edit Form</h4>
-                                                        <div class="p-3 text-center">
+                                                        <!--div class="p-3 text-center">
                                                             <input type="file"
                                                                    class="cardImage"
                                                                    name="file"
                                                                    accept="image/*"
                                                                    th:attr="data-product-id=${item.id}, data-has-image=${item.imageUrl != null}">
-                                                        </div>
+                                                        </div-->
                                                         <form class="form edit-item-form" method="post"
+                                                              th:action="@{'/v1/manager/manage/area/' + ${areaId} + '/unit/' + ${item.id}}"
                                                               th:attr="id=${'editForm' + iterStat.count}, data-item-id=${item.id}">
                                                             <div class="form-body">
                                                                 <div class="form-group">
                                                                     <label for="feedback1" class="sr-only" th:text="#{label.name}"></label>
                                                                     <input type="text" id="name" class="form-control" placeholder="Name"
                                                                            name="name" th:value="${item.name}" th:id="'formItemName' + ${item.id}">
-                                                                </div>
-                                                                <!--div class="form-group form-label-group">
-                                                                    <label for="label-textarea" th:text="#{label.description}"></label>
-                                                                    <textarea class="form-control" id="description" rows="3" name="description"
-                                                                              th:text="${item.description != null ? item.description : ''}"
-                                                                              th:placeholder="#{msg.noDescProvided}">
-                                                                    </textarea>
-                                                                </div-->
-
-                                                                <div class="form-group">
-                                                                    <label class="sr-only" th:text="#{label.sellingPrice}"></label>
-                                                                    <input type="text"
-                                                                           class="form-control price-input"
-                                                                           th:placeholder="#{label.price}"
-                                                                           th:value="${item.price != null ? #numbers.formatDecimal(item.price, 0, 'POINT', 0, 'COMMA') : ''}"
-                                                                           name="price"
-                                                                           inputmode="numeric"
-                                                                           autocomplete="off">
-
-                                                                    <input type="hidden"
-                                                                           class="price-raw"
-                                                                           name="priceRaw"
-                                                                           th:value="${item.price != null ? item.price : 0}">
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    <label for="stock" class="sr-only" th:text="#{label.stock}"></label>
-                                                                    <div class="d-flex align-items-center">
-                                                                        <input type="number" id="stock" class="form-control me-2"
-                                                                               th:value="${item.stockQuantity != null ? item.stockQuantity : 0}"
-                                                                               th:placeholder="#{label.quantity}" name="stock"
-                                                                               min="0" max="999" step="1"
-                                                                               style="width: 100px; text-align: center;" readonly>
-                                                                        <a href="#" class="btn btn-outline-secondary" title="Atur Stok">
-                                                                            <i class="bi bi-gear-fill"></i>
-                                                                        </a>
-                                                                    </div>
+                                                                    <input type="text" th:value="${activePage}" name="activePage"/>
+                                                                    <input type="text" th:value="${activeSub}" name="activeSub"/>
+                                                                    <input type="text" th:value="${path}" name="path"/>
                                                                 </div>
                                                             </div>
 
@@ -897,6 +852,7 @@
   const toastMediumTimeout = [[${toastMediumTimeout}]];
     const toastShortTimeout = [[${toastShortTimeout}]];
     const toastLongTimeout = [[${toastLongTimeout}]];
+    const areaId = [[${areaId}]];
     const colorDanger = [[${globals.get('colorDanger')}]];
     const colorWhite = [[${globals.get('colorWhite')}]];
     //const toastLongTimeout = [[${globals.get('toastLongTimeout')}]];
@@ -1087,6 +1043,24 @@
             const cancelBtn = form.querySelector('.cancel-collapse');
             if (cancelBtn) cancelBtn.textContent = 'Cancel';
           }
+
+          // -------------------------------------
+            // 🔥 EXECUTE PUT REQUEST VALID POSITION
+            // -------------------------------------
+            if (isEdit) {
+                //const areaId = this.getAttribute('data-area-id');
+                const unitId = form.dataset.itemId;
+                console.log("*areaId="+areaId);
+                console.log("*unitId="+unitId);
+                // 🔥 Cari form yang punya data-item-id sama
+                const targetForm = document.querySelector(`form[data-item-id="${unitId}"]`);
+
+                if (targetForm) {
+                    targetForm.submit();   // 🔥 SUBMIT!
+                }
+
+            }
+
         });
       });
 
@@ -1265,7 +1239,7 @@
     });
 </script>
 <!-- send edit form -->
-<script>
+<!--script>
     document.addEventListener("DOMContentLoaded", () => {
 
         document.querySelectorAll(".edit-item-form").forEach(form => {
@@ -1274,9 +1248,9 @@
 
                 const itemId = form.dataset.itemId;
                 const payload = {
-                    name: form.querySelector("input[name='name']").value,
-                    description: form.querySelector("textarea[name='description']").value,
-                    price: parseFloat(form.querySelector("input[name='priceRaw']").value) || 0
+                    name: form.querySelector("input[name='name']").value
+                    //description: form.querySelector("textarea[name='description']").value,
+                    //price: parseFloat(form.querySelector("input[name='priceRaw']").value) || 0
                 };
 
                 try {
@@ -1386,7 +1360,7 @@
             });
         });
     });
-</script>
+</script-->
 
 <!--HELPER FUNCTION-->
 <script>

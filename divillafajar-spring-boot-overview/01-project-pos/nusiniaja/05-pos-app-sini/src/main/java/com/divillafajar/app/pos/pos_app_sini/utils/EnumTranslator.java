@@ -19,8 +19,6 @@ public class EnumTranslator {
 	private final MessageSource messageSource;
 
 	public String translate(TranslatableEnum lob) {
-        System.out.println("masuk translate");
-        System.out.println("masuk translate= "+lob.getI18nKey());
         Locale locale = LocaleContextHolder.getLocale();
 		return messageSource.getMessage(lob.getI18nKey(), null, locale);
 		//getTranslated(LineOfBusinessEnum.ACCOMODATION, Locale.getDefault()); --cara manggilnya

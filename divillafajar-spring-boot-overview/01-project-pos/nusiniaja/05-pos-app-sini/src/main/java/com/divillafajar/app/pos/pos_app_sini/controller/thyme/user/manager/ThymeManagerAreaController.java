@@ -8,6 +8,7 @@ import com.divillafajar.app.pos.pos_app_sini.io.entity.category.ProductCategoryD
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientAddressDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.session.UserSessionLog;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.space.dto.SpaceAreaDTO;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.space.unit.dto.UnitAccomodationDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductItemSummaryProjectionDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductWithCategoryPathDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.area.AreaSummaryProjection;
@@ -20,11 +21,13 @@ import com.divillafajar.app.pos.pos_app_sini.service.product.category.ProductCat
 import com.divillafajar.app.pos.pos_app_sini.service.product.item.ProductService;
 import com.divillafajar.app.pos.pos_app_sini.utils.EnumTranslator;
 import com.divillafajar.app.pos.pos_app_sini.utils.TelegramNotifier;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -204,7 +207,7 @@ public class ThymeManagerAreaController {
             }
         }
         ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
-        List<ProductWithCategoryPathDTO> listItem = productService.getListProduct(dto.getPubId(),areaId, null);
+	    List<UnitAccomodationDTO> listItem = areaService.getListUnitArea(dto.getPubId(),areaId, null);
         model.addAttribute("pathCategory",pathCategory);
 		System.out.println("pathCategory="+pathCategory);
         model.addAttribute("path",path);
@@ -213,7 +216,7 @@ public class ThymeManagerAreaController {
         model.addAttribute("trimPath",trimPath);
         model.addAttribute("activePage",activePage);
         model.addAttribute("activeSub",activeSub);
-        model.addAttribute("categoryId",areaId);
+        model.addAttribute("areaId",areaId);
         model.addAttribute("adrPubId",dto.getPubId());
         model.addAttribute("toastShortTimeout",appGlobals.get("toastShortTimeout"));
         model.addAttribute("toastMediumTimeout",appGlobals.get("toastMediumTimeout"));
@@ -233,6 +236,76 @@ public class ThymeManagerAreaController {
         return "pages/v1/manager/space/item/home-area-item";
     }
 
+	@PostMapping("/{areaId}/unit/{id}")
+	public String updateUnitArea(
+			@RequestParam(name = "activePage", required = true) String activePage,
+			@RequestParam(name = "activeSub", required = true) String activeSub,
+			@RequestParam(name = "path", required = true) String path,
+			@PathVariable Long areaId,
+			@PathVariable Long id,
+			HttpServletRequest request,
+			Model model, HttpSession session
+	) {
+		// update logic
+		System.out.println("----------updateUnitArea----------");
+		System.out.println("--areaId/unitid="+areaId+"/"+id+"----------");
+
+		String trimPath = "";
+		StringTokenizer st = new StringTokenizer(path,"/");
+		while(st.hasMoreTokens()) {
+			String tkn = st.nextToken();
+			StringTokenizer st1 = new StringTokenizer(tkn,"~");
+			trimPath = trimPath+st1.nextToken();
+			if(st.hasMoreTokens()) {
+				trimPath=trimPath+" / ";
+			}
+		}
+		String pathCategory = "";
+		String targetCategoryName = "";
+		if(!StringUtils.isBlank(trimPath)) {
+			st = new StringTokenizer(trimPath,"/");
+			while(st.hasMoreTokens()) {
+				String tkn = st.nextToken().trim();
+				pathCategory = pathCategory + tkn;
+				if(st.hasMoreTokens()) {
+					pathCategory=pathCategory+"/";
+				}
+				else {
+					//last token
+					targetCategoryName=tkn.trim();
+				}
+			}
+		}
+		ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
+		List<UnitAccomodationDTO> listItem = areaService.getListUnitArea(dto.getPubId(),areaId, null);
+		model.addAttribute("pathCategory",pathCategory);
+		System.out.println("pathCategory="+pathCategory);
+		model.addAttribute("path",path);
+		System.out.println("path="+path);
+		model.addAttribute("targetCategoryName",targetCategoryName);
+		model.addAttribute("trimPath",trimPath);
+		model.addAttribute("activePage",activePage);
+		model.addAttribute("activeSub",activeSub);
+		model.addAttribute("areaId",areaId);
+		model.addAttribute("adrPubId",dto.getPubId());
+		model.addAttribute("toastShortTimeout",appGlobals.get("toastShortTimeout"));
+		model.addAttribute("toastMediumTimeout",appGlobals.get("toastMediumTimeout"));
+		model.addAttribute("toastLongTimeout",appGlobals.get("toastLongTimeout"));
+		model.addAttribute("generalFacilities", GeneralAccommodationFacilities.values());
+		model.addAttribute("accommodationEntertainmentFacilities", AccommodationEntertainmentFacilities.values());
+		model.addAttribute("featureAccommodationFacilities", FeatureAccommodationFacilities.values());
+		model.addAttribute("onDemandAccommodationFacilities", OnDemandAccommodationFacilities.values());
+		model.addAttribute("addOnAccommodationService", AddOnAccommodationService.values());
+		//"","",""
+		if(listItem!=null) {
+			model.addAttribute("listItem",listItem);
+		}
+		else {
+			model.addAttribute("listItem",new ArrayList<>());
+		}
+
+		return "pages/v1/manager/space/item/edit-area-item";
+	}
 
 	/*
 	INSERT ACCOMODATION UNIT BARU
@@ -254,47 +327,6 @@ public class ThymeManagerAreaController {
 			System.out.println("-------addNewItemUnitArea--------");
             ClientAddressDTO dto = (ClientAddressDTO) model.getAttribute("targetAddress");
 	        UserSessionDTO userLog = (UserSessionDTO) session.getAttribute("userLogInfo");
-			System.out.println("addNewItemUnitArea=="+areaId);
-	        System.out.println("CreateUnitAreaRequestModel=="+areaId);
-	        System.out.println("CreateUnitAreaRequestModel=="+dto.getPubId());
-	        System.out.println("CreateUnitAreaRequestModel=="+userLog.getUsername());
-	        System.out.println("CreateUnitAreaRequestModel=="+createUnitAreaRequestModel.getPath());
-	        System.out.println("CreateUnitAreaRequestModel=="+createUnitAreaRequestModel.getName());
-	        System.out.println("CreateUnitAreaRequestModel=="+createUnitAreaRequestModel.getDescription());
-	        System.out.println("CreateUnitAreaRequestModel=="+createUnitAreaRequestModel.getTbath());
-	        System.out.println("CreateUnitAreaRequestModel=="+createUnitAreaRequestModel.getTArea());
-	        System.out.println("CreateUnitAreaRequestModel=="+createUnitAreaRequestModel.getTroom());
-	        System.out.println("CreateUnitAreaRequestModel=="+createUnitAreaRequestModel.getTfloor());
-	        System.out.println("CreateUnitAreaRequestModel=="+createUnitAreaRequestModel.getTliving());
-	        /*
-			List<String> feature = createUnitAreaRequestModel.getFeatureFacilities();
-			if(!feature.isEmpty()) {
-				for(String item : feature) {
-					System.out.println(item);
-				}
-			}
-	        List<String> standard = createUnitAreaRequestModel.getGeneralFacilities();
-	        if(!feature.isEmpty()) {
-		        for(String item : standard) {
-			        System.out.println(item);
-		        }
-	        }
-
-	        List<String> onDemand = createUnitAreaRequestModel.getOnDemandFacilities();
-	        if(!feature.isEmpty()) {
-		        for(String item : onDemand) {
-			        System.out.println(item);
-		        }
-	        }
-
-	        List<String> services = createUnitAreaRequestModel.getAddOnService();
-	        if(!feature.isEmpty()) {
-		        for(String item : services) {
-			        System.out.println(item);
-		        }
-	        }
-
-	         */
 
 	        String path = createUnitAreaRequestModel.getPath();
 	        StringTokenizer st = new StringTokenizer(path,"/");
@@ -364,6 +396,8 @@ public class ThymeManagerAreaController {
 	    model.addAttribute("bedroomFacilities", BedroomFacilities.values());
 		return "pages/v1/manager/space/item/accommodation-bedroom-form";
     }
+
+
 
 	@Transactional
 	@PostMapping("/use-default")

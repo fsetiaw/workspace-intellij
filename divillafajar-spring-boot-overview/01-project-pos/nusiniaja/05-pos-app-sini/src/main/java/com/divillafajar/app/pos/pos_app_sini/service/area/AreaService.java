@@ -5,6 +5,7 @@ import com.divillafajar.app.pos.pos_app_sini.io.entity.client.area.dto.ClientAre
 import com.divillafajar.app.pos.pos_app_sini.io.entity.client.dto.ClientAddressDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.product.ProductDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.entity.space.dto.SpaceAreaDTO;
+import com.divillafajar.app.pos.pos_app_sini.io.entity.space.unit.dto.UnitAccomodationDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.CategorySummaryProjection;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.area.AreaSummaryProjection;
 import com.divillafajar.app.pos.pos_app_sini.model.area.unit.CreateUnitAreaRequestModel;
@@ -16,6 +17,7 @@ import java.util.Optional;
 
 public interface AreaService {
 	boolean locationHasArea(String pAid);
+	List<UnitAccomodationDTO> getListUnitArea(String clietnAddressPubId, Long areaId, String keyword);
 	AreaSummaryProjection getAreaSummary(String clientAddressPubId);
 	ProductCategoryDTO addNewMainArea(String areaName, String pAid, String username) throws Exception;
 	List<SpaceAreaDTO> getAreaAndSubAreaByClientAddressPubId(String pAid);
@@ -24,5 +26,5 @@ public interface AreaService {
     List<ReturnValueGetPathToEachEndChildCategoryByClientAddressPubId> getPathToEachEndChildCategoryByClientAddressPubId(String pAid, String filter);
 	void createDefaultArea(String lang, String clientAddressPubId);
 	void resetAreaByClientAddress(String clientAddressPubId);
-	ProductDTO addNewUnit(Long catId, ClientAddressDTO dto, CreateUnitAreaRequestModel createUnitAreaRequestModel, String username);
+	UnitAccomodationDTO addNewUnit(Long catId, ClientAddressDTO dto, CreateUnitAreaRequestModel createUnitAreaRequestModel, String username);
 }

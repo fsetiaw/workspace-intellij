@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- inject contextPath -->
+    <meta name="contextPath" th:content="@{/}">
+    <meta name="pAid" th:content="${session.targetAddress.pubId}">
+    <title>Edit Unit</title>
+    <link rel="shortcut icon" th:href="@{/assets/compiled/svg/favicon.svg}" type="image/x-icon}">
+    <link rel="shortcut icon"
+          href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACEAAAAiCAYAAADRcLDBAAAEs2lUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNS41LjAiPgogPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgeG1sbnM6ZXhpZj0iaHR0cDovL25zLmFkb2JlLmNvbS9leGlmLzEuMC8iCiAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyIKICAgIHhtbG5zOnBob3Rvc2hvcD0iaHR0cDovL25zLmFkb2JlLmNvbS9waG90b3Nob3AvMS4wLyIKICAgIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIKICAgIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIgogICAgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZUV2ZW50IyIKICAgZXhpZjpQaXhlbFhEaW1lbnNpb249IjMzIgogICBleGlmOlBpeGVsWURpbWVuc2lvbj0iMzQiCiAgIGV4aWY6Q29sb3JTcGFjZT0iMSIKICAgdGlmZjpJbWFnZVdpZHRoPSIzMyIKICAgdGlmZjpJbWFnZUxlbmd0aD0iMzQiCiAgIHRpZmY6UmVzb2x1dGlvblVuaXQ9IjIiCiAgIHRpZmY6WFJlc29sdXRpb249Ijk2LjAiCiAgIHRpZmY6WVJlc29sdXRpb249Ijk2LjAiCiAgIHBob3Rvc2hvcDpDb2xvck1vZGU9IjMiCiAgIHBob3Rvc2hvcDpJQ0NQcm9maWxlPSJzUkdCIElFQzYxOTY2LTIuMSIKICAgeG1wOk1vZGlmeURhdGU9IjIwMjItMDMtMzFUMTA6NTA6MjMrMDI6MDAiCiAgIHhtcDpNZXRhZGF0YURhdGU9IjIwMjItMDMtMzFUMTA6NTA6MjMrMDI6MDAiPgogICA8eG1wTU06SGlzdG9yeT4KICAgIDxyZGY6U2VxPgogICAgIDxyZGY6bGkKICAgICAgc3RFdnQ6YWN0aW9uPSJwcm9kdWNlZCIKICAgICAgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWZmaW5pdHkgRGVzaWduZXIgMS4xMC4xIgogICAgICBzdEV2dDp3aGVuPSIyMDIyLTAzLTMxVDEwOjUwOjIzKzAyOjAwIi8+CiAgICA8L3JkZjpTZXE+CiAgIDwveG1wTU06SGlzdG9yeT4KICA8L3JkZjpEZXNjcmlwdGlvbj4KIDwvcmRmOlJERj4KPC94OnhtcG1ldGE+Cjw/eHBhY2tldCBlbmQ9InIiPz5V57uAAAABgmlDQ1BzUkdCIElFQzYxOTY2LTIuMQAAKJF1kc8rRFEUxz9maORHo1hYKC9hISNGTWwsRn4VFmOUX5uZZ36oeTOv954kW2WrKLHxa8FfwFZZK0WkZClrYoOe87ypmWTO7dzzud97z+nec8ETzaiaWd4NWtYyIiNhZWZ2TvE946WZSjqoj6mmPjE1HKWkfdxR5sSbgFOr9Ll/rXoxYapQVik8oOqGJTwqPL5i6Q5vCzeo6dii8KlwpyEXFL519LjLLw6nXP5y2IhGBsFTJ6ykijhexGra0ITl5bRqmWU1fx/nJTWJ7PSUxBbxJkwijBBGYYwhBgnRQ7/MIQIE6ZIVJfK7f/MnyUmuKrPOKgZLpEhj0SnqslRPSEyKnpCRYdXp/9++msneoFu9JgwVT7b91ga+LfjetO3PQ9v+PgLvI1xkC/m5A+h7F32zoLXug38dzi4LWnwHzjeg8UGPGbFfySvuSSbh9QRqZ6H+Gqrm3Z7l9zm+h+iafNUV7O5Bu5z3L/wAdthn7QIme0YAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAJTSURBVFiF7Zi9axRBGIefEw2IdxFBRQsLWUTBaywSK4ubdSGVIY1Y6HZql8ZKCGIqwX/AYLmCgVQKfiDn7jZeEQMWfsSAHAiKqPiB5mIgELWYOW5vzc3O7niHhT/YZvY37/swM/vOzJbIqVq9uQ04CYwCI8AhYAlYAB4Dc7HnrOSJWcoJcBS4ARzQ2F4BZ2LPmTeNuykHwEWgkQGAet9QfiMZjUSt3hwD7psGTWgs9pwH1hC1enMYeA7sKwDxBqjGnvNdZzKZjqmCAKh+U1kmEwi3IEBbIsugnY5avTkEtIAtFhBrQCX2nLVehqyRqFoCAAwBh3WGLAhbgCRIYYinwLolwLqKUwwi9pxV4KUlxKKKUwxC6ZElRCPLYAJxGfhSEOCz6m8HEXvOB2CyIMSk6m8HoXQTmMkJcA2YNTHm3congOvATo3tE3A29pxbpnFzQSiQPcB55IFmFNgFfEQeahaAGZMpsIJIAZWAHcDX2HN+2cT6r39GxmvC9aPNwH5gO1BOPFuBVWAZue0vA9+A12EgjPadnhCuH1WAE8ivYAQ4ohKaagV4gvxi5oG7YSA2vApsCOH60WngKrA3R9IsvQUuhIGY00K4flQG7gHH/mLytB4C42EgfrQb0mV7us8AAMeBS8mGNMR4nwHamtBB7B4QRNdaS0M8GxDEog7iyoAguvJ0QYSBuAOcAt71Kfl7wA8DcTvZ2KtOlJEr+ByyQtqqhTyHTIeB+ONeqi3brh+VgIN0fohUgWGggizZFTplu12yW8iy/YLOGWMpDMTPXnl+Az9vj2HERYqPAAAAAElFTkSuQmCC"
+          type="image/png">
+    <link rel="stylesheet" th:href="@{/assets/compiled/css/app.css}">
+    <link rel="stylesheet" th:href="@{/assets/compiled/css/app-dark.css}">
+    <link rel="stylesheet" th:href="@{/assets/compiled/css/iconly.css}">
+    <link rel="stylesheet" th:href="@{/mine/js/css/toast.css}">
+
+    <link href="https://unpkg.com/filepond/dist/filepond.css" rel="stylesheet">
+    <link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css" rel="stylesheet">
+
+    <link rel="stylesheet" th:href="@{/assets/vendors/toastify/toastify.css}">
+    <link rel="stylesheet" th:href="@{/mine/js/css/additional-index.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/mine/js/css/breadcrumbs.css}">
+    <!--link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"-->
+    <style>
+        .change-image-btn {
+            font-size: 0.85rem;
+            padding: 0.25rem 0.6rem;
+        }
+
+        .filepond--root {
+          width: auto !important;
+          height: auto !important;
+          min-height: auto !important;
+          border: none !important;
+          background: none !important;
+        }
+
+        .filepond--drop-label {
+          background: none !important;
+          border: none !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          display: inline !important;
+          font-size: 0.85rem !important;
+          color: #0d6efd !important;
+          cursor: pointer !important;
+        }
+
+        .filepond--drop-label:hover {
+          text-decoration: none;
+        }
+
+        .filepond--panel-root,
+        .filepond--credits {
+          display: none !important;
+        }
+
+        .filepond-btn {
+          background-color: #007bff;  /* biru */
+          color: white;
+          padding: 4px 10px;
+          border-radius: 6px;
+          font-size: 0.75rem;
+          border: none;
+          cursor: pointer;
+          transition: background 0.2s ease-in-out;
+        }
+
+        .filepond-btn:hover {
+          background-color: #0056b3;  /* hover lebih gelap */
+        }
+
+        @media (max-width: 576px) {
+            .card-body .d-flex {
+                justify-content: center !important;
+            }
+        }
+
+        /*
+        .card-wrapper {
+          margin-bottom: 5px !important;
+        }
+        */
+
+        .card {
+          margin-bottom: 0.5rem !important;
+        }
+
+        .card-body {
+          padding-bottom: 0.75rem !important;
+          padding-top: 0.75rem !important;
+        }
+
+        /* Warna latar belakang body accordion */
+          #collapseOne .accordion-body {
+            background-color: #e3f2fd; /* biru muda lembut */
+          }
+
+          /* Kalau ada tombol accordion header */
+          #headingOne .accordion-button {
+            background-color: #bbdefb; /* biru muda */
+            color: #0d47a1;            /* teks biru tua */
+          }
+
+          /* Saat tombol accordion terbuka (expanded) */
+          #headingOne .accordion-button:not(.collapsed) {
+            background-color: #90caf9; /* biru sedikit lebih terang */
+            color: #0d47a1;
+            box-shadow: none;
+          }
+
+        .accordion-button .category-label {
+          color: [[${@appGlobals.get('colorPrimaryBlue')}]];
+          font-weight: 600;
+          font-size: 120%;
+          margin-left: 4px;
+          transition: color 0.2s ease;
+        }
+
+        /* Saat tombol TIDAK collapsed (berarti terbuka) */
+        .accordion-button:not(.collapsed) .category-label {
+          color: [[${@appGlobals.get('colorPrimaryBlue')}]];
+        }
+
+        .accordion-icon i {
+          transition: transform 0.3s ease;
+          color: #0d6efd;
+        }
+
+        /* saat aktif (accordion terbuka) */
+        .accordion-button:not(.collapsed) .accordion-icon i {
+          transform: rotate(180deg);
+        }
+
+
+    </style>
+    <script th:inline="javascript">
+        const path = [[${path}]];
+        console.log("path => " + path);
+    </script>
+</head>
+<body>
+<div class="toast-container position-fixed top-0 end-0 p-3">
+    <div id="toastRequired"
+         class="toast align-items-center text-bg-danger border-0"
+         role="alert" aria-live="assertive" aria-atomic="true">
+
+        <div class="d-flex">
+            <div class="toast-body" th:text="#{msg.fillRequiredFields}">
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                    data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
+
+
+<div id="app">
+    <!-- Sidebar slot -->
+    <div layout:fragment="sidebar">
+        <div th:replace="~{/pages/v1/manager/space/sidebar.html :: sidebar(${activePage}, ${activeSub}, '${listActiveLocation}')}"></div>
+    </div>
+    <div id="main">
+        <!-- Notification hamburg slot -->
+        <div layout:fragment="left-header">
+            <div th:replace="~{/pages/v1/fragments/hamburger-header.html :: left-header}"></div>
+        </div>
+        <!-- Notification header slot
+        <div layout:fragment="left-header">
+            <div th:replace="~{/pages/v1/manager/fragments/notification-header.html :: right-header}"></div>
+        </div-->
+        <!-- Index header slot -->
+        <div layout:fragment="logout-and-other-hidden-form">
+            <div th:replace="~{/pages/v1/fragments/logout-and-other-hidden-form.html :: hidden-form(${clientName}, ${updatePath}, ${deletePath})}"></div>
+        </div>
+
+        <!-- Main content slot -->
+        <div class="page-heading">
+            <ol class="breadcrumb">
+                <th:block th:replace="~{/pages/v1/fragments/crumbs/manager-area-root-crumb.html :: manager-product-root-crumb}"></th:block>
+                <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN','MANAGER')" class="breadcrumb-item active">
+                    <a th:href="@{/v1/manager/manage/area/item(pid=${targetAddress.pubId},activePage='menu1',activeSub='subMenu1-2')}"
+                    th:text="|${#messages.msg('label.unitArea')}|"></a>
+                </li>
+                <li sec:authorize="hasAnyRole('SUPERADMIN','ADMIN','MANAGER')" class="breadcrumb-item"
+                    aria-current="page"><!-- th:text="|${#messages.msg('label.itemList')}|"-->
+                    <span th:with="
+                    parts=${#strings.arraySplit(trimPath, '/')},
+                    lastIndex=${#lists.size(parts) - 1}">
+
+                    <span th:each="p, iter : ${parts}">
+                        <span th:if="${iter.last}"
+                              th:text="${p.trim()}">
+                        </span>
+                    </span>
+                </span>
+                </li>
+            </ol>
+            <h3>
+                <span style="font-size:70%; display:block; line-height:1;"
+                      th:text="|${#strings.toUpperCase(#messages.msg('label.setting'))}|">
+                </span>
+                <span th:with="
+                    parts=${#strings.arraySplit(trimPath, '/')},
+                    lastIndex=${#lists.size(parts) - 1}">
+
+                    <span th:each="p, iter : ${parts}">
+                        <span th:if="${!iter.last}"
+                              th:text="|${p.trim()} / |"
+                              style="color: gray;font-size:65%"></span>
+                        <span th:if="${iter.last}"
+                              th:text="${p.trim()}"
+                              style="color: #0d6efd; font-weight: 600;font-size:120%"></span>
+                    </span>
+                </span>
+
+                <!--span th:text="|${#strings.toUpperCase(#messages.msg('label.manager.setting.product.item'))} / ${#strings.toUpperCase(#messages.msg('label.manager.setting.product.barang'))}|"></span-->
+
+            </h3>
+        </div>
+        <div layout:fragment="content">
+            <div class="page-content">
+                <!-- list group button & badge start-->
+                <div class="card collapse-icon accordion-icon-rotate" id="collapsableCard">
+                    <div class="card-body">
+                        <div class="accordion" id="cardAccordion">
+                            <div class="accordion" id="accordionExample">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="headingOne">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#collapseOne" aria-expanded="false"
+                                                aria-controls="collapseOne">
+                                            <!-- Ikon plus -->
+                                            <i class="bi bi-plus d-inline-flex align-items-center justify-content-center me-2"
+                                               th:style="|color:${@appGlobals.get('colorPrimaryBlue')};
+                                                       width:22px;
+                                                       height:22px;
+                                                       border-radius:50%;
+                                                       font-size:150%;|">
+                                            </i>
+                                            <span th:utext="|#{label.type}|"
+                                                  style="color: gray;font-size:95%"></span>
+                                            <span th:text="${targetCategoryName}"
+                                                  style="font-weight: 600;font-size:120%; margin-left:4px" class="category-label"></span>
+
+                                        </button>
+                                    </h2>
+                                    <div id="collapseOne" class="accordion-collapse collapse "
+                                         aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                        <div class="accordion-body" id="addSearch">
+                                            <form class="form needs-validation" novalidate method="post"
+                                                  th:action="@{/v1/manager/manage/area/item/{areaId}(areaId=${categoryId},activePage=${activePage},activeSub=${activeSub})}">
+                                                <div class="form-body">
+                                                    <div class="form-group">
+                                                        <!--label for="feedback1" class="sr-only" th:text="#{label.unitName}"></label-->
+                                                        <input type="hidden" name="path" th:value="${path}">
+                                                        <input type="text" id="feedback1" class="form-control" th:placeholder="#{label.unitName}"
+                                                               name="name" required>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-12">
+                                                            <div class="form-group row align-items-center">
+                                                                <div class="col-lg-8 col-9">
+                                                                    <label class="col-form-label text-black-50" for="tUnit" th:utext="|#{label.totalUnitAvail}|"></label>
+                                                                </div>
+                                                                <div class="col-lg-4 col-3">
+                                                                    <input type="text" id="tUnit" class="form-control" name="tUnit"
+                                                                           placeholder="0" step="1" min="0" required>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!-- Section tambahan: tampil hanya jika path mulai dengan 'accomodation' -->
+                                                    <div th:if="${path != null and (#strings.toLowerCase(path).startsWith('accomodation'.toLowerCase()) or #strings.toLowerCase(path).startsWith('akomodasi'.toLowerCase()))}">
+                                                        <hr>
+                                                        <div class="form-group">
+                                                        <span th:text="#{label.roomDetails}"
+                                                              style="font-weight: 600;font-size:120%; margin-left:0px; padding-bottom:5px" class="category-label text-primary mb-3"></span>
+                                                            <!--label class="form-label text-primary">Extra Info for Accomodation</label-->
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group row align-items-center">
+                                                                        <div class="col-lg-8 col-9">
+                                                                            <label class="col-form-label text-black-50" for="tArea" th:utext="|#{label.totalArea}|"></label>
+                                                                        </div>
+                                                                        <div class="col-lg-4 col-3">
+                                                                            <input type="text" id="tArea" class="form-control" name="tArea"
+                                                                                   placeholder="0" step="1" min="0" required>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group row align-items-center">
+                                                                        <div class="col-lg-8 col-9">
+                                                                            <label class="col-form-label text-black-50" for="tfloor" th:utext="|#{label.total} #{label.floor}|"></label>
+                                                                        </div>
+                                                                        <div class="col-lg-4 col-3">
+                                                                            <input type="text" id="tfloor" class="form-control" name="tfloor"
+                                                                                   placeholder="0" step="1" min="1" required>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group row align-items-center">
+                                                                        <div class="col-lg-8 col-9">
+                                                                            <label class="col-form-label text-black-50" for="troom" th:utext="|#{label.total} #{label.bedroom}|"></label>
+                                                                        </div>
+                                                                        <div class="col-lg-4 col-3">
+                                                                            <input type="text" id="troom" class="form-control" name="troom"
+                                                                                   placeholder="0" step="1" min="1" required>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group row align-items-center">
+                                                                        <div class="col-lg-8 col-9">
+                                                                            <label class="col-form-label text-black-50" for="tliving" th:utext="|#{label.total} #{label.livingRoom}|"></label>
+                                                                        </div>
+                                                                        <div class="col-lg-4 col-3">
+                                                                            <input type="text" id="tliving" class="form-control" name="tliving"
+                                                                                   placeholder="0" step="1" min="0" required>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group row align-items-center">
+                                                                        <div class="col-lg-8 col-9">
+                                                                            <label class="col-form-label text-black-50" for="tbath" th:utext="|#{label.total} #{label.bathroom}|"></label>
+                                                                        </div>
+                                                                        <div class="col-lg-4 col-3">
+                                                                            <input type="text" id="tbath" class="form-control" name="tbath"
+                                                                                   placeholder="0" step="1" min="1" required>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group row align-items-center">
+                                                                        <div class="col-lg-8 col-9">
+                                                                            <label class="col-form-label text-black-50" for="tcapacity" th:utext="|#{label.maxAdultGuestCapacity}|"></label>
+                                                                        </div>
+                                                                        <div class="col-lg-4 col-3">
+                                                                            <input type="text" id="tcapacity" class="form-control" name="tcapacity"
+                                                                                   placeholder="0" step="1" min="1" required>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group row align-items-center">
+                                                                        <div class="col-lg-8 col-9">
+                                                                            <label class="col-form-label text-black-50" for="childAge" th:utext="|#{label.childAgeRestriction}|"></label>
+                                                                        </div>
+                                                                        <div class="col-lg-4 col-3">
+                                                                            <input type="text" id="childAge" class="form-control" name="childAge"
+                                                                                   placeholder="0" step="1" min="0" required>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <hr>
+                                                            <span th:text="#{label.amenities}"
+                                                                  style="font-weight: 600;font-size:120%; margin-left:0px; margin-bottom:0" class="category-label text-primary mb-4"></span>
+                                                            <br>
+                                                            <span th:text="#{label.feature}"
+                                                                  style="font-weight: 600;font-size:100%; margin-left:10px; margin-bottom:0" class="category-label text-primary mb-4">
+                                                            </span>
+                                                            <div class="row row-cols-2">
+                                                                <div class="col mb-2" th:each="feature : ${featureAccommodationFacilities}">
+                                                                    <div class="form-check" style="margin-left:15px">
+                                                                        <input class="form-check-input form-check-primary form-check-glow"
+                                                                               type="checkbox"
+                                                                               th:id="${'feat_' + feature.name()}"
+                                                                               th:name="featureFacilities"
+                                                                               th:value="${feature.name()}"
+                                                                               th:checked="${selectedGeneralFacilities != null and selectedGeneralFacilities.contains(feature)}">
+
+                                                                        <label class="form-check-label text-black-50"
+                                                                               th:for="${'feat_' + feature.name()}"
+                                                                               th:text="${@enumTranslator.translate(feature)}">
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <span th:text="#{label.standard}"
+                                                                  style="font-weight: 600;font-size:100%; margin-left:10px; margin-bottom:0" class="category-label text-primary mb-4"></span>
+                                                            <!--label class="form-label text-primary">Extra Info for Accomodation</label-->
+                                                            <div class="row row-cols-2">
+                                                                <div class="col mb-2" th:each="facility : ${generalFacilities}">
+                                                                    <div class="form-check" style="margin-left:15px">
+                                                                        <input class="form-check-input form-check-primary form-check-glow"
+                                                                               type="checkbox"
+                                                                               th:id="${'gen_' + facility.name()}"
+                                                                               th:name="generalFacilities"
+                                                                               th:value="${facility.name()}"
+                                                                               th:checked="${selectedGeneralFacilities != null and selectedGeneralFacilities.contains(facility)}">
+
+                                                                        <label class="form-check-label text-black-50"
+                                                                               th:for="${'gen_' + facility.name()}"
+                                                                               th:text="${@enumTranslator.translate(facility)}">
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <span th:text="#{label.onDemand}"
+                                                                  style="font-weight: 600;font-size:100%; margin-left:10px; margin-bottom:0" class="category-label text-primary mb-4">
+                                                            </span>
+                                                            <div class="row row-cols-2">
+                                                                <div class="col mb-2" th:each="onDemand : ${onDemandAccommodationFacilities}">
+                                                                    <div class="form-check" style="margin-left:15px">
+                                                                        <input class="form-check-input form-check-primary form-check-glow"
+                                                                               type="checkbox"
+                                                                               th:id="${'ond_' + onDemand.name()}"
+                                                                               th:name="onDemandFacilities"
+                                                                               th:value="${onDemand.name()}"
+                                                                               th:checked="${selectedGeneralFacilities != null and selectedGeneralFacilities.contains(onDemand)}">
+
+                                                                        <label class="form-check-label text-black-50"
+                                                                               th:for="${'ond_' + onDemand.name()}"
+                                                                               th:text="${@enumTranslator.translate(onDemand)}">
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <span th:text="#{label.addOnService}"
+                                                                  style="font-weight: 600;font-size:100%; margin-left:10px; margin-bottom:0" class="category-label text-primary mb-4">
+                                                            </span>
+                                                            <div class="row row-cols-2">
+                                                                <div class="col mb-2" th:each="addOn : ${addOnAccommodationService}">
+                                                                    <div class="form-check" style="margin-left:15px">
+                                                                        <input class="form-check-input form-check-primary form-check-glow"
+                                                                               type="checkbox"
+                                                                               th:id="${'add_' + addOn.name()}"
+                                                                               th:name="addOnService"
+                                                                               th:value="${addOn.name()}"
+                                                                               th:checked="${selectedGeneralFacilities != null and selectedGeneralFacilities.contains(addOn)}">
+
+                                                                        <label class="form-check-label text-black-50"
+                                                                               th:for="${'add_' + addOn.name()}"
+                                                                               th:text="${@enumTranslator.translate(addOn)}">
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- END conditional section -->
+                                                <div class="form-actions d-flex justify-content-end">
+                                                    <button type="submit" class="btn btn-primary me-1" th:text="#{label.add}"></button>
+                                                    <button type="reset" class="btn btn-light-primary" th:text="#{label.cancel}"></button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!-- Footer slot -->
+        <div layout:fragment="footer">
+            <div th:replace="~{/pages/v1/fragments/footer.html :: footer}"></div>
+        </div>
+    </div>
+</div>
+
+<!-- 🔹 Toast Notification -->
+<!--div id="toast-success" class="toast align-items-center text-white bg-success border-0 position-fixed bottom-0 end-0 m-4" role="alert">
+    <div class="d-flex">
+        <div class="toast-body">
+            ✅ Gambar berhasil diperbarui!
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+</div-->
+<!-- List of Toast Msg -->
+<div id="toast-msg-update-failed" th:data-msg="#{label.updateFailed}"></div>
+<div id="toast-msg-update-success" th:data-msg="#{label.updateSuccessfully}"></div>
+
+
+<!-- Toast status slot -->
+<div layout:fragment="toast-status">
+    <div th:replace="~{/pages/v1/fragments/toast/toast-status-process-result :: toast-messages(${successMessage}, ${errorMessage}, ${session.toastTimeout})}"></div>
+</div>
+<!-- Toast confirm slot -->
+<div layout:fragment="toast-confirm">
+    <!--div th:replace="~{/pages/v1/manager/fragments/toast-confirm.html :: toast-confirm('cancel', 'update', 'delete')}"></div-->
+    <div th:replace="~{/pages/v1/fragments/toast/toast-confirm.html :: toast-confirm('cancel', 'update', 'delete')}"></div>
+</div>
+<!--script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script-->
+<!--script th:src="@{/assets/static/js/bootstrap/V5.3.8/bootstrap.bundle.min.js}"></script-->
+
+<script th:src="@{/assets/static/js/initTheme.js}"></script>
+<script th:src="@{/assets/static/js/components/dark.js}"></script>
+<script th:src="@{/assets/extensions/perfect-scrollbar/perfect-scrollbar.min.js}"></script>
+<script th:src="@{/assets/vendors/toastify/toastify.js}"></script>
+<script th:src="@{/assets/compiled/js/app.js}"></script>
+<!--script th:src="@{/assets/static/js/pages/dashboard.js}"></script-->
+<script th:src="@{/mine/js/toast-handler.js}"></script>
+<!-- ✅filepond Tambahkan di bawah, sebelum </body> -->
+<script src="https://unpkg.com/filepond/dist/filepond.min.js"></script>
+<script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.js"></script>
+<link href="https://unpkg.com/filepond/dist/filepond.min.css" rel="stylesheet" />
+<link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css" rel="stylesheet" />
+
+<div layout:fragment="modal-confirm-delete">
+    <!--div th:replace="~{/pages/v1/manager/fragments/toast-confirm.html :: toast-confirm('cancel', 'update', 'delete')}"></div-->
+    <div th:replace="~{/pages/v1/fragments/modal/modal-confirm-delete.html :: modal-confirm-delete(${#strings.toUpperCase(#messages.msg('modal.confirm.delete.title'))},
+    #{modal.confirm.delete.body},'itemNameReplaceByJs',#{label.cancel}, #{label.delete})}"></div>
+</div>
+<!--script th:src="@{/mine/js/modal/modal-confirm-edit-delete.js}"></script-->
+
+<!-- 🔹 Script -->
+<script src="https://unpkg.com/filepond@^4/dist/filepond.js"></script>
+
+
+
+    </body>
+</html>

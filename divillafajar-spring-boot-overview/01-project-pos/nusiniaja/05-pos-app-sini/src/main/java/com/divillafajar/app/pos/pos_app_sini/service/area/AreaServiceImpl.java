@@ -17,6 +17,7 @@ import com.divillafajar.app.pos.pos_app_sini.io.entity.space.unit.AreaUnitEntity
 import com.divillafajar.app.pos.pos_app_sini.io.entity.space.unit.dto.UnitAccomodationDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.CategoryHierarchyProjectionDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductCategoryHierarchyProjection;
+import com.divillafajar.app.pos.pos_app_sini.io.projection.ProductWithCategoryPathDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.area.AreaHierarchyProjectionDTO;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.area.AreaSummaryProjection;
 import com.divillafajar.app.pos.pos_app_sini.io.projection.area.SpaceAreaHierarchyProjection;
@@ -58,6 +59,28 @@ public class AreaServiceImpl implements AreaService{
 	public boolean locationHasArea(String pAid) {
 		Long result = areaRepo.hasAreaByClientAddressPubId(pAid);
 		return result != null && result > 0;
+	}
+
+	@Override
+	public List<UnitAccomodationDTO> getListUnitArea(String clietnAddressPubId, Long areaId, String keyword) {
+		System.out.println("==============getListUnitArea==================");
+		ClientAddressEntity clientAddress = addressRepo.findByPubId(clietnAddressPubId);
+		List<AreaUnitEntity> listUnit = null;
+		if(keyword==null || keyword.isEmpty()) {
+			listUnit = unitAreaRepo.findUnitAreaByClientAndAreaId(clientAddress.getId(), areaId);
+		}
+		else {
+
+		}
+		List<UnitAccomodationDTO> retVal = new ArrayList<>();
+		if(listUnit!=null) {
+			retVal = modelMapper.map(
+					listUnit,
+					new TypeToken<List<UnitAccomodationDTO>>() {}.getType()
+			);
+			System.out.println("retVal size = "+retVal.size());
+		}
+		return retVal;
 	}
 
 	@Override
@@ -311,9 +334,9 @@ public class AreaServiceImpl implements AreaService{
 
 	@Override
 	@Transactional
-	public ProductDTO addNewUnit(Long areaId, ClientAddressDTO dto, CreateUnitAreaRequestModel createItemRequestModel, String username) {
+	public UnitAccomodationDTO addNewUnit(Long areaId, ClientAddressDTO dto, CreateUnitAreaRequestModel createItemRequestModel, String username) {
 
-		ProductDTO retVal = new ProductDTO();
+		UnitAccomodationDTO retVal = new UnitAccomodationDTO();
 		System.out.println("===== addNewProduct =======");
 		System.out.println("===== "+dto.getPubId()+" =======");
 		/*
@@ -325,7 +348,8 @@ public class AreaServiceImpl implements AreaService{
 		try {
 			AreaUnitEntity newUnit = new AreaUnitEntity();
 			newUnit =  modelMapper.map(createItemRequestModel, AreaUnitEntity.class);
-
+			ClientAddressEntity targetAddress = addressRepo.findByPubId(dto.getPubId());
+			newUnit.setClientAddress(targetAddress);
 			newUnit.setCreatedBy(username);
 			Optional<SpaceAreaEntity> area =  areaRepo.findById(areaId);
 			if(area.isEmpty())
@@ -343,7 +367,8 @@ public class AreaServiceImpl implements AreaService{
 			System.out.println("newUnit = "+newUnit.getOtherFeature());
 
 			 */
-			unitAreaRepo.save(newUnit);
+			AreaUnitEntity saved =  unitAreaRepo.save(newUnit);
+			retVal = modelMapper.map(saved,UnitAccomodationDTO.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -384,6 +409,6 @@ public class AreaServiceImpl implements AreaService{
 		}
 
  */
-		return null;
+		return retVal;
 	}
 }
